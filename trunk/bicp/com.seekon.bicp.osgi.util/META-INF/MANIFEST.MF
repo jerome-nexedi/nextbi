@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Util
+Bundle-SymbolicName: com.seekon.bicp.osgi.util
+Bundle-Version: 1.0.0
+Bundle-Vendor: SEEKON
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.osgi.framework
+Export-Package: com.seekon.framework.osgi.util;version="1.0.0"
