@@ -10,7 +10,7 @@ public final class StartupListener implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent event) {
 		GlobalWebContextHelper.setGlobalServletContext(event.getServletContext());
-
+		System.out.println("StartupListener is Initializing.");
 		this.service = new FrameworkService(event.getServletContext());
 		this.service.start();
 	}
