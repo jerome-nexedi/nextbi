@@ -23,14 +23,14 @@ public final class ProvisionActivator implements BundleActivator {
 
 	public void start(BundleContext context) throws Exception {
 		servletContext.setAttribute(BundleContext.class.getName(), context);
-
+				
 		List<Bundle> installed = new ArrayList<Bundle>();
 		for (URL url : findBundles()) {
 			this.servletContext.log("Installing bundle [" + url + "]");
 			Bundle bundle = context.installBundle(url.toExternalForm());
 			installed.add(bundle);
 		}
-
+		
 		ServiceReference ref = context.getServiceReference(PackageAdmin.class
 				.getName());
 
@@ -44,14 +44,14 @@ public final class ProvisionActivator implements BundleActivator {
 			System.out.println("PackageAdmin service is unavailable.");
 			return;
 		}
-
+		
 		pa.resolveBundles((Bundle[]) (Bundle[]) installed
 				.toArray(new Bundle[installed.size()]));
-
+		
 		for (Bundle bundle : installed) {
 			if (!Util.isFragment(bundle.adapt(BundleRevision.class))) {
 				String activator = bundle.getHeaders().get("Bundle-Activator");
-				if (activator != null) {
+				if (activator != null && bundle.getState() != Bundle.ACTIVE) {
 					try {
 						bundle.start();
 					} catch (Throwable e) {
@@ -60,6 +60,7 @@ public final class ProvisionActivator implements BundleActivator {
 				}
 			}
 		}
+	
 	}
 
 	public void stop(BundleContext context) throws Exception {
@@ -72,7 +73,7 @@ public final class ProvisionActivator implements BundleActivator {
 			if (name.endsWith(".jar")) {
 				URL url = this.servletContext.getResource(name);
 				if (url != null) {
-					list.add(url);
+						list.add(url);
 				}
 			}
 		}

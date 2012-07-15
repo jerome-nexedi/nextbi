@@ -74,13 +74,14 @@ public final class ProxyServlet extends HttpServlet {
       return;
     }
 
-    String uri = req.getRequestURI();
-    if (jspServlet != null && uri != null && uri.endsWith(".jsp")
-      && getServletContext().getResource(uri) != null) {
+    ////String uri = req.getRequestURI();
+    if (jspServlet != null && pathInfo != null && pathInfo.endsWith(".jsp")
+      && getServletContext().getResource(pathInfo) != null) {
       jspServlet.service(req, resp);
       return;
     }
     
+    System.out.println(req.getRequestURI());
 		HttpServlet dispatcher = this.tracker.getDispatcher();
 		if (dispatcher != null) {
 			dispatcher.service(req, resp);
