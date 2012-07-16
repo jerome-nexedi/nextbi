@@ -23,55 +23,53 @@ import org.opensaml.SAMLAuthenticationStatement;
  * @since 3.1
  */
 public class SamlAuthenticationMetaDataPopulator implements
-    AuthenticationMetaDataPopulator {
+  AuthenticationMetaDataPopulator {
 
-    public static final String ATTRIBUTE_AUTHENTICATION_METHOD = "samlAuthenticationStatementAuthMethod";
+  public static final String ATTRIBUTE_AUTHENTICATION_METHOD = "samlAuthenticationStatementAuthMethod";
 
-    private Map<String, String> authenticationMethods = new HashMap<String, String>();
+  private Map<String, String> authenticationMethods = new HashMap<String, String>();
 
-    public SamlAuthenticationMetaDataPopulator() {
-        this.authenticationMethods
-            .put(
-                "org.jasig.cas.authentication.principal.HttpBasedServiceCredentials",
-                SAMLAuthenticationStatement.AuthenticationMethod_SSL_TLS_Client);
-        this.authenticationMethods
-            .put(
-                "org.jasig.cas.authentication.principal.UsernamePasswordCredentials",
-                SAMLAuthenticationStatement.AuthenticationMethod_Password);
-        this.authenticationMethods
-            .put(
-                "org.jasig.cas.adaptors.trusted.authentication.principal.PrincipalBearingCredentials",
-                SAMLAuthenticationStatement.AuthenticationMethod_Unspecified);
-        this.authenticationMethods
-            .put(
-                "org.jasig.cas.adaptors.x509.authentication.principal.X509CertificateCredentials",
-                SAMLAuthenticationStatement.AuthenticationMethod_X509_PublicKey);
-    }
+  public SamlAuthenticationMetaDataPopulator() {
+    this.authenticationMethods.put(
+      "org.jasig.cas.authentication.principal.HttpBasedServiceCredentials",
+      SAMLAuthenticationStatement.AuthenticationMethod_SSL_TLS_Client);
+    this.authenticationMethods.put(
+      "org.jasig.cas.authentication.principal.UsernamePasswordCredentials",
+      SAMLAuthenticationStatement.AuthenticationMethod_Password);
+    this.authenticationMethods
+      .put(
+        "org.jasig.cas.adaptors.trusted.authentication.principal.PrincipalBearingCredentials",
+        SAMLAuthenticationStatement.AuthenticationMethod_Unspecified);
+    this.authenticationMethods
+      .put(
+        "org.jasig.cas.adaptors.x509.authentication.principal.X509CertificateCredentials",
+        SAMLAuthenticationStatement.AuthenticationMethod_X509_PublicKey);
+  }
 
-    public final Authentication populateAttributes(
-        final Authentication authentication, final Credentials credentials) {
+  public final Authentication populateAttributes(
+    final Authentication authentication, final Credentials credentials) {
 
-        final String credentialsClass = credentials.getClass().getName();
-        final String authenticationMetehod = this.authenticationMethods
-            .get(credentialsClass);
+    final String credentialsClass = credentials.getClass().getName();
+    final String authenticationMetehod = this.authenticationMethods
+      .get(credentialsClass);
 
-        authentication.getAttributes().put(ATTRIBUTE_AUTHENTICATION_METHOD,
-            authenticationMetehod);
+    authentication.getAttributes().put(ATTRIBUTE_AUTHENTICATION_METHOD,
+      authenticationMetehod);
 
-        return authentication;
-    }
+    return authentication;
+  }
 
-    /**
-     * Map of user-defined mappings. Note it is possible to over-ride the
-     * defaults. Mapping should be of the following type:
-     * <p>(<String version of Package/Class Name> <SAML Type>)
-     * <p>
-     * Example: (<"org.jasig.cas.authentication.principal.HttpBasedServiceCredentials">
-     * <SAMLAuthenticationStatement.AuthenticationMethod_SSL_TLS_Client>)
-     * 
-     * @param userDefinedMappings map of user defined authentication types.
-     */
-    public void setUserDefinedMappings(final Map<String, String> userDefinedMappings) {
-        this.authenticationMethods.putAll(userDefinedMappings);
-    }
+  /**
+   * Map of user-defined mappings. Note it is possible to over-ride the
+   * defaults. Mapping should be of the following type:
+   * <p>(<String version of Package/Class Name> <SAML Type>)
+   * <p>
+   * Example: (<"org.jasig.cas.authentication.principal.HttpBasedServiceCredentials">
+   * <SAMLAuthenticationStatement.AuthenticationMethod_SSL_TLS_Client>)
+   * 
+   * @param userDefinedMappings map of user defined authentication types.
+   */
+  public void setUserDefinedMappings(final Map<String, String> userDefinedMappings) {
+    this.authenticationMethods.putAll(userDefinedMappings);
+  }
 }

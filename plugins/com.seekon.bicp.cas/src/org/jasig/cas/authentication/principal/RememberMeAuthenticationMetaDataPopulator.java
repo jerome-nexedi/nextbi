@@ -18,17 +18,18 @@ import org.jasig.cas.authentication.AuthenticationMetaDataPopulator;
  *
  */
 public final class RememberMeAuthenticationMetaDataPopulator implements
-    AuthenticationMetaDataPopulator {
+  AuthenticationMetaDataPopulator {
 
-    public Authentication populateAttributes(final Authentication authentication,
-        final Credentials credentials) {
-        if (credentials instanceof RememberMeCredentials) {
-            final RememberMeCredentials r = (RememberMeCredentials) credentials;
-            if (r.isRememberMe()) {
-                authentication.getAttributes().put(RememberMeCredentials.AUTHENTICATION_ATTRIBUTE_REMEMBER_ME, Boolean.TRUE);
-            }
-        }
-        
-        return authentication;
+  public Authentication populateAttributes(final Authentication authentication,
+    final Credentials credentials) {
+    if (credentials instanceof RememberMeCredentials) {
+      final RememberMeCredentials r = (RememberMeCredentials) credentials;
+      if (r.isRememberMe()) {
+        authentication.getAttributes().put(
+          RememberMeCredentials.AUTHENTICATION_ATTRIBUTE_REMEMBER_ME, Boolean.TRUE);
+      }
     }
+
+    return authentication;
+  }
 }

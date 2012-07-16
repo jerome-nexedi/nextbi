@@ -30,47 +30,57 @@ import java.sql.Types;
  * @version $Revision$ $Date$
  * @since 3.3.5
  */
-public class InspektrThrottledSubmissionByIpAddressAndUsernameHandlerInterceptorAdapter extends AbstractThrottledSubmissionHandlerInterceptorAdapter {
+public class InspektrThrottledSubmissionByIpAddressAndUsernameHandlerInterceptorAdapter
+  extends AbstractThrottledSubmissionHandlerInterceptorAdapter {
 
-    private static final String DEFAULT_APPLICATION_CODE = "CAS";
+  private static final String DEFAULT_APPLICATION_CODE = "CAS";
 
-    private static final String INSPEKTR_ACTION = "THROTTLED_LOGIN_ATTEMPT";
+  private static final String INSPEKTR_ACTION = "THROTTLED_LOGIN_ATTEMPT";
 
-    private final AuditTrailManager auditTrailManager;
+  private final AuditTrailManager auditTrailManager;
 
-    private final JdbcTemplate jdbcTemplate;
+  private final JdbcTemplate jdbcTemplate;
 
-    private String applicationCode = DEFAULT_APPLICATION_CODE;
+  private String applicationCode = DEFAULT_APPLICATION_CODE;
 
-    public InspektrThrottledSubmissionByIpAddressAndUsernameHandlerInterceptorAdapter(final AuditTrailManager auditTrailManager, final DataSource dataSource) {
-        this.auditTrailManager = auditTrailManager;
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-    }
+  public InspektrThrottledSubmissionByIpAddressAndUsernameHandlerInterceptorAdapter(
+    final AuditTrailManager auditTrailManager, final DataSource dataSource) {
+    this.auditTrailManager = auditTrailManager;
+    this.jdbcTemplate = new JdbcTemplate(dataSource);
+  }
 
-    @Override
-    protected final int findCount(final HttpServletRequest request, final String usernameParameter, final int failureRangeInSeconds) {
-        final String SQL = "Select count(*) from COM_AUDIT_TRAIL where AUD_CLIENT_IP = ? and AUD_USER = ? AND AUD_ACTION = ? AND APPLIC_CD = ? AND AUD_DATE >= ?";
-        final String userToUse = constructUsername(request, usernameParameter);
-        final Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.SECOND, -1 * failureRangeInSeconds);
-        final Date oldestDate = calendar.getTime();
-        return this.jdbcTemplate.queryForInt(SQL, new Object[] {request.getRemoteAddr(), userToUse, INSPEKTR_ACTION, this.applicationCode, oldestDate}, new int[] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.TIMESTAMP});
-    }
+  @Override
+  protected final int findCount(final HttpServletRequest request,
+    final String usernameParameter, final int failureRangeInSeconds) {
+    final String SQL = "Select count(*) from COM_AUDIT_TRAIL where AUD_CLIENT_IP = ? and AUD_USER = ? AND AUD_ACTION = ? AND APPLIC_CD = ? AND AUD_DATE >= ?";
+    final String userToUse = constructUsername(request, usernameParameter);
+    final Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.SECOND, -1 * failureRangeInSeconds);
+    final Date oldestDate = calendar.getTime();
+    return this.jdbcTemplate.queryForInt(SQL, new Object[] {
+      request.getRemoteAddr(), userToUse, INSPEKTR_ACTION, this.applicationCode,
+      oldestDate }, new int[] { Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
+      Types.VARCHAR, Types.TIMESTAMP });
+  }
 
-    @Override
-    protected final void updateCount(final HttpServletRequest request, final String usernameParameter) {
-        final String userToUse = constructUsername(request, usernameParameter);
-        final ClientInfo clientInfo = ClientInfoHolder.getClientInfo();
-        final AuditActionContext context = new AuditActionContext(userToUse, userToUse, INSPEKTR_ACTION, this.applicationCode, new Date(), clientInfo.getClientIpAddress(), clientInfo.getServerIpAddress());
-        this.auditTrailManager.record(context);
-    }
+  @Override
+  protected final void updateCount(final HttpServletRequest request,
+    final String usernameParameter) {
+    final String userToUse = constructUsername(request, usernameParameter);
+    final ClientInfo clientInfo = ClientInfoHolder.getClientInfo();
+    final AuditActionContext context = new AuditActionContext(userToUse, userToUse,
+      INSPEKTR_ACTION, this.applicationCode, new Date(), clientInfo
+        .getClientIpAddress(), clientInfo.getServerIpAddress());
+    this.auditTrailManager.record(context);
+  }
 
-    public final void setApplicationCode(final String applicationCode) {
-        this.applicationCode = applicationCode;
-    }
+  public final void setApplicationCode(final String applicationCode) {
+    this.applicationCode = applicationCode;
+  }
 
-    protected String constructUsername(HttpServletRequest request, String usernameParameter) {
-        final String username = request.getParameter(usernameParameter);
-        return "[username: " + (username != null ? username : "") + "]";
-    }
+  protected String constructUsername(HttpServletRequest request,
+    String usernameParameter) {
+    final String username = request.getParameter(usernameParameter);
+    return "[username: " + (username != null ? username : "") + "]";
+  }
 }

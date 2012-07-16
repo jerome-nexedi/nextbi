@@ -19,10 +19,10 @@ package org.jasig.cas.authentication.principal;
  * </p>
  */
 public interface Service extends Principal {
-    
-    void setPrincipal(Principal principal);
-    
-    boolean logOutOfService(String sessionIdentifier);
-    
-    boolean matches(Service service);
+
+  void setPrincipal(Principal principal);
+
+  boolean logOutOfService(String sessionIdentifier);
+
+  boolean matches(Service service);
 }

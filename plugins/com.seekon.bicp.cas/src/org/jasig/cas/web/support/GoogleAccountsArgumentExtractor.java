@@ -22,38 +22,40 @@ import org.jasig.cas.authentication.principal.WebApplicationService;
  * @version $Revision: 1.1 $ $Date: 2005/08/19 18:27:17 $
  * @since 3.1
  */
-public final class GoogleAccountsArgumentExtractor extends AbstractSingleSignOutEnabledArgumentExtractor {
+public final class GoogleAccountsArgumentExtractor extends
+  AbstractSingleSignOutEnabledArgumentExtractor {
 
-    @NotNull
-    private PublicKey publicKey;
+  @NotNull
+  private PublicKey publicKey;
 
-    @NotNull
-    private PrivateKey privateKey;
+  @NotNull
+  private PrivateKey privateKey;
 
-    private String alternateUsername;
+  private String alternateUsername;
 
-    public WebApplicationService extractServiceInternal(final HttpServletRequest request) {
-        return GoogleAccountsService.createServiceFrom(request,
-            this.privateKey, this.publicKey, this.alternateUsername);
-    }
+  public WebApplicationService extractServiceInternal(
+    final HttpServletRequest request) {
+    return GoogleAccountsService.createServiceFrom(request, this.privateKey,
+      this.publicKey, this.alternateUsername);
+  }
 
-    public void setPrivateKey(final PrivateKey privateKey) {
-        this.privateKey = privateKey;
-    }
+  public void setPrivateKey(final PrivateKey privateKey) {
+    this.privateKey = privateKey;
+  }
 
-    public void setPublicKey(final PublicKey publicKey) {
-        this.publicKey = publicKey;
-    }
+  public void setPublicKey(final PublicKey publicKey) {
+    this.publicKey = publicKey;
+  }
 
-    /**
-     * Sets an alternate username to send to Google (i.e. fully qualified email address).  Relies on an appropriate
-     * attribute available for the user.
-     * <p>
-     * Note that this is optional and the default is to use the normal identifier.
-     *
-     * @param alternateUsername the alternate username.  This is OPTIONAL.
-     */
-    public void setAlternateUsername(final String alternateUsername) {
-        this.alternateUsername = alternateUsername;
-    }
+  /**
+   * Sets an alternate username to send to Google (i.e. fully qualified email address).  Relies on an appropriate
+   * attribute available for the user.
+   * <p>
+   * Note that this is optional and the default is to use the normal identifier.
+   *
+   * @param alternateUsername the alternate username.  This is OPTIONAL.
+   */
+  public void setAlternateUsername(final String alternateUsername) {
+    this.alternateUsername = alternateUsername;
+  }
 }

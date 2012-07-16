@@ -24,35 +24,34 @@ import javax.validation.constraints.NotNull;
  */
 public class PublicKeyFactoryBean extends AbstractFactoryBean {
 
-    @NotNull
-    private Resource resource;
-    
-    @NotNull
-    private String algorithm;
+  @NotNull
+  private Resource resource;
 
-    protected final Object createInstance() throws Exception {
-        final InputStream pubKey = this.resource.getInputStream();
-        try {
-            final byte[] bytes = new byte[pubKey.available()];
-            pubKey.read(bytes);
-            final X509EncodedKeySpec pubSpec = new X509EncodedKeySpec(bytes);
-            final KeyFactory factory = KeyFactory.getInstance(this.algorithm);
-            return factory.generatePublic(pubSpec);
-        } finally {
-            pubKey.close();
-        }
-    }
+  @NotNull
+  private String algorithm;
 
-    public Class getObjectType() {
-        return PublicKey.class;
+  protected final Object createInstance() throws Exception {
+    final InputStream pubKey = this.resource.getInputStream();
+    try {
+      final byte[] bytes = new byte[pubKey.available()];
+      pubKey.read(bytes);
+      final X509EncodedKeySpec pubSpec = new X509EncodedKeySpec(bytes);
+      final KeyFactory factory = KeyFactory.getInstance(this.algorithm);
+      return factory.generatePublic(pubSpec);
+    } finally {
+      pubKey.close();
     }
-    
+  }
 
-    public void setLocation(final Resource resource) {
-        this.resource = resource;
-    }
-    
-    public void setAlgorithm(final String algorithm) {
-        this.algorithm = algorithm;
-    }
+  public Class getObjectType() {
+    return PublicKey.class;
+  }
+
+  public void setLocation(final Resource resource) {
+    this.resource = resource;
+  }
+
+  public void setAlgorithm(final String algorithm) {
+    this.algorithm = algorithm;
+  }
 }

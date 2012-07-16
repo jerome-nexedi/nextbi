@@ -21,18 +21,18 @@ import org.jasig.cas.ticket.TicketState;
  */
 public final class TimeoutExpirationPolicy implements ExpirationPolicy {
 
-    /** Serializable ID. */
-    private static final long serialVersionUID = 3545511790222979383L;
+  /** Serializable ID. */
+  private static final long serialVersionUID = 3545511790222979383L;
 
-    /** The time to kill in milliseconds. */
-    private final long timeToKillInMilliSeconds;
+  /** The time to kill in milliseconds. */
+  private final long timeToKillInMilliSeconds;
 
-    public TimeoutExpirationPolicy(final long timeToKillInMilliSeconds) {
-        this.timeToKillInMilliSeconds = timeToKillInMilliSeconds;
-    }
+  public TimeoutExpirationPolicy(final long timeToKillInMilliSeconds) {
+    this.timeToKillInMilliSeconds = timeToKillInMilliSeconds;
+  }
 
-    public boolean isExpired(final TicketState ticketState) {
-        return (ticketState == null)
-            || (System.currentTimeMillis() - ticketState.getLastTimeUsed() >= this.timeToKillInMilliSeconds);
-    }
+  public boolean isExpired(final TicketState ticketState) {
+    return (ticketState == null)
+      || (System.currentTimeMillis() - ticketState.getLastTimeUsed() >= this.timeToKillInMilliSeconds);
+  }
 }

@@ -28,31 +28,37 @@ import org.opensaml.SAMLResponse;
  */
 public class Saml10FailureResponseView extends AbstractCasView {
 
-    private static final String DEFAULT_ENCODING = "UTF-8";
+  private static final String DEFAULT_ENCODING = "UTF-8";
 
-    private final SamlArgumentExtractor samlArgumentExtractor = new SamlArgumentExtractor();
+  private final SamlArgumentExtractor samlArgumentExtractor = new SamlArgumentExtractor();
 
-    @NotNull
-    private String encoding = DEFAULT_ENCODING;
+  @NotNull
+  private String encoding = DEFAULT_ENCODING;
 
-    protected void renderMergedOutputModel(final Map model,
-        final HttpServletRequest request, final HttpServletResponse response)
-        throws Exception {
-        final WebApplicationService service = this.samlArgumentExtractor.extractService(request);
-        final String artifactId = service != null ? service.getArtifactId() : null;
-        final String serviceId = service != null ? service.getId() : "UNKNOWN";
-        final String errorMessage = (String) model.get("description");
-        final SAMLResponse samlResponse = new SAMLResponse(artifactId, serviceId, new ArrayList<Object>(), new SAMLException(errorMessage));
-        samlResponse.setIssueInstant(new Date());
+  protected void renderMergedOutputModel(final Map model,
+    final HttpServletRequest request, final HttpServletResponse response)
+    throws Exception {
+    final WebApplicationService service = this.samlArgumentExtractor
+      .extractService(request);
+    final String artifactId = service != null ? service.getArtifactId() : null;
+    final String serviceId = service != null ? service.getId() : "UNKNOWN";
+    final String errorMessage = (String) model.get("description");
+    final SAMLResponse samlResponse = new SAMLResponse(artifactId, serviceId,
+      new ArrayList<Object>(), new SAMLException(errorMessage));
+    samlResponse.setIssueInstant(new Date());
 
-        response.setContentType("text/xml; charset=" + this.encoding);
-        response.getWriter().print("<?xml version=\"1.0\" encoding=\"" + this.encoding + "\"?>");
-        response.getWriter().print("<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body>");
-        response.getWriter().print(samlResponse.toString());
-        response.getWriter().print("</SOAP-ENV:Body></SOAP-ENV:Envelope>");
-    }
+    response.setContentType("text/xml; charset=" + this.encoding);
+    response.getWriter().print(
+      "<?xml version=\"1.0\" encoding=\"" + this.encoding + "\"?>");
+    response
+      .getWriter()
+      .print(
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body>");
+    response.getWriter().print(samlResponse.toString());
+    response.getWriter().print("</SOAP-ENV:Body></SOAP-ENV:Envelope>");
+  }
 
-    public void setEncoding(final String encoding) {
-        this.encoding = encoding;
-    }
+  public void setEncoding(final String encoding) {
+    this.encoding = encoding;
+  }
 }

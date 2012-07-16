@@ -29,49 +29,50 @@ import javax.validation.constraints.NotNull;
  *
  */
 public final class TicketOrCredentialPrincipalResolver implements PrincipalResolver {
-    
-    @NotNull
-    private final TicketRegistry ticketRegistry;
 
-    public TicketOrCredentialPrincipalResolver(final TicketRegistry ticketRegistry) {
-        this.ticketRegistry = ticketRegistry;
-    }
+  @NotNull
+  private final TicketRegistry ticketRegistry;
 
-    public String resolveFrom(final JoinPoint joinPoint, final Object retVal) {
-        return resolveFromInternal(AopUtils.unWrapJoinPoint(joinPoint));
-    }
+  public TicketOrCredentialPrincipalResolver(final TicketRegistry ticketRegistry) {
+    this.ticketRegistry = ticketRegistry;
+  }
 
-    public String resolveFrom(final JoinPoint joinPoint, final Exception retVal) {
-        return resolveFromInternal(AopUtils.unWrapJoinPoint(joinPoint));
-    }
+  public String resolveFrom(final JoinPoint joinPoint, final Object retVal) {
+    return resolveFromInternal(AopUtils.unWrapJoinPoint(joinPoint));
+  }
 
-    public String resolve() {
-        return UNKNOWN_USER;
-    }
-    
-    protected String resolveFromInternal(final JoinPoint joinPoint) {
-        final Object arg1 = joinPoint.getArgs()[0];
-        if (arg1 instanceof Credentials) {
-           return arg1.toString();
-        } else if (arg1 instanceof String) {
-            final Ticket ticket = this.ticketRegistry.getTicket((String) arg1);
-            if (ticket instanceof ServiceTicket) {
-                final ServiceTicket serviceTicket = (ServiceTicket) ticket;
-                return serviceTicket.getGrantingTicket().getAuthentication().getPrincipal().getId();
-            } else if (ticket instanceof TicketGrantingTicket) {
-                final TicketGrantingTicket tgt = (TicketGrantingTicket) ticket;
-                return tgt.getAuthentication().getPrincipal().getId();
-            }
-        } else {
-            final SecurityContext securityContext = SecurityContextHolder.getContext();
-            if (securityContext != null) {
-                final Authentication authentication = securityContext.getAuthentication();
+  public String resolveFrom(final JoinPoint joinPoint, final Exception retVal) {
+    return resolveFromInternal(AopUtils.unWrapJoinPoint(joinPoint));
+  }
 
-                if (authentication != null) {
-                    return ((UserDetails) authentication.getPrincipal()).getUsername();
-                }
-            }
+  public String resolve() {
+    return UNKNOWN_USER;
+  }
+
+  protected String resolveFromInternal(final JoinPoint joinPoint) {
+    final Object arg1 = joinPoint.getArgs()[0];
+    if (arg1 instanceof Credentials) {
+      return arg1.toString();
+    } else if (arg1 instanceof String) {
+      final Ticket ticket = this.ticketRegistry.getTicket((String) arg1);
+      if (ticket instanceof ServiceTicket) {
+        final ServiceTicket serviceTicket = (ServiceTicket) ticket;
+        return serviceTicket.getGrantingTicket().getAuthentication().getPrincipal()
+          .getId();
+      } else if (ticket instanceof TicketGrantingTicket) {
+        final TicketGrantingTicket tgt = (TicketGrantingTicket) ticket;
+        return tgt.getAuthentication().getPrincipal().getId();
+      }
+    } else {
+      final SecurityContext securityContext = SecurityContextHolder.getContext();
+      if (securityContext != null) {
+        final Authentication authentication = securityContext.getAuthentication();
+
+        if (authentication != null) {
+          return ((UserDetails) authentication.getPrincipal()).getUsername();
         }
-        return UNKNOWN_USER;
+      }
     }
+    return UNKNOWN_USER;
+  }
 }

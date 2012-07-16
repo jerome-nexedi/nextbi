@@ -15,6 +15,6 @@ package org.jasig.cas.authentication.handler;
  *
  */
 public interface NamedAuthenticationHandler extends AuthenticationHandler {
-    
-    String getName();
+
+  String getName();
 }

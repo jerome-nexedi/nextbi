@@ -27,76 +27,77 @@ import org.springframework.web.servlet.view.RedirectView;
  */
 public final class LogoutController extends AbstractController {
 
-    /** The CORE to which we delegate for all CAS functionality. */
-    @NotNull
-    private CentralAuthenticationService centralAuthenticationService;
+  /** The CORE to which we delegate for all CAS functionality. */
+  @NotNull
+  private CentralAuthenticationService centralAuthenticationService;
 
-    /** CookieGenerator for TGT Cookie */
-    @NotNull
-    private CookieRetrievingCookieGenerator ticketGrantingTicketCookieGenerator;
+  /** CookieGenerator for TGT Cookie */
+  @NotNull
+  private CookieRetrievingCookieGenerator ticketGrantingTicketCookieGenerator;
 
-    /** CookieGenerator for Warn Cookie */
-    @NotNull
-    private CookieRetrievingCookieGenerator warnCookieGenerator;
+  /** CookieGenerator for Warn Cookie */
+  @NotNull
+  private CookieRetrievingCookieGenerator warnCookieGenerator;
 
-    /** Logout view name. */
-    @NotNull
-    private String logoutView;
+  /** Logout view name. */
+  @NotNull
+  private String logoutView;
 
-    /**
-     * Boolean to determine if we will redirect to any url provided in the
-     * service request parameter.
-     */
-    private boolean followServiceRedirects;
-    
-    public LogoutController() {
-        setCacheSeconds(0);
+  /**
+   * Boolean to determine if we will redirect to any url provided in the
+   * service request parameter.
+   */
+  private boolean followServiceRedirects;
+
+  public LogoutController() {
+    setCacheSeconds(0);
+  }
+
+  protected ModelAndView handleRequestInternal(final HttpServletRequest request,
+    final HttpServletResponse response) throws Exception {
+    final String ticketGrantingTicketId = this.ticketGrantingTicketCookieGenerator
+      .retrieveCookieValue(request);
+    final String service = request.getParameter("service");
+
+    if (ticketGrantingTicketId != null) {
+      this.centralAuthenticationService
+        .destroyTicketGrantingTicket(ticketGrantingTicketId);
+
+      this.ticketGrantingTicketCookieGenerator.removeCookie(response);
+      this.warnCookieGenerator.removeCookie(response);
     }
 
-    protected ModelAndView handleRequestInternal(
-        final HttpServletRequest request, final HttpServletResponse response)
-        throws Exception {
-        final String ticketGrantingTicketId = this.ticketGrantingTicketCookieGenerator.retrieveCookieValue(request);
-        final String service = request.getParameter("service");
-
-        if (ticketGrantingTicketId != null) {
-            this.centralAuthenticationService
-                .destroyTicketGrantingTicket(ticketGrantingTicketId);
-
-            this.ticketGrantingTicketCookieGenerator.removeCookie(response);
-            this.warnCookieGenerator.removeCookie(response);
-        }
-
-        if (this.followServiceRedirects && service != null) {
-            return new ModelAndView(new RedirectView(service));
-        }
-
-        return new ModelAndView(this.logoutView);
+    if (this.followServiceRedirects && service != null) {
+      return new ModelAndView(new RedirectView(service));
     }
 
-    public void setTicketGrantingTicketCookieGenerator(
-        final CookieRetrievingCookieGenerator ticketGrantingTicketCookieGenerator) {
-        this.ticketGrantingTicketCookieGenerator = ticketGrantingTicketCookieGenerator;
-    }
+    return new ModelAndView(this.logoutView);
+  }
 
-    public void setWarnCookieGenerator(final CookieRetrievingCookieGenerator warnCookieGenerator) {
-        this.warnCookieGenerator = warnCookieGenerator;
-    }
+  public void setTicketGrantingTicketCookieGenerator(
+    final CookieRetrievingCookieGenerator ticketGrantingTicketCookieGenerator) {
+    this.ticketGrantingTicketCookieGenerator = ticketGrantingTicketCookieGenerator;
+  }
 
-    /**
-     * @param centralAuthenticationService The centralAuthenticationService to
-     * set.
-     */
-    public void setCentralAuthenticationService(
-        final CentralAuthenticationService centralAuthenticationService) {
-        this.centralAuthenticationService = centralAuthenticationService;
-    }
+  public void setWarnCookieGenerator(
+    final CookieRetrievingCookieGenerator warnCookieGenerator) {
+    this.warnCookieGenerator = warnCookieGenerator;
+  }
 
-    public void setFollowServiceRedirects(final boolean followServiceRedirects) {
-        this.followServiceRedirects = followServiceRedirects;
-    }
+  /**
+   * @param centralAuthenticationService The centralAuthenticationService to
+   * set.
+   */
+  public void setCentralAuthenticationService(
+    final CentralAuthenticationService centralAuthenticationService) {
+    this.centralAuthenticationService = centralAuthenticationService;
+  }
 
-    public void setLogoutView(final String logoutView) {
-        this.logoutView = logoutView;
-    }
+  public void setFollowServiceRedirects(final boolean followServiceRedirects) {
+    this.followServiceRedirects = followServiceRedirects;
+  }
+
+  public void setLogoutView(final String logoutView) {
+    this.logoutView = logoutView;
+  }
 }

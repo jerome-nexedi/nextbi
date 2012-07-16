@@ -20,52 +20,53 @@ import org.slf4j.LoggerFactory;
  * @since 3.0.5
  */
 public final class ThrottledUseAndTimeoutExpirationPolicy implements
-    ExpirationPolicy {
+  ExpirationPolicy {
 
-    private static final Logger log = LoggerFactory.getLogger(ThrottledUseAndTimeoutExpirationPolicy.class);
+  private static final Logger log = LoggerFactory
+    .getLogger(ThrottledUseAndTimeoutExpirationPolicy.class);
 
-    /** Static ID for serialization. */
-    private static final long serialVersionUID = -848036845536731268L;
+  /** Static ID for serialization. */
+  private static final long serialVersionUID = -848036845536731268L;
 
-    /** The time to kill in milliseconds. */
-    private long timeToKillInMilliSeconds;
+  /** The time to kill in milliseconds. */
+  private long timeToKillInMilliSeconds;
 
-    /** Time time between which a ticket must wait to be used again. */
-    private long timeInBetweenUsesInMilliSeconds;
+  /** Time time between which a ticket must wait to be used again. */
+  private long timeInBetweenUsesInMilliSeconds;
 
-    public void setTimeInBetweenUsesInMilliSeconds(
-        final long timeInBetweenUsesInMilliSeconds) {
-        this.timeInBetweenUsesInMilliSeconds = timeInBetweenUsesInMilliSeconds;
+  public void setTimeInBetweenUsesInMilliSeconds(
+    final long timeInBetweenUsesInMilliSeconds) {
+    this.timeInBetweenUsesInMilliSeconds = timeInBetweenUsesInMilliSeconds;
+  }
+
+  public void setTimeToKillInMilliSeconds(final long timeToKillInMilliSeconds) {
+    this.timeToKillInMilliSeconds = timeToKillInMilliSeconds;
+  }
+
+  public boolean isExpired(final TicketState ticketState) {
+    if (ticketState.getCountOfUses() == 0
+      && (System.currentTimeMillis() - ticketState.getLastTimeUsed() < this.timeToKillInMilliSeconds)) {
+      if (log.isDebugEnabled()) {
+        log
+          .debug("Ticket is not expired due to a count of zero and the time being less than the timeToKillInMilliseconds");
+      }
+      return false;
     }
 
-    public void setTimeToKillInMilliSeconds(final long timeToKillInMilliSeconds) {
-        this.timeToKillInMilliSeconds = timeToKillInMilliSeconds;
+    if ((System.currentTimeMillis() - ticketState.getLastTimeUsed() >= this.timeToKillInMilliSeconds)) {
+      if (log.isDebugEnabled()) {
+        log
+          .debug("Ticket is expired due to the time being greater than the timeToKillInMilliseconds");
+      }
+      return true;
     }
 
-    public boolean isExpired(final TicketState ticketState) {
-        if (ticketState.getCountOfUses() == 0
-            && (System.currentTimeMillis() - ticketState.getLastTimeUsed() < this.timeToKillInMilliSeconds)) {
-            if (log.isDebugEnabled()) {
-                log
-                    .debug("Ticket is not expired due to a count of zero and the time being less than the timeToKillInMilliseconds");
-            }
-            return false;
-        }
-
-        if ((System.currentTimeMillis() - ticketState.getLastTimeUsed() >= this.timeToKillInMilliSeconds)) {
-            if (log.isDebugEnabled()) {
-                log
-                    .debug("Ticket is expired due to the time being greater than the timeToKillInMilliseconds");
-            }
-            return true;
-        }
-
-        if ((System.currentTimeMillis() - ticketState.getLastTimeUsed() <= this.timeInBetweenUsesInMilliSeconds)) {
-            log
-                .warn("Ticket is expired due to the time being less than the waiting period.");
-            return true;
-        }
-
-        return false;
+    if ((System.currentTimeMillis() - ticketState.getLastTimeUsed() <= this.timeInBetweenUsesInMilliSeconds)) {
+      log
+        .warn("Ticket is expired due to the time being less than the waiting period.");
+      return true;
     }
+
+    return false;
+  }
 }

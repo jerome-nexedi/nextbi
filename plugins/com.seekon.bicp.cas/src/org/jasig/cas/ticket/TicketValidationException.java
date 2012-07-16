@@ -16,27 +16,27 @@ import org.jasig.cas.authentication.principal.Service;
  */
 public class TicketValidationException extends TicketException {
 
-    /** Unique Serial ID. */
-    private static final long serialVersionUID = 3257004341537093175L;
+  /** Unique Serial ID. */
+  private static final long serialVersionUID = 3257004341537093175L;
 
-    /** The code description. */
-    private static final String CODE = "INVALID_SERVICE";
-    
-    private final Service service;
+  /** The code description. */
+  private static final String CODE = "INVALID_SERVICE";
 
-    /**
-     * Constructs a TicketValidationException with the default exception code
-     * and the original exception that was thrown.
-     * 
-     * @param throwable the chained exception
-     */
-    public TicketValidationException(final Service service) {
-        super(CODE);
-        this.service = service;
-    }
-    
-    public Service getOriginalService() {
-        return this.service;
-    }
+  private final Service service;
+
+  /**
+   * Constructs a TicketValidationException with the default exception code
+   * and the original exception that was thrown.
+   * 
+   * @param throwable the chained exception
+   */
+  public TicketValidationException(final Service service) {
+    super(CODE);
+    this.service = service;
+  }
+
+  public Service getOriginalService() {
+    return this.service;
+  }
 
 }

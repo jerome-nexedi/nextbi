@@ -20,98 +20,98 @@ import org.jasig.cas.authentication.principal.Service;
  */
 public interface RegisteredService extends Cloneable, Serializable {
 
-    /**
-     * Is this application currently allowed to use CAS?
-     * 
-     * @return true if it can use CAS, false otherwise.
-     */
-    boolean isEnabled();
+  /**
+   * Is this application currently allowed to use CAS?
+   * 
+   * @return true if it can use CAS, false otherwise.
+   */
+  boolean isEnabled();
 
-    /**
-     * Determines whether the service is allowed anonymous or priveleged access
-     * to user information. Anonymous access should not return any identifying
-     * information such as user id.
-     *
-     * @return if we should use a pseudo random identifier instead of their real id
-     */
-    boolean isAnonymousAccess();
-    
-    /**
-     * Sets whether we should bother to read the attribute list or not.
-     * 
-     * @return true if we should read it, false otherwise.
-     */
-    boolean isIgnoreAttributes();
+  /**
+   * Determines whether the service is allowed anonymous or priveleged access
+   * to user information. Anonymous access should not return any identifying
+   * information such as user id.
+   *
+   * @return if we should use a pseudo random identifier instead of their real id
+   */
+  boolean isAnonymousAccess();
 
-    /**
-     * Returns the list of allowed attributes.
-     * 
-     * @return the list of attributes
-     */
-    List<String> getAllowedAttributes();
+  /**
+   * Sets whether we should bother to read the attribute list or not.
+   * 
+   * @return true if we should read it, false otherwise.
+   */
+  boolean isIgnoreAttributes();
 
-    /**
-     * Is this application allowed to take part in the proxying capabilities of
-     * CAS?
-     * 
-     * @return true if it can, false otherwise.
-     */
-    boolean isAllowedToProxy();
+  /**
+   * Returns the list of allowed attributes.
+   * 
+   * @return the list of attributes
+   */
+  List<String> getAllowedAttributes();
 
-    /**
-     * The unique identifier for this service.
-     * 
-     * @return the unique identifier for this service.
-     */
-    String getServiceId();
+  /**
+   * Is this application allowed to take part in the proxying capabilities of
+   * CAS?
+   * 
+   * @return true if it can, false otherwise.
+   */
+  boolean isAllowedToProxy();
 
-    long getId();
+  /**
+   * The unique identifier for this service.
+   * 
+   * @return the unique identifier for this service.
+   */
+  String getServiceId();
 
-    /**
-     * Returns the name of the service.
-     * 
-     * @return the name of the service.
-     */
-    String getName();
+  long getId();
 
-    /**
-     * Returns a short theme name. Services do not need to have unique theme
-     * names.
-     * 
-     * @return the theme name associated with this service.
-     */
-    String getTheme();
+  /**
+   * Returns the name of the service.
+   * 
+   * @return the name of the service.
+   */
+  String getName();
 
-    /**
-     * Does this application participate in the SSO session?
-     * 
-     * @return true if it does, false otherwise.
-     */
-    boolean isSsoEnabled();
+  /**
+   * Returns a short theme name. Services do not need to have unique theme
+   * names.
+   * 
+   * @return the theme name associated with this service.
+   */
+  String getTheme();
 
-    /**
-     * Returns the description of the service.
-     * 
-     * @return the description of the service.
-     */
-    String getDescription();
-   
-    /**
-     * Gets the relative evaluation order of this service when determining
-     * matches.
-     * @return Evaluation order relative to other registered services.
-     * Services with lower values will be evaluated for a match before others.
-     */
-    int getEvaluationOrder();
+  /**
+   * Does this application participate in the SSO session?
+   * 
+   * @return true if it does, false otherwise.
+   */
+  boolean isSsoEnabled();
 
-    /**
-     * Returns whether the service matches the registered service.
-     * <p>Note, as of 3.1.2, matches are case insensitive.
-     * 
-     * @param service the service to match.
-     * @return true if they match, false otherwise.
-     */
-    boolean matches(final Service service);
-    
-    Object clone() throws CloneNotSupportedException;
+  /**
+   * Returns the description of the service.
+   * 
+   * @return the description of the service.
+   */
+  String getDescription();
+
+  /**
+   * Gets the relative evaluation order of this service when determining
+   * matches.
+   * @return Evaluation order relative to other registered services.
+   * Services with lower values will be evaluated for a match before others.
+   */
+  int getEvaluationOrder();
+
+  /**
+   * Returns whether the service matches the registered service.
+   * <p>Note, as of 3.1.2, matches are case insensitive.
+   * 
+   * @param service the service to match.
+   * @return true if they match, false otherwise.
+   */
+  boolean matches(final Service service);
+
+  Object clone() throws CloneNotSupportedException;
 }

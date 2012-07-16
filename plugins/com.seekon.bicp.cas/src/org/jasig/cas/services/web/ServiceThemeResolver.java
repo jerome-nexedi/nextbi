@@ -31,66 +31,69 @@ import java.util.regex.Pattern;
  */
 public final class ServiceThemeResolver extends AbstractThemeResolver {
 
-    /** The ServiceRegistry to look up the service. */
-    private ServicesManager servicesManager;
+  /** The ServiceRegistry to look up the service. */
+  private ServicesManager servicesManager;
 
-    private List<ArgumentExtractor> argumentExtractors;
+  private List<ArgumentExtractor> argumentExtractors;
 
-    private Map<Pattern,String> overrides = new HashMap<Pattern,String>();
+  private Map<Pattern, String> overrides = new HashMap<Pattern, String>();
 
-    public String resolveThemeName(final HttpServletRequest request) {
-        if (this.servicesManager == null) {
-            return getDefaultThemeName();
-        }
-
-        final Service service = WebUtils.getService(this.argumentExtractors, request);
-
-        final RegisteredService rService = this.servicesManager.findServiceBy(service);
-
-        // retrieve the user agent string from the request
-        String userAgent = request.getHeader("User-Agent");
-
-        if (userAgent == null) {
-            return getDefaultThemeName();
-        }
-
-        for (final Map.Entry<Pattern,String> entry : this.overrides.entrySet()) {
-            if (entry.getKey().matcher(userAgent).matches()) {
-                request.setAttribute("isMobile","true");
-                request.setAttribute("browserType", entry.getValue());
-                break;
-            }
-        }
-
-        return service != null && rService != null && StringUtils.hasText(rService.getTheme()) ? rService.getTheme() : getDefaultThemeName();
+  public String resolveThemeName(final HttpServletRequest request) {
+    if (this.servicesManager == null) {
+      return getDefaultThemeName();
     }
 
-    public void setThemeName(final HttpServletRequest request, final HttpServletResponse response, final String themeName) {
-        // nothing to do here
+    final Service service = WebUtils.getService(this.argumentExtractors, request);
+
+    final RegisteredService rService = this.servicesManager.findServiceBy(service);
+
+    // retrieve the user agent string from the request
+    String userAgent = request.getHeader("User-Agent");
+
+    if (userAgent == null) {
+      return getDefaultThemeName();
     }
 
-    public void setServicesManager(final ServicesManager servicesManager) {
-        this.servicesManager = servicesManager;
+    for (final Map.Entry<Pattern, String> entry : this.overrides.entrySet()) {
+      if (entry.getKey().matcher(userAgent).matches()) {
+        request.setAttribute("isMobile", "true");
+        request.setAttribute("browserType", entry.getValue());
+        break;
+      }
     }
 
-    public void setArgumentExtractors(final List<ArgumentExtractor> argumentExtractors) {
-        this.argumentExtractors = argumentExtractors;
-    }
+    return service != null && rService != null
+      && StringUtils.hasText(rService.getTheme()) ? rService.getTheme()
+      : getDefaultThemeName();
+  }
 
-    /**
-     * Sets the map of mobile browsers.  This sets a flag on the request called "isMobile" and also
-     * provides the custom flag called browserType which can be mapped into the theme.
-     * <p>
-     * Themes that understand isMobile should provide an alternative stylesheet.
-     *
-     * @param mobileOverrides the list of mobile browsers.
-     */
-    public void setMobileBrowsers(final Map<String,String> mobileOverrides) {
-        // initialize the overrides variable to an empty map
-        this.overrides = new HashMap<Pattern,String>();
+  public void setThemeName(final HttpServletRequest request,
+    final HttpServletResponse response, final String themeName) {
+    // nothing to do here
+  }
 
-        for (final Map.Entry<String,String> entry : mobileOverrides.entrySet()) {
-            this.overrides.put(Pattern.compile(entry.getKey()), entry.getValue());
-        }
+  public void setServicesManager(final ServicesManager servicesManager) {
+    this.servicesManager = servicesManager;
+  }
+
+  public void setArgumentExtractors(final List<ArgumentExtractor> argumentExtractors) {
+    this.argumentExtractors = argumentExtractors;
+  }
+
+  /**
+   * Sets the map of mobile browsers.  This sets a flag on the request called "isMobile" and also
+   * provides the custom flag called browserType which can be mapped into the theme.
+   * <p>
+   * Themes that understand isMobile should provide an alternative stylesheet.
+   *
+   * @param mobileOverrides the list of mobile browsers.
+   */
+  public void setMobileBrowsers(final Map<String, String> mobileOverrides) {
+    // initialize the overrides variable to an empty map
+    this.overrides = new HashMap<Pattern, String>();
+
+    for (final Map.Entry<String, String> entry : mobileOverrides.entrySet()) {
+      this.overrides.put(Pattern.compile(entry.getKey()), entry.getValue());
     }
+  }
 }

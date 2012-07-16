@@ -17,32 +17,32 @@ import org.springframework.orm.jpa.support.JpaDaoSupport;
  * @since 3.1
  */
 public final class JpaServiceRegistryDaoImpl extends JpaDaoSupport implements
-    ServiceRegistryDao {
+  ServiceRegistryDao {
 
-    public boolean delete(final RegisteredService registeredService) {
-        getJpaTemplate().remove(
-            getJpaTemplate().contains(registeredService) ? registeredService
-                : getJpaTemplate().merge(registeredService));
-        return true;
+  public boolean delete(final RegisteredService registeredService) {
+    getJpaTemplate().remove(
+      getJpaTemplate().contains(registeredService) ? registeredService
+        : getJpaTemplate().merge(registeredService));
+    return true;
+  }
+
+  public List<RegisteredService> load() {
+    return getJpaTemplate().find("select r from RegisteredServiceImpl r");
+  }
+
+  public RegisteredService save(final RegisteredService registeredService) {
+    final boolean isNew = registeredService.getId() == -1;
+
+    final RegisteredService r = getJpaTemplate().merge(registeredService);
+
+    if (!isNew) {
+      getJpaTemplate().persist(r);
     }
 
-    public List<RegisteredService> load() {
-        return getJpaTemplate().find("select r from RegisteredServiceImpl r");
-    }
+    return r;
+  }
 
-    public RegisteredService save(final RegisteredService registeredService) {
-        final boolean isNew = registeredService.getId() == -1;
-
-        final RegisteredService r = getJpaTemplate().merge(registeredService);
-        
-        if (!isNew) {
-            getJpaTemplate().persist(r);
-        }
-        
-        return r;
-    }
-
-    public RegisteredService findServiceById(final long id) {
-        return getJpaTemplate().find(RegisteredServiceImpl.class, id);
-    }
+  public RegisteredService findServiceById(final long id) {
+    return getJpaTemplate().find(RegisteredServiceImpl.class, id);
+  }
 }

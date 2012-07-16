@@ -17,25 +17,26 @@ import javax.validation.constraints.NotNull;
  * @version $Revision$ $Date$
  * @since 3.4.6
  */
-public final class ServiceManagementResourceResolver implements AuditResourceResolver {
+public final class ServiceManagementResourceResolver implements
+  AuditResourceResolver {
 
-    public String[] resolveFrom(final JoinPoint target, final Object returnValue) {
-        return findService(target);
+  public String[] resolveFrom(final JoinPoint target, final Object returnValue) {
+    return findService(target);
+  }
+
+  public String[] resolveFrom(final JoinPoint target, final Exception exception) {
+    return findService(target);
+  }
+
+  private String[] findService(final JoinPoint joinPoint) {
+    final JoinPoint j = AopUtils.unWrapJoinPoint(joinPoint);
+
+    final Long id = (Long) j.getArgs()[0];
+
+    if (id == null) {
+      return new String[] { "" };
     }
 
-    public String[] resolveFrom(final JoinPoint target, final Exception exception) {
-        return findService(target);
-    }
-
-    private String[] findService(final JoinPoint joinPoint) {
-        final JoinPoint j = AopUtils.unWrapJoinPoint(joinPoint);
-
-        final Long id = (Long) j.getArgs()[0];
-
-        if (id == null) {
-            return new String[] {""};
-        }
-
-        return new String[] {"id=" + id};
-    }
+    return new String[] { "id=" + id };
+  }
 }

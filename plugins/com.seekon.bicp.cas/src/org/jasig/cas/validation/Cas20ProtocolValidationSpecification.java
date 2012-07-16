@@ -16,17 +16,17 @@ package org.jasig.cas.validation;
  * @since 3.0
  */
 public class Cas20ProtocolValidationSpecification extends
-    AbstractCasProtocolValidationSpecification {
+  AbstractCasProtocolValidationSpecification {
 
-    public Cas20ProtocolValidationSpecification() {
-        super();
-    }
+  public Cas20ProtocolValidationSpecification() {
+    super();
+  }
 
-    public Cas20ProtocolValidationSpecification(final boolean renew) {
-        super(renew);
-    }
+  public Cas20ProtocolValidationSpecification(final boolean renew) {
+    super(renew);
+  }
 
-    protected boolean isSatisfiedByInternal(final Assertion assertion) {
-        return true;
-    }
+  protected boolean isSatisfiedByInternal(final Assertion assertion) {
+    return true;
+  }
 }

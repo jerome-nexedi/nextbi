@@ -15,7 +15,7 @@ package org.jasig.cas.authentication.handler;
  */
 public final class PlainTextPasswordEncoder implements PasswordEncoder {
 
-    public String encode(final String password) {
-        return password;
-    }
+  public String encode(final String password) {
+    return password;
+  }
 }

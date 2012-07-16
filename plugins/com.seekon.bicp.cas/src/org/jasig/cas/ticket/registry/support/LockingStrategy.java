@@ -16,16 +16,15 @@ package org.jasig.cas.ticket.registry.support;
  */
 public interface LockingStrategy {
 
-    /**
-     * Attempt to acquire the lock.
-     *
-     * @return  True if lock was successfully acquired, false otherwise.
-     */
-    boolean acquire();
+  /**
+   * Attempt to acquire the lock.
+   *
+   * @return  True if lock was successfully acquired, false otherwise.
+   */
+  boolean acquire();
 
-
-    /**
-     * Release the lock if held.  If the lock is not held nothing is done.
-     */
-    void release();
+  /**
+   * Release the lock if held.  If the lock is not held nothing is done.
+   */
+  void release();
 }

@@ -15,10 +15,12 @@ import javax.servlet.http.HttpServletRequest;
  * @version $Revision$ $Date$
  * @since 3.3.5
  */
-public final class InMemoryThrottledSubmissionByIpAddressHandlerInterceptorAdapter extends AbstractInMemoryThrottledSubmissionHandlerInterceptorAdapter {
+public final class InMemoryThrottledSubmissionByIpAddressHandlerInterceptorAdapter
+  extends AbstractInMemoryThrottledSubmissionHandlerInterceptorAdapter {
 
-    @Override
-    protected String constructKey(final HttpServletRequest request, final String usernameParameter) {
-        return request.getRemoteAddr();
-    }
+  @Override
+  protected String constructKey(final HttpServletRequest request,
+    final String usernameParameter) {
+    return request.getRemoteAddr();
+  }
 }

@@ -19,10 +19,10 @@ import org.jasig.cas.ticket.TicketState;
  */
 public final class NeverExpiresExpirationPolicy implements ExpirationPolicy {
 
-    /** Serializable Unique ID. */
-    private static final long serialVersionUID = 3833747698242303540L;
+  /** Serializable Unique ID. */
+  private static final long serialVersionUID = 3833747698242303540L;
 
-    public boolean isExpired(final TicketState ticketState) {
-        return false;
-    }
+  public boolean isExpired(final TicketState ticketState) {
+    return false;
+  }
 }

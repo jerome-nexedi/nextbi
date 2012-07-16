@@ -25,46 +25,54 @@ import javax.servlet.http.HttpServletRequest;
  * @version $Revision$ $Date$
  * @since 3.0.5
  */
-public abstract class AbstractInMemoryThrottledSubmissionHandlerInterceptorAdapter extends AbstractThrottledSubmissionHandlerInterceptorAdapter {
+public abstract class AbstractInMemoryThrottledSubmissionHandlerInterceptorAdapter
+  extends AbstractThrottledSubmissionHandlerInterceptorAdapter {
 
-    private final ConcurrentMap<String, AtomicInteger> ipMap = new ConcurrentHashMap<String, AtomicInteger>();
+  private final ConcurrentMap<String, AtomicInteger> ipMap = new ConcurrentHashMap<String, AtomicInteger>();
 
-    @Override
-    protected final int findCount(final HttpServletRequest request, final String usernameParameter, final int failureRangeInSeconds) {
-        final AtomicInteger existingValue = this.ipMap.get(constructKey(request, usernameParameter));
-        return existingValue == null ? 0 : existingValue.get();
+  @Override
+  protected final int findCount(final HttpServletRequest request,
+    final String usernameParameter, final int failureRangeInSeconds) {
+    final AtomicInteger existingValue = this.ipMap.get(constructKey(request,
+      usernameParameter));
+    return existingValue == null ? 0 : existingValue.get();
+  }
+
+  @Override
+  protected final void updateCount(final HttpServletRequest request,
+    final String usernameParameter) {
+    final AtomicInteger newAtomicInteger = new AtomicInteger(1);
+    final AtomicInteger oldAtomicInteger = this.ipMap.putIfAbsent(constructKey(
+      request, usernameParameter), newAtomicInteger);
+
+    if (oldAtomicInteger != null) {
+      oldAtomicInteger.incrementAndGet();
     }
+  }
 
-    @Override
-    protected final void updateCount(final HttpServletRequest request, final String usernameParameter) {
-        final AtomicInteger newAtomicInteger = new AtomicInteger(1);
-        final AtomicInteger oldAtomicInteger = this.ipMap.putIfAbsent(constructKey(request, usernameParameter), newAtomicInteger);
+  protected abstract String constructKey(HttpServletRequest request,
+    String usernameParameter);
 
-        if (oldAtomicInteger != null) {
-            oldAtomicInteger.incrementAndGet();
-        }
+  /**
+   * This class relies on an external configuration to clean it up. It ignores the threshold data in the parent class.
+   */
+  public final void decrementCounts() {
+    final Set<String> keys = this.ipMap.keySet();
+    log.debug("Decrementing counts for throttler.  Starting key count: "
+      + keys.size());
+
+    for (final Iterator<String> iter = keys.iterator(); iter.hasNext();) {
+      final String key = iter.next();
+      final AtomicInteger integer = this.ipMap.get(key);
+      final int newValue = integer.decrementAndGet();
+
+      log.trace("Decrementing count for key [" + key + "]; starting count ["
+        + integer + "]; ending count [" + newValue + "]");
+
+      if (newValue == 0) {
+        iter.remove();
+      }
     }
-
-    protected abstract String constructKey(HttpServletRequest request, String usernameParameter);
-
-    /**
-     * This class relies on an external configuration to clean it up. It ignores the threshold data in the parent class.
-     */
-    public final void decrementCounts() {
-        final Set<String> keys = this.ipMap.keySet();
-        log.debug("Decrementing counts for throttler.  Starting key count: " + keys.size());
-
-        for (final Iterator<String> iter = keys.iterator(); iter.hasNext();) {
-            final String key = iter.next();
-            final AtomicInteger integer = this.ipMap.get(key);
-            final int  newValue = integer.decrementAndGet();
-
-            log.trace("Decrementing count for key [" + key + "]; starting count [" + integer + "]; ending count [" + newValue + "]");
-
-            if (newValue == 0) {
-                iter.remove();
-            }
-        }
-        log.debug("Done decrementing count for throttler.");
-    }
+    log.debug("Done decrementing count for throttler.");
+  }
 }

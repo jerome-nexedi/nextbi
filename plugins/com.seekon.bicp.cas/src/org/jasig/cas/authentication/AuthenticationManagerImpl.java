@@ -57,103 +57,110 @@ import javax.validation.constraints.Size;
 
 public final class AuthenticationManagerImpl extends AbstractAuthenticationManager {
 
-    /** An array of authentication handlers. */
-    @NotNull
-    @Size(min=1)
-    private List<AuthenticationHandler> authenticationHandlers;
+  /** An array of authentication handlers. */
+  @NotNull
+  @Size(min = 1)
+  private List<AuthenticationHandler> authenticationHandlers;
 
-    /** An array of CredentialsToPrincipalResolvers. */
-    @NotNull
-    @Size(min=1)
-    private List<CredentialsToPrincipalResolver> credentialsToPrincipalResolvers;
+  /** An array of CredentialsToPrincipalResolvers. */
+  @NotNull
+  @Size(min = 1)
+  private List<CredentialsToPrincipalResolver> credentialsToPrincipalResolvers;
 
-    @Override
-    protected Pair<AuthenticationHandler, Principal> authenticateAndObtainPrincipal(final Credentials credentials) throws AuthenticationException {
-        boolean foundSupported = false;
-        boolean authenticated = false;
-        AuthenticationHandler authenticatedClass = null;
-        
-        for (final AuthenticationHandler authenticationHandler : this.authenticationHandlers) {
-            if (authenticationHandler.supports(credentials)) {
-                foundSupported = true;
+  @Override
+  protected Pair<AuthenticationHandler, Principal> authenticateAndObtainPrincipal(
+    final Credentials credentials) throws AuthenticationException {
+    boolean foundSupported = false;
+    boolean authenticated = false;
+    AuthenticationHandler authenticatedClass = null;
 
-                boolean auth = false;
-                final LoggingStopWatch stopWatch = new LoggingStopWatch(authenticationHandler.getClass().getSimpleName());
+    for (final AuthenticationHandler authenticationHandler : this.authenticationHandlers) {
+      if (authenticationHandler.supports(credentials)) {
+        foundSupported = true;
 
-                try {
-                    auth = authenticationHandler.authenticate(credentials);
-                } finally {
-                    stopWatch.stop();
-                }
+        boolean auth = false;
+        final LoggingStopWatch stopWatch = new LoggingStopWatch(
+          authenticationHandler.getClass().getSimpleName());
 
-                if (!auth) {
-                    if (log.isInfoEnabled()) {
-                        log.info("AuthenticationHandler: "
-                                + authenticationHandler.getClass().getName()
-                                + " failed to authenticate the user which provided the following credentials: "
-                                + credentials.toString());
-                    }
-                } else {
-                    if (log.isInfoEnabled()) {
-                        log.info("AuthenticationHandler: "
-                                + authenticationHandler.getClass().getName()
-                                + " successfully authenticated the user which provided the following credentials: "
-                                + credentials.toString());
-                    }
-                    authenticatedClass = authenticationHandler;
-                    authenticated = true;
-                    break;
-                }
-            }
+        try {
+          auth = authenticationHandler.authenticate(credentials);
+        } finally {
+          stopWatch.stop();
         }
 
-        if (!authenticated) {
-            if (foundSupported) {
-                throw BadCredentialsAuthenticationException.ERROR;
-            }
-
-            throw UnsupportedCredentialsException.ERROR;
+        if (!auth) {
+          if (log.isInfoEnabled()) {
+            log
+              .info("AuthenticationHandler: "
+                + authenticationHandler.getClass().getName()
+                + " failed to authenticate the user which provided the following credentials: "
+                + credentials.toString());
+          }
+        } else {
+          if (log.isInfoEnabled()) {
+            log
+              .info("AuthenticationHandler: "
+                + authenticationHandler.getClass().getName()
+                + " successfully authenticated the user which provided the following credentials: "
+                + credentials.toString());
+          }
+          authenticatedClass = authenticationHandler;
+          authenticated = true;
+          break;
         }
-
-        foundSupported = false;
-
-        for (final CredentialsToPrincipalResolver credentialsToPrincipalResolver : this.credentialsToPrincipalResolvers) {
-            if (credentialsToPrincipalResolver.supports(credentials)) {
-                final Principal principal = credentialsToPrincipalResolver.resolvePrincipal(credentials);
-                log.info("Resolved principal " + principal);
-                foundSupported = true;
-                if (principal != null) {
-                    return new Pair<AuthenticationHandler,Principal>(authenticatedClass, principal);
-                }
-            }
-        }
-
-        if (foundSupported) {
-            if (log.isDebugEnabled()) {
-                log.debug("CredentialsToPrincipalResolver found but no principal returned.");
-            }
-
-            throw BadCredentialsAuthenticationException.ERROR;
-        }
-
-        log.error("CredentialsToPrincipalResolver not found for " + credentials.getClass().getName());
-        throw UnsupportedCredentialsException.ERROR;
+      }
     }
 
-    /**
-     * @param authenticationHandlers The authenticationHandlers to set.
-     */
-    public void setAuthenticationHandlers(
-        final List<AuthenticationHandler> authenticationHandlers) {
-        this.authenticationHandlers = authenticationHandlers;
+    if (!authenticated) {
+      if (foundSupported) {
+        throw BadCredentialsAuthenticationException.ERROR;
+      }
+
+      throw UnsupportedCredentialsException.ERROR;
     }
 
-    /**
-     * @param credentialsToPrincipalResolvers The
-     * credentialsToPrincipalResolvers to set.
-     */
-    public void setCredentialsToPrincipalResolvers(
-        final List<CredentialsToPrincipalResolver> credentialsToPrincipalResolvers) {
-        this.credentialsToPrincipalResolvers = credentialsToPrincipalResolvers;
+    foundSupported = false;
+
+    for (final CredentialsToPrincipalResolver credentialsToPrincipalResolver : this.credentialsToPrincipalResolvers) {
+      if (credentialsToPrincipalResolver.supports(credentials)) {
+        final Principal principal = credentialsToPrincipalResolver
+          .resolvePrincipal(credentials);
+        log.info("Resolved principal " + principal);
+        foundSupported = true;
+        if (principal != null) {
+          return new Pair<AuthenticationHandler, Principal>(authenticatedClass,
+            principal);
+        }
+      }
     }
+
+    if (foundSupported) {
+      if (log.isDebugEnabled()) {
+        log.debug("CredentialsToPrincipalResolver found but no principal returned.");
+      }
+
+      throw BadCredentialsAuthenticationException.ERROR;
+    }
+
+    log.error("CredentialsToPrincipalResolver not found for "
+      + credentials.getClass().getName());
+    throw UnsupportedCredentialsException.ERROR;
+  }
+
+  /**
+   * @param authenticationHandlers The authenticationHandlers to set.
+   */
+  public void setAuthenticationHandlers(
+    final List<AuthenticationHandler> authenticationHandlers) {
+    this.authenticationHandlers = authenticationHandlers;
+  }
+
+  /**
+   * @param credentialsToPrincipalResolvers The
+   * credentialsToPrincipalResolvers to set.
+   */
+  public void setCredentialsToPrincipalResolvers(
+    final List<CredentialsToPrincipalResolver> credentialsToPrincipalResolvers) {
+    this.credentialsToPrincipalResolvers = credentialsToPrincipalResolvers;
+  }
 }

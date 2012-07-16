@@ -33,85 +33,99 @@ import java.util.Set;
  * @version $Revision$ $Date$
  * @since 3.0
  */
-public final class RemoteCentralAuthenticationService implements CentralAuthenticationService {
+public final class RemoteCentralAuthenticationService implements
+  CentralAuthenticationService {
 
-    /** The CORE to delegate to. */
-    @NotNull
-    private CentralAuthenticationService centralAuthenticationService;
+  /** The CORE to delegate to. */
+  @NotNull
+  private CentralAuthenticationService centralAuthenticationService;
 
-    /** The validators to check the Credentials. */
-    @NotNull
-    private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+  /** The validators to check the Credentials. */
+  @NotNull
+  private Validator validator = Validation.buildDefaultValidatorFactory()
+    .getValidator();
 
-    /**
-     * @throws IllegalArgumentException if the Credentials are null or if given
-     * invalid credentials.
-     */
-    public String createTicketGrantingTicket(final Credentials credentials) throws TicketException {
-        Assert.notNull(credentials, "credentials cannot be null");
-        checkForErrors(credentials);
+  /**
+   * @throws IllegalArgumentException if the Credentials are null or if given
+   * invalid credentials.
+   */
+  public String createTicketGrantingTicket(final Credentials credentials)
+    throws TicketException {
+    Assert.notNull(credentials, "credentials cannot be null");
+    checkForErrors(credentials);
 
-        return this.centralAuthenticationService.createTicketGrantingTicket(credentials);
+    return this.centralAuthenticationService.createTicketGrantingTicket(credentials);
+  }
+
+  public String grantServiceTicket(final String ticketGrantingTicketId,
+    final Service service) throws TicketException {
+    return this.centralAuthenticationService.grantServiceTicket(
+      ticketGrantingTicketId, service);
+  }
+
+  /**
+   * @throws IllegalArgumentException if given invalid credentials
+   */
+  public String grantServiceTicket(final String ticketGrantingTicketId,
+    final Service service, final Credentials credentials) throws TicketException {
+    checkForErrors(credentials);
+
+    return this.centralAuthenticationService.grantServiceTicket(
+      ticketGrantingTicketId, service, credentials);
+  }
+
+  public Assertion validateServiceTicket(final String serviceTicketId,
+    final Service service) throws TicketException {
+    return this.centralAuthenticationService.validateServiceTicket(serviceTicketId,
+      service);
+  }
+
+  public void destroyTicketGrantingTicket(final String ticketGrantingTicketId) {
+    this.centralAuthenticationService
+      .destroyTicketGrantingTicket(ticketGrantingTicketId);
+  }
+
+  /**
+   * @throws IllegalArgumentException if the credentials are invalid.
+   */
+  public String delegateTicketGrantingTicket(final String serviceTicketId,
+    final Credentials credentials) throws TicketException {
+    checkForErrors(credentials);
+
+    return this.centralAuthenticationService.delegateTicketGrantingTicket(
+      serviceTicketId, credentials);
+  }
+
+  private void checkForErrors(final Credentials credentials) {
+    if (credentials == null) {
+      return;
     }
 
-    public String grantServiceTicket(final String ticketGrantingTicketId, final Service service) throws TicketException {
-        return this.centralAuthenticationService.grantServiceTicket(ticketGrantingTicketId, service);
+    final Set<ConstraintViolation<Credentials>> errors = this.validator
+      .validate(credentials);
+    if (!errors.isEmpty()) {
+      throw new IllegalArgumentException("Error validating credentials: "
+        + errors.toString());
     }
+  }
 
-    /**
-     * @throws IllegalArgumentException if given invalid credentials
-     */
-    public String grantServiceTicket(final String ticketGrantingTicketId, final Service service, final Credentials credentials) throws TicketException {
-        checkForErrors(credentials);
+  /**
+   * Set the CentralAuthenticationService.
+   * 
+   * @param centralAuthenticationService The CentralAuthenticationService to
+   * set.
+   */
+  public void setCentralAuthenticationService(
+    final CentralAuthenticationService centralAuthenticationService) {
+    this.centralAuthenticationService = centralAuthenticationService;
+  }
 
-        return this.centralAuthenticationService.grantServiceTicket(ticketGrantingTicketId, service, credentials);
-    }
-
-    public Assertion validateServiceTicket(final String serviceTicketId, final Service service) throws TicketException {
-        return this.centralAuthenticationService.validateServiceTicket(serviceTicketId, service);
-    }
-
-    public void destroyTicketGrantingTicket(final String ticketGrantingTicketId) {
-        this.centralAuthenticationService.destroyTicketGrantingTicket(ticketGrantingTicketId);
-    }
-
-    /**
-     * @throws IllegalArgumentException if the credentials are invalid.
-     */
-    public String delegateTicketGrantingTicket(final String serviceTicketId, final Credentials credentials) throws TicketException {
-        checkForErrors(credentials);
-
-        return this.centralAuthenticationService.delegateTicketGrantingTicket(serviceTicketId, credentials);
-    }
-
-    private void checkForErrors(final Credentials credentials) {
-        if (credentials == null) {
-            return;
-        }
-        
-        final Set<ConstraintViolation<Credentials>> errors = this.validator.validate(credentials);
-        if (!errors.isEmpty()) {
-            throw new IllegalArgumentException("Error validating credentials: " + errors.toString());
-        }
-    }
-
-    /**
-     * Set the CentralAuthenticationService.
-     * 
-     * @param centralAuthenticationService The CentralAuthenticationService to
-     * set.
-     */
-    public void setCentralAuthenticationService(
-        final CentralAuthenticationService centralAuthenticationService) {
-        this.centralAuthenticationService = centralAuthenticationService;
-    }
-
-    /**
-     * Set the list of validators.
-     * 
-     * @param validator The array of validators to use.
-     */
-    public void setValidator(final Validator validator) {
-        this.validator = validator;
-    }
+  /**
+   * Set the list of validators.
+   * 
+   * @param validator The array of validators to use.
+   */
+  public void setValidator(final Validator validator) {
+    this.validator = validator;
+  }
 }

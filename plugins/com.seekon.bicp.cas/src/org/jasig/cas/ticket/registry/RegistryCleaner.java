@@ -18,8 +18,8 @@ package org.jasig.cas.ticket.registry;
  */
 public interface RegistryCleaner {
 
-    /**
-     * Method to kick-off the cleaning of a registry.
-     */
-    void clean();
+  /**
+   * Method to kick-off the cleaning of a registry.
+   */
+  void clean();
 }

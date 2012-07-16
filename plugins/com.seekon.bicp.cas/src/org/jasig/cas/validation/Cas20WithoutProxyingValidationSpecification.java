@@ -17,17 +17,17 @@ package org.jasig.cas.validation;
  * @since 3.0
  */
 public class Cas20WithoutProxyingValidationSpecification extends
-    AbstractCasProtocolValidationSpecification {
+  AbstractCasProtocolValidationSpecification {
 
-    public Cas20WithoutProxyingValidationSpecification() {
-        super();
-    }
+  public Cas20WithoutProxyingValidationSpecification() {
+    super();
+  }
 
-    public Cas20WithoutProxyingValidationSpecification(final boolean renew) {
-        super(renew);
-    }
+  public Cas20WithoutProxyingValidationSpecification(final boolean renew) {
+    super(renew);
+  }
 
-    protected boolean isSatisfiedByInternal(final Assertion assertion) {
-        return (assertion.getChainedAuthentications().size() == 1);
-    }
+  protected boolean isSatisfiedByInternal(final Assertion assertion) {
+    return (assertion.getChainedAuthentications().size() == 1);
+  }
 }

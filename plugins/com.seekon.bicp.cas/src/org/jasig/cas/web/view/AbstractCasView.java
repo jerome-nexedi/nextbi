@@ -20,10 +20,10 @@ import org.springframework.web.servlet.view.AbstractView;
  * @since 3.1
  */
 public abstract class AbstractCasView extends AbstractView {
-    
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    protected final Assertion getAssertionFrom(final Map model) {
-        return (Assertion) model.get("assertion");
-    }
+  protected final Logger log = LoggerFactory.getLogger(this.getClass());
+
+  protected final Assertion getAssertionFrom(final Map model) {
+    return (Assertion) model.get("assertion");
+  }
 }

@@ -22,11 +22,11 @@ import java.io.Serializable;
  */
 public interface ExpirationPolicy extends Serializable {
 
-    /**
-     * Method to determine if a Ticket has expired or not, based on the policy.
-     * 
-     * @param ticketState The snapshot of the current ticket state
-     * @return true if the ticket is expired, false otherwise.
-     */
-    boolean isExpired(TicketState ticketState);
+  /**
+   * Method to determine if a Ticket has expired or not, based on the policy.
+   * 
+   * @param ticketState The snapshot of the current ticket state
+   * @return true if the ticket is expired, false otherwise.
+   */
+  boolean isExpired(TicketState ticketState);
 }

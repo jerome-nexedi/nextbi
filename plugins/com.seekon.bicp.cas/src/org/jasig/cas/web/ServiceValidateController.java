@@ -42,192 +42,210 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public class ServiceValidateController extends AbstractController {
 
-    /** View if Service Ticket Validation Fails. */
-    private static final String DEFAULT_SERVICE_FAILURE_VIEW_NAME = "casServiceFailureView";
+  /** View if Service Ticket Validation Fails. */
+  private static final String DEFAULT_SERVICE_FAILURE_VIEW_NAME = "casServiceFailureView";
 
-    /** View if Service Ticket Validation Succeeds. */
-    private static final String DEFAULT_SERVICE_SUCCESS_VIEW_NAME = "casServiceSuccessView";
+  /** View if Service Ticket Validation Succeeds. */
+  private static final String DEFAULT_SERVICE_SUCCESS_VIEW_NAME = "casServiceSuccessView";
 
-    /** Constant representing the PGTIOU in the model. */
-    private static final String MODEL_PROXY_GRANTING_TICKET_IOU = "pgtIou";
+  /** Constant representing the PGTIOU in the model. */
+  private static final String MODEL_PROXY_GRANTING_TICKET_IOU = "pgtIou";
 
-    /** Constant representing the Assertion in the model. */
-    private static final String MODEL_ASSERTION = "assertion";
+  /** Constant representing the Assertion in the model. */
+  private static final String MODEL_ASSERTION = "assertion";
 
-    /** The CORE which we will delegate all requests to. */
-    @NotNull
-    private CentralAuthenticationService centralAuthenticationService;
+  /** The CORE which we will delegate all requests to. */
+  @NotNull
+  private CentralAuthenticationService centralAuthenticationService;
 
-    /** The validation protocol we want to use. */
-    @NotNull
-    private Class<?> validationSpecificationClass = Cas20ProtocolValidationSpecification.class;
+  /** The validation protocol we want to use. */
+  @NotNull
+  private Class<?> validationSpecificationClass = Cas20ProtocolValidationSpecification.class;
 
-    /** The proxy handler we want to use with the controller. */
-    @NotNull
-    private ProxyHandler proxyHandler;
+  /** The proxy handler we want to use with the controller. */
+  @NotNull
+  private ProxyHandler proxyHandler;
 
-    /** The view to redirect to on a successful validation. */
-    @NotNull
-    private String successView = DEFAULT_SERVICE_SUCCESS_VIEW_NAME;
+  /** The view to redirect to on a successful validation. */
+  @NotNull
+  private String successView = DEFAULT_SERVICE_SUCCESS_VIEW_NAME;
 
-    /** The view to redirect to on a validation failure. */
-    @NotNull
-    private String failureView = DEFAULT_SERVICE_FAILURE_VIEW_NAME;
+  /** The view to redirect to on a validation failure. */
+  @NotNull
+  private String failureView = DEFAULT_SERVICE_FAILURE_VIEW_NAME;
 
-    /** Extracts parameters from Request object. */
-    @NotNull
-    private ArgumentExtractor argumentExtractor;
+  /** Extracts parameters from Request object. */
+  @NotNull
+  private ArgumentExtractor argumentExtractor;
 
-    /**
-     * Overrideable method to determine which credentials to use to grant a
-     * proxy granting ticket. Default is to use the pgtUrl.
-     * 
-     * @param request the HttpServletRequest object.
-     * @return the credentials or null if there was an error or no credentials
-     * provided.
-     */
-    protected Credentials getServiceCredentialsFromRequest(final HttpServletRequest request) {
-        final String pgtUrl = request.getParameter("pgtUrl");
-        if (StringUtils.hasText(pgtUrl)) {
-            try {
-                return new HttpBasedServiceCredentials(new URL(pgtUrl));
-            } catch (final Exception e) {
-                logger.error("Error constructing pgtUrl", e);
-            }
-        }
-
-        return null;
+  /**
+   * Overrideable method to determine which credentials to use to grant a
+   * proxy granting ticket. Default is to use the pgtUrl.
+   * 
+   * @param request the HttpServletRequest object.
+   * @return the credentials or null if there was an error or no credentials
+   * provided.
+   */
+  protected Credentials getServiceCredentialsFromRequest(
+    final HttpServletRequest request) {
+    final String pgtUrl = request.getParameter("pgtUrl");
+    if (StringUtils.hasText(pgtUrl)) {
+      try {
+        return new HttpBasedServiceCredentials(new URL(pgtUrl));
+      } catch (final Exception e) {
+        logger.error("Error constructing pgtUrl", e);
+      }
     }
 
-    protected void initBinder(final HttpServletRequest request, final ServletRequestDataBinder binder) {
-        binder.setRequiredFields("renew");
+    return null;
+  }
+
+  protected void initBinder(final HttpServletRequest request,
+    final ServletRequestDataBinder binder) {
+    binder.setRequiredFields("renew");
+  }
+
+  protected final ModelAndView handleRequestInternal(
+    final HttpServletRequest request, final HttpServletResponse response)
+    throws Exception {
+    final WebApplicationService service = this.argumentExtractor
+      .extractService(request);
+    final String serviceTicketId = service != null ? service.getArtifactId() : null;
+
+    if (service == null || serviceTicketId == null) {
+      if (logger.isDebugEnabled()) {
+        logger.debug(String.format(
+          "Could not process request; Service: %s, Service Ticket Id: %s", service,
+          serviceTicketId));
+      }
+      return generateErrorView("INVALID_REQUEST", "INVALID_REQUEST", null);
     }
 
-    protected final ModelAndView handleRequestInternal(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-        final WebApplicationService service = this.argumentExtractor.extractService(request);
-        final String serviceTicketId = service != null ? service.getArtifactId() : null;
+    try {
+      final Credentials serviceCredentials = getServiceCredentialsFromRequest(request);
+      String proxyGrantingTicketId = null;
 
-        if (service == null || serviceTicketId == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug(String.format("Could not process request; Service: %s, Service Ticket Id: %s", service, serviceTicketId));
-            }
-            return generateErrorView("INVALID_REQUEST", "INVALID_REQUEST", null);
-        }
-
+      // XXX should be able to validate AND THEN use
+      if (serviceCredentials != null) {
         try {
-            final Credentials serviceCredentials = getServiceCredentialsFromRequest(request);
-            String proxyGrantingTicketId = null;
-
-            // XXX should be able to validate AND THEN use
-            if (serviceCredentials != null) {
-                try {
-                    proxyGrantingTicketId = this.centralAuthenticationService
-                        .delegateTicketGrantingTicket(serviceTicketId,
-                            serviceCredentials);
-                } catch (final TicketException e) {
-                    logger.error("TicketException generating ticket for: "
-                        + serviceCredentials, e);
-                }
-            }
-
-            final Assertion assertion = this.centralAuthenticationService.validateServiceTicket(serviceTicketId, service);
-
-            final ValidationSpecification validationSpecification = this.getCommandClass();
-            final ServletRequestDataBinder binder = new ServletRequestDataBinder(validationSpecification, "validationSpecification");
-            initBinder(request, binder);
-            binder.bind(request);
-
-            if (!validationSpecification.isSatisfiedBy(assertion)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("ServiceTicket [" + serviceTicketId + "] does not satisfy validation specification.");
-                }
-                return generateErrorView("INVALID_TICKET", "INVALID_TICKET_SPEC", null);
-            }
-
-            onSuccessfulValidation(serviceTicketId, assertion);
-
-            final ModelAndView success = new ModelAndView(this.successView);
-            success.addObject(MODEL_ASSERTION, assertion);
-
-            if (serviceCredentials != null && proxyGrantingTicketId != null) {
-                final String proxyIou = this.proxyHandler.handle(serviceCredentials, proxyGrantingTicketId);
-                success.addObject(MODEL_PROXY_GRANTING_TICKET_IOU, proxyIou);
-            }
-
-            if (logger.isDebugEnabled()) {
-                logger.debug(String.format("Successfully validated service ticket: %s", serviceTicketId));
-            }
-
-            return success;
-        } catch (final TicketValidationException e) {
-            return generateErrorView(e.getCode(), e.getCode(), new Object[] {serviceTicketId, e.getOriginalService().getId(), service.getId()});
-        } catch (final TicketException te) {
-            return generateErrorView(te.getCode(), te.getCode(),
-                new Object[] {serviceTicketId});
-        } catch (final UnauthorizedServiceException e) {
-            return generateErrorView(e.getMessage(), e.getMessage(), null);
+          proxyGrantingTicketId = this.centralAuthenticationService
+            .delegateTicketGrantingTicket(serviceTicketId, serviceCredentials);
+        } catch (final TicketException e) {
+          logger.error("TicketException generating ticket for: "
+            + serviceCredentials, e);
         }
-    }
+      }
 
-    protected void onSuccessfulValidation(final String serviceTicketId, final Assertion assertion) {
-        // template method with nothing to do.
-    }
+      final Assertion assertion = this.centralAuthenticationService
+        .validateServiceTicket(serviceTicketId, service);
 
-    private ModelAndView generateErrorView(final String code, final String description, final Object[] args) {
-        final ModelAndView modelAndView = new ModelAndView(this.failureView);
-        final String convertedDescription = getMessageSourceAccessor().getMessage(description, args, description);
-        modelAndView.addObject("code", code);
-        modelAndView.addObject("description", convertedDescription);
+      final ValidationSpecification validationSpecification = this.getCommandClass();
+      final ServletRequestDataBinder binder = new ServletRequestDataBinder(
+        validationSpecification, "validationSpecification");
+      initBinder(request, binder);
+      binder.bind(request);
 
-        return modelAndView;
-    }
-
-    private ValidationSpecification getCommandClass() {
-        try {
-            return (ValidationSpecification) this.validationSpecificationClass.newInstance();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
+      if (!validationSpecification.isSatisfiedBy(assertion)) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("ServiceTicket [" + serviceTicketId
+            + "] does not satisfy validation specification.");
         }
-    }
-    
-    /**
-     * @param centralAuthenticationService The centralAuthenticationService to
-     * set.
-     */
-    public final void setCentralAuthenticationService(final CentralAuthenticationService centralAuthenticationService) {
-        this.centralAuthenticationService = centralAuthenticationService;
-    }
+        return generateErrorView("INVALID_TICKET", "INVALID_TICKET_SPEC", null);
+      }
 
-    public final void setArgumentExtractor(final ArgumentExtractor argumentExtractor) {
-        this.argumentExtractor = argumentExtractor;
-    }
+      onSuccessfulValidation(serviceTicketId, assertion);
 
-    /**
-     * @param validationSpecificationClass The authenticationSpecificationClass
-     * to set.
-     */
-    public final void setValidationSpecificationClass(final Class<?> validationSpecificationClass) {
-        this.validationSpecificationClass = validationSpecificationClass;
-    }
+      final ModelAndView success = new ModelAndView(this.successView);
+      success.addObject(MODEL_ASSERTION, assertion);
 
-    /**
-     * @param failureView The failureView to set.
-     */
-    public final void setFailureView(final String failureView) {
-        this.failureView = failureView;
-    }
+      if (serviceCredentials != null && proxyGrantingTicketId != null) {
+        final String proxyIou = this.proxyHandler.handle(serviceCredentials,
+          proxyGrantingTicketId);
+        success.addObject(MODEL_PROXY_GRANTING_TICKET_IOU, proxyIou);
+      }
 
-    /**
-     * @param successView The successView to set.
-     */
-    public final void setSuccessView(final String successView) {
-        this.successView = successView;
-    }
+      if (logger.isDebugEnabled()) {
+        logger.debug(String.format("Successfully validated service ticket: %s",
+          serviceTicketId));
+      }
 
-    /**
-     * @param proxyHandler The proxyHandler to set.
-     */
-    public final void setProxyHandler(final ProxyHandler proxyHandler) {
-        this.proxyHandler = proxyHandler;
+      return success;
+    } catch (final TicketValidationException e) {
+      return generateErrorView(e.getCode(), e.getCode(), new Object[] {
+        serviceTicketId, e.getOriginalService().getId(), service.getId() });
+    } catch (final TicketException te) {
+      return generateErrorView(te.getCode(), te.getCode(),
+        new Object[] { serviceTicketId });
+    } catch (final UnauthorizedServiceException e) {
+      return generateErrorView(e.getMessage(), e.getMessage(), null);
     }
+  }
+
+  protected void onSuccessfulValidation(final String serviceTicketId,
+    final Assertion assertion) {
+    // template method with nothing to do.
+  }
+
+  private ModelAndView generateErrorView(final String code,
+    final String description, final Object[] args) {
+    final ModelAndView modelAndView = new ModelAndView(this.failureView);
+    final String convertedDescription = getMessageSourceAccessor().getMessage(
+      description, args, description);
+    modelAndView.addObject("code", code);
+    modelAndView.addObject("description", convertedDescription);
+
+    return modelAndView;
+  }
+
+  private ValidationSpecification getCommandClass() {
+    try {
+      return (ValidationSpecification) this.validationSpecificationClass
+        .newInstance();
+    } catch (final Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * @param centralAuthenticationService The centralAuthenticationService to
+   * set.
+   */
+  public final void setCentralAuthenticationService(
+    final CentralAuthenticationService centralAuthenticationService) {
+    this.centralAuthenticationService = centralAuthenticationService;
+  }
+
+  public final void setArgumentExtractor(final ArgumentExtractor argumentExtractor) {
+    this.argumentExtractor = argumentExtractor;
+  }
+
+  /**
+   * @param validationSpecificationClass The authenticationSpecificationClass
+   * to set.
+   */
+  public final void setValidationSpecificationClass(
+    final Class<?> validationSpecificationClass) {
+    this.validationSpecificationClass = validationSpecificationClass;
+  }
+
+  /**
+   * @param failureView The failureView to set.
+   */
+  public final void setFailureView(final String failureView) {
+    this.failureView = failureView;
+  }
+
+  /**
+   * @param successView The successView to set.
+   */
+  public final void setSuccessView(final String successView) {
+    this.successView = successView;
+  }
+
+  /**
+   * @param proxyHandler The proxyHandler to set.
+   */
+  public final void setProxyHandler(final ProxyHandler proxyHandler) {
+    this.proxyHandler = proxyHandler;
+  }
 }

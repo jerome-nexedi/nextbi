@@ -14,7 +14,7 @@ package org.jasig.cas.authentication.handler;
  */
 public final class NoOpPrincipalNameTransformer implements PrincipalNameTransformer {
 
-    public String transform(final String formUserId) {
-        return formUserId;
-    }
+  public String transform(final String formUserId) {
+    return formUserId;
+  }
 }

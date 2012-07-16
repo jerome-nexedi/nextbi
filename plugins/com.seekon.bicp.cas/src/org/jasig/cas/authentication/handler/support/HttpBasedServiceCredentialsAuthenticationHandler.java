@@ -27,60 +27,56 @@ import javax.validation.constraints.NotNull;
  * @version $Revision$ $Date$
  * @since 3.0
  */
-public final class HttpBasedServiceCredentialsAuthenticationHandler implements AuthenticationHandler {
+public final class HttpBasedServiceCredentialsAuthenticationHandler implements
+  AuthenticationHandler {
 
-    /** The string representing the HTTPS protocol. */
-    private static final String PROTOCOL_HTTPS = "https";
+  /** The string representing the HTTPS protocol. */
+  private static final String PROTOCOL_HTTPS = "https";
 
-    /** Boolean variable denoting whether secure connection is required or not. */
-    private boolean requireSecure = true;
+  /** Boolean variable denoting whether secure connection is required or not. */
+  private boolean requireSecure = true;
 
-    /** Log instance. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
+  /** Log instance. */
+  private final Logger log = LoggerFactory.getLogger(getClass());
 
-    /** Instance of Apache Commons HttpClient */
-    @NotNull
-    private HttpClient httpClient;
+  /** Instance of Apache Commons HttpClient */
+  @NotNull
+  private HttpClient httpClient;
 
-    public boolean authenticate(final Credentials credentials) {
-        final HttpBasedServiceCredentials serviceCredentials = (HttpBasedServiceCredentials) credentials;
-        if (this.requireSecure
-            && !serviceCredentials.getCallbackUrl().getProtocol().equals(
-                PROTOCOL_HTTPS)) {
-            if (log.isDebugEnabled()) {
-                log.debug("Authentication failed because url was not secure.");
-            }
-            return false;
-        }
-        log
-            .debug("Attempting to resolve credentials for "
-                + serviceCredentials);
-
-        return this.httpClient.isValidEndPoint(serviceCredentials
-            .getCallbackUrl());
+  public boolean authenticate(final Credentials credentials) {
+    final HttpBasedServiceCredentials serviceCredentials = (HttpBasedServiceCredentials) credentials;
+    if (this.requireSecure
+      && !serviceCredentials.getCallbackUrl().getProtocol().equals(PROTOCOL_HTTPS)) {
+      if (log.isDebugEnabled()) {
+        log.debug("Authentication failed because url was not secure.");
+      }
+      return false;
     }
+    log.debug("Attempting to resolve credentials for " + serviceCredentials);
 
-    /**
-     * @return true if the credentials provided are not null and the credentials
-     * are a subclass of (or equal to) HttpBasedServiceCredentials.
-     */
-    public boolean supports(final Credentials credentials) {
-        return credentials != null
-            && HttpBasedServiceCredentials.class.isAssignableFrom(credentials
-                .getClass());
-    }
+    return this.httpClient.isValidEndPoint(serviceCredentials.getCallbackUrl());
+  }
 
-    /** Sets the HttpClient which will do all of the connection stuff. */
-    public void setHttpClient(final HttpClient httpClient) {
-        this.httpClient = httpClient;
-    }
+  /**
+   * @return true if the credentials provided are not null and the credentials
+   * are a subclass of (or equal to) HttpBasedServiceCredentials.
+   */
+  public boolean supports(final Credentials credentials) {
+    return credentials != null
+      && HttpBasedServiceCredentials.class.isAssignableFrom(credentials.getClass());
+  }
 
-    /**
-     * Set whether a secure url is required or not.
-     * 
-     * @param requireSecure true if its required, false if not. Default is true.
-     */
-    public void setRequireSecure(final boolean requireSecure) {
-        this.requireSecure = requireSecure;
-    }
+  /** Sets the HttpClient which will do all of the connection stuff. */
+  public void setHttpClient(final HttpClient httpClient) {
+    this.httpClient = httpClient;
+  }
+
+  /**
+   * Set whether a secure url is required or not.
+   * 
+   * @param requireSecure true if its required, false if not. Default is true.
+   */
+  public void setRequireSecure(final boolean requireSecure) {
+    this.requireSecure = requireSecure;
+  }
 }

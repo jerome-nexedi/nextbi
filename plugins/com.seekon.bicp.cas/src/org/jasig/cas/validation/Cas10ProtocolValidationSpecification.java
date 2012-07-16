@@ -17,17 +17,17 @@ package org.jasig.cas.validation;
  * @since 3.0
  */
 public final class Cas10ProtocolValidationSpecification extends
-    AbstractCasProtocolValidationSpecification {
+  AbstractCasProtocolValidationSpecification {
 
-    public Cas10ProtocolValidationSpecification() {
-        super();
-    }
+  public Cas10ProtocolValidationSpecification() {
+    super();
+  }
 
-    public Cas10ProtocolValidationSpecification(final boolean renew) {
-        super(renew);
-    }
+  public Cas10ProtocolValidationSpecification(final boolean renew) {
+    super(renew);
+  }
 
-    protected boolean isSatisfiedByInternal(final Assertion assertion) {
-        return (assertion.getChainedAuthentications().size() == 1);
-    }
+  protected boolean isSatisfiedByInternal(final Assertion assertion) {
+    return (assertion.getChainedAuthentications().size() == 1);
+  }
 }

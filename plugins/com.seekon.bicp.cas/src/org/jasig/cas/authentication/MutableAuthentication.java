@@ -22,22 +22,22 @@ import org.jasig.cas.authentication.principal.Principal;
  */
 public final class MutableAuthentication extends AbstractAuthentication {
 
-    /** Unique Id for serialization. */
-    private static final long serialVersionUID = -4415875344376642246L;
+  /** Unique Id for serialization. */
+  private static final long serialVersionUID = -4415875344376642246L;
 
-    /** The date/time this authentication object became valid. */
-    private final Date authenticatedDate;
+  /** The date/time this authentication object became valid. */
+  private final Date authenticatedDate;
 
-    public MutableAuthentication(final Principal principal) {
-        this(principal, new Date());
-    }
-    
-    public MutableAuthentication(final Principal principal, final Date date) {
-        super(principal, new HashMap<String, Object>());
-        this.authenticatedDate = date;
-    }
+  public MutableAuthentication(final Principal principal) {
+    this(principal, new Date());
+  }
 
-    public Date getAuthenticatedDate() {
-        return this.authenticatedDate;
-    }
+  public MutableAuthentication(final Principal principal, final Date date) {
+    super(principal, new HashMap<String, Object>());
+    this.authenticatedDate = date;
+  }
+
+  public Date getAuthenticatedDate() {
+    return this.authenticatedDate;
+  }
 }

@@ -17,9 +17,12 @@ import org.jasig.cas.authentication.principal.WebApplicationService;
  * @version $Revision$ $Date$
  * @since 3.1
  */
-public final class SamlArgumentExtractor extends AbstractSingleSignOutEnabledArgumentExtractor {
+public final class SamlArgumentExtractor extends
+  AbstractSingleSignOutEnabledArgumentExtractor {
 
-    public WebApplicationService extractServiceInternal(final HttpServletRequest request) {
-        return SamlService.createServiceFrom(request, getHttpClientIfSingleSignOutEnabled());
-    }
+  public WebApplicationService extractServiceInternal(
+    final HttpServletRequest request) {
+    return SamlService.createServiceFrom(request,
+      getHttpClientIfSingleSignOutEnabled());
+  }
 }

@@ -21,25 +21,28 @@ import java.util.Map;
  * @version $Revision$ $Date$
  * @since 3.3.4
  **/
-public final class AutowiringSchedulerFactoryBean extends SchedulerFactoryBean implements ApplicationContextAware, InitializingBean {
+public final class AutowiringSchedulerFactoryBean extends SchedulerFactoryBean
+  implements ApplicationContextAware, InitializingBean {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+  private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private ApplicationContext applicationContext;
+  private ApplicationContext applicationContext;
 
-    public void afterPropertiesSet() throws Exception {
-        final Map<String,Trigger> triggers = this.applicationContext.getBeansOfType(Trigger.class);
-        super.setTriggers(triggers.values().toArray(new Trigger[triggers.size()]));
+  public void afterPropertiesSet() throws Exception {
+    final Map<String, Trigger> triggers = this.applicationContext
+      .getBeansOfType(Trigger.class);
+    super.setTriggers(triggers.values().toArray(new Trigger[triggers.size()]));
 
-        if (log.isDebugEnabled()) {
-            log.debug("Autowired the following triggers defined in application context: " + triggers.keySet().toString());
-        }
-
-        super.afterPropertiesSet();
+    if (log.isDebugEnabled()) {
+      log.debug("Autowired the following triggers defined in application context: "
+        + triggers.keySet().toString());
     }
 
-    public void setApplicationContext(final ApplicationContext applicationContext) {
-        super.setApplicationContext(applicationContext);
-        this.applicationContext = applicationContext;
-    }
+    super.afterPropertiesSet();
+  }
+
+  public void setApplicationContext(final ApplicationContext applicationContext) {
+    super.setApplicationContext(applicationContext);
+    this.applicationContext = applicationContext;
+  }
 }

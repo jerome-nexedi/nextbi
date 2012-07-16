@@ -14,35 +14,33 @@ package org.jasig.cas.services;
  */
 public class UnauthorizedServiceException extends RuntimeException {
 
-    /** The Unique ID for serialization. */
-    private static final long serialVersionUID = 3905807495715960369L;
-    
-    /** The code description. */
-    private static final String CODE = "service.not.authorized";
+  /** The Unique ID for serialization. */
+  private static final long serialVersionUID = 3905807495715960369L;
 
-    public UnauthorizedServiceException() {
-        this(CODE);
-    }
-    
-    
-    /**
-     * Constructs an UnauthorizedServiceException with a custom message and the
-     * root cause of this exception.
-     * 
-     * @param message an explanatory message.
-     * @param cause the root cause of the exception.
-     */
-    public UnauthorizedServiceException(final String message,
-        final Throwable cause) {
-        super(message, cause);
-    }
+  /** The code description. */
+  private static final String CODE = "service.not.authorized";
 
-    /**
-     * Constructs an exception with a custom message.
-     * 
-     * @param message an explanatory message.
-     */
-    public UnauthorizedServiceException(final String message) {
-        super(message);
-    }
+  public UnauthorizedServiceException() {
+    this(CODE);
+  }
+
+  /**
+   * Constructs an UnauthorizedServiceException with a custom message and the
+   * root cause of this exception.
+   * 
+   * @param message an explanatory message.
+   * @param cause the root cause of the exception.
+   */
+  public UnauthorizedServiceException(final String message, final Throwable cause) {
+    super(message, cause);
+  }
+
+  /**
+   * Constructs an exception with a custom message.
+   * 
+   * @param message an explanatory message.
+   */
+  public UnauthorizedServiceException(final String message) {
+    super(message);
+  }
 }

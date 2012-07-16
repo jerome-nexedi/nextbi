@@ -13,17 +13,17 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  * @version $Revision$ $Date$
  * @since 3.4.4
  */
-@ManagedResource(objectName = "CAS:name=JasigCasServicesManagerMBean",
-        description = "Exposes the services management tool via JMX", log = true, logFile="jasig_cas_jmx.log",
-        currencyTimeLimit = 15)
-public final class ReloadableServicesManagerMBean extends AbstractServicesManagerMBean<ReloadableServicesManager> {
+@ManagedResource(objectName = "CAS:name=JasigCasServicesManagerMBean", description = "Exposes the services management tool via JMX", log = true, logFile = "jasig_cas_jmx.log", currencyTimeLimit = 15)
+public final class ReloadableServicesManagerMBean extends
+  AbstractServicesManagerMBean<ReloadableServicesManager> {
 
-    public ReloadableServicesManagerMBean(final ReloadableServicesManager reloadableServicesManager) {
-        super(reloadableServicesManager);
-    }
+  public ReloadableServicesManagerMBean(
+    final ReloadableServicesManager reloadableServicesManager) {
+    super(reloadableServicesManager);
+  }
 
-    @ManagedOperation(description = "Reloads the list of the services from the persistence storage.")
-    public void reload() {
-        getServicesManager().reload();
-    }
+  @ManagedOperation(description = "Reloads the list of the services from the persistence storage.")
+  public void reload() {
+    getServicesManager().reload();
+  }
 }

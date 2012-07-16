@@ -17,30 +17,30 @@ import org.springframework.util.Assert;
  * @version $Revision$ $Date$
  * @since 3.0
  */
-public final class MultiTimeUseOrTimeoutExpirationPolicy implements
-    ExpirationPolicy {
+public final class MultiTimeUseOrTimeoutExpirationPolicy implements ExpirationPolicy {
 
-    /** Serializable Unique ID. */
-    private static final long serialVersionUID = 3257844372614558261L;
+  /** Serializable Unique ID. */
+  private static final long serialVersionUID = 3257844372614558261L;
 
-    /** The time to kill in millseconds. */
-    private final long timeToKillInMilliSeconds;
+  /** The time to kill in millseconds. */
+  private final long timeToKillInMilliSeconds;
 
-    /** The maximum number of uses before expiration. */
-    private final int numberOfUses;
+  /** The maximum number of uses before expiration. */
+  private final int numberOfUses;
 
-    public MultiTimeUseOrTimeoutExpirationPolicy(final int numberOfUses,
-        final long timeToKillInMilliSeconds) {
-        this.timeToKillInMilliSeconds = timeToKillInMilliSeconds;
-        this.numberOfUses = numberOfUses;
-        Assert.isTrue(this.numberOfUses > 0, "numberOfUsers must be greater than 0.");
-        Assert.isTrue(this.timeToKillInMilliSeconds > 0, "timeToKillInMilliseconds must be greater than 0.");
+  public MultiTimeUseOrTimeoutExpirationPolicy(final int numberOfUses,
+    final long timeToKillInMilliSeconds) {
+    this.timeToKillInMilliSeconds = timeToKillInMilliSeconds;
+    this.numberOfUses = numberOfUses;
+    Assert.isTrue(this.numberOfUses > 0, "numberOfUsers must be greater than 0.");
+    Assert.isTrue(this.timeToKillInMilliSeconds > 0,
+      "timeToKillInMilliseconds must be greater than 0.");
 
-    }
+  }
 
-    public boolean isExpired(final TicketState ticketState) {
-        return (ticketState == null)
-            || (ticketState.getCountOfUses() >= this.numberOfUses)
-            || (System.currentTimeMillis() - ticketState.getLastTimeUsed() >= this.timeToKillInMilliSeconds);
-    }
+  public boolean isExpired(final TicketState ticketState) {
+    return (ticketState == null)
+      || (ticketState.getCountOfUses() >= this.numberOfUses)
+      || (System.currentTimeMillis() - ticketState.getLastTimeUsed() >= this.timeToKillInMilliSeconds);
+  }
 }

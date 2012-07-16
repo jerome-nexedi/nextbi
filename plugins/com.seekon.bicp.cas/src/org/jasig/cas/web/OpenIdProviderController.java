@@ -22,15 +22,15 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public final class OpenIdProviderController extends AbstractController {
 
-    @NotNull
-    private String loginUrl;
-    
-    protected ModelAndView handleRequestInternal(final HttpServletRequest request,
-        final HttpServletResponse response) throws Exception {
-        return new ModelAndView("openIdProviderView", "openid_server", this.loginUrl);
-    }
+  @NotNull
+  private String loginUrl;
 
-    public void setLoginUrl(final String loginUrl) {
-        this.loginUrl = loginUrl;
-    }
+  protected ModelAndView handleRequestInternal(final HttpServletRequest request,
+    final HttpServletResponse response) throws Exception {
+    return new ModelAndView("openIdProviderView", "openid_server", this.loginUrl);
+  }
+
+  public void setLoginUrl(final String loginUrl) {
+    this.loginUrl = loginUrl;
+  }
 }

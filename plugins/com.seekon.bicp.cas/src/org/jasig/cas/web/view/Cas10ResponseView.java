@@ -23,28 +23,28 @@ import org.jasig.cas.validation.Assertion;
  */
 public final class Cas10ResponseView extends AbstractCasView {
 
-    /**
-     * Indicate whether this view will be generating the success response or
-     * not.
-     */
-    private boolean successResponse;
+  /**
+   * Indicate whether this view will be generating the success response or
+   * not.
+   */
+  private boolean successResponse;
 
-    protected void renderMergedOutputModel(final Map model,
-        final HttpServletRequest request, final HttpServletResponse response)
-        throws Exception {
-        final Assertion assertion = getAssertionFrom(model);
+  protected void renderMergedOutputModel(final Map model,
+    final HttpServletRequest request, final HttpServletResponse response)
+    throws Exception {
+    final Assertion assertion = getAssertionFrom(model);
 
-        if (this.successResponse) {
-            response.getWriter().print(
-                "yes\n"
-                    + assertion.getChainedAuthentications().get(0).getPrincipal()
-                        .getId() + "\n");
-        } else {
-            response.getWriter().print("no\n\n");
-        }
+    if (this.successResponse) {
+      response.getWriter().print(
+        "yes\n"
+          + assertion.getChainedAuthentications().get(0).getPrincipal().getId()
+          + "\n");
+    } else {
+      response.getWriter().print("no\n\n");
     }
+  }
 
-    public void setSuccessResponse(final boolean successResponse) {
-        this.successResponse = successResponse;
-    }
+  public void setSuccessResponse(final boolean successResponse) {
+    this.successResponse = successResponse;
+  }
 }

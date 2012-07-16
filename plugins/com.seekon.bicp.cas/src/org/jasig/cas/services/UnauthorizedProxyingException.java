@@ -14,23 +14,23 @@ package org.jasig.cas.services;
  */
 public class UnauthorizedProxyingException extends UnauthorizedServiceException {
 
-    /**
-     * Comment for <code>serialVersionUID</code>
-     */
-    private static final long serialVersionUID = -7307803750894078575L;
+  /**
+   * Comment for <code>serialVersionUID</code>
+   */
+  private static final long serialVersionUID = -7307803750894078575L;
 
-    /** The code description. */
-    private static final String CODE = "service.not.authorized.proxy";
+  /** The code description. */
+  private static final String CODE = "service.not.authorized.proxy";
 
-    public UnauthorizedProxyingException() {
-        super(CODE);
-    }
+  public UnauthorizedProxyingException() {
+    super(CODE);
+  }
 
-    public UnauthorizedProxyingException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public UnauthorizedProxyingException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    public UnauthorizedProxyingException(String message) {
-        super(message);
-    }
+  public UnauthorizedProxyingException(String message) {
+    super(message);
+  }
 }

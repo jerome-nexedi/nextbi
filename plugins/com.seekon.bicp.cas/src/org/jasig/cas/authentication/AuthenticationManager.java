@@ -21,23 +21,23 @@ import org.jasig.cas.authentication.principal.Credentials;
  * </p>
  */
 public interface AuthenticationManager {
-    
-    String AUTHENTICATION_METHOD_ATTRIBUTE = "authenticationMethod";
 
-    /**
-     * Method to validate the credentials provided. On successful validation, a
-     * fully populated Authentication object will be returned. Typically this
-     * will involve resolving a principal and providing any additional
-     * attributes, but specifics are left to the individual implementations to
-     * determine. Failure to authenticate is considered an exceptional case, and
-     * an AuthenticationException is thrown.
-     * 
-     * @param credentials The credentials provided for authentication.
-     * @return fully populated Authentication object.
-     * @throws AuthenticationException if unable to determine validity of
-     * credentials or there is an extenuating circumstance related to
-     * credentials (i.e. Account locked).
-     */
-    Authentication authenticate(final Credentials credentials)
-        throws AuthenticationException;
+  String AUTHENTICATION_METHOD_ATTRIBUTE = "authenticationMethod";
+
+  /**
+   * Method to validate the credentials provided. On successful validation, a
+   * fully populated Authentication object will be returned. Typically this
+   * will involve resolving a principal and providing any additional
+   * attributes, but specifics are left to the individual implementations to
+   * determine. Failure to authenticate is considered an exceptional case, and
+   * an AuthenticationException is thrown.
+   * 
+   * @param credentials The credentials provided for authentication.
+   * @return fully populated Authentication object.
+   * @throws AuthenticationException if unable to determine validity of
+   * credentials or there is an extenuating circumstance related to
+   * credentials (i.e. Account locked).
+   */
+  Authentication authenticate(final Credentials credentials)
+    throws AuthenticationException;
 }

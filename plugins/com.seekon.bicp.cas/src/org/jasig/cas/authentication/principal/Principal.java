@@ -27,15 +27,15 @@ import java.util.Map;
  */
 public interface Principal extends Serializable {
 
-    /**
-     * Returns the unique id for the Principal
-     * @return the unique id for the Principal.
-     */
-    String getId();
-    
-    /**
-     * 
-     * @return
-     */
-    Map<String, Object> getAttributes();
+  /**
+   * Returns the unique id for the Principal
+   * @return the unique id for the Principal.
+   */
+  String getId();
+
+  /**
+   * 
+   * @return
+   */
+  Map<String, Object> getAttributes();
 }
