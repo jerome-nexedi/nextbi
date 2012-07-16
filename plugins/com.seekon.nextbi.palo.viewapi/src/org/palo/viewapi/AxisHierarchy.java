@@ -5,8 +5,7 @@ import org.palo.api.ElementNode;
 import org.palo.api.Hierarchy;
 import org.palo.api.subsets.Subset2;
 
-public abstract interface AxisHierarchy
-{
+public abstract interface AxisHierarchy {
   public static final String USE_ALIAS = "com.tensegrity.palo.axis.use_alias";
 
   public abstract Property<?>[] getProperties();
@@ -56,7 +55,8 @@ public abstract interface AxisHierarchy
   public abstract void setAxis(Axis paramAxis);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi.jar
- * Qualified Name:     org.palo.viewapi.AxisHierarchy
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi
+ * .jar Qualified Name: org.palo.viewapi.AxisHierarchy JD-Core Version: 0.5.4
  */

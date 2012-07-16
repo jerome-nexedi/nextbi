@@ -9,12 +9,13 @@ import org.palo.viewapi.User;
 import org.palo.viewapi.View;
 import org.palo.viewapi.exceptions.OperationFailedException;
 
-public abstract interface ViewService extends Service
-{
-  public abstract View createViewAsSubobject(String paramString1, Cube paramCube, AuthUser paramAuthUser, String paramString2, String paramString3)
+public abstract interface ViewService extends Service {
+  public abstract View createViewAsSubobject(String paramString1, Cube paramCube,
+    AuthUser paramAuthUser, String paramString2, String paramString3)
     throws OperationFailedException;
 
-  public abstract View createView(String paramString1, Cube paramCube, AuthUser paramAuthUser, String paramString2, String paramString3)
+  public abstract View createView(String paramString1, Cube paramCube,
+    AuthUser paramAuthUser, String paramString2, String paramString3)
     throws OperationFailedException;
 
   public abstract boolean doesViewExist(String paramString, Cube paramCube);
@@ -27,11 +28,9 @@ public abstract interface ViewService extends Service
 
   public abstract boolean hasViews(Account paramAccount);
 
-  public abstract void save(View paramView)
-    throws OperationFailedException;
+  public abstract void save(View paramView) throws OperationFailedException;
 
-  public abstract void delete(View paramView)
-    throws OperationFailedException;
+  public abstract void delete(View paramView) throws OperationFailedException;
 
   public abstract void add(Role paramRole, View paramView)
     throws OperationFailedException;
@@ -52,7 +51,9 @@ public abstract interface ViewService extends Service
   public abstract void setName(String paramString, View paramView);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi.jar
- * Qualified Name:     org.palo.viewapi.services.ViewService
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi
+ * .jar Qualified Name: org.palo.viewapi.services.ViewService JD-Core Version:
+ * 0.5.4
  */

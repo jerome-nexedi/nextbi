@@ -4,11 +4,14 @@ import org.palo.api.Cube;
 import org.palo.api.parameters.ParameterReceiver;
 import org.palo.viewapi.uimodels.formats.Format;
 
-public abstract interface CubeView extends DomainObject, CubeViewProperties, ParameterReceiver
-{
+public abstract interface CubeView extends DomainObject, CubeViewProperties,
+  ParameterReceiver {
   public static final String SELECTION_AXIS = "selected";
+
   public static final String ROW_AXIS = "rows";
+
   public static final String COLUMN_AXIS = "cols";
+
   public static final String PARAMETER_ELEMENT = "Element";
 
   public abstract Cube getCube();
@@ -56,7 +59,8 @@ public abstract interface CubeView extends DomainObject, CubeViewProperties, Par
   public abstract Format getFormat(String paramString);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi.jar
- * Qualified Name:     org.palo.viewapi.CubeView
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi
+ * .jar Qualified Name: org.palo.viewapi.CubeView JD-Core Version: 0.5.4
  */

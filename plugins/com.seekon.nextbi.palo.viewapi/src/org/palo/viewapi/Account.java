@@ -1,7 +1,6 @@
 package org.palo.viewapi;
 
-public abstract interface Account extends DomainObject
-{
+public abstract interface Account extends DomainObject {
   public abstract String getLoginName();
 
   public abstract String getPassword();
@@ -15,7 +14,8 @@ public abstract interface Account extends DomainObject
   public abstract boolean isLoggedIn();
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi.jar
- * Qualified Name:     org.palo.viewapi.Account
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi
+ * .jar Qualified Name: org.palo.viewapi.Account JD-Core Version: 0.5.4
  */

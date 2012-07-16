@@ -3,8 +3,7 @@ package org.palo.viewapi;
 import org.palo.api.Element;
 import org.palo.api.ElementNode;
 
-public abstract interface LocalFilter
-{
+public abstract interface LocalFilter {
   public abstract boolean hasVisibleElements();
 
   public abstract void clear();
@@ -26,7 +25,8 @@ public abstract interface LocalFilter
   public abstract int indexOf(ElementNode paramElementNode);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi.jar
- * Qualified Name:     org.palo.viewapi.LocalFilter
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi
+ * .jar Qualified Name: org.palo.viewapi.LocalFilter JD-Core Version: 0.5.4
  */
