@@ -37,137 +37,134 @@ import mondrian.rolap.*;
  *          //open/mondrian/src/main/mondrian/rolap/agg/AggregationKey.java#6 $
  */
 public class AggregationKey {
-	/**
-	 * This is needed because for a Virtual Cube: two CellRequests could have the
-	 * same BitKey but have different underlying base cubes. Without this, one get
-	 * the result in the SegmentArrayQuerySpec addMeasure Util.assertTrue being
-	 * triggered (which is what happened).
-	 */
-	private final RolapStar star;
+  /**
+   * This is needed because for a Virtual Cube: two CellRequests could have the
+   * same BitKey but have different underlying base cubes. Without this, one get
+   * the result in the SegmentArrayQuerySpec addMeasure Util.assertTrue being
+   * triggered (which is what happened).
+   */
+  private final RolapStar star;
 
-	private final BitKey constrainedColumnsBitKey;
+  private final BitKey constrainedColumnsBitKey;
 
-	/*
-	 * This map must be deternimistic; otherwise different runs generate SQL
-	 * statements in different orders.
-	 * 
-	 * TODO: change this to SortedMap to speed up comparison.
-	 */
-	private final Map<BitKey, StarPredicate> compoundPredicateMap;
+  /*
+   * This map must be deternimistic; otherwise different runs generate SQL
+   * statements in different orders.
+   * 
+   * TODO: change this to SortedMap to speed up comparison.
+   */
+  private final Map<BitKey, StarPredicate> compoundPredicateMap;
 
-	private int hashCode;
+  private int hashCode;
 
-	/**
-	 * Creates an AggregationKey.
-	 * 
-	 * @param request
-	 *          Cell request
-	 */
-	public AggregationKey(CellRequest request) {
-		this.constrainedColumnsBitKey = request.getConstrainedColumnsBitKey();
-		this.star = request.getMeasure().getStar();
-		this.compoundPredicateMap = request.getCompoundPredicateMap();
-	}
+  /**
+   * Creates an AggregationKey.
+   * 
+   * @param request
+   *          Cell request
+   */
+  public AggregationKey(CellRequest request) {
+    this.constrainedColumnsBitKey = request.getConstrainedColumnsBitKey();
+    this.star = request.getMeasure().getStar();
+    this.compoundPredicateMap = request.getCompoundPredicateMap();
+  }
 
-	public int computeHashCode() {
-		int retCode = constrainedColumnsBitKey.hashCode();
-		retCode = Util.hash(retCode, star);
-		if (compoundPredicateMap != null) {
-			for (BitKey bitKey : compoundPredicateMap.keySet()) {
-				retCode = Util.hash(retCode, bitKey.hashCode());
-			}
-		}
-		return retCode;
-	}
+  public int computeHashCode() {
+    int retCode = constrainedColumnsBitKey.hashCode();
+    retCode = Util.hash(retCode, star);
+    if (compoundPredicateMap != null) {
+      for (BitKey bitKey : compoundPredicateMap.keySet()) {
+        retCode = Util.hash(retCode, bitKey.hashCode());
+      }
+    }
+    return retCode;
+  }
 
-	public int hashCode() {
-		if (hashCode == 0) {
-			// Compute hash code on first use. It is expensive to compute, and
-			// not always required.
-			hashCode = computeHashCode();
-		}
-		return hashCode;
-	}
+  public int hashCode() {
+    if (hashCode == 0) {
+      // Compute hash code on first use. It is expensive to compute, and
+      // not always required.
+      hashCode = computeHashCode();
+    }
+    return hashCode;
+  }
 
-	public boolean equals(Object other) {
-		if (!(other instanceof AggregationKey)) {
-			return false;
-		}
-		final AggregationKey that = (AggregationKey) other;
-		return constrainedColumnsBitKey.equals(that.constrainedColumnsBitKey)
-				&& star.equals(that.star)
-				&& equal(compoundPredicateMap, that.compoundPredicateMap);
-	}
+  public boolean equals(Object other) {
+    if (!(other instanceof AggregationKey)) {
+      return false;
+    }
+    final AggregationKey that = (AggregationKey) other;
+    return constrainedColumnsBitKey.equals(that.constrainedColumnsBitKey)
+      && star.equals(that.star)
+      && equal(compoundPredicateMap, that.compoundPredicateMap);
+  }
 
-	/**
-	 * Two compound predicates are equal.
-	 * 
-	 * @param map1
-	 *          First compound predicate map
-	 * @param map2
-	 *          Second compound predicate map
-	 * @return Whether compound predicate maps are equal
-	 */
-	private static boolean equal(final Map<BitKey, StarPredicate> map1,
-			final Map<BitKey, StarPredicate> map2) {
-		if (map1 == null) {
-			return map2 == null;
-		}
-		if (map2 == null) {
-			return false;
-		}
-		if (map1.size() != map2.size()) {
-			return false;
-		}
-		for (BitKey bitKey : map1.keySet()) {
-			StarPredicate thisPred = map1.get(bitKey);
-			StarPredicate otherPred = map2.get(bitKey);
-			if (thisPred == null || otherPred == null
-					|| !thisPred.equalConstraint(otherPred)) {
-				return false;
-			}
-		}
-		return true;
-	}
+  /**
+   * Two compound predicates are equal.
+   * 
+   * @param map1
+   *          First compound predicate map
+   * @param map2
+   *          Second compound predicate map
+   * @return Whether compound predicate maps are equal
+   */
+  private static boolean equal(final Map<BitKey, StarPredicate> map1,
+    final Map<BitKey, StarPredicate> map2) {
+    if (map1 == null) {
+      return map2 == null;
+    }
+    if (map2 == null) {
+      return false;
+    }
+    if (map1.size() != map2.size()) {
+      return false;
+    }
+    for (BitKey bitKey : map1.keySet()) {
+      StarPredicate thisPred = map1.get(bitKey);
+      StarPredicate otherPred = map2.get(bitKey);
+      if (thisPred == null || otherPred == null
+        || !thisPred.equalConstraint(otherPred)) {
+        return false;
+      }
+    }
+    return true;
+  }
 
-	public String toString() {
-		return star.getFactTable().getTableName()
-				+ " "
-				+ constrainedColumnsBitKey.toString()
-				+ "\n"
-				+ (compoundPredicateMap == null ? "{}" : compoundPredicateMap
-						.toString());
-	}
+  public String toString() {
+    return star.getFactTable().getTableName() + " "
+      + constrainedColumnsBitKey.toString() + "\n"
+      + (compoundPredicateMap == null ? "{}" : compoundPredicateMap.toString());
+  }
 
-	/**
-	 * Returns the bitkey of columns that constrain this aggregation.
-	 * 
-	 * @return Bitkey of contraining columns
-	 */
-	public final BitKey getConstrainedColumnsBitKey() {
-		return constrainedColumnsBitKey;
-	}
+  /**
+   * Returns the bitkey of columns that constrain this aggregation.
+   * 
+   * @return Bitkey of contraining columns
+   */
+  public final BitKey getConstrainedColumnsBitKey() {
+    return constrainedColumnsBitKey;
+  }
 
-	/**
-	 * Returns the star.
-	 * 
-	 * @return Star
-	 */
-	public final RolapStar getStar() {
-		return star;
-	}
+  /**
+   * Returns the star.
+   * 
+   * @return Star
+   */
+  public final RolapStar getStar() {
+    return star;
+  }
 
-	/**
-	 * Returns the list of compound predicates.
-	 * 
-	 * @return list of predicates
-	 */
-	public List<StarPredicate> getCompoundPredicateList() {
-		if (compoundPredicateMap == null) {
-			return Collections.emptyList();
-		}
-		return new ArrayList<StarPredicate>(compoundPredicateMap.values());
-	}
+  /**
+   * Returns the list of compound predicates.
+   * 
+   * @return list of predicates
+   */
+  public List<StarPredicate> getCompoundPredicateList() {
+    if (compoundPredicateMap == null) {
+      return Collections.emptyList();
+    }
+    return new ArrayList<StarPredicate>(compoundPredicateMap.values());
+  }
 
 }
 

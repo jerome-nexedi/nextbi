@@ -20,105 +20,104 @@ import mondrian.olap.*;
  *          //open/mondrian/src/main/mondrian/olap/type/DimensionType.java#14 $
  */
 public class DimensionType implements Type {
-	private final Dimension dimension;
-	private final String digest;
+  private final Dimension dimension;
 
-	public static final DimensionType Unknown = new DimensionType(null);
+  private final String digest;
 
-	/**
-	 * Creates a type representing a dimension.
-	 * 
-	 * @param dimension
-	 *          Dimension that values of this type must belong to, or null if the
-	 *          dimension is unknown
-	 */
-	public DimensionType(Dimension dimension) {
-		this.dimension = dimension;
-		StringBuilder buf = new StringBuilder("DimensionType<");
-		if (dimension != null) {
-			buf.append("dimension=").append(dimension.getUniqueName());
-		}
-		buf.append(">");
-		this.digest = buf.toString();
-	}
+  public static final DimensionType Unknown = new DimensionType(null);
 
-	public static DimensionType forDimension(Dimension dimension) {
-		return new DimensionType(dimension);
-	}
+  /**
+   * Creates a type representing a dimension.
+   * 
+   * @param dimension
+   *          Dimension that values of this type must belong to, or null if the
+   *          dimension is unknown
+   */
+  public DimensionType(Dimension dimension) {
+    this.dimension = dimension;
+    StringBuilder buf = new StringBuilder("DimensionType<");
+    if (dimension != null) {
+      buf.append("dimension=").append(dimension.getUniqueName());
+    }
+    buf.append(">");
+    this.digest = buf.toString();
+  }
 
-	public static DimensionType forType(Type type) {
-		return new DimensionType(type.getDimension());
-	}
+  public static DimensionType forDimension(Dimension dimension) {
+    return new DimensionType(dimension);
+  }
 
-	public boolean usesDimension(Dimension dimension, boolean definitely) {
-		// REVIEW: Should be '!definitely'?
-		return this.dimension == dimension
-				|| (definitely && this.dimension == null);
-	}
+  public static DimensionType forType(Type type) {
+    return new DimensionType(type.getDimension());
+  }
 
-	public boolean usesHierarchy(Hierarchy hierarchy, boolean definitely) {
-		// If hierarchy belongs to this type's dimension, we might use it.
-		return hierarchy.getDimension() == this.dimension && !definitely;
-	}
+  public boolean usesDimension(Dimension dimension, boolean definitely) {
+    // REVIEW: Should be '!definitely'?
+    return this.dimension == dimension || (definitely && this.dimension == null);
+  }
 
-	public Hierarchy getHierarchy() {
-		return dimension == null ? null
-				: dimension.getHierarchies().length > 1 ? null : dimension
-						.getHierarchies()[0];
-	}
+  public boolean usesHierarchy(Hierarchy hierarchy, boolean definitely) {
+    // If hierarchy belongs to this type's dimension, we might use it.
+    return hierarchy.getDimension() == this.dimension && !definitely;
+  }
 
-	public Level getLevel() {
-		return null;
-	}
+  public Hierarchy getHierarchy() {
+    return dimension == null ? null : dimension.getHierarchies().length > 1 ? null
+      : dimension.getHierarchies()[0];
+  }
 
-	public Dimension getDimension() {
-		return dimension;
-	}
+  public Level getLevel() {
+    return null;
+  }
 
-	public int hashCode() {
-		return digest.hashCode();
-	}
+  public Dimension getDimension() {
+    return dimension;
+  }
 
-	public boolean equals(Object obj) {
-		if (obj instanceof DimensionType) {
-			DimensionType that = (DimensionType) obj;
-			return Util.equals(this.getDimension(), that.getDimension());
-		}
-		return false;
-	}
+  public int hashCode() {
+    return digest.hashCode();
+  }
 
-	public String toString() {
-		return digest;
-	}
+  public boolean equals(Object obj) {
+    if (obj instanceof DimensionType) {
+      DimensionType that = (DimensionType) obj;
+      return Util.equals(this.getDimension(), that.getDimension());
+    }
+    return false;
+  }
 
-	public Type computeCommonType(Type type, int[] conversionCount) {
-		if (conversionCount != null && type instanceof HierarchyType) {
-			HierarchyType hierarchyType = (HierarchyType) type;
-			if (Util.equals(hierarchyType.getDimension(), dimension)) {
-				++conversionCount[0];
-				return this;
-			}
-			return null;
-		}
-		if (!(type instanceof DimensionType)) {
-			return null;
-		}
-		DimensionType that = (DimensionType) type;
-		if (this.getDimension() != null
-				&& this.getDimension().equals(that.getDimension())) {
-			return new DimensionType(this.getDimension());
-		}
-		return DimensionType.Unknown;
-	}
+  public String toString() {
+    return digest;
+  }
 
-	public boolean isInstance(Object value) {
-		return value instanceof Dimension
-				&& (dimension == null || value.equals(dimension));
-	}
+  public Type computeCommonType(Type type, int[] conversionCount) {
+    if (conversionCount != null && type instanceof HierarchyType) {
+      HierarchyType hierarchyType = (HierarchyType) type;
+      if (Util.equals(hierarchyType.getDimension(), dimension)) {
+        ++conversionCount[0];
+        return this;
+      }
+      return null;
+    }
+    if (!(type instanceof DimensionType)) {
+      return null;
+    }
+    DimensionType that = (DimensionType) type;
+    if (this.getDimension() != null
+      && this.getDimension().equals(that.getDimension())) {
+      return new DimensionType(this.getDimension());
+    }
+    return DimensionType.Unknown;
+  }
 
-	public int getArity() {
-		return 1;
-	}
+  public boolean isInstance(Object value) {
+    return value instanceof Dimension
+      && (dimension == null || value.equals(dimension));
+  }
+
+  public int getArity() {
+    return 1;
+  }
 }
 
 // End DimensionType.java

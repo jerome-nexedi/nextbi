@@ -26,16 +26,16 @@ import javax.sql.DataSource;
  */
 public interface DataSourceResolver {
 
-	/**
-	 * Converts a data source name to a JDBC data source object.
-	 * 
-	 * @param dataSourceName
-	 *          Data source name
-	 * @return JDBC data source, or null if not found
-	 * @throws Exception
-	 *           on error
-	 */
-	DataSource lookup(String dataSourceName) throws Exception;
+  /**
+   * Converts a data source name to a JDBC data source object.
+   * 
+   * @param dataSourceName
+   *          Data source name
+   * @return JDBC data source, or null if not found
+   * @throws Exception
+   *           on error
+   */
+  DataSource lookup(String dataSourceName) throws Exception;
 
 }
 

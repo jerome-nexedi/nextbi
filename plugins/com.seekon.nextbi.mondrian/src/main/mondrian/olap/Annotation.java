@@ -19,19 +19,19 @@ package mondrian.olap;
  * @author jhyde
  */
 public interface Annotation {
-	/**
-	 * Returns the name of this annotation. Must be unique within its element.
-	 * 
-	 * @return Annotation name
-	 */
-	String getName();
+  /**
+   * Returns the name of this annotation. Must be unique within its element.
+   * 
+   * @return Annotation name
+   */
+  String getName();
 
-	/**
-	 * Returns the value of this annotation. Usually a string.
-	 * 
-	 * @return Annotation value
-	 */
-	Object getValue();
+  /**
+   * Returns the value of this annotation. Usually a string.
+   * 
+   * @return Annotation value
+   */
+  Object getValue();
 }
 
 // End Annotation.java

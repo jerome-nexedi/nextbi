@@ -29,30 +29,30 @@ import mondrian.olap.Member;
  * @since Mar 23, 2006
  */
 public class MemberHierarchyFunDef extends FunDefBase {
-	static final MemberHierarchyFunDef instance = new MemberHierarchyFunDef();
+  static final MemberHierarchyFunDef instance = new MemberHierarchyFunDef();
 
-	private MemberHierarchyFunDef() {
-		super("Hierarchy", "Returns a member's hierarchy.", "phm");
-	}
+  private MemberHierarchyFunDef() {
+    super("Hierarchy", "Returns a member's hierarchy.", "phm");
+  }
 
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
-		final MemberCalc memberCalc = compiler.compileMember(call.getArg(0));
-		return new CalcImpl(call, memberCalc);
-	}
+  public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    final MemberCalc memberCalc = compiler.compileMember(call.getArg(0));
+    return new CalcImpl(call, memberCalc);
+  }
 
-	public static class CalcImpl extends AbstractHierarchyCalc {
-		private final MemberCalc memberCalc;
+  public static class CalcImpl extends AbstractHierarchyCalc {
+    private final MemberCalc memberCalc;
 
-		public CalcImpl(Exp exp, MemberCalc memberCalc) {
-			super(exp, new Calc[] { memberCalc });
-			this.memberCalc = memberCalc;
-		}
+    public CalcImpl(Exp exp, MemberCalc memberCalc) {
+      super(exp, new Calc[] { memberCalc });
+      this.memberCalc = memberCalc;
+    }
 
-		public Hierarchy evaluateHierarchy(Evaluator evaluator) {
-			Member member = memberCalc.evaluateMember(evaluator);
-			return member.getHierarchy();
-		}
-	}
+    public Hierarchy evaluateHierarchy(Evaluator evaluator) {
+      Member member = memberCalc.evaluateMember(evaluator);
+      return member.getHierarchy();
+    }
+  }
 }
 
 // End MemberHierarchyFunDef.java

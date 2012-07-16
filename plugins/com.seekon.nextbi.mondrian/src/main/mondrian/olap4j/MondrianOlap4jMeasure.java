@@ -25,45 +25,44 @@ import org.olap4j.metadata.Measure;
  * @since Dec 10, 2007
  */
 class MondrianOlap4jMeasure extends MondrianOlap4jMember implements Measure {
-	MondrianOlap4jMeasure(MondrianOlap4jSchema olap4jSchema, RolapMeasure measure) {
-		super(olap4jSchema, measure);
-	}
+  MondrianOlap4jMeasure(MondrianOlap4jSchema olap4jSchema, RolapMeasure measure) {
+    super(olap4jSchema, measure);
+  }
 
-	public Aggregator getAggregator() {
-		if (!(member instanceof RolapStoredMeasure)) {
-			return Aggregator.UNKNOWN;
-		}
-		final RolapAggregator aggregator = ((RolapStoredMeasure) member)
-				.getAggregator();
-		if (aggregator == RolapAggregator.Avg) {
-			return Aggregator.AVG;
-		} else if (aggregator == RolapAggregator.Count) {
-			return Aggregator.COUNT;
-		} else if (aggregator == RolapAggregator.DistinctCount) {
-			return Aggregator.UNKNOWN;
-		} else if (aggregator == RolapAggregator.Max) {
-			return Aggregator.MAX;
-		} else if (aggregator == RolapAggregator.Min) {
-			return Aggregator.MIN;
-		} else if (aggregator == RolapAggregator.Sum) {
-			return Aggregator.SUM;
-		} else {
-			return Aggregator.UNKNOWN;
-		}
-	}
+  public Aggregator getAggregator() {
+    if (!(member instanceof RolapStoredMeasure)) {
+      return Aggregator.UNKNOWN;
+    }
+    final RolapAggregator aggregator = ((RolapStoredMeasure) member).getAggregator();
+    if (aggregator == RolapAggregator.Avg) {
+      return Aggregator.AVG;
+    } else if (aggregator == RolapAggregator.Count) {
+      return Aggregator.COUNT;
+    } else if (aggregator == RolapAggregator.DistinctCount) {
+      return Aggregator.UNKNOWN;
+    } else if (aggregator == RolapAggregator.Max) {
+      return Aggregator.MAX;
+    } else if (aggregator == RolapAggregator.Min) {
+      return Aggregator.MIN;
+    } else if (aggregator == RolapAggregator.Sum) {
+      return Aggregator.SUM;
+    } else {
+      return Aggregator.UNKNOWN;
+    }
+  }
 
-	public Datatype getDatatype() {
-		final String datatype = (String) member.getPropertyValue(Property.DATATYPE
-				.getName());
-		if (datatype != null) {
-			if (datatype.equals("Integer")) {
-				return Datatype.INTEGER;
-			} else if (datatype.equals("Numeric")) {
-				return Datatype.DOUBLE;
-			}
-		}
-		return Datatype.STRING;
-	}
+  public Datatype getDatatype() {
+    final String datatype = (String) member.getPropertyValue(Property.DATATYPE
+      .getName());
+    if (datatype != null) {
+      if (datatype.equals("Integer")) {
+        return Datatype.INTEGER;
+      } else if (datatype.equals("Numeric")) {
+        return Datatype.DOUBLE;
+      }
+    }
+    return Datatype.STRING;
+  }
 }
 
 // End MondrianOlap4jMeasure.java

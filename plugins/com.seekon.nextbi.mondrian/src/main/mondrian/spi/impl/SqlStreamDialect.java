@@ -22,18 +22,18 @@ import java.sql.SQLException;
  */
 public class SqlStreamDialect extends LucidDbDialect {
 
-	public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
-			SqlStreamDialect.class, DatabaseProduct.SQLSTREAM);
+  public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
+    SqlStreamDialect.class, DatabaseProduct.SQLSTREAM);
 
-	/**
-	 * Creates a SqlStreamDialect.
-	 * 
-	 * @param connection
-	 *          Connection
-	 */
-	public SqlStreamDialect(Connection connection) throws SQLException {
-		super(connection);
-	}
+  /**
+   * Creates a SqlStreamDialect.
+   * 
+   * @param connection
+   *          Connection
+   */
+  public SqlStreamDialect(Connection connection) throws SQLException {
+    super(connection);
+  }
 }
 
 // End SqlStreamDialect.java

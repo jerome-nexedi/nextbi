@@ -27,31 +27,31 @@ import java.util.List;
  * @version $Id: //open/mondrian/src/main/mondrian/rolap/agg/QuerySpec.java#8 $
  */
 public interface QuerySpec {
-	RolapStar getStar();
+  RolapStar getStar();
 
-	int getMeasureCount();
+  int getMeasureCount();
 
-	RolapStar.Measure getMeasure(int i);
+  RolapStar.Measure getMeasure(int i);
 
-	String getMeasureAlias(int i);
+  String getMeasureAlias(int i);
 
-	RolapStar.Column[] getColumns();
+  RolapStar.Column[] getColumns();
 
-	String getColumnAlias(int i);
+  String getColumnAlias(int i);
 
-	/**
-	 * Returns the predicate on the <code>i</code>th column.
-	 * 
-	 * <p>
-	 * If the column is unconstrained, returns {@link LiteralStarPredicate}(true).
-	 * 
-	 * @param i
-	 *          Column ordinal
-	 * @return Constraint on column
-	 */
-	StarColumnPredicate getColumnPredicate(int i);
+  /**
+   * Returns the predicate on the <code>i</code>th column.
+   * 
+   * <p>
+   * If the column is unconstrained, returns {@link LiteralStarPredicate}(true).
+   * 
+   * @param i
+   *          Column ordinal
+   * @return Constraint on column
+   */
+  StarColumnPredicate getColumnPredicate(int i);
 
-	Pair<String, List<SqlStatement.Type>> generateSqlQuery();
+  Pair<String, List<SqlStatement.Type>> generateSqlQuery();
 }
 
 // End QuerySpec.java

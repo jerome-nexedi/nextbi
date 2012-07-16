@@ -30,131 +30,133 @@ import java.util.Map;
  *          .java#24 $
  */
 class SegmentArrayQuerySpec extends AbstractQuerySpec {
-	private final List<Segment> segments;
-	private final Segment segment0;
-	private final GroupingSetsList groupingSetsList;
+  private final List<Segment> segments;
 
-	/*
-	 * Compound member predicates. Each list constrains one dimension.
-	 */
-	private final List<StarPredicate> compoundPredicateList;
+  private final Segment segment0;
 
-	/**
-	 * Creates a SegmentArrayQuerySpec.
-	 * 
-	 * @param groupingSetsList
-	 *          Collection of grouping sets
-	 * @param compoundPredicateList
-	 *          list of predicates representing the compound member constraints
-	 */
-	SegmentArrayQuerySpec(GroupingSetsList groupingSetsList,
-			List<StarPredicate> compoundPredicateList) {
-		super(groupingSetsList.getStar(), false);
-		this.segments = groupingSetsList.getDefaultSegments();
-		this.segment0 = segments.get(0);
-		this.groupingSetsList = groupingSetsList;
-		this.compoundPredicateList = compoundPredicateList;
-		assert isValid(true);
-	}
+  private final GroupingSetsList groupingSetsList;
 
-	/**
-	 * Returns whether this query specification is valid, or throws if invalid and
-	 * <code>fail</code> is true.
-	 * 
-	 * @param fail
-	 *          Whether to throw if invalid
-	 * @return Whether this query specification is valid
-	 */
-	private boolean isValid(boolean fail) {
-		assert segments.size() > 0;
-		for (Segment segment : segments) {
-			if (segment.aggregation != segment0.aggregation) {
-				assert !fail;
-				return false;
-			}
-			int n = segment.axes.length;
-			if (n != segment0.axes.length) {
-				assert !fail;
-				return false;
-			}
-			for (int j = 0; j < segment.axes.length; j++) {
-				// We only require that the two arrays have the same
-				// contents, we but happen to know they are the same array,
-				// because we constructed them at the same time.
-				if (segment.axes[j].getPredicate() != segment0.axes[j].getPredicate()) {
-					assert !fail;
-					return false;
-				}
-			}
-		}
-		return true;
-	}
+  /*
+   * Compound member predicates. Each list constrains one dimension.
+   */
+  private final List<StarPredicate> compoundPredicateList;
 
-	public int getMeasureCount() {
-		return segments.size();
-	}
+  /**
+   * Creates a SegmentArrayQuerySpec.
+   * 
+   * @param groupingSetsList
+   *          Collection of grouping sets
+   * @param compoundPredicateList
+   *          list of predicates representing the compound member constraints
+   */
+  SegmentArrayQuerySpec(GroupingSetsList groupingSetsList,
+    List<StarPredicate> compoundPredicateList) {
+    super(groupingSetsList.getStar(), false);
+    this.segments = groupingSetsList.getDefaultSegments();
+    this.segment0 = segments.get(0);
+    this.groupingSetsList = groupingSetsList;
+    this.compoundPredicateList = compoundPredicateList;
+    assert isValid(true);
+  }
 
-	public RolapStar.Measure getMeasure(final int i) {
-		return segments.get(i).measure;
-	}
+  /**
+   * Returns whether this query specification is valid, or throws if invalid and
+   * <code>fail</code> is true.
+   * 
+   * @param fail
+   *          Whether to throw if invalid
+   * @return Whether this query specification is valid
+   */
+  private boolean isValid(boolean fail) {
+    assert segments.size() > 0;
+    for (Segment segment : segments) {
+      if (segment.aggregation != segment0.aggregation) {
+        assert !fail;
+        return false;
+      }
+      int n = segment.axes.length;
+      if (n != segment0.axes.length) {
+        assert !fail;
+        return false;
+      }
+      for (int j = 0; j < segment.axes.length; j++) {
+        // We only require that the two arrays have the same
+        // contents, we but happen to know they are the same array,
+        // because we constructed them at the same time.
+        if (segment.axes[j].getPredicate() != segment0.axes[j].getPredicate()) {
+          assert !fail;
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 
-	public String getMeasureAlias(final int i) {
-		return "m" + Integer.toString(i);
-	}
+  public int getMeasureCount() {
+    return segments.size();
+  }
 
-	public RolapStar.Column[] getColumns() {
-		return segment0.aggregation.getColumns();
-	}
+  public RolapStar.Measure getMeasure(final int i) {
+    return segments.get(i).measure;
+  }
 
-	/**
-	 * SqlQuery relies on "c" and index. All this should go into SqlQuery!
-	 * 
-	 * @see mondrian.rolap.sql.SqlQuery#addOrderBy
-	 */
-	public String getColumnAlias(final int i) {
-		return "c" + Integer.toString(i);
-	}
+  public String getMeasureAlias(final int i) {
+    return "m" + Integer.toString(i);
+  }
 
-	public StarColumnPredicate getColumnPredicate(final int i) {
-		return segment0.axes[i].getPredicate();
-	}
+  public RolapStar.Column[] getColumns() {
+    return segment0.aggregation.getColumns();
+  }
 
-	protected List<StarPredicate> getPredicateList() {
-		if (compoundPredicateList == null) {
-			return super.getPredicateList();
-		} else {
-			return compoundPredicateList;
-		}
-	}
+  /**
+   * SqlQuery relies on "c" and index. All this should go into SqlQuery!
+   * 
+   * @see mondrian.rolap.sql.SqlQuery#addOrderBy
+   */
+  public String getColumnAlias(final int i) {
+    return "c" + Integer.toString(i);
+  }
 
-	protected void addGroupingFunction(SqlQuery sqlQuery) {
-		List<RolapStar.Column> list = groupingSetsList.getRollupColumns();
-		for (RolapStar.Column column : list) {
-			sqlQuery.addGroupingFunction(column.generateExprString(sqlQuery));
-		}
-	}
+  public StarColumnPredicate getColumnPredicate(final int i) {
+    return segment0.axes[i].getPredicate();
+  }
 
-	protected void addGroupingSets(SqlQuery sqlQuery,
-			Map<String, String> groupingSetsAliases) {
-		List<RolapStar.Column[]> groupingSetsColumns = groupingSetsList
-				.getGroupingSetsColumns();
-		for (RolapStar.Column[] groupingSetsColumn : groupingSetsColumns) {
-			ArrayList<String> groupingColumnsExpr = new ArrayList<String>();
-			for (RolapStar.Column aColumn : groupingSetsColumn) {
-				final String columnExpr = aColumn.generateExprString(sqlQuery);
-				if (groupingSetsAliases.containsKey(columnExpr)) {
-					groupingColumnsExpr.add(groupingSetsAliases.get(columnExpr));
-				} else {
-					groupingColumnsExpr.add(columnExpr);
-				}
-			}
-			sqlQuery.addGroupingSet(groupingColumnsExpr);
-		}
-	}
+  protected List<StarPredicate> getPredicateList() {
+    if (compoundPredicateList == null) {
+      return super.getPredicateList();
+    } else {
+      return compoundPredicateList;
+    }
+  }
 
-	protected boolean isAggregate() {
-		return true;
-	}
+  protected void addGroupingFunction(SqlQuery sqlQuery) {
+    List<RolapStar.Column> list = groupingSetsList.getRollupColumns();
+    for (RolapStar.Column column : list) {
+      sqlQuery.addGroupingFunction(column.generateExprString(sqlQuery));
+    }
+  }
+
+  protected void addGroupingSets(SqlQuery sqlQuery,
+    Map<String, String> groupingSetsAliases) {
+    List<RolapStar.Column[]> groupingSetsColumns = groupingSetsList
+      .getGroupingSetsColumns();
+    for (RolapStar.Column[] groupingSetsColumn : groupingSetsColumns) {
+      ArrayList<String> groupingColumnsExpr = new ArrayList<String>();
+      for (RolapStar.Column aColumn : groupingSetsColumn) {
+        final String columnExpr = aColumn.generateExprString(sqlQuery);
+        if (groupingSetsAliases.containsKey(columnExpr)) {
+          groupingColumnsExpr.add(groupingSetsAliases.get(columnExpr));
+        } else {
+          groupingColumnsExpr.add(columnExpr);
+        }
+      }
+      sqlQuery.addGroupingSet(groupingColumnsExpr);
+    }
+  }
+
+  protected boolean isAggregate() {
+    return true;
+  }
 }
 
 // End SegmentArrayQuerySpec.java

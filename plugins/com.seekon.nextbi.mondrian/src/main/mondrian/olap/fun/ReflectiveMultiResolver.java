@@ -28,48 +28,47 @@ import java.lang.reflect.InvocationTargetException;
  * @since Mar 23, 2006
  */
 public class ReflectiveMultiResolver extends MultiResolver {
-	private final Constructor constructor;
-	private final String[] reservedWords;
+  private final Constructor constructor;
 
-	public ReflectiveMultiResolver(String name, String signature,
-			String description, String[] signatures, Class clazz) {
-		this(name, signature, description, signatures, clazz, null);
-	}
+  private final String[] reservedWords;
 
-	public ReflectiveMultiResolver(String name, String signature,
-			String description, String[] signatures, Class clazz,
-			String[] reservedWords) {
-		super(name, signature, description, signatures);
-		try {
-			this.constructor = clazz.getConstructor(new Class[] { FunDef.class });
-		} catch (NoSuchMethodException e) {
-			throw Util.newInternal(e, "Error while registering resolver class "
-					+ clazz);
-		}
-		this.reservedWords = reservedWords;
-	}
+  public ReflectiveMultiResolver(String name, String signature, String description,
+    String[] signatures, Class clazz) {
+    this(name, signature, description, signatures, clazz, null);
+  }
 
-	protected FunDef createFunDef(Exp[] args, FunDef dummyFunDef) {
-		try {
-			return (FunDef) constructor.newInstance(new Object[] { dummyFunDef });
-		} catch (InstantiationException e) {
-			throw Util.newInternal(e, "Error while instantiating FunDef '"
-					+ getSignature() + "'");
-		} catch (IllegalAccessException e) {
-			throw Util.newInternal(e, "Error while instantiating FunDef '"
-					+ getSignature() + "'");
-		} catch (InvocationTargetException e) {
-			throw Util.newInternal(e, "Error while instantiating FunDef '"
-					+ getSignature() + "'");
-		}
-	}
+  public ReflectiveMultiResolver(String name, String signature, String description,
+    String[] signatures, Class clazz, String[] reservedWords) {
+    super(name, signature, description, signatures);
+    try {
+      this.constructor = clazz.getConstructor(new Class[] { FunDef.class });
+    } catch (NoSuchMethodException e) {
+      throw Util.newInternal(e, "Error while registering resolver class " + clazz);
+    }
+    this.reservedWords = reservedWords;
+  }
 
-	public String[] getReservedWords() {
-		if (reservedWords != null) {
-			return reservedWords;
-		}
-		return super.getReservedWords();
-	}
+  protected FunDef createFunDef(Exp[] args, FunDef dummyFunDef) {
+    try {
+      return (FunDef) constructor.newInstance(new Object[] { dummyFunDef });
+    } catch (InstantiationException e) {
+      throw Util.newInternal(e, "Error while instantiating FunDef '"
+        + getSignature() + "'");
+    } catch (IllegalAccessException e) {
+      throw Util.newInternal(e, "Error while instantiating FunDef '"
+        + getSignature() + "'");
+    } catch (InvocationTargetException e) {
+      throw Util.newInternal(e, "Error while instantiating FunDef '"
+        + getSignature() + "'");
+    }
+  }
+
+  public String[] getReservedWords() {
+    if (reservedWords != null) {
+      return reservedWords;
+    }
+    return super.getReservedWords();
+  }
 }
 
 // End ReflectiveMultiResolver.java

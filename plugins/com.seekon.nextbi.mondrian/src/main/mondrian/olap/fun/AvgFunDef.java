@@ -23,35 +23,34 @@ import mondrian.mdx.ResolvedFunCall;
  * @since Mar 23, 2006
  */
 class AvgFunDef extends AbstractAggregateFunDef {
-	static final ReflectiveMultiResolver Resolver = new ReflectiveMultiResolver(
-			"Avg",
-			"Avg(<Set>[, <Numeric Expression>])",
-			"Returns the average value of a numeric expression evaluated over a set.",
-			new String[] { "fnx", "fnxn" }, AvgFunDef.class);
+  static final ReflectiveMultiResolver Resolver = new ReflectiveMultiResolver("Avg",
+    "Avg(<Set>[, <Numeric Expression>])",
+    "Returns the average value of a numeric expression evaluated over a set.",
+    new String[] { "fnx", "fnxn" }, AvgFunDef.class);
 
-	public AvgFunDef(FunDef dummyFunDef) {
-		super(dummyFunDef);
-	}
+  public AvgFunDef(FunDef dummyFunDef) {
+    super(dummyFunDef);
+  }
 
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
-		final ListCalc listCalc = compiler.compileList(call.getArg(0));
-		final Calc calc = call.getArgCount() > 1 ? compiler.compileScalar(
-				call.getArg(1), true) : new ValueCalc(call);
-		return new AbstractDoubleCalc(call, new Calc[] { listCalc, calc }) {
-			public double evaluateDouble(Evaluator evaluator) {
-				TupleList memberList = evaluateCurrentList(listCalc, evaluator);
-				final int savepoint = evaluator.savepoint();
-				evaluator.setNonEmpty(false);
-				final double avg = (Double) avg(evaluator, memberList, calc);
-				evaluator.restore(savepoint);
-				return avg;
-			}
+  public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    final ListCalc listCalc = compiler.compileList(call.getArg(0));
+    final Calc calc = call.getArgCount() > 1 ? compiler.compileScalar(
+      call.getArg(1), true) : new ValueCalc(call);
+    return new AbstractDoubleCalc(call, new Calc[] { listCalc, calc }) {
+      public double evaluateDouble(Evaluator evaluator) {
+        TupleList memberList = evaluateCurrentList(listCalc, evaluator);
+        final int savepoint = evaluator.savepoint();
+        evaluator.setNonEmpty(false);
+        final double avg = (Double) avg(evaluator, memberList, calc);
+        evaluator.restore(savepoint);
+        return avg;
+      }
 
-			public boolean dependsOn(Hierarchy hierarchy) {
-				return anyDependsButFirst(getCalcs(), hierarchy);
-			}
-		};
-	}
+      public boolean dependsOn(Hierarchy hierarchy) {
+        return anyDependsButFirst(getCalcs(), hierarchy);
+      }
+    };
+  }
 }
 
 // End AvgFunDef.java

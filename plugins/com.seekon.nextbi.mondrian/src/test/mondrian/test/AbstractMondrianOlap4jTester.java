@@ -6,7 +6,7 @@
 // Copyright (C) 2010-2010 Julian Hyde
 // All Rights Reserved.
 // You must accept the terms of that agreement to use this software.
-*/
+ */
 package mondrian.test;
 
 import org.olap4j.test.TestContext;
@@ -17,75 +17,72 @@ import java.util.Properties;
 /**
  * Abstract implementation of the {@link org.olap4j.test.TestContext.Tester}
  * callback required by olap4j's Test Compatability Kit (TCK).
- *
- * @version $Id: //open/mondrian/testsrc/main/mondrian/test/AbstractMondrianOlap4jTester.java#1 $
+ * 
+ * @version $Id:
+ *          //open/mondrian/testsrc/main/mondrian/test/AbstractMondrianOlap4jTester
+ *          .java#1 $
  * @author Julian Hyde
  */
 abstract class AbstractMondrianOlap4jTester implements TestContext.Tester {
-    private final TestContext testContext;
-    private final String driverUrlPrefix;
-    private final String driverClassName;
-    private final Flavor flavor;
+  private final TestContext testContext;
 
-    protected AbstractMondrianOlap4jTester(
-        TestContext testContext,
-        String driverUrlPrefix,
-        String driverClassName,
-        Flavor flavor)
-    {
-        this.testContext = testContext;
-        this.driverUrlPrefix = driverUrlPrefix;
-        this.driverClassName = driverClassName;
-        this.flavor = flavor;
+  private final String driverUrlPrefix;
+
+  private final String driverClassName;
+
+  private final Flavor flavor;
+
+  protected AbstractMondrianOlap4jTester(TestContext testContext,
+    String driverUrlPrefix, String driverClassName, Flavor flavor) {
+    this.testContext = testContext;
+    this.driverUrlPrefix = driverUrlPrefix;
+    this.driverClassName = driverClassName;
+    this.flavor = flavor;
+  }
+
+  public TestContext getTestContext() {
+    return testContext;
+  }
+
+  public Connection createConnection() throws SQLException {
+    try {
+      Class.forName(getDriverClassName());
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException("oops", e);
     }
+    return DriverManager.getConnection(getURL(), new Properties());
+  }
 
-    public TestContext getTestContext() {
-        return testContext;
-    }
+  public Connection createConnectionWithUserPassword() throws SQLException {
+    return DriverManager.getConnection(getURL(), USER, PASSWORD);
+  }
 
-    public Connection createConnection() throws SQLException {
-        try {
-            Class.forName(getDriverClassName());
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("oops", e);
-        }
-        return
-            DriverManager.getConnection(
-                getURL(),
-                new Properties());
-    }
+  public String getDriverUrlPrefix() {
+    return driverUrlPrefix;
+  }
 
-    public Connection createConnectionWithUserPassword() throws SQLException
-    {
-        return DriverManager.getConnection(
-            getURL(), USER, PASSWORD);
-    }
+  public String getDriverClassName() {
+    return driverClassName;
+  }
 
-    public String getDriverUrlPrefix() {
-        return driverUrlPrefix;
-    }
+  public String getURL() {
+    // This property is usually defined in build.properties. See
+    // examples in that file.
+    return testContext.getProperties().getProperty(
+      TestContext.Property.CONNECT_URL.path);
+  }
 
-    public String getDriverClassName() {
-        return driverClassName;
-    }
+  public Flavor getFlavor() {
+    return flavor;
+  }
 
-    public String getURL() {
-        // This property is usually defined in build.properties. See
-        // examples in that file.
-        return testContext.getProperties().getProperty(
-            TestContext.Property.CONNECT_URL.path);
-    }
+  public TestContext.Wrapper getWrapper() {
+    return TestContext.Wrapper.NONE;
+  }
 
-    public Flavor getFlavor() {
-        return flavor;
-    }
+  private static final String USER = "sa";
 
-    public TestContext.Wrapper getWrapper() {
-        return TestContext.Wrapper.NONE;
-    }
-
-    private static final String USER = "sa";
-    private static final String PASSWORD = "sa";
+  private static final String PASSWORD = "sa";
 }
 
 // End AbstractMondrianOlap4jTester.java

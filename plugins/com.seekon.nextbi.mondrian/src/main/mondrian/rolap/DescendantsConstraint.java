@@ -28,51 +28,51 @@ import mondrian.rolap.aggmatcher.AggStar;
  *          #16 $
  */
 class DescendantsConstraint implements TupleConstraint {
-	List<RolapMember> parentMembers;
-	MemberChildrenConstraint mcc;
+  List<RolapMember> parentMembers;
 
-	/**
-	 * Creates a DescendantsConstraint.
-	 * 
-	 * @param parentMembers
-	 *          list of parents all from the same level
-	 * @param mcc
-	 *          the constraint that would return the children for each single
-	 *          parent
-	 */
-	public DescendantsConstraint(List<RolapMember> parentMembers,
-			MemberChildrenConstraint mcc) {
-		this.parentMembers = parentMembers;
-		this.mcc = mcc;
-	}
+  MemberChildrenConstraint mcc;
 
-	public void addConstraint(SqlQuery sqlQuery, RolapCube baseCube,
-			AggStar aggStar) {
-		mcc.addMemberConstraint(sqlQuery, baseCube, aggStar, parentMembers);
-	}
+  /**
+   * Creates a DescendantsConstraint.
+   * 
+   * @param parentMembers
+   *          list of parents all from the same level
+   * @param mcc
+   *          the constraint that would return the children for each single
+   *          parent
+   */
+  public DescendantsConstraint(List<RolapMember> parentMembers,
+    MemberChildrenConstraint mcc) {
+    this.parentMembers = parentMembers;
+    this.mcc = mcc;
+  }
 
-	public void addLevelConstraint(SqlQuery sqlQuery, RolapCube baseCube,
-			AggStar aggStar, RolapLevel level) {
-		mcc.addLevelConstraint(sqlQuery, baseCube, aggStar, level);
-	}
+  public void addConstraint(SqlQuery sqlQuery, RolapCube baseCube, AggStar aggStar) {
+    mcc.addMemberConstraint(sqlQuery, baseCube, aggStar, parentMembers);
+  }
 
-	public MemberChildrenConstraint getMemberChildrenConstraint(RolapMember parent) {
-		return mcc;
-	}
+  public void addLevelConstraint(SqlQuery sqlQuery, RolapCube baseCube,
+    AggStar aggStar, RolapLevel level) {
+    mcc.addLevelConstraint(sqlQuery, baseCube, aggStar, level);
+  }
 
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * <p>
-	 * This implementation returns null, because descendants is not cached.
-	 */
-	public Object getCacheKey() {
-		return null;
-	}
+  public MemberChildrenConstraint getMemberChildrenConstraint(RolapMember parent) {
+    return mcc;
+  }
 
-	public Evaluator getEvaluator() {
-		return null;
-	}
+  /**
+   * {@inheritDoc}
+   * 
+   * <p>
+   * This implementation returns null, because descendants is not cached.
+   */
+  public Object getCacheKey() {
+    return null;
+  }
+
+  public Evaluator getEvaluator() {
+    return null;
+  }
 }
 
 // End DescendantsConstraint.java

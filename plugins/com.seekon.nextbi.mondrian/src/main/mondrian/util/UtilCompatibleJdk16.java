@@ -28,18 +28,18 @@ import javax.script.*;
  *          //open/mondrian/src/main/mondrian/util/UtilCompatibleJdk16.java#1 $
  */
 public class UtilCompatibleJdk16 extends UtilCompatibleJdk15 {
-	public <T> T compileScript(Class<T> iface, String script, String engineName) {
-		ScriptEngineManager factory = new ScriptEngineManager();
-		ScriptEngine engine = factory.getEngineByName(engineName);
-		try {
-			engine.eval(script);
-			Invocable inv = (Invocable) engine;
-			return inv.getInterface(iface);
-		} catch (ScriptException e) {
-			throw Util.newError(e, "Error while compiling script to implement "
-					+ iface + " SPI");
-		}
-	}
+  public <T> T compileScript(Class<T> iface, String script, String engineName) {
+    ScriptEngineManager factory = new ScriptEngineManager();
+    ScriptEngine engine = factory.getEngineByName(engineName);
+    try {
+      engine.eval(script);
+      Invocable inv = (Invocable) engine;
+      return inv.getInterface(iface);
+    } catch (ScriptException e) {
+      throw Util.newError(e, "Error while compiling script to implement " + iface
+        + " SPI");
+    }
+  }
 }
 
 // End UtilCompatibleJdk16.java

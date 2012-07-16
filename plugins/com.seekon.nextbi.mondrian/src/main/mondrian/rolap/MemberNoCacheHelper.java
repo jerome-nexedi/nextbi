@@ -27,80 +27,80 @@ import java.util.*;
  * @version 1.0
  */
 public class MemberNoCacheHelper extends MemberCacheHelper {
-	DataSourceChangeListener changeListener;
+  DataSourceChangeListener changeListener;
 
-	public MemberNoCacheHelper() {
-		super(null);
-	}
+  public MemberNoCacheHelper() {
+    super(null);
+  }
 
-	// implement MemberCache
-	public RolapMember getMember(Object key, boolean mustCheckCacheStatus) {
-		return null;
-	}
+  // implement MemberCache
+  public RolapMember getMember(Object key, boolean mustCheckCacheStatus) {
+    return null;
+  }
 
-	// implement MemberCache
-	public Object putMember(Object key, RolapMember value) {
-		return value;
-	}
+  // implement MemberCache
+  public Object putMember(Object key, RolapMember value) {
+    return value;
+  }
 
-	// implement MemberCache
-	public Object makeKey(RolapMember parent, Object key) {
-		return new MemberKey(parent, key);
-	}
+  // implement MemberCache
+  public Object makeKey(RolapMember parent, Object key) {
+    return new MemberKey(parent, key);
+  }
 
-	// implement MemberCache
-	// synchronization: Must synchronize, because modifies mapKeyToMember
-	public synchronized RolapMember getMember(Object key) {
-		return getMember(key, true);
-	}
+  // implement MemberCache
+  // synchronization: Must synchronize, because modifies mapKeyToMember
+  public synchronized RolapMember getMember(Object key) {
+    return getMember(key, true);
+  }
 
-	public void checkCacheStatus() {
-	}
+  public void checkCacheStatus() {
+  }
 
-	/**
-	 * ???
-	 * 
-	 * @param level
-	 * @param constraint
-	 * @param members
-	 */
-	public void putLevelMembersInCache(RolapLevel level,
-			TupleConstraint constraint, List<RolapMember> members) {
-	}
+  /**
+   * ???
+   * 
+   * @param level
+   * @param constraint
+   * @param members
+   */
+  public void putLevelMembersInCache(RolapLevel level, TupleConstraint constraint,
+    List<RolapMember> members) {
+  }
 
-	public List<RolapMember> getChildrenFromCache(RolapMember member,
-			MemberChildrenConstraint constraint) {
-		return null;
-	}
+  public List<RolapMember> getChildrenFromCache(RolapMember member,
+    MemberChildrenConstraint constraint) {
+    return null;
+  }
 
-	public void putChildren(RolapMember member,
-			MemberChildrenConstraint constraint, List<RolapMember> children) {
-	}
+  public void putChildren(RolapMember member, MemberChildrenConstraint constraint,
+    List<RolapMember> children) {
+  }
 
-	public List<RolapMember> getLevelMembersFromCache(RolapLevel level,
-			TupleConstraint constraint) {
-		return null;
-	}
+  public List<RolapMember> getLevelMembersFromCache(RolapLevel level,
+    TupleConstraint constraint) {
+    return null;
+  }
 
-	public DataSourceChangeListener getChangeListener() {
-		return changeListener;
-	}
+  public DataSourceChangeListener getChangeListener() {
+    return changeListener;
+  }
 
-	public void setChangeListener(DataSourceChangeListener listener) {
-		changeListener = listener;
-	}
+  public void setChangeListener(DataSourceChangeListener listener) {
+    changeListener = listener;
+  }
 
-	public boolean isMutable() {
-		return true;
-	}
+  public boolean isMutable() {
+    return true;
+  }
 
-	public synchronized RolapMember removeMember(Object key) {
-		return null;
-	}
+  public synchronized RolapMember removeMember(Object key) {
+    return null;
+  }
 
-	public synchronized RolapMember removeMemberAndDescendants(Object key) {
-		return null;
-	}
+  public synchronized RolapMember removeMemberAndDescendants(Object key) {
+    return null;
+  }
 }
 
 // End MemberNoCacheHelper.java

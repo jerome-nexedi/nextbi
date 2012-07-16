@@ -27,36 +27,36 @@ import java.util.List;
  */
 public interface MdxParserValidator {
 
-	/**
-	 * Parses a string to create a {@link mondrian.olap.Query}. Called only by
-	 * {@link mondrian.olap.ConnectionBase#parseQuery}.
-	 */
-	QueryPart parseInternal(Statement statement, String queryString,
-			boolean debug, FunTable funTable, boolean strictValidation);
+  /**
+   * Parses a string to create a {@link mondrian.olap.Query}. Called only by
+   * {@link mondrian.olap.ConnectionBase#parseQuery}.
+   */
+  QueryPart parseInternal(Statement statement, String queryString, boolean debug,
+    FunTable funTable, boolean strictValidation);
 
-	Exp parseExpression(Statement statement, String queryString, boolean debug,
-			FunTable funTable);
+  Exp parseExpression(Statement statement, String queryString, boolean debug,
+    FunTable funTable);
 
-	interface QueryPartFactory {
+  interface QueryPartFactory {
 
-		/**
-		 * Creates a {@link mondrian.olap.Query} object. Override this function to
-		 * make your kind of query.
-		 */
-		Query makeQuery(Statement statement, Formula[] formulae, QueryAxis[] axes,
-				String cube, Exp slicer, QueryPart[] cellProps, boolean strictValidation);
+    /**
+     * Creates a {@link mondrian.olap.Query} object. Override this function to
+     * make your kind of query.
+     */
+    Query makeQuery(Statement statement, Formula[] formulae, QueryAxis[] axes,
+      String cube, Exp slicer, QueryPart[] cellProps, boolean strictValidation);
 
-		/**
-		 * Creates a {@link mondrian.olap.DrillThrough} object.
-		 */
-		DrillThrough makeDrillThrough(Query query, int maxRowCount,
-				int firstRowOrdinal, List<Exp> returnList);
+    /**
+     * Creates a {@link mondrian.olap.DrillThrough} object.
+     */
+    DrillThrough makeDrillThrough(Query query, int maxRowCount, int firstRowOrdinal,
+      List<Exp> returnList);
 
-		/**
-		 * Creates an {@link mondrian.olap.Explain} object.
-		 */
-		Explain makeExplain(QueryPart query);
-	}
+    /**
+     * Creates an {@link mondrian.olap.Explain} object.
+     */
+    Explain makeExplain(QueryPart query);
+  }
 }
 
 // End MdxParserValidator.java

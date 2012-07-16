@@ -28,27 +28,27 @@ import mondrian.olap.Literal;
  * @since Aug 21, 2006
  */
 class IsNullFunDef extends FunDefBase {
-	/**
-	 * Resolves calls to the <code>IS NULL</code> postfix operator.
-	 */
-	static final ReflectiveMultiResolver Resolver = new ReflectiveMultiResolver(
-			"IS NULL", "<Expression> IS NULL", "Returns whether an object is null",
-			new String[] { "Qbm", "Qbl", "Qbh", "Qbd" }, IsNullFunDef.class);
+  /**
+   * Resolves calls to the <code>IS NULL</code> postfix operator.
+   */
+  static final ReflectiveMultiResolver Resolver = new ReflectiveMultiResolver(
+    "IS NULL", "<Expression> IS NULL", "Returns whether an object is null",
+    new String[] { "Qbm", "Qbl", "Qbh", "Qbd" }, IsNullFunDef.class);
 
-	public IsNullFunDef(FunDef dummyFunDef) {
-		super(dummyFunDef);
-	}
+  public IsNullFunDef(FunDef dummyFunDef) {
+    super(dummyFunDef);
+  }
 
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
-		assert call.getArgCount() == 1;
-		final MemberCalc memberCalc = compiler.compileMember(call.getArg(0));
-		return new AbstractBooleanCalc(call, new Calc[] { memberCalc }) {
-			public boolean evaluateBoolean(Evaluator evaluator) {
-				Member member = memberCalc.evaluateMember(evaluator);
-				return member.isNull();
-			}
-		};
-	}
+  public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    assert call.getArgCount() == 1;
+    final MemberCalc memberCalc = compiler.compileMember(call.getArg(0));
+    return new AbstractBooleanCalc(call, new Calc[] { memberCalc }) {
+      public boolean evaluateBoolean(Evaluator evaluator) {
+        Member member = memberCalc.evaluateMember(evaluator);
+        return member.isNull();
+      }
+    };
+  }
 }
 
 // End IsNullFunDef.java

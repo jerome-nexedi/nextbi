@@ -11,8 +11,7 @@ package mondrian.util;
 
 import java.util.UUID;
 import java.util.regex.Pattern;
-import java.math.BigDecimal;
-// Only in Java5 and above
+import java.math.BigDecimal; // Only in Java5 and above
 import java.math.MathContext;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
@@ -32,57 +31,56 @@ import java.lang.annotation.Annotation;
  * @since Feb 5, 2007
  */
 public class UtilCompatibleJdk15 implements UtilCompatible {
-	/**
-	 * This generates a BigDecimal with a precision reflecting the precision of
-	 * the input double.
-	 * 
-	 * @param d
-	 *          input double
-	 * @return BigDecimal
-	 */
-	public BigDecimal makeBigDecimalFromDouble(double d) {
-		return new BigDecimal(d, MathContext.DECIMAL64);
-	}
+  /**
+   * This generates a BigDecimal with a precision reflecting the precision of
+   * the input double.
+   * 
+   * @param d
+   *          input double
+   * @return BigDecimal
+   */
+  public BigDecimal makeBigDecimalFromDouble(double d) {
+    return new BigDecimal(d, MathContext.DECIMAL64);
+  }
 
-	public String quotePattern(String s) {
-		return Pattern.quote(s);
-	}
+  public String quotePattern(String s) {
+    return Pattern.quote(s);
+  }
 
-	@SuppressWarnings("unchecked")
-	public <T> T getAnnotation(Method method, String annotationClassName,
-			T defaultValue) {
-		try {
-			Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Class
-					.forName(annotationClassName);
-			if (method.isAnnotationPresent(annotationClass)) {
-				final Annotation annotation = method.getAnnotation(annotationClass);
-				final Method method1 = annotation.getClass().getMethod("value");
-				return (T) method1.invoke(annotation);
-			}
-		} catch (IllegalAccessException e) {
-			return defaultValue;
-		} catch (InvocationTargetException e) {
-			return defaultValue;
-		} catch (NoSuchMethodException e) {
-			return defaultValue;
-		} catch (ClassNotFoundException e) {
-			return defaultValue;
-		}
-		return defaultValue;
-	}
+  @SuppressWarnings("unchecked")
+  public <T> T getAnnotation(Method method, String annotationClassName,
+    T defaultValue) {
+    try {
+      Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Class
+        .forName(annotationClassName);
+      if (method.isAnnotationPresent(annotationClass)) {
+        final Annotation annotation = method.getAnnotation(annotationClass);
+        final Method method1 = annotation.getClass().getMethod("value");
+        return (T) method1.invoke(annotation);
+      }
+    } catch (IllegalAccessException e) {
+      return defaultValue;
+    } catch (InvocationTargetException e) {
+      return defaultValue;
+    } catch (NoSuchMethodException e) {
+      return defaultValue;
+    } catch (ClassNotFoundException e) {
+      return defaultValue;
+    }
+    return defaultValue;
+  }
 
-	public String generateUuidString() {
-		return UUID.randomUUID().toString();
-	}
+  public String generateUuidString() {
+    return UUID.randomUUID().toString();
+  }
 
-	public <T> T compileScript(Class<T> iface, String script, String engineName) {
-		throw new UnsupportedOperationException(
-				"Scripting not supported until Java 1.6");
-	}
+  public <T> T compileScript(Class<T> iface, String script, String engineName) {
+    throw new UnsupportedOperationException("Scripting not supported until Java 1.6");
+  }
 
-	public <T> void threadLocalRemove(ThreadLocal<T> threadLocal) {
-		threadLocal.remove();
-	}
+  public <T> void threadLocalRemove(ThreadLocal<T> threadLocal) {
+    threadLocal.remove();
+  }
 }
 
 // End UtilCompatibleJdk15.java

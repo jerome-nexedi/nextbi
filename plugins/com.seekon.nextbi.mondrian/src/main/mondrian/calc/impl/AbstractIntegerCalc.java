@@ -31,28 +31,28 @@ import mondrian.calc.Calc;
  * @since Sep 26, 2005
  */
 public abstract class AbstractIntegerCalc extends AbstractCalc implements
-		IntegerCalc {
-	/**
-	 * Creates an AbstractIntegerCalc.
-	 * 
-	 * @param exp
-	 *          Source expression
-	 * @param calcs
-	 *          Child compiled expressions
-	 */
-	protected AbstractIntegerCalc(Exp exp, Calc[] calcs) {
-		super(exp, calcs);
-		assert getType() instanceof NumericType;
-	}
+  IntegerCalc {
+  /**
+   * Creates an AbstractIntegerCalc.
+   * 
+   * @param exp
+   *          Source expression
+   * @param calcs
+   *          Child compiled expressions
+   */
+  protected AbstractIntegerCalc(Exp exp, Calc[] calcs) {
+    super(exp, calcs);
+    assert getType() instanceof NumericType;
+  }
 
-	public Object evaluate(Evaluator evaluator) {
-		int i = evaluateInteger(evaluator);
-		if (i == FunUtil.IntegerNull) {
-			return null;
-		} else {
-			return i;
-		}
-	}
+  public Object evaluate(Evaluator evaluator) {
+    int i = evaluateInteger(evaluator);
+    if (i == FunUtil.IntegerNull) {
+      return null;
+    } else {
+      return i;
+    }
+  }
 }
 
 // End AbstractIntegerCalc.java

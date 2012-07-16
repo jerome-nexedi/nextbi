@@ -28,142 +28,142 @@ import java.util.*;
  * @since May 24, 2007
  */
 class MondrianOlap4jCell implements Cell {
-	private final int[] coordinates;
-	private final MondrianOlap4jCellSet olap4jCellSet;
-	private final RolapCell cell;
+  private final int[] coordinates;
 
-	/**
-	 * Creates a MondrianOlap4jCell.
-	 * 
-	 * @param coordinates
-	 *          Coordinates
-	 * @param olap4jCellSet
-	 *          Cell set
-	 * @param cell
-	 *          Cell in native Mondrian representation
-	 */
-	MondrianOlap4jCell(int[] coordinates, MondrianOlap4jCellSet olap4jCellSet,
-			RolapCell cell) {
-		assert coordinates != null;
-		assert olap4jCellSet != null;
-		assert cell != null;
-		this.coordinates = coordinates;
-		this.olap4jCellSet = olap4jCellSet;
-		this.cell = cell;
-	}
+  private final MondrianOlap4jCellSet olap4jCellSet;
 
-	public CellSet getCellSet() {
-		return olap4jCellSet;
-	}
+  private final RolapCell cell;
 
-	public int getOrdinal() {
-		return (Integer) cell
-				.getPropertyValue(mondrian.olap.Property.CELL_ORDINAL.name);
-	}
+  /**
+   * Creates a MondrianOlap4jCell.
+   * 
+   * @param coordinates
+   *          Coordinates
+   * @param olap4jCellSet
+   *          Cell set
+   * @param cell
+   *          Cell in native Mondrian representation
+   */
+  MondrianOlap4jCell(int[] coordinates, MondrianOlap4jCellSet olap4jCellSet,
+    RolapCell cell) {
+    assert coordinates != null;
+    assert olap4jCellSet != null;
+    assert cell != null;
+    this.coordinates = coordinates;
+    this.olap4jCellSet = olap4jCellSet;
+    this.cell = cell;
+  }
 
-	public List<Integer> getCoordinateList() {
-		ArrayList<Integer> list = new ArrayList<Integer>(coordinates.length);
-		for (int coordinate : coordinates) {
-			list.add(coordinate);
-		}
-		return list;
-	}
+  public CellSet getCellSet() {
+    return olap4jCellSet;
+  }
 
-	public Object getPropertyValue(Property property) {
-		// We assume that mondrian properties have the same name as olap4j
-		// properties.
-		return cell.getPropertyValue(property.getName());
-	}
+  public int getOrdinal() {
+    return (Integer) cell.getPropertyValue(mondrian.olap.Property.CELL_ORDINAL.name);
+  }
 
-	public boolean isEmpty() {
-		// FIXME
-		return cell.isNull();
-	}
+  public List<Integer> getCoordinateList() {
+    ArrayList<Integer> list = new ArrayList<Integer>(coordinates.length);
+    for (int coordinate : coordinates) {
+      list.add(coordinate);
+    }
+    return list;
+  }
 
-	public boolean isError() {
-		return cell.isError();
-	}
+  public Object getPropertyValue(Property property) {
+    // We assume that mondrian properties have the same name as olap4j
+    // properties.
+    return cell.getPropertyValue(property.getName());
+  }
 
-	public boolean isNull() {
-		return cell.isNull();
-	}
+  public boolean isEmpty() {
+    // FIXME
+    return cell.isNull();
+  }
 
-	public double getDoubleValue() throws OlapException {
-		Object o = cell.getValue();
-		if (o instanceof Number) {
-			Number number = (Number) o;
-			return number.doubleValue();
-		}
-		throw olap4jCellSet.olap4jStatement.olap4jConnection.helper
-				.createException(this, "not a number");
-	}
+  public boolean isError() {
+    return cell.isError();
+  }
 
-	public String getErrorText() {
-		Object o = cell.getValue();
-		if (o instanceof Throwable) {
-			return ((Throwable) o).getMessage();
-		} else {
-			return null;
-		}
-	}
+  public boolean isNull() {
+    return cell.isNull();
+  }
 
-	public Object getValue() {
-		return cell.getValue();
-	}
+  public double getDoubleValue() throws OlapException {
+    Object o = cell.getValue();
+    if (o instanceof Number) {
+      Number number = (Number) o;
+      return number.doubleValue();
+    }
+    throw olap4jCellSet.olap4jStatement.olap4jConnection.helper.createException(
+      this, "not a number");
+  }
 
-	public String getFormattedValue() {
-		return cell.getFormattedValue();
-	}
+  public String getErrorText() {
+    Object o = cell.getValue();
+    if (o instanceof Throwable) {
+      return ((Throwable) o).getMessage();
+    } else {
+      return null;
+    }
+  }
 
-	public ResultSet drillThrough() throws OlapException {
-		return drillThroughInternal(-1, -1, null, false, null, null);
-	}
+  public Object getValue() {
+    return cell.getValue();
+  }
 
-	/**
-	 * Executes drill-through on this cell.
-	 * 
-	 * <p>
-	 * Not a part of the public API. Package-protected because this method also
-	 * implements the DRILLTHROUGH statement.
-	 * 
-	 * @param maxRowCount
-	 *          Maximum number of rows to retrieve, <= 0 if unlimited
-	 * @param firstRowOrdinal
-	 *          Ordinal of row to skip to (1-based), or 0 to start from beginning
-	 * @param tabFields
-	 *          Comma-separated list of fields to return (deprecated)
-	 * @param extendedContext
-	 *          If true, add non-constraining columns to the query for levels
-	 *          below each current member. This additional context makes the
-	 *          drill-through queries easier for humans to understand.
-	 * @param logger
-	 *          Logger. If not null and debug is enabled, log SQL here
-	 * @param rowCountSlot
-	 *          Slot into which the number of fact rows is written
-	 * @return Result set
-	 * @throws OlapException
-	 *           on error
-	 */
-	ResultSet drillThroughInternal(int maxRowCount, int firstRowOrdinal,
-			String tabFields, boolean extendedContext, Logger logger,
-			int[] rowCountSlot) throws OlapException {
-		if (!cell.canDrillThrough()) {
-			return null;
-		}
-		if (rowCountSlot != null) {
-			rowCountSlot[0] = cell.getDrillThroughCount();
-		}
-		final SqlStatement sqlStmt = cell.drillThroughInternal(maxRowCount,
-				firstRowOrdinal, tabFields, extendedContext, logger);
-		return sqlStmt.getWrappedResultSet();
-	}
+  public String getFormattedValue() {
+    return cell.getFormattedValue();
+  }
 
-	public void setValue(Object newValue, AllocationPolicy allocationPolicy,
-			Object... allocationArgs) throws OlapException {
-		Scenario scenario = olap4jCellSet.olap4jStatement.olap4jConnection
-				.getScenario();
-		cell.setValue(scenario, newValue, allocationPolicy, allocationArgs);
-	}
+  public ResultSet drillThrough() throws OlapException {
+    return drillThroughInternal(-1, -1, null, false, null, null);
+  }
+
+  /**
+   * Executes drill-through on this cell.
+   * 
+   * <p>
+   * Not a part of the public API. Package-protected because this method also
+   * implements the DRILLTHROUGH statement.
+   * 
+   * @param maxRowCount
+   *          Maximum number of rows to retrieve, <= 0 if unlimited
+   * @param firstRowOrdinal
+   *          Ordinal of row to skip to (1-based), or 0 to start from beginning
+   * @param tabFields
+   *          Comma-separated list of fields to return (deprecated)
+   * @param extendedContext
+   *          If true, add non-constraining columns to the query for levels
+   *          below each current member. This additional context makes the
+   *          drill-through queries easier for humans to understand.
+   * @param logger
+   *          Logger. If not null and debug is enabled, log SQL here
+   * @param rowCountSlot
+   *          Slot into which the number of fact rows is written
+   * @return Result set
+   * @throws OlapException
+   *           on error
+   */
+  ResultSet drillThroughInternal(int maxRowCount, int firstRowOrdinal,
+    String tabFields, boolean extendedContext, Logger logger, int[] rowCountSlot)
+    throws OlapException {
+    if (!cell.canDrillThrough()) {
+      return null;
+    }
+    if (rowCountSlot != null) {
+      rowCountSlot[0] = cell.getDrillThroughCount();
+    }
+    final SqlStatement sqlStmt = cell.drillThroughInternal(maxRowCount,
+      firstRowOrdinal, tabFields, extendedContext, logger);
+    return sqlStmt.getWrappedResultSet();
+  }
+
+  public void setValue(Object newValue, AllocationPolicy allocationPolicy,
+    Object... allocationArgs) throws OlapException {
+    Scenario scenario = olap4jCellSet.olap4jStatement.olap4jConnection.getScenario();
+    cell.setValue(scenario, newValue, allocationPolicy, allocationArgs);
+  }
 }
 
 // End MondrianOlap4jCell.java

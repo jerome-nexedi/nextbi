@@ -12,21 +12,21 @@ package mondrian.util;
 import mondrian.olap.MondrianException;
 
 public class CreationException extends MondrianException {
-	public CreationException() {
-		super();
-	}
+  public CreationException() {
+    super();
+  }
 
-	public CreationException(String s) {
-		super(s);
-	}
+  public CreationException(String s) {
+    super(s);
+  }
 
-	public CreationException(String s, Throwable t) {
-		super(s, t);
-	}
+  public CreationException(String s, Throwable t) {
+    super(s, t);
+  }
 
-	public CreationException(Throwable t) {
-		super(t);
-	}
+  public CreationException(Throwable t) {
+    super(t);
+  }
 }
 
 // End CreationException.java

@@ -21,24 +21,25 @@ import java.util.SortedSet;
  *          .java#3 $
  */
 class DenseObjectSegmentBody extends AbstractSegmentBody {
-	private static final long serialVersionUID = -3558427982849392173L;
-	final Object[] data;
-	private final int size;
+  private static final long serialVersionUID = -3558427982849392173L;
 
-	DenseObjectSegmentBody(Object[] dataToSave, int size,
-			SortedSet<Comparable<?>>[] axisValueSets, boolean[] nullAxisFlags) {
-		super(axisValueSets, nullAxisFlags);
-		this.size = size;
-		this.data = new Object[size];
-		System.arraycopy(dataToSave, 0, data, 0, size);
-	}
+  final Object[] data;
 
-	public SegmentDataset createSegmentDataset(Segment segment) {
-		DenseObjectSegmentDataset ds = new DenseObjectSegmentDataset(segment,
-				this.size);
-		System.arraycopy(data, 0, ds.values, 0, this.size);
-		return ds;
-	}
+  private final int size;
+
+  DenseObjectSegmentBody(Object[] dataToSave, int size,
+    SortedSet<Comparable<?>>[] axisValueSets, boolean[] nullAxisFlags) {
+    super(axisValueSets, nullAxisFlags);
+    this.size = size;
+    this.data = new Object[size];
+    System.arraycopy(dataToSave, 0, data, 0, size);
+  }
+
+  public SegmentDataset createSegmentDataset(Segment segment) {
+    DenseObjectSegmentDataset ds = new DenseObjectSegmentDataset(segment, this.size);
+    System.arraycopy(data, 0, ds.values, 0, this.size);
+    return ds;
+  }
 }
 
 // End DenseObjectSegmentBody.java

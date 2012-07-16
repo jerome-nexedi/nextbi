@@ -29,62 +29,63 @@ import java.util.List;
  * @since Oct 7, 2009
  */
 class AsFunDef extends FunDefBase {
-	public static final Resolver RESOLVER = new ResolverImpl();
-	private final Query.ScopedNamedSet scopedNamedSet;
+  public static final Resolver RESOLVER = new ResolverImpl();
 
-	/**
-	 * Creates an AsFunDef.
-	 * 
-	 * @param scopedNamedSet
-	 *          Named set definition
-	 */
-	private AsFunDef(Query.ScopedNamedSet scopedNamedSet) {
-		super("AS", "<Expression> AS <Name>", "Assigns an alias to an expression",
-				"ixxn");
-		this.scopedNamedSet = scopedNamedSet;
-	}
+  private final Query.ScopedNamedSet scopedNamedSet;
 
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
-		// Argument 0, the definition of the set, has been resolved since the
-		// scoped named set was created. Implicit conversions, like converting
-		// a member to a set, have been performed. Use the new expression.
-		scopedNamedSet.setExp(call.getArg(0));
+  /**
+   * Creates an AsFunDef.
+   * 
+   * @param scopedNamedSet
+   *          Named set definition
+   */
+  private AsFunDef(Query.ScopedNamedSet scopedNamedSet) {
+    super("AS", "<Expression> AS <Name>", "Assigns an alias to an expression",
+      "ixxn");
+    this.scopedNamedSet = scopedNamedSet;
+  }
 
-		return new AbstractIterCalc(call, new Calc[0]) {
-			public TupleIterable evaluateIterable(Evaluator evaluator) {
-				final Evaluator.NamedSetEvaluator namedSetEvaluator = evaluator
-						.getNamedSetEvaluator(scopedNamedSet, false);
-				return namedSetEvaluator.evaluateTupleIterable();
-			}
-		};
-	}
+  public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    // Argument 0, the definition of the set, has been resolved since the
+    // scoped named set was created. Implicit conversions, like converting
+    // a member to a set, have been performed. Use the new expression.
+    scopedNamedSet.setExp(call.getArg(0));
 
-	private static class ResolverImpl extends ResolverBase {
-		public ResolverImpl() {
-			super("AS", null, null, Syntax.Infix);
-		}
+    return new AbstractIterCalc(call, new Calc[0]) {
+      public TupleIterable evaluateIterable(Evaluator evaluator) {
+        final Evaluator.NamedSetEvaluator namedSetEvaluator = evaluator
+          .getNamedSetEvaluator(scopedNamedSet, false);
+        return namedSetEvaluator.evaluateTupleIterable();
+      }
+    };
+  }
 
-		public FunDef resolve(Exp[] args, Validator validator,
-				List<Conversion> conversions) {
-			final Exp exp = args[0];
-			if (!validator.canConvert(0, args[0], Category.Set, conversions)) {
-				return null;
-			}
+  private static class ResolverImpl extends ResolverBase {
+    public ResolverImpl() {
+      super("AS", null, null, Syntax.Infix);
+    }
 
-			// By the time resolve is called, the id argument has already been
-			// resolved... to a named set, namely itself. That's not pretty.
-			// We'd rather it stayed as an id, and we'd rather that a named set
-			// was not visible in the scope that defines it. But we can work
-			// with this.
-			final String name = ((NamedSetExpr) args[1]).getNamedSet().getName();
+    public FunDef resolve(Exp[] args, Validator validator,
+      List<Conversion> conversions) {
+      final Exp exp = args[0];
+      if (!validator.canConvert(0, args[0], Category.Set, conversions)) {
+        return null;
+      }
 
-			final Query.ScopedNamedSet scopedNamedSet = (Query.ScopedNamedSet) ((NamedSetExpr) args[1])
-					.getNamedSet();
-			// validator.getQuery().createScopedNamedSet(
-			// name, (QueryPart) exp, exp);
-			return new AsFunDef(scopedNamedSet);
-		}
-	}
+      // By the time resolve is called, the id argument has already been
+      // resolved... to a named set, namely itself. That's not pretty.
+      // We'd rather it stayed as an id, and we'd rather that a named set
+      // was not visible in the scope that defines it. But we can work
+      // with this.
+      final String name = ((NamedSetExpr) args[1]).getNamedSet().getName();
+
+      final Query.ScopedNamedSet scopedNamedSet = (Query.ScopedNamedSet) ((NamedSetExpr) args[1])
+        .getNamedSet();
+      // validator.getQuery().createScopedNamedSet(
+      // name, (QueryPart) exp, exp);
+      return new AsFunDef(scopedNamedSet);
+    }
+  }
 }
 
 // End AsFunDef.java

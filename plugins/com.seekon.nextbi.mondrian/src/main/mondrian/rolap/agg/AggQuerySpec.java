@@ -37,171 +37,174 @@ import java.util.List;
  *          //open/mondrian/src/main/mondrian/rolap/agg/AggQuerySpec.java#27 $
  */
 class AggQuerySpec {
-	private static final Logger LOGGER = Logger.getLogger(AggQuerySpec.class);
+  private static final Logger LOGGER = Logger.getLogger(AggQuerySpec.class);
 
-	private final AggStar aggStar;
-	private final List<Segment> segments;
-	private final Segment segment0;
-	private final boolean rollup;
-	private final GroupingSetsList groupingSetsList;
+  private final AggStar aggStar;
 
-	AggQuerySpec(final AggStar aggStar, final boolean rollup,
-			GroupingSetsList groupingSetsList) {
-		this.aggStar = aggStar;
-		this.segments = groupingSetsList.getDefaultSegments();
-		this.segment0 = segments.get(0);
-		this.rollup = rollup;
-		this.groupingSetsList = groupingSetsList;
-	}
+  private final List<Segment> segments;
 
-	protected SqlQuery newSqlQuery() {
-		return getStar().getSqlQuery();
-	}
+  private final Segment segment0;
 
-	public RolapStar getStar() {
-		return aggStar.getStar();
-	}
+  private final boolean rollup;
 
-	public int getMeasureCount() {
-		return segments.size();
-	}
+  private final GroupingSetsList groupingSetsList;
 
-	public AggStar.FactTable.Column getMeasureAsColumn(final int i) {
-		int bitPos = segments.get(i).measure.getBitPosition();
-		return aggStar.lookupColumn(bitPos);
-	}
+  AggQuerySpec(final AggStar aggStar, final boolean rollup,
+    GroupingSetsList groupingSetsList) {
+    this.aggStar = aggStar;
+    this.segments = groupingSetsList.getDefaultSegments();
+    this.segment0 = segments.get(0);
+    this.rollup = rollup;
+    this.groupingSetsList = groupingSetsList;
+  }
 
-	public String getMeasureAlias(final int i) {
-		return "m" + Integer.toString(i);
-	}
+  protected SqlQuery newSqlQuery() {
+    return getStar().getSqlQuery();
+  }
 
-	public int getColumnCount() {
-		return segment0.aggregation.getColumns().length;
-	}
+  public RolapStar getStar() {
+    return aggStar.getStar();
+  }
 
-	public AggStar.Table.Column getColumn(final int i) {
-		RolapStar.Column[] columns = segment0.aggregation.getColumns();
-		int bitPos = columns[i].getBitPosition();
-		AggStar.Table.Column column = aggStar.lookupColumn(bitPos);
+  public int getMeasureCount() {
+    return segments.size();
+  }
 
-		// this should never happen
-		if (column == null) {
-			LOGGER.error("column null for bitPos=" + bitPos);
-		}
-		return column;
-	}
+  public AggStar.FactTable.Column getMeasureAsColumn(final int i) {
+    int bitPos = segments.get(i).measure.getBitPosition();
+    return aggStar.lookupColumn(bitPos);
+  }
 
-	public String getColumnAlias(final int i) {
-		return "c" + Integer.toString(i);
-	}
+  public String getMeasureAlias(final int i) {
+    return "m" + Integer.toString(i);
+  }
 
-	/**
-	 * Returns the predicate on the <code>i</code>th column.
-	 * 
-	 * <p>
-	 * If the column is unconstrained, returns {@link LiteralStarPredicate}(true).
-	 * 
-	 * @param i
-	 *          Column ordinal
-	 * @return Constraint on column
-	 */
-	public StarColumnPredicate getPredicate(int i) {
-		return segment0.axes[i].getPredicate();
-	}
+  public int getColumnCount() {
+    return segment0.aggregation.getColumns().length;
+  }
 
-	public Pair<String, List<Type>> generateSqlQuery() {
-		SqlQuery sqlQuery = newSqlQuery();
-		generateSql(sqlQuery);
-		return sqlQuery.toSqlAndTypes();
-	}
+  public AggStar.Table.Column getColumn(final int i) {
+    RolapStar.Column[] columns = segment0.aggregation.getColumns();
+    int bitPos = columns[i].getBitPosition();
+    AggStar.Table.Column column = aggStar.lookupColumn(bitPos);
 
-	private void addGroupingSets(SqlQuery sqlQuery) {
-		List<RolapStar.Column[]> groupingSetsColumns = groupingSetsList
-				.getGroupingSetsColumns();
-		for (RolapStar.Column[] groupingSetColumns : groupingSetsColumns) {
-			ArrayList<String> groupingColumnsExpr = new ArrayList<String>();
+    // this should never happen
+    if (column == null) {
+      LOGGER.error("column null for bitPos=" + bitPos);
+    }
+    return column;
+  }
 
-			for (RolapStar.Column aColumnArr : groupingSetColumns) {
-				groupingColumnsExpr.add(findColumnExpr(aColumnArr, sqlQuery));
-			}
-			sqlQuery.addGroupingSet(groupingColumnsExpr);
-		}
-	}
+  public String getColumnAlias(final int i) {
+    return "c" + Integer.toString(i);
+  }
 
-	private String findColumnExpr(RolapStar.Column columnj, SqlQuery sqlQuery) {
-		AggStar.Table.Column column = aggStar
-				.lookupColumn(columnj.getBitPosition());
-		return column.generateExprString(sqlQuery);
-	}
+  /**
+   * Returns the predicate on the <code>i</code>th column.
+   * 
+   * <p>
+   * If the column is unconstrained, returns {@link LiteralStarPredicate}(true).
+   * 
+   * @param i
+   *          Column ordinal
+   * @return Constraint on column
+   */
+  public StarColumnPredicate getPredicate(int i) {
+    return segment0.axes[i].getPredicate();
+  }
 
-	protected void addMeasure(final int i, final SqlQuery query) {
-		AggStar.FactTable.Measure column = (AggStar.FactTable.Measure) getMeasureAsColumn(i);
+  public Pair<String, List<Type>> generateSqlQuery() {
+    SqlQuery sqlQuery = newSqlQuery();
+    generateSql(sqlQuery);
+    return sqlQuery.toSqlAndTypes();
+  }
 
-		column.getTable().addToFrom(query, false, true);
-		String alias = getMeasureAlias(i);
+  private void addGroupingSets(SqlQuery sqlQuery) {
+    List<RolapStar.Column[]> groupingSetsColumns = groupingSetsList
+      .getGroupingSetsColumns();
+    for (RolapStar.Column[] groupingSetColumns : groupingSetsColumns) {
+      ArrayList<String> groupingColumnsExpr = new ArrayList<String>();
 
-		String expr;
-		if (rollup) {
-			expr = column.generateRollupString(query);
-		} else {
-			expr = column.generateExprString(query);
-		}
-		query.addSelect(expr, null, alias);
-	}
+      for (RolapStar.Column aColumnArr : groupingSetColumns) {
+        groupingColumnsExpr.add(findColumnExpr(aColumnArr, sqlQuery));
+      }
+      sqlQuery.addGroupingSet(groupingColumnsExpr);
+    }
+  }
 
-	protected void generateSql(final SqlQuery sqlQuery) {
-		// add constraining dimensions
-		int columnCnt = getColumnCount();
-		for (int i = 0; i < columnCnt; i++) {
-			AggStar.Table.Column column = getColumn(i);
-			AggStar.Table table = column.getTable();
-			table.addToFrom(sqlQuery, false, true);
+  private String findColumnExpr(RolapStar.Column columnj, SqlQuery sqlQuery) {
+    AggStar.Table.Column column = aggStar.lookupColumn(columnj.getBitPosition());
+    return column.generateExprString(sqlQuery);
+  }
 
-			String expr = column.generateExprString(sqlQuery);
+  protected void addMeasure(final int i, final SqlQuery query) {
+    AggStar.FactTable.Measure column = (AggStar.FactTable.Measure) getMeasureAsColumn(i);
 
-			StarColumnPredicate predicate = getPredicate(i);
-			final String where = RolapStar.Column.createInExpr(expr, predicate,
-					column.getDatatype(), sqlQuery);
-			if (!where.equals("true")) {
-				sqlQuery.addWhere(where);
-			}
+    column.getTable().addToFrom(query, false, true);
+    String alias = getMeasureAlias(i);
 
-			// some DB2 (AS400) versions throw an error, if a column alias is
-			// there and *not* used in a subsequent order by/group by
-			final String alias0;
-			switch (sqlQuery.getDialect().getDatabaseProduct()) {
-			case DB2_AS400:
-			case DB2_OLD_AS400:
-				alias0 = null;
-				break;
-			default:
-				alias0 = getColumnAlias(i);
-				break;
-			}
+    String expr;
+    if (rollup) {
+      expr = column.generateRollupString(query);
+    } else {
+      expr = column.generateExprString(query);
+    }
+    query.addSelect(expr, null, alias);
+  }
 
-			final String alias = sqlQuery.addSelect(expr, column.getInternalType(),
-					alias0);
-			if (rollup) {
-				sqlQuery.addGroupBy(expr, alias);
-			}
-		}
+  protected void generateSql(final SqlQuery sqlQuery) {
+    // add constraining dimensions
+    int columnCnt = getColumnCount();
+    for (int i = 0; i < columnCnt; i++) {
+      AggStar.Table.Column column = getColumn(i);
+      AggStar.Table table = column.getTable();
+      table.addToFrom(sqlQuery, false, true);
 
-		// Add measures.
-		// This can also add non-shared local dimension columns, which are
-		// not measures.
-		for (int i = 0, count = getMeasureCount(); i < count; i++) {
-			addMeasure(i, sqlQuery);
-		}
-		addGroupingSets(sqlQuery);
-		addGroupingFunction(sqlQuery);
-	}
+      String expr = column.generateExprString(sqlQuery);
 
-	private void addGroupingFunction(SqlQuery sqlQuery) {
-		List<RolapStar.Column> list = groupingSetsList.getRollupColumns();
-		for (RolapStar.Column column : list) {
-			sqlQuery.addGroupingFunction(findColumnExpr(column, sqlQuery));
-		}
-	}
+      StarColumnPredicate predicate = getPredicate(i);
+      final String where = RolapStar.Column.createInExpr(expr, predicate, column
+        .getDatatype(), sqlQuery);
+      if (!where.equals("true")) {
+        sqlQuery.addWhere(where);
+      }
+
+      // some DB2 (AS400) versions throw an error, if a column alias is
+      // there and *not* used in a subsequent order by/group by
+      final String alias0;
+      switch (sqlQuery.getDialect().getDatabaseProduct()) {
+      case DB2_AS400:
+      case DB2_OLD_AS400:
+        alias0 = null;
+        break;
+      default:
+        alias0 = getColumnAlias(i);
+        break;
+      }
+
+      final String alias = sqlQuery
+        .addSelect(expr, column.getInternalType(), alias0);
+      if (rollup) {
+        sqlQuery.addGroupBy(expr, alias);
+      }
+    }
+
+    // Add measures.
+    // This can also add non-shared local dimension columns, which are
+    // not measures.
+    for (int i = 0, count = getMeasureCount(); i < count; i++) {
+      addMeasure(i, sqlQuery);
+    }
+    addGroupingSets(sqlQuery);
+    addGroupingFunction(sqlQuery);
+  }
+
+  private void addGroupingFunction(SqlQuery sqlQuery) {
+    List<RolapStar.Column> list = groupingSetsList.getRollupColumns();
+    for (RolapStar.Column column : list) {
+      sqlQuery.addGroupingFunction(findColumnExpr(column, sqlQuery));
+    }
+  }
 }
 
 // End AggQuerySpec.java

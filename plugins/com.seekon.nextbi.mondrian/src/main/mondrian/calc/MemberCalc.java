@@ -24,18 +24,18 @@ import mondrian.olap.Member;
  * @since Sep 26, 2005
  */
 public interface MemberCalc extends Calc {
-	/**
-	 * Evaluates this expression to yield a member.
-	 * 
-	 * <p>
-	 * May return the null member (see
-	 * {@link mondrian.olap.Hierarchy#getNullMember()}) but never null.
-	 * 
-	 * @param evaluator
-	 *          Evaluation context
-	 * @return a member
-	 */
-	Member evaluateMember(Evaluator evaluator);
+  /**
+   * Evaluates this expression to yield a member.
+   * 
+   * <p>
+   * May return the null member (see
+   * {@link mondrian.olap.Hierarchy#getNullMember()}) but never null.
+   * 
+   * @param evaluator
+   *          Evaluation context
+   * @return a member
+   */
+  Member evaluateMember(Evaluator evaluator);
 }
 
 // End MemberCalc.java

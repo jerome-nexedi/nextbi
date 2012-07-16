@@ -18,11 +18,11 @@ package mondrian.olap;
  * {@link Walker}.
  */
 interface Walkable {
-	/**
-	 * Returns an array of the object's children. Those which are not
-	 * {@link Walkable} are ignored.
-	 */
-	Object[] getChildren();
+  /**
+   * Returns an array of the object's children. Those which are not
+   * {@link Walkable} are ignored.
+   */
+  Object[] getChildren();
 }
 
 // End Walkable.java

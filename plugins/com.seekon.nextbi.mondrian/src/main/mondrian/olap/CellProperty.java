@@ -19,24 +19,24 @@ package mondrian.olap;
  */
 
 public class CellProperty extends QueryPart {
-	private String name;
+  private String name;
 
-	public CellProperty(Object name) {
-		this.name = name.toString();
-	}
+  public CellProperty(Object name) {
+    this.name = name.toString();
+  }
 
-	/**
-	 * checks whether cell property is equals to passed parameter. It adds '[' and
-	 * ']' before and after the propertyName before comparing. The comparison is
-	 * case insensitive.
-	 */
-	public boolean isNameEquals(String propertyName) {
-		return name.equalsIgnoreCase(Util.quoteMdxIdentifier(propertyName));
-	}
+  /**
+   * checks whether cell property is equals to passed parameter. It adds '[' and
+   * ']' before and after the propertyName before comparing. The comparison is
+   * case insensitive.
+   */
+  public boolean isNameEquals(String propertyName) {
+    return name.equalsIgnoreCase(Util.quoteMdxIdentifier(propertyName));
+  }
 
-	public String toString() {
-		return name;
-	}
+  public String toString() {
+    return name;
+  }
 }
 
 // End CellProperty.java

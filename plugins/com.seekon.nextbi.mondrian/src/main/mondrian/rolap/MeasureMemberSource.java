@@ -31,9 +31,9 @@ import java.util.List;
  *          $
  */
 class MeasureMemberSource extends ArrayMemberSource {
-	MeasureMemberSource(RolapHierarchy hierarchy, List<RolapMember> members) {
-		super(hierarchy, members);
-	}
+  MeasureMemberSource(RolapHierarchy hierarchy, List<RolapMember> members) {
+    super(hierarchy, members);
+  }
 }
 
 // End MeasureMemberSource.java

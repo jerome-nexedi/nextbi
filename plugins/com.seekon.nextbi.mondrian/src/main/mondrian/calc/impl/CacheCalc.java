@@ -21,20 +21,20 @@ import mondrian.calc.Calc;
  * @since Oct 10, 2005
  */
 public class CacheCalc extends GenericCalc {
-	private final ExpCacheDescriptor key;
+  private final ExpCacheDescriptor key;
 
-	public CacheCalc(Exp exp, ExpCacheDescriptor key) {
-		super(exp);
-		this.key = key;
-	}
+  public CacheCalc(Exp exp, ExpCacheDescriptor key) {
+    super(exp);
+    this.key = key;
+  }
 
-	public Object evaluate(Evaluator evaluator) {
-		return evaluator.getCachedResult(key);
-	}
+  public Object evaluate(Evaluator evaluator) {
+    return evaluator.getCachedResult(key);
+  }
 
-	public Calc[] getCalcs() {
-		return new Calc[] { key.getCalc() };
-	}
+  public Calc[] getCalcs() {
+    return new Calc[] { key.getCalc() };
+  }
 }
 
 // End CacheCalc.java

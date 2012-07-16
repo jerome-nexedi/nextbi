@@ -21,9 +21,9 @@ import mondrian.olap.MondrianException;
  *          $
  */
 public final class RecorderException extends MondrianException {
-	protected RecorderException(String msg) {
-		super(msg);
-	}
+  protected RecorderException(String msg) {
+    super(msg);
+  }
 }
 
 // End RecorderException.java

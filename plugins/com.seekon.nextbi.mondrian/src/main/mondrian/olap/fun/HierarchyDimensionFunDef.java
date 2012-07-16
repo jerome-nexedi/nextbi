@@ -30,32 +30,31 @@ import mondrian.olap.Hierarchy;
  * @since Mar 23, 2006
  */
 public class HierarchyDimensionFunDef extends FunDefBase {
-	static final HierarchyDimensionFunDef instance = new HierarchyDimensionFunDef();
+  static final HierarchyDimensionFunDef instance = new HierarchyDimensionFunDef();
 
-	private HierarchyDimensionFunDef() {
-		super("Dimension",
-				"Returns the dimension that contains a specified hierarchy.", "pdh");
-	}
+  private HierarchyDimensionFunDef() {
+    super("Dimension", "Returns the dimension that contains a specified hierarchy.",
+      "pdh");
+  }
 
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
-		final HierarchyCalc hierarchyCalc = compiler.compileHierarchy(call
-				.getArg(0));
-		return new CalcImpl(call, hierarchyCalc);
-	}
+  public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    final HierarchyCalc hierarchyCalc = compiler.compileHierarchy(call.getArg(0));
+    return new CalcImpl(call, hierarchyCalc);
+  }
 
-	public static class CalcImpl extends AbstractDimensionCalc {
-		private final HierarchyCalc hierarchyCalc;
+  public static class CalcImpl extends AbstractDimensionCalc {
+    private final HierarchyCalc hierarchyCalc;
 
-		public CalcImpl(Exp exp, HierarchyCalc hierarchyCalc) {
-			super(exp, new Calc[] { hierarchyCalc });
-			this.hierarchyCalc = hierarchyCalc;
-		}
+    public CalcImpl(Exp exp, HierarchyCalc hierarchyCalc) {
+      super(exp, new Calc[] { hierarchyCalc });
+      this.hierarchyCalc = hierarchyCalc;
+    }
 
-		public Dimension evaluateDimension(Evaluator evaluator) {
-			Hierarchy hierarchy = hierarchyCalc.evaluateHierarchy(evaluator);
-			return hierarchy.getDimension();
-		}
-	}
+    public Dimension evaluateDimension(Evaluator evaluator) {
+      Hierarchy hierarchy = hierarchyCalc.evaluateHierarchy(evaluator);
+      return hierarchy.getDimension();
+    }
+  }
 }
 
 // End HierarchyDimensionFunDef.java

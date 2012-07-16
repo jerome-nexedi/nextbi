@@ -16,7 +16,7 @@ package mondrian.olap;
  * Namer contains the methods to retrieve localized attributes
  */
 public interface Namer {
-	public String getLocalResource(String uName, String defaultValue);
+  public String getLocalResource(String uName, String defaultValue);
 }
 
 // End Namer.java

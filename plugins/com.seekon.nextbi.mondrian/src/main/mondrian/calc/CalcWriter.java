@@ -22,104 +22,108 @@ import java.util.*;
  * @since Dec 23, 2005
  */
 public class CalcWriter {
-	private static final int INDENT = 4;
-	private static String BIG_STRING = "                ";
+  private static final int INDENT = 4;
 
-	private final PrintWriter writer;
-	private final boolean profiling;
-	private int linePrefixLength;
-	private final Map<Calc, Map<String, Object>> parentArgMap = new IdentityHashMap<Calc, Map<String, Object>>();
+  private static String BIG_STRING = "                ";
 
-	public CalcWriter(PrintWriter writer, boolean profiling) {
-		this.writer = writer;
-		this.profiling = profiling;
-	}
+  private final PrintWriter writer;
 
-	public PrintWriter getWriter() {
-		return writer;
-	}
+  private final boolean profiling;
 
-	public void visitChild(int ordinal, Calc calc) {
-		indent();
-		calc.accept(this);
-		outdent();
-	}
+  private int linePrefixLength;
 
-	public void visitCalc(Calc calc, String name, Map<String, Object> arguments,
-			Calc[] childCalcs) {
-		writer.print(getLinePrefix());
-		writer.print(name);
-		final Map<String, Object> parentArgs = parentArgMap.get(calc);
-		if (parentArgs != null && !parentArgs.isEmpty()) {
-			// noinspection unchecked
-			arguments = new CompositeMap(arguments, parentArgs);
-		}
-		if (!arguments.isEmpty()) {
-			writer.print("(");
-			int k = 0;
-			for (Map.Entry<String, Object> entry : arguments.entrySet()) {
-				if (k++ > 0) {
-					writer.print(", ");
-				}
-				writer.print(entry.getKey());
-				writer.print("=");
-				writer.print(entry.getValue());
-			}
-			writer.print(")");
-		}
-		writer.println();
-		int k = 0;
-		for (Calc childCalc : childCalcs) {
-			visitChild(k++, childCalc);
-		}
-	}
+  private final Map<Calc, Map<String, Object>> parentArgMap = new IdentityHashMap<Calc, Map<String, Object>>();
 
-	/**
-	 * Increases the indentation level.
-	 */
-	public void indent() {
-		linePrefixLength += INDENT;
-	}
+  public CalcWriter(PrintWriter writer, boolean profiling) {
+    this.writer = writer;
+    this.profiling = profiling;
+  }
 
-	/**
-	 * Decreases the indentation level.
-	 */
-	public void outdent() {
-		linePrefixLength -= INDENT;
-	}
+  public PrintWriter getWriter() {
+    return writer;
+  }
 
-	private String getLinePrefix() {
-		return spaces(linePrefixLength);
-	}
+  public void visitChild(int ordinal, Calc calc) {
+    indent();
+    calc.accept(this);
+    outdent();
+  }
 
-	/**
-	 * Returns a string of N spaces.
-	 * 
-	 * @param n
-	 *          Number of spaces
-	 * @return String of N spaces
-	 */
-	private static synchronized String spaces(int n) {
-		while (n > BIG_STRING.length()) {
-			BIG_STRING = BIG_STRING + BIG_STRING;
-		}
-		return BIG_STRING.substring(0, n);
-	}
+  public void visitCalc(Calc calc, String name, Map<String, Object> arguments,
+    Calc[] childCalcs) {
+    writer.print(getLinePrefix());
+    writer.print(name);
+    final Map<String, Object> parentArgs = parentArgMap.get(calc);
+    if (parentArgs != null && !parentArgs.isEmpty()) {
+      // noinspection unchecked
+      arguments = new CompositeMap(arguments, parentArgs);
+    }
+    if (!arguments.isEmpty()) {
+      writer.print("(");
+      int k = 0;
+      for (Map.Entry<String, Object> entry : arguments.entrySet()) {
+        if (k++ > 0) {
+          writer.print(", ");
+        }
+        writer.print(entry.getKey());
+        writer.print("=");
+        writer.print(entry.getValue());
+      }
+      writer.print(")");
+    }
+    writer.println();
+    int k = 0;
+    for (Calc childCalc : childCalcs) {
+      visitChild(k++, childCalc);
+    }
+  }
 
-	public void setParentArgs(Calc calc, Map<String, Object> argumentMap) {
-		parentArgMap.put(calc, argumentMap);
-	}
+  /**
+   * Increases the indentation level.
+   */
+  public void indent() {
+    linePrefixLength += INDENT;
+  }
 
-	/**
-	 * Whether to print out attributes relating to how a statement was actually
-	 * executed. If false, client should only send attributes relating to the
-	 * plan.
-	 * 
-	 * @return Whether client should send attributes about profiling
-	 */
-	public boolean enableProfiling() {
-		return profiling;
-	}
+  /**
+   * Decreases the indentation level.
+   */
+  public void outdent() {
+    linePrefixLength -= INDENT;
+  }
+
+  private String getLinePrefix() {
+    return spaces(linePrefixLength);
+  }
+
+  /**
+   * Returns a string of N spaces.
+   * 
+   * @param n
+   *          Number of spaces
+   * @return String of N spaces
+   */
+  private static synchronized String spaces(int n) {
+    while (n > BIG_STRING.length()) {
+      BIG_STRING = BIG_STRING + BIG_STRING;
+    }
+    return BIG_STRING.substring(0, n);
+  }
+
+  public void setParentArgs(Calc calc, Map<String, Object> argumentMap) {
+    parentArgMap.put(calc, argumentMap);
+  }
+
+  /**
+   * Whether to print out attributes relating to how a statement was actually
+   * executed. If false, client should only send attributes relating to the
+   * plan.
+   * 
+   * @return Whether client should send attributes about profiling
+   */
+  public boolean enableProfiling() {
+    return profiling;
+  }
 }
 
 // End CalcWriter.java

@@ -29,78 +29,80 @@ import java.util.List;
  * @since May 15, 2009
  */
 class RolapTupleCalculation implements RolapCalculation {
-	private final List<RolapHierarchy> hierarchyList;
-	private final Calc calc;
-	private final int hashCode;
+  private final List<RolapHierarchy> hierarchyList;
 
-	/**
-	 * Creates a RolapTupleCalculation.
-	 * 
-	 * @param hierarchyList
-	 *          List of hierarchies to be replaced.
-	 * @param calc
-	 *          Compiled scalar expression to compute cell
-	 */
-	public RolapTupleCalculation(List<RolapHierarchy> hierarchyList, Calc calc) {
-		this.hierarchyList = hierarchyList;
-		this.calc = calc;
-		this.hashCode = Util.hash(hierarchyList.hashCode(), calc);
-	}
+  private final Calc calc;
 
-	@Override
-	public int hashCode() {
-		return hashCode;
-	}
+  private final int hashCode;
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj instanceof RolapTupleCalculation) {
-			RolapTupleCalculation calculation = (RolapTupleCalculation) obj;
-			return this.hierarchyList.equals(calculation.hierarchyList)
-					&& this.calc.equals(calculation.calc);
-		}
-		return false;
-	}
+  /**
+   * Creates a RolapTupleCalculation.
+   * 
+   * @param hierarchyList
+   *          List of hierarchies to be replaced.
+   * @param calc
+   *          Compiled scalar expression to compute cell
+   */
+  public RolapTupleCalculation(List<RolapHierarchy> hierarchyList, Calc calc) {
+    this.hierarchyList = hierarchyList;
+    this.calc = calc;
+    this.hashCode = Util.hash(hierarchyList.hashCode(), calc);
+  }
 
-	@Override
-	public String toString() {
-		return calc.toString();
-	}
+  @Override
+  public int hashCode() {
+    return hashCode;
+  }
 
-	public void setContextIn(RolapEvaluator evaluator) {
-		// Restore default member for each hierarchy
-		// in the tuple.
-		for (RolapHierarchy hierarchy : hierarchyList) {
-			final int ordinal = hierarchy.getOrdinalInCube();
-			final RolapMember defaultMember = evaluator.root.defaultMembers[ordinal];
-			evaluator.setContext(defaultMember);
-		}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj instanceof RolapTupleCalculation) {
+      RolapTupleCalculation calculation = (RolapTupleCalculation) obj;
+      return this.hierarchyList.equals(calculation.hierarchyList)
+        && this.calc.equals(calculation.calc);
+    }
+    return false;
+  }
 
-		evaluator.removeCalculation(this, true);
-	}
+  @Override
+  public String toString() {
+    return calc.toString();
+  }
 
-	public int getSolveOrder() {
-		return Integer.MIN_VALUE;
-	}
+  public void setContextIn(RolapEvaluator evaluator) {
+    // Restore default member for each hierarchy
+    // in the tuple.
+    for (RolapHierarchy hierarchy : hierarchyList) {
+      final int ordinal = hierarchy.getOrdinalInCube();
+      final RolapMember defaultMember = evaluator.root.defaultMembers[ordinal];
+      evaluator.setContext(defaultMember);
+    }
 
-	public int getHierarchyOrdinal() {
-		throw new UnsupportedOperationException();
-	}
+    evaluator.removeCalculation(this, true);
+  }
 
-	public Calc getCompiledExpression(RolapEvaluatorRoot root) {
-		return calc;
-	}
+  public int getSolveOrder() {
+    return Integer.MIN_VALUE;
+  }
 
-	public boolean containsAggregateFunction() {
-		return false;
-	}
+  public int getHierarchyOrdinal() {
+    throw new UnsupportedOperationException();
+  }
 
-	public boolean isCalculatedInQuery() {
-		return true;
-	}
+  public Calc getCompiledExpression(RolapEvaluatorRoot root) {
+    return calc;
+  }
+
+  public boolean containsAggregateFunction() {
+    return false;
+  }
+
+  public boolean isCalculatedInQuery() {
+    return true;
+  }
 }
 
 // End RolapTupleCalculation.java

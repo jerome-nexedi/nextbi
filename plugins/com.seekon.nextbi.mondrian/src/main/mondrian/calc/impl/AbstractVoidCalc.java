@@ -29,21 +29,21 @@ import mondrian.calc.*;
  * @since Sep 29, 2005
  */
 public class AbstractVoidCalc extends GenericCalc implements VoidCalc {
-	private final Calc[] calcs;
+  private final Calc[] calcs;
 
-	protected AbstractVoidCalc(Exp exp, Calc[] calcs) {
-		super(exp);
-		this.calcs = calcs;
-	}
+  protected AbstractVoidCalc(Exp exp, Calc[] calcs) {
+    super(exp);
+    this.calcs = calcs;
+  }
 
-	public Object evaluate(Evaluator evaluator) {
-		evaluateVoid(evaluator);
-		return null;
-	}
+  public Object evaluate(Evaluator evaluator) {
+    evaluateVoid(evaluator);
+    return null;
+  }
 
-	public Calc[] getCalcs() {
-		return calcs;
-	}
+  public Calc[] getCalcs() {
+    return calcs;
+  }
 }
 
 // End AbstractVoidCalc.java

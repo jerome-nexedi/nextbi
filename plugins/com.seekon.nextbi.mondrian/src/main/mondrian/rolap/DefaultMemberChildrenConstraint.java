@@ -23,42 +23,41 @@ import mondrian.rolap.aggmatcher.AggStar;
  *          //open/mondrian/src/main/mondrian/rolap/DefaultMemberChildrenConstraint
  *          .java#16 $
  */
-public class DefaultMemberChildrenConstraint implements
-		MemberChildrenConstraint {
-	private static final MemberChildrenConstraint instance = new DefaultMemberChildrenConstraint();
+public class DefaultMemberChildrenConstraint implements MemberChildrenConstraint {
+  private static final MemberChildrenConstraint instance = new DefaultMemberChildrenConstraint();
 
-	protected DefaultMemberChildrenConstraint() {
-	}
+  protected DefaultMemberChildrenConstraint() {
+  }
 
-	public void addMemberConstraint(SqlQuery sqlQuery, RolapCube baseCube,
-			AggStar aggStar, RolapMember parent) {
-		SqlConstraintUtils.addMemberConstraint(sqlQuery, baseCube, aggStar, parent,
-				true);
-	}
+  public void addMemberConstraint(SqlQuery sqlQuery, RolapCube baseCube,
+    AggStar aggStar, RolapMember parent) {
+    SqlConstraintUtils
+      .addMemberConstraint(sqlQuery, baseCube, aggStar, parent, true);
+  }
 
-	public void addMemberConstraint(SqlQuery sqlQuery, RolapCube baseCube,
-			AggStar aggStar, List<RolapMember> parents) {
-		boolean exclude = false;
-		SqlConstraintUtils.addMemberConstraint(sqlQuery, baseCube, aggStar,
-				parents, true, false, exclude);
-	}
+  public void addMemberConstraint(SqlQuery sqlQuery, RolapCube baseCube,
+    AggStar aggStar, List<RolapMember> parents) {
+    boolean exclude = false;
+    SqlConstraintUtils.addMemberConstraint(sqlQuery, baseCube, aggStar, parents,
+      true, false, exclude);
+  }
 
-	public void addLevelConstraint(SqlQuery query, RolapCube baseCube,
-			AggStar aggStar, RolapLevel level) {
-	}
+  public void addLevelConstraint(SqlQuery query, RolapCube baseCube,
+    AggStar aggStar, RolapLevel level) {
+  }
 
-	public String toString() {
-		return "DefaultMemberChildrenConstraint";
-	}
+  public String toString() {
+    return "DefaultMemberChildrenConstraint";
+  }
 
-	public Object getCacheKey() {
-		// we have no state, so all instances are equal
-		return this;
-	}
+  public Object getCacheKey() {
+    // we have no state, so all instances are equal
+    return this;
+  }
 
-	public static MemberChildrenConstraint instance() {
-		return instance;
-	}
+  public static MemberChildrenConstraint instance() {
+    return instance;
+  }
 }
 
 // End DefaultMemberChildrenConstraint.java

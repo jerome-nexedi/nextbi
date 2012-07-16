@@ -22,18 +22,18 @@ import java.sql.SQLException;
  */
 public class NetezzaDialect extends PostgreSqlDialect {
 
-	public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
-			NetezzaDialect.class, DatabaseProduct.NETEZZA);
+  public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
+    NetezzaDialect.class, DatabaseProduct.NETEZZA);
 
-	/**
-	 * Creates a NetezzaDialect.
-	 * 
-	 * @param connection
-	 *          Connection
-	 */
-	public NetezzaDialect(Connection connection) throws SQLException {
-		super(connection);
-	}
+  /**
+   * Creates a NetezzaDialect.
+   * 
+   * @param connection
+   *          Connection
+   */
+  public NetezzaDialect(Connection connection) throws SQLException {
+    super(connection);
+  }
 
 }
 // End NetezzaDialect.java

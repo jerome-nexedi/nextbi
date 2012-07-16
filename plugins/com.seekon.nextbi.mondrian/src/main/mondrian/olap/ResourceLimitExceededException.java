@@ -17,17 +17,16 @@ package mondrian.olap;
  *          //open/mondrian/src/main/mondrian/olap/ResourceLimitExceededException
  *          .java#4 $
  */
-public class ResourceLimitExceededException extends
-		ResultLimitExceededException {
-	/**
-	 * Creates a ResourceLimitExceededException
-	 * 
-	 * @param message
-	 *          Localized message
-	 */
-	public ResourceLimitExceededException(String message) {
-		super(message);
-	}
+public class ResourceLimitExceededException extends ResultLimitExceededException {
+  /**
+   * Creates a ResourceLimitExceededException
+   * 
+   * @param message
+   *          Localized message
+   */
+  public ResourceLimitExceededException(String message) {
+    super(message);
+  }
 }
 
 // End ResourceLimitExceededException.java

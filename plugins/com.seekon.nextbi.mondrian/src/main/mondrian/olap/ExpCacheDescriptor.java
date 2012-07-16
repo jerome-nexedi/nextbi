@@ -25,96 +25,98 @@ import java.util.List;
  *          //open/mondrian/src/main/mondrian/olap/ExpCacheDescriptor.java#9 $
  */
 public class ExpCacheDescriptor {
-	private final Exp exp;
-	private int[] dependentHierarchyOrdinals;
-	private final Calc calc;
+  private final Exp exp;
 
-	/**
-	 * Creates a descriptor with a given compiled expression.
-	 * 
-	 * @param exp
-	 *          Expression
-	 * @param calc
-	 *          Compiled expression
-	 * @param evaluator
-	 *          Evaluator
-	 */
-	public ExpCacheDescriptor(Exp exp, Calc calc, Evaluator evaluator) {
-		this.calc = calc;
-		this.exp = exp;
-		computeDepends(calc, evaluator);
-	}
+  private int[] dependentHierarchyOrdinals;
 
-	/**
-	 * Creates a descriptor.
-	 * 
-	 * @param exp
-	 *          Expression
-	 * @param evaluator
-	 *          Evaluator
-	 */
-	public ExpCacheDescriptor(Exp exp, Evaluator evaluator) {
-		this(exp, new BetterExpCompiler(evaluator, null));
-	}
+  private final Calc calc;
 
-	/**
-	 * Creates a descriptor.
-	 * 
-	 * @param exp
-	 *          Expression
-	 * @param compiler
-	 *          Compiler
-	 */
-	public ExpCacheDescriptor(Exp exp, ExpCompiler compiler) {
-		this.exp = exp;
+  /**
+   * Creates a descriptor with a given compiled expression.
+   * 
+   * @param exp
+   *          Expression
+   * @param calc
+   *          Compiled expression
+   * @param evaluator
+   *          Evaluator
+   */
+  public ExpCacheDescriptor(Exp exp, Calc calc, Evaluator evaluator) {
+    this.calc = calc;
+    this.exp = exp;
+    computeDepends(calc, evaluator);
+  }
 
-		// Compile expression.
-		Calc calc = compiler.compile(exp);
-		if (calc == null) {
-			// now allow conversions
-			calc = compiler.compileAs(exp, null, ResultStyle.ANY_ONLY);
-		}
-		this.calc = calc;
+  /**
+   * Creates a descriptor.
+   * 
+   * @param exp
+   *          Expression
+   * @param evaluator
+   *          Evaluator
+   */
+  public ExpCacheDescriptor(Exp exp, Evaluator evaluator) {
+    this(exp, new BetterExpCompiler(evaluator, null));
+  }
 
-		// Compute list of dependent dimensions.
-		computeDepends(calc, compiler.getEvaluator());
-	}
+  /**
+   * Creates a descriptor.
+   * 
+   * @param exp
+   *          Expression
+   * @param compiler
+   *          Compiler
+   */
+  public ExpCacheDescriptor(Exp exp, ExpCompiler compiler) {
+    this.exp = exp;
 
-	private void computeDepends(Calc calc, Evaluator evaluator) {
-		final List<Integer> ordinalList = new ArrayList<Integer>();
-		final Member[] members = evaluator.getMembers();
-		for (int i = 0; i < members.length; i++) {
-			Hierarchy hierarchy = members[i].getHierarchy();
-			if (calc.dependsOn(hierarchy)) {
-				ordinalList.add(i);
-			}
-		}
-		dependentHierarchyOrdinals = new int[ordinalList.size()];
-		for (int i = 0; i < dependentHierarchyOrdinals.length; i++) {
-			dependentHierarchyOrdinals[i] = ordinalList.get(i);
-		}
-	}
+    // Compile expression.
+    Calc calc = compiler.compile(exp);
+    if (calc == null) {
+      // now allow conversions
+      calc = compiler.compileAs(exp, null, ResultStyle.ANY_ONLY);
+    }
+    this.calc = calc;
 
-	public Exp getExp() {
-		return exp;
-	}
+    // Compute list of dependent dimensions.
+    computeDepends(calc, compiler.getEvaluator());
+  }
 
-	public Calc getCalc() {
-		return calc;
-	}
+  private void computeDepends(Calc calc, Evaluator evaluator) {
+    final List<Integer> ordinalList = new ArrayList<Integer>();
+    final Member[] members = evaluator.getMembers();
+    for (int i = 0; i < members.length; i++) {
+      Hierarchy hierarchy = members[i].getHierarchy();
+      if (calc.dependsOn(hierarchy)) {
+        ordinalList.add(i);
+      }
+    }
+    dependentHierarchyOrdinals = new int[ordinalList.size()];
+    for (int i = 0; i < dependentHierarchyOrdinals.length; i++) {
+      dependentHierarchyOrdinals[i] = ordinalList.get(i);
+    }
+  }
 
-	public Object evaluate(Evaluator evaluator) {
-		return calc.evaluate(evaluator);
-	}
+  public Exp getExp() {
+    return exp;
+  }
 
-	/**
-	 * Returns the ordinals of the hierarchies which this expression is dependent
-	 * upon. When the cache descriptor is used to generate a cache key, the key
-	 * will consist of a member from each of these hierarchies.
-	 */
-	public int[] getDependentHierarchyOrdinals() {
-		return dependentHierarchyOrdinals;
-	}
+  public Calc getCalc() {
+    return calc;
+  }
+
+  public Object evaluate(Evaluator evaluator) {
+    return calc.evaluate(evaluator);
+  }
+
+  /**
+   * Returns the ordinals of the hierarchies which this expression is dependent
+   * upon. When the cache descriptor is used to generate a cache key, the key
+   * will consist of a member from each of these hierarchies.
+   */
+  public int[] getDependentHierarchyOrdinals() {
+    return dependentHierarchyOrdinals;
+  }
 
 }
 

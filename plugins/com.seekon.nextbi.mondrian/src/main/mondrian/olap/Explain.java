@@ -18,34 +18,34 @@ import java.io.PrintWriter;
  * @version $Id: //open/mondrian/src/main/mondrian/olap/Explain.java#1 $
  */
 public class Explain extends QueryPart {
-	private final QueryPart query;
+  private final QueryPart query;
 
-	/**
-	 * Creates an Explain statement.
-	 * 
-	 * @param query
-	 *          Query (SELECT or DRILLTHROUGH)
-	 */
-	Explain(QueryPart query) {
-		this.query = query;
-		assert this.query != null;
-		assert this.query instanceof Query || this.query instanceof DrillThrough;
-	}
+  /**
+   * Creates an Explain statement.
+   * 
+   * @param query
+   *          Query (SELECT or DRILLTHROUGH)
+   */
+  Explain(QueryPart query) {
+    this.query = query;
+    assert this.query != null;
+    assert this.query instanceof Query || this.query instanceof DrillThrough;
+  }
 
-	@Override
-	public void unparse(PrintWriter pw) {
-		pw.print("EXPLAIN PLAN FOR ");
-		query.unparse(pw);
-	}
+  @Override
+  public void unparse(PrintWriter pw) {
+    pw.print("EXPLAIN PLAN FOR ");
+    query.unparse(pw);
+  }
 
-	@Override
-	public Object[] getChildren() {
-		return new Object[] { query };
-	}
+  @Override
+  public Object[] getChildren() {
+    return new Object[] { query };
+  }
 
-	public QueryPart getQuery() {
-		return query;
-	}
+  public QueryPart getQuery() {
+    return query;
+  }
 }
 
 // End Explain.java

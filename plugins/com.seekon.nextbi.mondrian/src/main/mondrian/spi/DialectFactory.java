@@ -69,24 +69,24 @@ import java.sql.Connection;
  * @since Jan 13, 2009
  */
 public interface DialectFactory {
-	/**
-	 * Creates a Dialect.
-	 * 
-	 * <p>
-	 * If the dialect cannot handle this connection, returns null.
-	 * 
-	 * @param dataSource
-	 *          JDBC data source
-	 * @param connection
-	 *          JDBC connection
-	 * 
-	 * @return dialect for this connection, or null if this factory's dialect is
-	 *         not appropriate for the connection
-	 * 
-	 * @throws RuntimeException
-	 *           if underlying systems give an error
-	 */
-	Dialect createDialect(DataSource dataSource, Connection connection);
+  /**
+   * Creates a Dialect.
+   * 
+   * <p>
+   * If the dialect cannot handle this connection, returns null.
+   * 
+   * @param dataSource
+   *          JDBC data source
+   * @param connection
+   *          JDBC connection
+   * 
+   * @return dialect for this connection, or null if this factory's dialect is
+   *         not appropriate for the connection
+   * 
+   * @throws RuntimeException
+   *           if underlying systems give an error
+   */
+  Dialect createDialect(DataSource dataSource, Connection connection);
 }
 
 // End DialectFactory.java

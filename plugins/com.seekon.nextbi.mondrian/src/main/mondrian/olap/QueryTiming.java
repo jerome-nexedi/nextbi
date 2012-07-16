@@ -34,188 +34,194 @@ import java.util.*;
  * @version $Id: //open/mondrian/src/main/mondrian/olap/QueryTiming.java#3 $
  */
 public class QueryTiming {
-	private boolean enabled;
-	private final Stack<TimingInfo> currentTimings = new Stack<TimingInfo>();
-	private final Map<String, List<StartEnd>> timings = new HashMap<String, List<StartEnd>>();
-	private final Map<String, DurationCount> fullTimings = new HashMap<String, DurationCount>();
+  private boolean enabled;
 
-	/**
-	 * Initializes (or re-initializes) a query timing, also setting whether
-	 * enabled. All previous stats are removed.
-	 * 
-	 * @param enabled
-	 *          Whether to collect stats in future
-	 */
-	public void init(boolean enabled) {
-		this.enabled = enabled;
-		currentTimings.clear();
-		timings.clear();
-		fullTimings.clear();
-	}
+  private final Stack<TimingInfo> currentTimings = new Stack<TimingInfo>();
 
-	public void done() {
-	}
+  private final Map<String, List<StartEnd>> timings = new HashMap<String, List<StartEnd>>();
 
-	/**
-	 * Marks the start of a Query component's execution.
-	 * 
-	 * @param name
-	 *          Name of the component
-	 */
-	public final void markStart(String name) {
-		if (enabled) {
-			markStartInternal(name);
-		}
-	}
+  private final Map<String, DurationCount> fullTimings = new HashMap<String, DurationCount>();
 
-	/**
-	 * Marks the end of a Query component's execution.
-	 * 
-	 * @param name
-	 *          Name of the component
-	 */
-	public final void markEnd(String name) {
-		if (enabled) {
-			long tstamp = System.currentTimeMillis();
-			markEndInternal(name, tstamp);
-		}
-	}
+  /**
+   * Initializes (or re-initializes) a query timing, also setting whether
+   * enabled. All previous stats are removed.
+   * 
+   * @param enabled
+   *          Whether to collect stats in future
+   */
+  public void init(boolean enabled) {
+    this.enabled = enabled;
+    currentTimings.clear();
+    timings.clear();
+    fullTimings.clear();
+  }
 
-	/**
-	 * Marks the duration of a Query component's execution.
-	 * 
-	 * @param name
-	 *          Name of the component
-	 * @param duration
-	 *          Duration of the execution
-	 */
-	public final void markFull(String name, long duration) {
-		if (enabled) {
-			markFullInternal(name, duration);
-		}
-	}
+  public void done() {
+  }
 
-	private void markStartInternal(String name) {
-		currentTimings.push(new TimingInfo(name));
-	}
+  /**
+   * Marks the start of a Query component's execution.
+   * 
+   * @param name
+   *          Name of the component
+   */
+  public final void markStart(String name) {
+    if (enabled) {
+      markStartInternal(name);
+    }
+  }
 
-	private void markEndInternal(String name, long tstamp) {
-		if (currentTimings == null || currentTimings.isEmpty()
-				|| !currentTimings.peek().name.equals(name)) {
-			throw new IllegalStateException("end but no start for " + name);
-		}
-		TimingInfo finished = currentTimings.pop();
-		assert finished.name.equals(name);
-		finished.markEnd(tstamp);
+  /**
+   * Marks the end of a Query component's execution.
+   * 
+   * @param name
+   *          Name of the component
+   */
+  public final void markEnd(String name) {
+    if (enabled) {
+      long tstamp = System.currentTimeMillis();
+      markEndInternal(name, tstamp);
+    }
+  }
 
-		List<StartEnd> timingList = timings.get(finished.name);
-		if (timingList == null) {
-			timingList = new ArrayList<StartEnd>();
-			timings.put(finished.name, timingList);
-		}
-		timingList.add(new StartEnd(finished.startTime, finished.endTime));
-	}
+  /**
+   * Marks the duration of a Query component's execution.
+   * 
+   * @param name
+   *          Name of the component
+   * @param duration
+   *          Duration of the execution
+   */
+  public final void markFull(String name, long duration) {
+    if (enabled) {
+      markFullInternal(name, duration);
+    }
+  }
 
-	private void markFullInternal(String name, long duration) {
-		DurationCount p = fullTimings.get(name);
-		if (p == null) {
-			p = new DurationCount();
-			fullTimings.put(name, p);
-		}
-		p.count++;
-		p.duration += duration;
-	}
+  private void markStartInternal(String name) {
+    currentTimings.push(new TimingInfo(name));
+  }
 
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (Map.Entry<String, List<StartEnd>> entry : timings.entrySet()) {
-			if (sb.length() > 0) {
-				sb.append(Util.nl);
-			}
-			long total = 0;
-			for (StartEnd durection : entry.getValue()) {
-				total += (durection.endTime - durection.startTime);
-			}
-			int count = entry.getValue().size();
-			sb.append(entry.getKey()).append(" invoked ").append(count)
-					.append(" times for total of ").append(total).append("ms.  (Avg. ")
-					.append(total / count).append("ms/invocation)");
-		}
-		for (Map.Entry<String, DurationCount> entry : fullTimings.entrySet()) {
-			if (sb.length() > 0) {
-				sb.append(Util.nl);
-			}
-			sb.append(entry.getKey()).append(" invoked ")
-					.append(entry.getValue().count).append(" times for total of ")
-					.append(entry.getValue().duration).append("ms.  (Avg. ")
-					.append(entry.getValue().duration / entry.getValue().count)
-					.append("ms/invocation)");
-		}
-		return sb.toString();
-	}
+  private void markEndInternal(String name, long tstamp) {
+    if (currentTimings == null || currentTimings.isEmpty()
+      || !currentTimings.peek().name.equals(name)) {
+      throw new IllegalStateException("end but no start for " + name);
+    }
+    TimingInfo finished = currentTimings.pop();
+    assert finished.name.equals(name);
+    finished.markEnd(tstamp);
 
-	/**
-	 * @return a collection of all Query component names
-	 */
-	public Collection<String> getTimingKeys() {
-		Set<String> keys = new HashSet<String>();
-		keys.addAll(timings.keySet());
-		keys.addAll(fullTimings.keySet());
-		return keys;
-	}
+    List<StartEnd> timingList = timings.get(finished.name);
+    if (timingList == null) {
+      timingList = new ArrayList<StartEnd>();
+      timings.put(finished.name, timingList);
+    }
+    timingList.add(new StartEnd(finished.startTime, finished.endTime));
+  }
 
-	/**
-	 * @param key
-	 *          Name of the Query component to get timing information on
-	 * @return a List of durations
-	 */
-	public List<Long> getTimings(String key) {
-		List<Long> timingList = new ArrayList<Long>();
-		List<StartEnd> regTime = timings.get(key);
-		if (regTime != null) {
-			for (StartEnd timing : regTime) {
-				timingList.add(timing.endTime - timing.startTime);
-			}
-		}
-		DurationCount qTime = fullTimings.get(key);
-		if (qTime != null) {
-			final Long duration = qTime.duration;
-			for (int i = 0; i < qTime.count; i++) {
-				timingList.add(duration);
-			}
-		}
-		return timingList;
-	}
+  private void markFullInternal(String name, long duration) {
+    DurationCount p = fullTimings.get(name);
+    if (p == null) {
+      p = new DurationCount();
+      fullTimings.put(name, p);
+    }
+    p.count++;
+    p.duration += duration;
+  }
 
-	private static class TimingInfo {
-		private final String name;
-		private final long startTime;
-		private long endTime;
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for (Map.Entry<String, List<StartEnd>> entry : timings.entrySet()) {
+      if (sb.length() > 0) {
+        sb.append(Util.nl);
+      }
+      long total = 0;
+      for (StartEnd durection : entry.getValue()) {
+        total += (durection.endTime - durection.startTime);
+      }
+      int count = entry.getValue().size();
+      sb.append(entry.getKey()).append(" invoked ").append(count).append(
+        " times for total of ").append(total).append("ms.  (Avg. ").append(
+        total / count).append("ms/invocation)");
+    }
+    for (Map.Entry<String, DurationCount> entry : fullTimings.entrySet()) {
+      if (sb.length() > 0) {
+        sb.append(Util.nl);
+      }
+      sb.append(entry.getKey()).append(" invoked ").append(entry.getValue().count)
+        .append(" times for total of ").append(entry.getValue().duration).append(
+          "ms.  (Avg. ").append(entry.getValue().duration / entry.getValue().count)
+        .append("ms/invocation)");
+    }
+    return sb.toString();
+  }
 
-		private TimingInfo(String name) {
-			this.name = name;
-			this.startTime = System.currentTimeMillis();
-		}
+  /**
+   * @return a collection of all Query component names
+   */
+  public Collection<String> getTimingKeys() {
+    Set<String> keys = new HashSet<String>();
+    keys.addAll(timings.keySet());
+    keys.addAll(fullTimings.keySet());
+    return keys;
+  }
 
-		private void markEnd(long tstamp) {
-			this.endTime = tstamp;
-		}
-	}
+  /**
+   * @param key
+   *          Name of the Query component to get timing information on
+   * @return a List of durations
+   */
+  public List<Long> getTimings(String key) {
+    List<Long> timingList = new ArrayList<Long>();
+    List<StartEnd> regTime = timings.get(key);
+    if (regTime != null) {
+      for (StartEnd timing : regTime) {
+        timingList.add(timing.endTime - timing.startTime);
+      }
+    }
+    DurationCount qTime = fullTimings.get(key);
+    if (qTime != null) {
+      final Long duration = qTime.duration;
+      for (int i = 0; i < qTime.count; i++) {
+        timingList.add(duration);
+      }
+    }
+    return timingList;
+  }
 
-	private static class StartEnd {
-		final long startTime;
-		final long endTime;
+  private static class TimingInfo {
+    private final String name;
 
-		public StartEnd(long startTime, long endTime) {
-			this.startTime = startTime;
-			this.endTime = endTime;
-		}
-	}
+    private final long startTime;
 
-	private static class DurationCount {
-		long duration;
-		long count;
-	}
+    private long endTime;
+
+    private TimingInfo(String name) {
+      this.name = name;
+      this.startTime = System.currentTimeMillis();
+    }
+
+    private void markEnd(long tstamp) {
+      this.endTime = tstamp;
+    }
+  }
+
+  private static class StartEnd {
+    final long startTime;
+
+    final long endTime;
+
+    public StartEnd(long startTime, long endTime) {
+      this.startTime = startTime;
+      this.endTime = endTime;
+    }
+  }
+
+  private static class DurationCount {
+    long duration;
+
+    long count;
+  }
 }
 
 // End QueryTiming.java

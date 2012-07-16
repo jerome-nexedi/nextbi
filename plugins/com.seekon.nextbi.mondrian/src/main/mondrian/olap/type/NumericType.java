@@ -22,24 +22,24 @@ import mondrian.olap.Hierarchy;
  */
 public class NumericType extends ScalarType {
 
-	/**
-	 * Creates a numeric type.
-	 */
-	public NumericType() {
-		this("NUMERIC");
-	}
+  /**
+   * Creates a numeric type.
+   */
+  public NumericType() {
+    this("NUMERIC");
+  }
 
-	protected NumericType(String digest) {
-		super(digest);
-	}
+  protected NumericType(String digest) {
+    super(digest);
+  }
 
-	public boolean equals(Object obj) {
-		return obj instanceof NumericType && toString().equals(obj.toString());
-	}
+  public boolean equals(Object obj) {
+    return obj instanceof NumericType && toString().equals(obj.toString());
+  }
 
-	public boolean isInstance(Object value) {
-		return value instanceof Number || value instanceof Character;
-	}
+  public boolean isInstance(Object value) {
+    return value instanceof Number || value instanceof Character;
+  }
 }
 
 // End NumericType.java

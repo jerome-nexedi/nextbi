@@ -30,39 +30,39 @@ import java.util.*;
  */
 public class CurrentDateStringUdf implements UserDefinedFunction {
 
-	public Object execute(Evaluator evaluator, Argument[] arguments) {
-		Object arg = arguments[0].evaluateScalar(evaluator);
+  public Object execute(Evaluator evaluator, Argument[] arguments) {
+    Object arg = arguments[0].evaluateScalar(evaluator);
 
-		final Locale locale = Locale.getDefault();
-		final Format format = new Format((String) arg, locale);
-		Date currDate = evaluator.getQueryStartTime();
-		return format.format(currDate);
-	}
+    final Locale locale = Locale.getDefault();
+    final Format format = new Format((String) arg, locale);
+    Date currDate = evaluator.getQueryStartTime();
+    return format.format(currDate);
+  }
 
-	public String getDescription() {
-		return "Returns the current date formatted as specified by the format "
-				+ "parameter.";
-	}
+  public String getDescription() {
+    return "Returns the current date formatted as specified by the format "
+      + "parameter.";
+  }
 
-	public String getName() {
-		return "CurrentDateString";
-	}
+  public String getName() {
+    return "CurrentDateString";
+  }
 
-	public Type[] getParameterTypes() {
-		return new Type[] { new StringType() };
-	}
+  public Type[] getParameterTypes() {
+    return new Type[] { new StringType() };
+  }
 
-	public String[] getReservedWords() {
-		return null;
-	}
+  public String[] getReservedWords() {
+    return null;
+  }
 
-	public Type getReturnType(Type[] parameterTypes) {
-		return new StringType();
-	}
+  public Type getReturnType(Type[] parameterTypes) {
+    return new StringType();
+  }
 
-	public Syntax getSyntax() {
-		return Syntax.Function;
-	}
+  public Syntax getSyntax() {
+    return Syntax.Function;
+  }
 
 }
 

@@ -27,110 +27,118 @@ import mondrian.resource.MondrianResource;
  * @since Jul 20, 2006
  */
 public class RolapSchemaParameter implements Parameter, ParameterCompilable {
-	private final RolapSchema schema;
-	private final String name;
-	private String description;
-	private String defaultExpString;
-	private Type type;
-	private final boolean modifiable;
-	private Object value;
-	private boolean assigned;
-	private Object cachedDefaultValue;
+  private final RolapSchema schema;
 
-	RolapSchemaParameter(RolapSchema schema, String name,
-			String defaultExpString, String description, Type type, boolean modifiable) {
-		assert defaultExpString != null;
-		assert name != null;
-		assert schema != null;
-		assert type != null;
-		this.schema = schema;
-		this.name = name;
-		this.defaultExpString = defaultExpString;
-		this.description = description;
-		this.type = type;
-		this.modifiable = modifiable;
-		schema.parameterList.add(this);
-	}
+  private final String name;
 
-	RolapSchema getSchema() {
-		return schema;
-	}
+  private String description;
 
-	public boolean isModifiable() {
-		return modifiable;
-	}
+  private String defaultExpString;
 
-	public Scope getScope() {
-		return Scope.Schema;
-	}
+  private Type type;
 
-	public Type getType() {
-		return type;
-	}
+  private final boolean modifiable;
 
-	public Exp getDefaultExp() {
-		throw new UnsupportedOperationException();
-	}
+  private Object value;
 
-	public String getName() {
-		return name;
-	}
+  private boolean assigned;
 
-	public String getDescription() {
-		return description;
-	}
+  private Object cachedDefaultValue;
 
-	public Object getValue() {
-		return value;
-	}
+  RolapSchemaParameter(RolapSchema schema, String name, String defaultExpString,
+    String description, Type type, boolean modifiable) {
+    assert defaultExpString != null;
+    assert name != null;
+    assert schema != null;
+    assert type != null;
+    this.schema = schema;
+    this.name = name;
+    this.defaultExpString = defaultExpString;
+    this.description = description;
+    this.type = type;
+    this.modifiable = modifiable;
+    schema.parameterList.add(this);
+  }
 
-	public void setValue(Object value) {
-		if (!modifiable) {
-			throw MondrianResource.instance().ParameterIsNotModifiable.ex(getName(),
-					getScope().name());
-		}
-		this.assigned = true;
-		this.value = value;
-	}
+  RolapSchema getSchema() {
+    return schema;
+  }
 
-	public boolean isSet() {
-		return assigned;
-	}
+  public boolean isModifiable() {
+    return modifiable;
+  }
 
-	public void unsetValue() {
-		if (!modifiable) {
-			throw MondrianResource.instance().ParameterIsNotModifiable.ex(getName(),
-					getScope().name());
-		}
-		assigned = false;
-		value = null;
-	}
+  public Scope getScope() {
+    return Scope.Schema;
+  }
 
-	public Calc compile(ExpCompiler compiler) {
-		// Parse and compile the expression for the default value.
-		Exp defaultExp = compiler.getValidator().getQuery().getConnection()
-				.parseExpression(defaultExpString);
-		defaultExp = compiler.getValidator().validate(defaultExp, true);
-		final Calc defaultCalc = defaultExp.accept(compiler);
+  public Type getType() {
+    return type;
+  }
 
-		// Generate a program which looks at the assigned value first,
-		// and if it is not set, returns the default expression.
-		return new GenericCalc(defaultExp) {
-			public Calc[] getCalcs() {
-				return new Calc[] { defaultCalc };
-			}
+  public Exp getDefaultExp() {
+    throw new UnsupportedOperationException();
+  }
 
-			public Object evaluate(Evaluator evaluator) {
-				if (value != null) {
-					return value;
-				}
-				if (cachedDefaultValue == null) {
-					cachedDefaultValue = defaultCalc.evaluate(evaluator);
-				}
-				return cachedDefaultValue;
-			}
-		};
-	}
+  public String getName() {
+    return name;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public Object getValue() {
+    return value;
+  }
+
+  public void setValue(Object value) {
+    if (!modifiable) {
+      throw MondrianResource.instance().ParameterIsNotModifiable.ex(getName(),
+        getScope().name());
+    }
+    this.assigned = true;
+    this.value = value;
+  }
+
+  public boolean isSet() {
+    return assigned;
+  }
+
+  public void unsetValue() {
+    if (!modifiable) {
+      throw MondrianResource.instance().ParameterIsNotModifiable.ex(getName(),
+        getScope().name());
+    }
+    assigned = false;
+    value = null;
+  }
+
+  public Calc compile(ExpCompiler compiler) {
+    // Parse and compile the expression for the default value.
+    Exp defaultExp = compiler.getValidator().getQuery().getConnection()
+      .parseExpression(defaultExpString);
+    defaultExp = compiler.getValidator().validate(defaultExp, true);
+    final Calc defaultCalc = defaultExp.accept(compiler);
+
+    // Generate a program which looks at the assigned value first,
+    // and if it is not set, returns the default expression.
+    return new GenericCalc(defaultExp) {
+      public Calc[] getCalcs() {
+        return new Calc[] { defaultCalc };
+      }
+
+      public Object evaluate(Evaluator evaluator) {
+        if (value != null) {
+          return value;
+        }
+        if (cachedDefaultValue == null) {
+          cachedDefaultValue = defaultCalc.evaluate(evaluator);
+        }
+        return cachedDefaultValue;
+      }
+    };
+  }
 }
 
 // End RolapSchemaParameter.java

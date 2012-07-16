@@ -26,116 +26,116 @@ import java.util.*;
  * @since Nov 6, 2006
  */
 public class MinusStarPredicate extends AbstractColumnPredicate {
-	private final StarColumnPredicate plus;
-	private final StarColumnPredicate minus;
+  private final StarColumnPredicate plus;
 
-	/**
-	 * Creates a MinusStarPredicate.
-	 * 
-	 * @param plus
-	 *          Positive predicate
-	 * @param minus
-	 *          Negative predicate
-	 * @pre plus != null
-	 * @pre minus != null
-	 */
-	public MinusStarPredicate(StarColumnPredicate plus, StarColumnPredicate minus) {
-		super(plus.getConstrainedColumn());
-		assert minus != null;
-		this.plus = plus;
-		this.minus = minus;
-	}
+  private final StarColumnPredicate minus;
 
-	public boolean equals(Object obj) {
-		if (obj instanceof MinusStarPredicate) {
-			MinusStarPredicate that = (MinusStarPredicate) obj;
-			return this.plus.equals(that.plus) && this.minus.equals(that.minus);
-		} else {
-			return false;
-		}
-	}
+  /**
+   * Creates a MinusStarPredicate.
+   * 
+   * @param plus
+   *          Positive predicate
+   * @param minus
+   *          Negative predicate
+   * @pre plus != null
+   * @pre minus != null
+   */
+  public MinusStarPredicate(StarColumnPredicate plus, StarColumnPredicate minus) {
+    super(plus.getConstrainedColumn());
+    assert minus != null;
+    this.plus = plus;
+    this.minus = minus;
+  }
 
-	public int hashCode() {
-		return plus.hashCode() * 31 + minus.hashCode();
-	}
+  public boolean equals(Object obj) {
+    if (obj instanceof MinusStarPredicate) {
+      MinusStarPredicate that = (MinusStarPredicate) obj;
+      return this.plus.equals(that.plus) && this.minus.equals(that.minus);
+    } else {
+      return false;
+    }
+  }
 
-	public RolapStar.Column getConstrainedColumn() {
-		return plus.getConstrainedColumn();
-	}
+  public int hashCode() {
+    return plus.hashCode() * 31 + minus.hashCode();
+  }
 
-	public void values(Collection<Object> collection) {
-		Set<Object> plusValues = new HashSet<Object>();
-		plus.values(plusValues);
-		List<Object> minusValues = new ArrayList<Object>();
-		minus.values(minusValues);
-		plusValues.removeAll(minusValues);
-		collection.addAll(plusValues);
-	}
+  public RolapStar.Column getConstrainedColumn() {
+    return plus.getConstrainedColumn();
+  }
 
-	public boolean evaluate(Object value) {
-		return plus.evaluate(value) && !minus.evaluate(value);
-	}
+  public void values(Collection<Object> collection) {
+    Set<Object> plusValues = new HashSet<Object>();
+    plus.values(plusValues);
+    List<Object> minusValues = new ArrayList<Object>();
+    minus.values(minusValues);
+    plusValues.removeAll(minusValues);
+    collection.addAll(plusValues);
+  }
 
-	public void describe(StringBuilder buf) {
-		buf.append("(").append(plus).append(" - ").append(minus).append(")");
-	}
+  public boolean evaluate(Object value) {
+    return plus.evaluate(value) && !minus.evaluate(value);
+  }
 
-	public Overlap intersect(StarColumnPredicate predicate) {
-		throw new UnsupportedOperationException();
-	}
+  public void describe(StringBuilder buf) {
+    buf.append("(").append(plus).append(" - ").append(minus).append(")");
+  }
 
-	public boolean mightIntersect(StarPredicate other) {
-		// Approximately, this constraint might intersect if it intersects
-		// with the 'plus' side. It's possible that the 'minus' side might
-		// wipe out all of those intersections, but we don't consider that.
-		return plus.mightIntersect(other);
-	}
+  public Overlap intersect(StarColumnPredicate predicate) {
+    throw new UnsupportedOperationException();
+  }
 
-	public StarColumnPredicate minus(StarPredicate predicate) {
-		assert predicate != null;
-		if (predicate instanceof ValueColumnPredicate) {
-			ValueColumnPredicate valuePredicate = (ValueColumnPredicate) predicate;
-			if (!evaluate(valuePredicate.getValue())) {
-				// Case 3: 'minus' is a list, 'constraint' is a value
-				// which is not matched by this
-				return this;
-			}
-		}
-		if (minus instanceof ListColumnPredicate) {
-			ListColumnPredicate minusList = (ListColumnPredicate) minus;
-			RolapStar.Column column = plus.getConstrainedColumn();
-			if (predicate instanceof ListColumnPredicate) {
-				// Case 1: 'minus' and 'constraint' are both lists.
-				ListColumnPredicate list = (ListColumnPredicate) predicate;
-				List<StarColumnPredicate> unionList = new ArrayList<StarColumnPredicate>();
-				unionList.addAll(minusList.getPredicates());
-				unionList.addAll(list.getPredicates());
-				return new MinusStarPredicate(plus, new ListColumnPredicate(column,
-						unionList));
-			}
-			if (predicate instanceof ValueColumnPredicate) {
-				ValueColumnPredicate valuePredicate = (ValueColumnPredicate) predicate;
-				if (!evaluate(valuePredicate.getValue())) {
-					// Case 3: 'minus' is a list, 'constraint' is a value
-					// which is not matched by this
-					return this;
-				}
-				// Case 2: 'minus' is a list, 'constraint' is a value.
-				List<StarColumnPredicate> unionList = new ArrayList<StarColumnPredicate>();
-				unionList.addAll(minusList.getPredicates());
-				unionList.add(new ValueColumnPredicate(column, valuePredicate
-						.getValue()));
-				return new MinusStarPredicate(plus, new ListColumnPredicate(column,
-						unionList));
-			}
-		}
-		return new MinusStarPredicate(this, (StarColumnPredicate) predicate);
-	}
+  public boolean mightIntersect(StarPredicate other) {
+    // Approximately, this constraint might intersect if it intersects
+    // with the 'plus' side. It's possible that the 'minus' side might
+    // wipe out all of those intersections, but we don't consider that.
+    return plus.mightIntersect(other);
+  }
 
-	public StarColumnPredicate cloneWithColumn(RolapStar.Column column) {
-		return new MinusStarPredicate(plus.cloneWithColumn(column),
-				minus.cloneWithColumn(column));
-	}
+  public StarColumnPredicate minus(StarPredicate predicate) {
+    assert predicate != null;
+    if (predicate instanceof ValueColumnPredicate) {
+      ValueColumnPredicate valuePredicate = (ValueColumnPredicate) predicate;
+      if (!evaluate(valuePredicate.getValue())) {
+        // Case 3: 'minus' is a list, 'constraint' is a value
+        // which is not matched by this
+        return this;
+      }
+    }
+    if (minus instanceof ListColumnPredicate) {
+      ListColumnPredicate minusList = (ListColumnPredicate) minus;
+      RolapStar.Column column = plus.getConstrainedColumn();
+      if (predicate instanceof ListColumnPredicate) {
+        // Case 1: 'minus' and 'constraint' are both lists.
+        ListColumnPredicate list = (ListColumnPredicate) predicate;
+        List<StarColumnPredicate> unionList = new ArrayList<StarColumnPredicate>();
+        unionList.addAll(minusList.getPredicates());
+        unionList.addAll(list.getPredicates());
+        return new MinusStarPredicate(plus, new ListColumnPredicate(column,
+          unionList));
+      }
+      if (predicate instanceof ValueColumnPredicate) {
+        ValueColumnPredicate valuePredicate = (ValueColumnPredicate) predicate;
+        if (!evaluate(valuePredicate.getValue())) {
+          // Case 3: 'minus' is a list, 'constraint' is a value
+          // which is not matched by this
+          return this;
+        }
+        // Case 2: 'minus' is a list, 'constraint' is a value.
+        List<StarColumnPredicate> unionList = new ArrayList<StarColumnPredicate>();
+        unionList.addAll(minusList.getPredicates());
+        unionList.add(new ValueColumnPredicate(column, valuePredicate.getValue()));
+        return new MinusStarPredicate(plus, new ListColumnPredicate(column,
+          unionList));
+      }
+    }
+    return new MinusStarPredicate(this, (StarColumnPredicate) predicate);
+  }
+
+  public StarColumnPredicate cloneWithColumn(RolapStar.Column column) {
+    return new MinusStarPredicate(plus.cloneWithColumn(column), minus
+      .cloneWithColumn(column));
+  }
 }
 
 // End MinusStarPredicate.java

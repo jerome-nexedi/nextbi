@@ -19,17 +19,17 @@ import mondrian.olap.Evaluator;
  * @since Jan 11, 2007
  */
 public interface IterCalc extends Calc {
-	/**
-	 * Evaluates an expression to yield an Iterable of members or tuples.
-	 * 
-	 * <p>
-	 * The Iterable is immutable.
-	 * 
-	 * @param evaluator
-	 *          Evaluation context
-	 * @return An Iterable of members or tuples, never null.
-	 */
-	TupleIterable evaluateIterable(Evaluator evaluator);
+  /**
+   * Evaluates an expression to yield an Iterable of members or tuples.
+   * 
+   * <p>
+   * The Iterable is immutable.
+   * 
+   * @param evaluator
+   *          Evaluation context
+   * @return An Iterable of members or tuples, never null.
+   */
+  TupleIterable evaluateIterable(Evaluator evaluator);
 }
 
 // End IterCalc.java

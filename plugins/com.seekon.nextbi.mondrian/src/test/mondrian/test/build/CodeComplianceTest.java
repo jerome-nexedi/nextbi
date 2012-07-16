@@ -7,45 +7,43 @@
 // Copyright (C) 2009-2009 Julian Hyde
 // All Rights Reserved.
 // You must accept the terms of that agreement to use this software.
-*/
+ */
 package mondrian.test.build;
 
 /**
  * Omnibus code compliance test to wrap various ant tasks that check the code
  * base, such checkFile, as macker, Javadoc, preambles, and so on.
- *
+ * 
  * @author Chard Nelson
  * @since Sep 8, 2009
- * @version $Id: //open/mondrian/testsrc/main/mondrian/test/build/CodeComplianceTest.java#1 $
+ * @version $Id:
+ *          //open/mondrian/testsrc/main/mondrian/test/build/CodeComplianceTest
+ *          .java#1 $
  */
-public class CodeComplianceTest
-    extends AntTestBase
-{
-    /**
-     * Creates a CodeComplianceTest.
-     *
-     * @param name Test name
-     */
-    public CodeComplianceTest(String name)
-    {
-        super(name);
-    }
+public class CodeComplianceTest extends AntTestBase {
+  /**
+   * Creates a CodeComplianceTest.
+   * 
+   * @param name
+   *          Test name
+   */
+  public CodeComplianceTest(String name) {
+    super(name);
+  }
 
-    /**
-     * Checks source code file formatting.
-     */
-    public void testCodeFormatting()  throws Exception
-    {
-        runAntTest("checkCodeFormatting");
-    }
+  /**
+   * Checks source code file formatting.
+   */
+  public void testCodeFormatting() throws Exception {
+    runAntTest("checkCodeFormatting");
+  }
 
-    /**
-     * Checks that javadoc can be generated without errors.
-     */
-    public void testJavadoc() throws Exception
-    {
-        runAntTest("checkJavadoc");
-    }
+  /**
+   * Checks that javadoc can be generated without errors.
+   */
+  public void testJavadoc() throws Exception {
+    runAntTest("checkJavadoc");
+  }
 }
 
 // End CodeComplianceTest.java

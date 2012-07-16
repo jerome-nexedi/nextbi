@@ -28,23 +28,22 @@ import mondrian.calc.Calc;
  *          #4 $
  * @since Sep 26, 2005
  */
-public abstract class AbstractStringCalc extends AbstractCalc implements
-		StringCalc {
-	/**
-	 * Creates an AbstractStringCalc.
-	 * 
-	 * @param exp
-	 *          Source expression
-	 * @param calcs
-	 *          Child compiled expressions
-	 */
-	protected AbstractStringCalc(Exp exp, Calc[] calcs) {
-		super(exp, calcs);
-	}
+public abstract class AbstractStringCalc extends AbstractCalc implements StringCalc {
+  /**
+   * Creates an AbstractStringCalc.
+   * 
+   * @param exp
+   *          Source expression
+   * @param calcs
+   *          Child compiled expressions
+   */
+  protected AbstractStringCalc(Exp exp, Calc[] calcs) {
+    super(exp, calcs);
+  }
 
-	public Object evaluate(Evaluator evaluator) {
-		return evaluateString(evaluator);
-	}
+  public Object evaluate(Evaluator evaluator) {
+    return evaluateString(evaluator);
+  }
 }
 
 // End AbstractStringCalc.java

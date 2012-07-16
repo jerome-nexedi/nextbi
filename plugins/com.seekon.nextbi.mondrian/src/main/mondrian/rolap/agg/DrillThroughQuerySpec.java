@@ -33,132 +33,134 @@ import java.util.Set;
  *          .java#22 $
  */
 class DrillThroughQuerySpec extends AbstractQuerySpec {
-	private final CellRequest request;
-	private final List<StarPredicate> listOfStarPredicates;
-	private final List<String> columnNames;
-	private final int maxColumnNameLength;
+  private final CellRequest request;
 
-	public DrillThroughQuerySpec(CellRequest request,
-			StarPredicate starPredicateSlicer, boolean countOnly) {
-		super(request.getMeasure().getStar(), countOnly);
-		this.request = request;
-		if (starPredicateSlicer != null) {
-			this.listOfStarPredicates = Collections
-					.singletonList(starPredicateSlicer);
-		} else {
-			this.listOfStarPredicates = Collections.emptyList();
-		}
-		int tmpMaxColumnNameLength = getStar().getSqlQueryDialect()
-				.getMaxColumnNameLength();
-		if (tmpMaxColumnNameLength == 0) {
-			// From java.sql.DatabaseMetaData: "a result of zero means that
-			// there is no limit or the limit is not known"
-			maxColumnNameLength = Integer.MAX_VALUE;
-		} else {
-			maxColumnNameLength = tmpMaxColumnNameLength;
-		}
-		this.columnNames = computeDistinctColumnNames();
-	}
+  private final List<StarPredicate> listOfStarPredicates;
 
-	private List<String> computeDistinctColumnNames() {
-		final List<String> columnNames = new ArrayList<String>();
-		final Set<String> columnNameSet = new HashSet<String>();
+  private final List<String> columnNames;
 
-		final RolapStar.Column[] columns = getColumns();
-		for (RolapStar.Column column : columns) {
-			addColumnName(column, columnNames, columnNameSet);
-		}
+  private final int maxColumnNameLength;
 
-		addColumnName(request.getMeasure(), columnNames, columnNameSet);
+  public DrillThroughQuerySpec(CellRequest request,
+    StarPredicate starPredicateSlicer, boolean countOnly) {
+    super(request.getMeasure().getStar(), countOnly);
+    this.request = request;
+    if (starPredicateSlicer != null) {
+      this.listOfStarPredicates = Collections.singletonList(starPredicateSlicer);
+    } else {
+      this.listOfStarPredicates = Collections.emptyList();
+    }
+    int tmpMaxColumnNameLength = getStar().getSqlQueryDialect()
+      .getMaxColumnNameLength();
+    if (tmpMaxColumnNameLength == 0) {
+      // From java.sql.DatabaseMetaData: "a result of zero means that
+      // there is no limit or the limit is not known"
+      maxColumnNameLength = Integer.MAX_VALUE;
+    } else {
+      maxColumnNameLength = tmpMaxColumnNameLength;
+    }
+    this.columnNames = computeDistinctColumnNames();
+  }
 
-		return columnNames;
-	}
+  private List<String> computeDistinctColumnNames() {
+    final List<String> columnNames = new ArrayList<String>();
+    final Set<String> columnNameSet = new HashSet<String>();
 
-	private void addColumnName(final RolapStar.Column column,
-			final List<String> columnNames, final Set<String> columnNameSet) {
-		String columnName = column.getName();
-		if (columnName != null) {
-			// nothing
-		} else if (column.getExpression() instanceof MondrianDef.Column) {
-			columnName = ((MondrianDef.Column) column.getExpression()).name;
-		} else {
-			columnName = "c" + Integer.toString(columnNames.size());
-		}
-		// Register the column name, and if it's not unique, append numeric
-		// suffixes until it is. Also make sure that it is within the
-		// range allowed by this SQL dialect.
-		String originalColumnName = columnName;
-		if (columnName.length() > maxColumnNameLength) {
-			columnName = columnName.substring(0, maxColumnNameLength);
-		}
-		for (int j = 0; !columnNameSet.add(columnName); j++) {
-			final String suffix = "_" + Integer.toString(j);
-			columnName = originalColumnName;
-			if (originalColumnName.length() + suffix.length() > maxColumnNameLength) {
-				columnName = originalColumnName.substring(0, maxColumnNameLength
-						- suffix.length());
-			}
-			columnName += suffix;
-		}
-		columnNames.add(columnName);
-	}
+    final RolapStar.Column[] columns = getColumns();
+    for (RolapStar.Column column : columns) {
+      addColumnName(column, columnNames, columnNameSet);
+    }
 
-	public int getMeasureCount() {
-		return 1;
-	}
+    addColumnName(request.getMeasure(), columnNames, columnNameSet);
 
-	public RolapStar.Measure getMeasure(final int i) {
-		Util.assertTrue(i == 0);
-		return request.getMeasure();
-	}
+    return columnNames;
+  }
 
-	public String getMeasureAlias(final int i) {
-		Util.assertTrue(i == 0);
-		return columnNames.get(columnNames.size() - 1);
-	}
+  private void addColumnName(final RolapStar.Column column,
+    final List<String> columnNames, final Set<String> columnNameSet) {
+    String columnName = column.getName();
+    if (columnName != null) {
+      // nothing
+    } else if (column.getExpression() instanceof MondrianDef.Column) {
+      columnName = ((MondrianDef.Column) column.getExpression()).name;
+    } else {
+      columnName = "c" + Integer.toString(columnNames.size());
+    }
+    // Register the column name, and if it's not unique, append numeric
+    // suffixes until it is. Also make sure that it is within the
+    // range allowed by this SQL dialect.
+    String originalColumnName = columnName;
+    if (columnName.length() > maxColumnNameLength) {
+      columnName = columnName.substring(0, maxColumnNameLength);
+    }
+    for (int j = 0; !columnNameSet.add(columnName); j++) {
+      final String suffix = "_" + Integer.toString(j);
+      columnName = originalColumnName;
+      if (originalColumnName.length() + suffix.length() > maxColumnNameLength) {
+        columnName = originalColumnName.substring(0, maxColumnNameLength
+          - suffix.length());
+      }
+      columnName += suffix;
+    }
+    columnNames.add(columnName);
+  }
 
-	public RolapStar.Column[] getColumns() {
-		return request.getConstrainedColumns();
-	}
+  public int getMeasureCount() {
+    return 1;
+  }
 
-	public String getColumnAlias(final int i) {
-		return columnNames.get(i);
-	}
+  public RolapStar.Measure getMeasure(final int i) {
+    Util.assertTrue(i == 0);
+    return request.getMeasure();
+  }
 
-	public StarColumnPredicate getColumnPredicate(final int i) {
-		final StarColumnPredicate constr = request.getValueAt(i);
-		return (constr == null) ? LiteralStarPredicate.TRUE : constr;
-	}
+  public String getMeasureAlias(final int i) {
+    Util.assertTrue(i == 0);
+    return columnNames.get(columnNames.size() - 1);
+  }
 
-	public Pair<String, List<SqlStatement.Type>> generateSqlQuery() {
-		SqlQuery sqlQuery = newSqlQuery();
-		nonDistinctGenerateSql(sqlQuery);
-		return sqlQuery.toSqlAndTypes();
-	}
+  public RolapStar.Column[] getColumns() {
+    return request.getConstrainedColumns();
+  }
 
-	protected void addMeasure(final int i, final SqlQuery sqlQuery) {
-		RolapStar.Measure measure = getMeasure(i);
+  public String getColumnAlias(final int i) {
+    return columnNames.get(i);
+  }
 
-		Util.assertTrue(measure.getTable() == getStar().getFactTable());
-		measure.getTable().addToFrom(sqlQuery, false, true);
+  public StarColumnPredicate getColumnPredicate(final int i) {
+    final StarColumnPredicate constr = request.getValueAt(i);
+    return (constr == null) ? LiteralStarPredicate.TRUE : constr;
+  }
 
-		if (!countOnly) {
-			String expr = measure.generateExprString(sqlQuery);
-			sqlQuery.addSelect(expr, null, getMeasureAlias(i));
-		}
-	}
+  public Pair<String, List<SqlStatement.Type>> generateSqlQuery() {
+    SqlQuery sqlQuery = newSqlQuery();
+    nonDistinctGenerateSql(sqlQuery);
+    return sqlQuery.toSqlAndTypes();
+  }
 
-	protected boolean isAggregate() {
-		return false;
-	}
+  protected void addMeasure(final int i, final SqlQuery sqlQuery) {
+    RolapStar.Measure measure = getMeasure(i);
 
-	protected boolean isOrdered() {
-		return true;
-	}
+    Util.assertTrue(measure.getTable() == getStar().getFactTable());
+    measure.getTable().addToFrom(sqlQuery, false, true);
 
-	protected List<StarPredicate> getPredicateList() {
-		return listOfStarPredicates;
-	}
+    if (!countOnly) {
+      String expr = measure.generateExprString(sqlQuery);
+      sqlQuery.addSelect(expr, null, getMeasureAlias(i));
+    }
+  }
+
+  protected boolean isAggregate() {
+    return false;
+  }
+
+  protected boolean isOrdered() {
+    return true;
+  }
+
+  protected List<StarPredicate> getPredicateList() {
+    return listOfStarPredicates;
+  }
 }
 
 // End DrillThroughQuerySpec.java

@@ -19,15 +19,15 @@ import java.util.Map;
  * @author jhyde
  */
 public interface Annotated {
-	/**
-	 * Returns a list of annotations.
-	 * 
-	 * <p>
-	 * The map may be empty, never null.
-	 * 
-	 * @return Map from annotation name to annotations.
-	 */
-	Map<String, Annotation> getAnnotationMap();
+  /**
+   * Returns a list of annotations.
+   * 
+   * <p>
+   * The map may be empty, never null.
+   * 
+   * @return Map from annotation name to annotations.
+   */
+  Map<String, Annotation> getAnnotationMap();
 }
 
 // End Annotated.java

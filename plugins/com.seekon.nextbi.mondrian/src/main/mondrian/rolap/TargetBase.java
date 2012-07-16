@@ -31,85 +31,89 @@ import java.sql.SQLException;
  * @version $Id: //open/mondrian/src/main/mondrian/rolap/TargetBase.java#6 $
  */
 public abstract class TargetBase {
-	final List<RolapMember> srcMembers;
-	final RolapLevel level;
-	private RolapMember currMember;
-	private List<RolapMember> list;
-	final Object cacheLock;
-	final TupleReader.MemberBuilder memberBuilder;
+  final List<RolapMember> srcMembers;
 
-	public TargetBase(List<RolapMember> srcMembers, RolapLevel level,
-			TupleReader.MemberBuilder memberBuilder) {
-		this.srcMembers = srcMembers;
-		this.level = level;
-		cacheLock = memberBuilder.getMemberCacheLock();
-		this.memberBuilder = memberBuilder;
-	}
+  final RolapLevel level;
 
-	public void setList(final List<RolapMember> list) {
-		this.list = list;
-	}
+  private RolapMember currMember;
 
-	public List<RolapMember> getSrcMembers() {
-		return srcMembers;
-	}
+  private List<RolapMember> list;
 
-	public RolapLevel getLevel() {
-		return level;
-	}
+  final Object cacheLock;
 
-	public RolapMember getCurrMember() {
-		return this.currMember;
-	}
+  final TupleReader.MemberBuilder memberBuilder;
 
-	public void removeCurrMember() {
-		this.currMember = null;
-	}
+  public TargetBase(List<RolapMember> srcMembers, RolapLevel level,
+    TupleReader.MemberBuilder memberBuilder) {
+    this.srcMembers = srcMembers;
+    this.level = level;
+    cacheLock = memberBuilder.getMemberCacheLock();
+    this.memberBuilder = memberBuilder;
+  }
 
-	public void setCurrMember(final RolapMember m) {
-		this.currMember = m;
-	}
+  public void setList(final List<RolapMember> list) {
+    this.list = list;
+  }
 
-	public List<RolapMember> getList() {
-		return list;
-	}
+  public List<RolapMember> getSrcMembers() {
+    return srcMembers;
+  }
 
-	public String toString() {
-		return level.getUniqueName();
-	}
+  public RolapLevel getLevel() {
+    return level;
+  }
 
-	/**
-	 * Adds a row to the collection.
-	 * 
-	 * @param stmt
-	 *          Statement
-	 * @param column
-	 *          Column ordinal (0-based)
-	 * @return Ordinal of next unconsumed column
-	 * @throws SQLException
-	 *           On error
-	 */
-	public final int addRow(SqlStatement stmt, int column) throws SQLException {
-		synchronized (cacheLock) {
-			return internalAddRow(stmt, column);
-		}
-	}
+  public RolapMember getCurrMember() {
+    return this.currMember;
+  }
 
-	public abstract void open();
+  public void removeCurrMember() {
+    this.currMember = null;
+  }
 
-	public abstract List<Member> close();
+  public void setCurrMember(final RolapMember m) {
+    this.currMember = m;
+  }
 
-	abstract int internalAddRow(SqlStatement stmt, int column)
-			throws SQLException;
+  public List<RolapMember> getList() {
+    return list;
+  }
 
-	public void add(final RolapMember member) {
-		this.getList().add(member);
-	}
+  public String toString() {
+    return level.getUniqueName();
+  }
 
-	RolapNativeCrossJoin.NonEmptyCrossJoinConstraint castToNonEmptyCJConstraint(
-			TupleConstraint constraint) {
-		return (RolapNativeCrossJoin.NonEmptyCrossJoinConstraint) constraint;
-	}
+  /**
+   * Adds a row to the collection.
+   * 
+   * @param stmt
+   *          Statement
+   * @param column
+   *          Column ordinal (0-based)
+   * @return Ordinal of next unconsumed column
+   * @throws SQLException
+   *           On error
+   */
+  public final int addRow(SqlStatement stmt, int column) throws SQLException {
+    synchronized (cacheLock) {
+      return internalAddRow(stmt, column);
+    }
+  }
+
+  public abstract void open();
+
+  public abstract List<Member> close();
+
+  abstract int internalAddRow(SqlStatement stmt, int column) throws SQLException;
+
+  public void add(final RolapMember member) {
+    this.getList().add(member);
+  }
+
+  RolapNativeCrossJoin.NonEmptyCrossJoinConstraint castToNonEmptyCJConstraint(
+    TupleConstraint constraint) {
+    return (RolapNativeCrossJoin.NonEmptyCrossJoinConstraint) constraint;
+  }
 }
 
 // End TargetBase.java

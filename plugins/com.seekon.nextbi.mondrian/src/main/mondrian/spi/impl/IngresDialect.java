@@ -22,28 +22,27 @@ import java.sql.SQLException;
  */
 public class IngresDialect extends JdbcDialectImpl {
 
-	public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
-			IngresDialect.class, DatabaseProduct.INGRES);
+  public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
+    IngresDialect.class, DatabaseProduct.INGRES);
 
-	/**
-	 * Creates an IngresDialect.
-	 * 
-	 * @param connection
-	 *          Connection
-	 */
-	public IngresDialect(Connection connection) throws SQLException {
-		super(connection);
-	}
+  /**
+   * Creates an IngresDialect.
+   * 
+   * @param connection
+   *          Connection
+   */
+  public IngresDialect(Connection connection) throws SQLException {
+    super(connection);
+  }
 
-	public String generateInline(List<String> columnNames,
-			List<String> columnTypes, List<String[]> valueList) {
-		return generateInlineGeneric(columnNames, columnTypes, valueList, null,
-				false);
-	}
+  public String generateInline(List<String> columnNames, List<String> columnTypes,
+    List<String[]> valueList) {
+    return generateInlineGeneric(columnNames, columnTypes, valueList, null, false);
+  }
 
-	public boolean requiresOrderByAlias() {
-		return true;
-	}
+  public boolean requiresOrderByAlias() {
+    return true;
+  }
 }
 
 // End IngresDialect.java

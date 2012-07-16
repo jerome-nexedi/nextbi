@@ -55,37 +55,37 @@ import mondrian.util.Pair;
  *          $
  */
 public class SmartMemberListCache<K, V> {
-	SmartCache<Pair<K, Object>, V> cache;
+  SmartCache<Pair<K, Object>, V> cache;
 
-	public SmartMemberListCache() {
-		cache = new SoftSmartCache<Pair<K, Object>, V>();
-	}
+  public SmartMemberListCache() {
+    cache = new SoftSmartCache<Pair<K, Object>, V>();
+  }
 
-	public Object put(K key, SqlConstraint constraint, V value) {
-		Object cacheKey = constraint.getCacheKey();
-		if (cacheKey == null) {
-			return null;
-		}
-		Pair<K, Object> key2 = new Pair<K, Object>(key, cacheKey);
-		return cache.put(key2, value);
-	}
+  public Object put(K key, SqlConstraint constraint, V value) {
+    Object cacheKey = constraint.getCacheKey();
+    if (cacheKey == null) {
+      return null;
+    }
+    Pair<K, Object> key2 = new Pair<K, Object>(key, cacheKey);
+    return cache.put(key2, value);
+  }
 
-	public V get(K key, SqlConstraint constraint) {
-		Pair<K, Object> key2 = new Pair<K, Object>(key, constraint.getCacheKey());
-		return cache.get(key2);
-	}
+  public V get(K key, SqlConstraint constraint) {
+    Pair<K, Object> key2 = new Pair<K, Object>(key, constraint.getCacheKey());
+    return cache.get(key2);
+  }
 
-	public void clear() {
-		cache.clear();
-	}
+  public void clear() {
+    cache.clear();
+  }
 
-	SmartCache<Pair<K, Object>, V> getCache() {
-		return cache;
-	}
+  SmartCache<Pair<K, Object>, V> getCache() {
+    return cache;
+  }
 
-	void setCache(SmartCache<Pair<K, Object>, V> cache) {
-		this.cache = cache;
-	}
+  void setCache(SmartCache<Pair<K, Object>, V> cache) {
+    this.cache = cache;
+  }
 }
 
 // End SmartMemberListCache.java

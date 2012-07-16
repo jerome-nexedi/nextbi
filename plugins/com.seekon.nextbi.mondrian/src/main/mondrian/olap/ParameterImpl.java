@@ -28,268 +28,272 @@ import java.util.*;
  * @since Jul 22, 2006
  */
 public class ParameterImpl implements Parameter, ParameterCompilable {
-	private final String name;
-	private String description;
-	private Exp defaultExp;
-	private Type type;
-	private ParameterSlot slot = new ParameterSlot() {
-		Object value;
-		boolean assigned;
+  private final String name;
 
-		public Object getCachedDefaultValue() {
-			throw new UnsupportedOperationException();
-		}
+  private String description;
 
-		public Calc getDefaultValueCalc() {
-			throw new UnsupportedOperationException();
-		}
+  private Exp defaultExp;
 
-		public int getIndex() {
-			throw new UnsupportedOperationException();
-		}
+  private Type type;
 
-		public Parameter getParameter() {
-			return ParameterImpl.this;
-		}
+  private ParameterSlot slot = new ParameterSlot() {
+    Object value;
 
-		public Object getParameterValue() {
-			return value;
-		}
+    boolean assigned;
 
-		public boolean isParameterSet() {
-			return assigned;
-		}
+    public Object getCachedDefaultValue() {
+      throw new UnsupportedOperationException();
+    }
 
-		public void unsetParameterValue() {
-			this.assigned = false;
-			this.value = null;
-		}
+    public Calc getDefaultValueCalc() {
+      throw new UnsupportedOperationException();
+    }
 
-		public void setCachedDefaultValue(Object value) {
-			throw new UnsupportedOperationException();
-		}
+    public int getIndex() {
+      throw new UnsupportedOperationException();
+    }
 
-		public void setParameterValue(Object value, boolean assigned) {
-			this.assigned = true;
-			this.value = value;
+    public Parameter getParameter() {
+      return ParameterImpl.this;
+    }
 
-			// make sure caller called convert first
-			assert !(value instanceof List && !(value instanceof TupleList));
-			assert !(value instanceof MemberExpr);
-			assert !(value instanceof Literal);
-		}
-	};
+    public Object getParameterValue() {
+      return value;
+    }
 
-	public ParameterImpl(String name, Exp defaultExp, String description,
-			Type type) {
-		this.name = name;
-		this.defaultExp = defaultExp;
-		this.description = description;
-		this.type = type;
-		assert defaultExp != null;
-		assert type instanceof StringType || type instanceof NumericType
-				|| type instanceof MemberType;
-	}
+    public boolean isParameterSet() {
+      return assigned;
+    }
 
-	public Scope getScope() {
-		return Scope.Statement;
-	}
+    public void unsetParameterValue() {
+      this.assigned = false;
+      this.value = null;
+    }
 
-	public Type getType() {
-		return type;
-	}
+    public void setCachedDefaultValue(Object value) {
+      throw new UnsupportedOperationException();
+    }
 
-	public Exp getDefaultExp() {
-		return defaultExp;
-	}
+    public void setParameterValue(Object value, boolean assigned) {
+      this.assigned = true;
+      this.value = value;
 
-	public String getName() {
-		return name;
-	}
+      // make sure caller called convert first
+      assert !(value instanceof List && !(value instanceof TupleList));
+      assert !(value instanceof MemberExpr);
+      assert !(value instanceof Literal);
+    }
+  };
 
-	public Object getValue() {
-		if (slot == null) {
-			// query has not been resolved yet, so it's not possible for the
-			// parameter to have a value
-			return null;
-		} else {
-			final Object value = slot.getParameterValue();
-			return convertBack(value);
-		}
-	}
+  public ParameterImpl(String name, Exp defaultExp, String description, Type type) {
+    this.name = name;
+    this.defaultExp = defaultExp;
+    this.description = description;
+    this.type = type;
+    assert defaultExp != null;
+    assert type instanceof StringType || type instanceof NumericType
+      || type instanceof MemberType;
+  }
 
-	public void setValue(Object value) {
-		slot.setParameterValue(convert(value), true);
-	}
+  public Scope getScope() {
+    return Scope.Statement;
+  }
 
-	public boolean isSet() {
-		return slot != null && slot.isParameterSet();
-	}
+  public Type getType() {
+    return type;
+  }
 
-	public void unsetValue() {
-		slot.unsetParameterValue();
-	}
+  public Exp getDefaultExp() {
+    return defaultExp;
+  }
 
-	public String getDescription() {
-		return description;
-	}
+  public String getName() {
+    return name;
+  }
 
-	// For the purposes of type inference and expression substitution, a
-	// parameter is atomic; therefore, we ignore the child member, if any.
-	public Object[] getChildren() {
-		return null;
-	}
+  public Object getValue() {
+    if (slot == null) {
+      // query has not been resolved yet, so it's not possible for the
+      // parameter to have a value
+      return null;
+    } else {
+      final Object value = slot.getParameterValue();
+      return convertBack(value);
+    }
+  }
 
-	/**
-	 * Returns whether this parameter is equal to another, based upon name, type
-	 * and value
-	 */
-	public boolean equals(Object other) {
-		if (!(other instanceof ParameterImpl)) {
-			return false;
-		}
-		ParameterImpl that = (ParameterImpl) other;
-		return that.getName().equals(this.getName())
-				&& that.defaultExp.equals(this.defaultExp);
-	}
+  public void setValue(Object value) {
+    slot.setParameterValue(convert(value), true);
+  }
 
-	public int hashCode() {
-		return Util.hash(getName().hashCode(), defaultExp.hashCode());
-	}
+  public boolean isSet() {
+    return slot != null && slot.isParameterSet();
+  }
 
-	/**
-	 * Returns whether the parameter can be modified.
-	 */
-	public boolean isModifiable() {
-		return true;
-	}
+  public void unsetValue() {
+    slot.unsetParameterValue();
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public void setType(Type type) {
-		assert type instanceof StringType
-				|| type instanceof NumericType
-				|| type instanceof MemberType
-				|| (type instanceof SetType && ((SetType) type).getElementType() instanceof MemberType) : type;
-		this.type = type;
-	}
+  // For the purposes of type inference and expression substitution, a
+  // parameter is atomic; therefore, we ignore the child member, if any.
+  public Object[] getChildren() {
+    return null;
+  }
 
-	public void setDefaultExp(Exp defaultExp) {
-		assert defaultExp != null;
-		this.defaultExp = defaultExp;
-	}
+  /**
+   * Returns whether this parameter is equal to another, based upon name, type
+   * and value
+   */
+  public boolean equals(Object other) {
+    if (!(other instanceof ParameterImpl)) {
+      return false;
+    }
+    ParameterImpl that = (ParameterImpl) other;
+    return that.getName().equals(this.getName())
+      && that.defaultExp.equals(this.defaultExp);
+  }
 
-	public Calc compile(ExpCompiler compiler) {
-		final ParameterSlot slot = compiler.registerParameter(this);
-		if (this.slot != null) {
-			// save previous value
-			if (this.slot.isParameterSet()) {
-				slot.setParameterValue(this.slot.getParameterValue(), true);
-			}
-		}
-		this.slot = slot;
-		if (type instanceof SetType) {
-			return new MemberListParameterCalc(slot);
-		} else {
-			return new ParameterCalc(slot);
-		}
-	}
+  public int hashCode() {
+    return Util.hash(getName().hashCode(), defaultExp.hashCode());
+  }
 
-	protected Object convert(Object value) {
-		// Convert from old-style tuple list (list of member or member[])
-		// to new-style list (TupleList).
-		if (value instanceof List && !(value instanceof TupleList)) {
-			List list = (List) value;
-			return TupleCollections.asTupleList(list);
-		}
-		if (value instanceof MemberExpr) {
-			return ((MemberExpr) value).getMember();
-		}
-		if (value instanceof Literal) {
-			return ((Literal) value).getValue();
-		}
-		return value;
-	}
+  /**
+   * Returns whether the parameter can be modified.
+   */
+  public boolean isModifiable() {
+    return true;
+  }
 
-	public static Object convertBack(Object value) {
-		if (value instanceof TupleList) {
-			TupleList tupleList = (TupleList) value;
-			if (tupleList.getArity() == 1) {
-				return tupleList.slice(0);
-			} else {
-				return TupleCollections.asMemberArrayList(tupleList);
-			}
-		}
-		return value;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	/**
-	 * Compiled expression which yields the value of a scalar, member, level,
-	 * hierarchy or dimension parameter.
-	 * 
-	 * <p>
-	 * It uses a slot which has a unique id within the execution environment.
-	 * 
-	 * @see MemberListParameterCalc
-	 */
-	private static class ParameterCalc extends GenericCalc {
-		private final ParameterSlot slot;
+  public void setType(Type type) {
+    assert type instanceof StringType
+      || type instanceof NumericType
+      || type instanceof MemberType
+      || (type instanceof SetType && ((SetType) type).getElementType() instanceof MemberType) : type;
+    this.type = type;
+  }
 
-		/**
-		 * Creates a ParameterCalc.
-		 * 
-		 * @param slot
-		 *          Slot
-		 */
-		public ParameterCalc(ParameterSlot slot) {
-			super(new DummyExp(slot.getParameter().getType()), new Calc[0]);
-			this.slot = slot;
-		}
+  public void setDefaultExp(Exp defaultExp) {
+    assert defaultExp != null;
+    this.defaultExp = defaultExp;
+  }
 
-		public Object evaluate(Evaluator evaluator) {
-			Object value = evaluator.getParameterValue(slot);
-			if (!slot.isParameterSet()) {
-				// save value if not set (setting the default value)
-				slot.setParameterValue(value, false);
-			}
-			return value;
-		}
-	}
+  public Calc compile(ExpCompiler compiler) {
+    final ParameterSlot slot = compiler.registerParameter(this);
+    if (this.slot != null) {
+      // save previous value
+      if (this.slot.isParameterSet()) {
+        slot.setParameterValue(this.slot.getParameterValue(), true);
+      }
+    }
+    this.slot = slot;
+    if (type instanceof SetType) {
+      return new MemberListParameterCalc(slot);
+    } else {
+      return new ParameterCalc(slot);
+    }
+  }
 
-	/**
-	 * Compiled expression which yields the value of parameter whose type is a
-	 * list of members.
-	 * 
-	 * <p>
-	 * It uses a slot which has a unique id within the execution environment.
-	 * 
-	 * @see ParameterCalc
-	 */
-	private static class MemberListParameterCalc extends AbstractListCalc {
-		private final ParameterSlot slot;
+  protected Object convert(Object value) {
+    // Convert from old-style tuple list (list of member or member[])
+    // to new-style list (TupleList).
+    if (value instanceof List && !(value instanceof TupleList)) {
+      List list = (List) value;
+      return TupleCollections.asTupleList(list);
+    }
+    if (value instanceof MemberExpr) {
+      return ((MemberExpr) value).getMember();
+    }
+    if (value instanceof Literal) {
+      return ((Literal) value).getValue();
+    }
+    return value;
+  }
 
-		/**
-		 * Creates a MemberListParameterCalc.
-		 * 
-		 * @param slot
-		 *          Slot
-		 */
-		public MemberListParameterCalc(ParameterSlot slot) {
-			super(new DummyExp(slot.getParameter().getType()), new Calc[0]);
-			this.slot = slot;
-		}
+  public static Object convertBack(Object value) {
+    if (value instanceof TupleList) {
+      TupleList tupleList = (TupleList) value;
+      if (tupleList.getArity() == 1) {
+        return tupleList.slice(0);
+      } else {
+        return TupleCollections.asMemberArrayList(tupleList);
+      }
+    }
+    return value;
+  }
 
-		public TupleList evaluateList(Evaluator evaluator) {
-			TupleList value = (TupleList) evaluator.getParameterValue(slot);
-			if (!slot.isParameterSet()) {
-				// save value if not set (setting the default value)
-				slot.setParameterValue(value, false);
-			}
-			return value;
-		}
-	}
+  /**
+   * Compiled expression which yields the value of a scalar, member, level,
+   * hierarchy or dimension parameter.
+   * 
+   * <p>
+   * It uses a slot which has a unique id within the execution environment.
+   * 
+   * @see MemberListParameterCalc
+   */
+  private static class ParameterCalc extends GenericCalc {
+    private final ParameterSlot slot;
+
+    /**
+     * Creates a ParameterCalc.
+     * 
+     * @param slot
+     *          Slot
+     */
+    public ParameterCalc(ParameterSlot slot) {
+      super(new DummyExp(slot.getParameter().getType()), new Calc[0]);
+      this.slot = slot;
+    }
+
+    public Object evaluate(Evaluator evaluator) {
+      Object value = evaluator.getParameterValue(slot);
+      if (!slot.isParameterSet()) {
+        // save value if not set (setting the default value)
+        slot.setParameterValue(value, false);
+      }
+      return value;
+    }
+  }
+
+  /**
+   * Compiled expression which yields the value of parameter whose type is a
+   * list of members.
+   * 
+   * <p>
+   * It uses a slot which has a unique id within the execution environment.
+   * 
+   * @see ParameterCalc
+   */
+  private static class MemberListParameterCalc extends AbstractListCalc {
+    private final ParameterSlot slot;
+
+    /**
+     * Creates a MemberListParameterCalc.
+     * 
+     * @param slot
+     *          Slot
+     */
+    public MemberListParameterCalc(ParameterSlot slot) {
+      super(new DummyExp(slot.getParameter().getType()), new Calc[0]);
+      this.slot = slot;
+    }
+
+    public TupleList evaluateList(Evaluator evaluator) {
+      TupleList value = (TupleList) evaluator.getParameterValue(slot);
+      if (!slot.isParameterSet()) {
+        // save value if not set (setting the default value)
+        slot.setParameterValue(value, false);
+      }
+      return value;
+    }
+  }
 }
 
 // End ParameterImpl.java

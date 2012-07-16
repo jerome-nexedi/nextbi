@@ -23,14 +23,14 @@ import mondrian.olap.Evaluator;
  * @since Sep 26, 2005
  */
 public interface StringCalc extends Calc {
-	/**
-	 * Evaluates this expression to yield a {@link String} value.
-	 * 
-	 * @param evaluator
-	 *          Evaluation context
-	 * @return evaluation result
-	 */
-	String evaluateString(Evaluator evaluator);
+  /**
+   * Evaluates this expression to yield a {@link String} value.
+   * 
+   * @param evaluator
+   *          Evaluation context
+   * @return evaluation result
+   */
+  String evaluateString(Evaluator evaluator);
 }
 
 // End StringCalc.java

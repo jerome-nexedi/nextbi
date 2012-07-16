@@ -23,13 +23,13 @@ import mondrian.spi.CellFormatter;
  * @version $Id: //open/mondrian/src/main/mondrian/rolap/RolapMeasure.java#17 $
  */
 public interface RolapMeasure extends Member {
-	/**
-	 * Returns the object that formats cells of this measure, or null to use
-	 * default formatting.
-	 * 
-	 * @return formatter
-	 */
-	RolapResult.ValueFormatter getFormatter();
+  /**
+   * Returns the object that formats cells of this measure, or null to use
+   * default formatting.
+   * 
+   * @return formatter
+   */
+  RolapResult.ValueFormatter getFormatter();
 }
 
 // End RolapMeasure.java

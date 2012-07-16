@@ -19,14 +19,14 @@ package mondrian.olap;
  * @version $Id: //open/mondrian/src/main/mondrian/olap/Access.java#8 $
  */
 public enum Access {
-	/** No access to an object. */
-	NONE,
-	/** Custom access to an object (described by other parameters). */
-	CUSTOM,
-	/** Access to all shared dimensions (applies to schema grant). */
-	ALL_DIMENSIONS,
-	/** All access to an object. */
-	ALL;
+  /** No access to an object. */
+  NONE,
+  /** Custom access to an object (described by other parameters). */
+  CUSTOM,
+  /** Access to all shared dimensions (applies to schema grant). */
+  ALL_DIMENSIONS,
+  /** All access to an object. */
+  ALL;
 }
 
 // End Access.java

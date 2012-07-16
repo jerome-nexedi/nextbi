@@ -20,50 +20,50 @@ import mondrian.spi.MemberFormatter;
  */
 public interface Level extends OlapElement, Annotated {
 
-	/**
-	 * Returns the depth of this level.
-	 * 
-	 * <p>
-	 * Note #1: In an access-controlled context, the first visible level of a
-	 * hierarchy (as returned by {@link SchemaReader#getHierarchyLevels}) may not
-	 * have a depth of 0.
-	 * </p>
-	 * 
-	 * <p>
-	 * Note #2: In a parent-child hierarchy, the depth of a member (as returned by
-	 * {@link SchemaReader#getMemberDepth}) may not be the same as the depth of
-	 * its level.
-	 */
-	int getDepth();
+  /**
+   * Returns the depth of this level.
+   * 
+   * <p>
+   * Note #1: In an access-controlled context, the first visible level of a
+   * hierarchy (as returned by {@link SchemaReader#getHierarchyLevels}) may not
+   * have a depth of 0.
+   * </p>
+   * 
+   * <p>
+   * Note #2: In a parent-child hierarchy, the depth of a member (as returned by
+   * {@link SchemaReader#getMemberDepth}) may not be the same as the depth of
+   * its level.
+   */
+  int getDepth();
 
-	Hierarchy getHierarchy();
+  Hierarchy getHierarchy();
 
-	Level getChildLevel();
+  Level getChildLevel();
 
-	Level getParentLevel();
+  Level getParentLevel();
 
-	boolean isAll();
+  boolean isAll();
 
-	boolean areMembersUnique();
+  boolean areMembersUnique();
 
-	LevelType getLevelType();
+  LevelType getLevelType();
 
-	/** Returns properties defined against this level. */
-	Property[] getProperties();
+  /** Returns properties defined against this level. */
+  Property[] getProperties();
 
-	/** Returns properties defined against this level and parent levels. */
-	Property[] getInheritedProperties();
+  /** Returns properties defined against this level and parent levels. */
+  Property[] getInheritedProperties();
 
-	/**
-	 * Returns the object that is used to format members of this level.
-	 */
-	MemberFormatter getMemberFormatter();
+  /**
+   * Returns the object that is used to format members of this level.
+   */
+  MemberFormatter getMemberFormatter();
 
-	/**
-	 * Returns the approximate number of members in this level, or
-	 * {@link Integer#MIN_VALUE} if no approximation is known.
-	 */
-	int getApproxRowCount();
+  /**
+   * Returns the approximate number of members in this level, or
+   * {@link Integer#MIN_VALUE} if no approximation is known.
+   */
+  int getApproxRowCount();
 }
 
 // End Level.java

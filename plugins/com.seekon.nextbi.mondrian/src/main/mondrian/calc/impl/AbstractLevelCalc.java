@@ -29,24 +29,23 @@ import mondrian.calc.Calc;
  *          $
  * @since Sep 26, 2005
  */
-public abstract class AbstractLevelCalc extends AbstractCalc implements
-		LevelCalc {
-	/**
-	 * Creates an AbstractLevelCalc.
-	 * 
-	 * @param exp
-	 *          Source expression
-	 * @param calcs
-	 *          Child compiled expressions
-	 */
-	protected AbstractLevelCalc(Exp exp, Calc[] calcs) {
-		super(exp, calcs);
-		assert getType() instanceof LevelType;
-	}
+public abstract class AbstractLevelCalc extends AbstractCalc implements LevelCalc {
+  /**
+   * Creates an AbstractLevelCalc.
+   * 
+   * @param exp
+   *          Source expression
+   * @param calcs
+   *          Child compiled expressions
+   */
+  protected AbstractLevelCalc(Exp exp, Calc[] calcs) {
+    super(exp, calcs);
+    assert getType() instanceof LevelType;
+  }
 
-	public Object evaluate(Evaluator evaluator) {
-		return evaluateLevel(evaluator);
-	}
+  public Object evaluate(Evaluator evaluator) {
+    return evaluateLevel(evaluator);
+  }
 }
 
 // End AbstractLevelCalc.java

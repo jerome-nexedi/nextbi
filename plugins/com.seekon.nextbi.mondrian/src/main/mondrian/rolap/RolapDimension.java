@@ -54,149 +54,147 @@ import java.util.Collections;
  */
 class RolapDimension extends DimensionBase {
 
-	private static final Logger LOGGER = Logger.getLogger(RolapDimension.class);
+  private static final Logger LOGGER = Logger.getLogger(RolapDimension.class);
 
-	private final Schema schema;
-	private final Map<String, Annotation> annotationMap;
+  private final Schema schema;
 
-	RolapDimension(Schema schema, String name, String caption, boolean visible,
-			String description, DimensionType dimensionType,
-			final boolean highCardinality, Map<String, Annotation> annotationMap) {
-		// todo: recognition of a time dimension should be improved
-		// allow multiple time dimensions
-		super(name, caption, visible, description, dimensionType, highCardinality);
-		assert annotationMap != null;
-		this.schema = schema;
-		this.annotationMap = annotationMap;
-		this.hierarchies = new RolapHierarchy[0];
-	}
+  private final Map<String, Annotation> annotationMap;
 
-	/**
-	 * Creates a dimension from an XML definition.
-	 * 
-	 * @pre schema != null
-	 */
-	RolapDimension(RolapSchema schema, RolapCube cube,
-			MondrianDef.Dimension xmlDimension,
-			MondrianDef.CubeDimension xmlCubeDimension) {
-		this(schema, xmlDimension.name, xmlDimension.caption, xmlDimension.visible,
-				xmlDimension.description, xmlDimension.getDimensionType(),
-				xmlDimension.highCardinality, RolapHierarchy
-						.createAnnotationMap(xmlCubeDimension.annotations));
+  RolapDimension(Schema schema, String name, String caption, boolean visible,
+    String description, DimensionType dimensionType, final boolean highCardinality,
+    Map<String, Annotation> annotationMap) {
+    // todo: recognition of a time dimension should be improved
+    // allow multiple time dimensions
+    super(name, caption, visible, description, dimensionType, highCardinality);
+    assert annotationMap != null;
+    this.schema = schema;
+    this.annotationMap = annotationMap;
+    this.hierarchies = new RolapHierarchy[0];
+  }
 
-		Util.assertPrecondition(schema != null);
+  /**
+   * Creates a dimension from an XML definition.
+   * 
+   * @pre schema != null
+   */
+  RolapDimension(RolapSchema schema, RolapCube cube,
+    MondrianDef.Dimension xmlDimension, MondrianDef.CubeDimension xmlCubeDimension) {
+    this(schema, xmlDimension.name, xmlDimension.caption, xmlDimension.visible,
+      xmlDimension.description, xmlDimension.getDimensionType(),
+      xmlDimension.highCardinality, RolapHierarchy
+        .createAnnotationMap(xmlCubeDimension.annotations));
 
-		if (cube != null) {
-			Util.assertTrue(cube.getSchema() == schema);
-		}
+    Util.assertPrecondition(schema != null);
 
-		if (!Util.isEmpty(xmlDimension.caption)) {
-			setCaption(xmlDimension.caption);
-		}
-		this.hierarchies = new RolapHierarchy[xmlDimension.hierarchies.length];
-		for (int i = 0; i < xmlDimension.hierarchies.length; i++) {
-			// remaps the xml hierarchy relation to the fact table.
-			// moved out of RolapHierarchy constructor
-			// this should eventually be phased out completely
-			if (xmlDimension.hierarchies[i].relation == null
-					&& xmlDimension.hierarchies[i].memberReaderClass == null
-					&& cube != null) {
-				xmlDimension.hierarchies[i].relation = cube.fact;
-			}
+    if (cube != null) {
+      Util.assertTrue(cube.getSchema() == schema);
+    }
 
-			RolapHierarchy hierarchy = new RolapHierarchy(this,
-					xmlDimension.hierarchies[i], xmlCubeDimension);
-			hierarchies[i] = hierarchy;
-		}
+    if (!Util.isEmpty(xmlDimension.caption)) {
+      setCaption(xmlDimension.caption);
+    }
+    this.hierarchies = new RolapHierarchy[xmlDimension.hierarchies.length];
+    for (int i = 0; i < xmlDimension.hierarchies.length; i++) {
+      // remaps the xml hierarchy relation to the fact table.
+      // moved out of RolapHierarchy constructor
+      // this should eventually be phased out completely
+      if (xmlDimension.hierarchies[i].relation == null
+        && xmlDimension.hierarchies[i].memberReaderClass == null && cube != null) {
+        xmlDimension.hierarchies[i].relation = cube.fact;
+      }
 
-		// if there was no dimension type assigned, determine now.
-		if (dimensionType == null) {
-			for (int i = 0; i < hierarchies.length; i++) {
-				Level[] levels = hierarchies[i].getLevels();
-				LevLoop: for (int j = 0; j < levels.length; j++) {
-					Level lev = levels[j];
-					if (lev.isAll()) {
-						continue LevLoop;
-					}
-					if (dimensionType == null) {
-						// not set yet - set it according to current level
-						dimensionType = (lev.getLevelType().isTime()) ? DimensionType.TimeDimension
-								: isMeasures() ? DimensionType.MeasuresDimension
-										: DimensionType.StandardDimension;
+      RolapHierarchy hierarchy = new RolapHierarchy(this,
+        xmlDimension.hierarchies[i], xmlCubeDimension);
+      hierarchies[i] = hierarchy;
+    }
 
-					} else {
-						// Dimension type was set according to first level.
-						// Make sure that other levels fit to definition.
-						if (dimensionType == DimensionType.TimeDimension
-								&& !lev.getLevelType().isTime() && !lev.isAll()) {
-							throw MondrianResource.instance().NonTimeLevelInTimeHierarchy
-									.ex(getUniqueName());
-						}
-						if (dimensionType != DimensionType.TimeDimension
-								&& lev.getLevelType().isTime()) {
-							throw MondrianResource.instance().TimeLevelInNonTimeHierarchy
-									.ex(getUniqueName());
-						}
-					}
-				}
-			}
-		}
-	}
+    // if there was no dimension type assigned, determine now.
+    if (dimensionType == null) {
+      for (int i = 0; i < hierarchies.length; i++) {
+        Level[] levels = hierarchies[i].getLevels();
+        LevLoop: for (int j = 0; j < levels.length; j++) {
+          Level lev = levels[j];
+          if (lev.isAll()) {
+            continue LevLoop;
+          }
+          if (dimensionType == null) {
+            // not set yet - set it according to current level
+            dimensionType = (lev.getLevelType().isTime()) ? DimensionType.TimeDimension
+              : isMeasures() ? DimensionType.MeasuresDimension
+                : DimensionType.StandardDimension;
 
-	protected Logger getLogger() {
-		return LOGGER;
-	}
+          } else {
+            // Dimension type was set according to first level.
+            // Make sure that other levels fit to definition.
+            if (dimensionType == DimensionType.TimeDimension
+              && !lev.getLevelType().isTime() && !lev.isAll()) {
+              throw MondrianResource.instance().NonTimeLevelInTimeHierarchy
+                .ex(getUniqueName());
+            }
+            if (dimensionType != DimensionType.TimeDimension
+              && lev.getLevelType().isTime()) {
+              throw MondrianResource.instance().TimeLevelInNonTimeHierarchy
+                .ex(getUniqueName());
+            }
+          }
+        }
+      }
+    }
+  }
 
-	/**
-	 * Initializes a dimension within the context of a cube.
-	 */
-	void init(MondrianDef.CubeDimension xmlDimension) {
-		for (int i = 0; i < hierarchies.length; i++) {
-			if (hierarchies[i] != null) {
-				((RolapHierarchy) hierarchies[i]).init(xmlDimension);
-			}
-		}
-	}
+  protected Logger getLogger() {
+    return LOGGER;
+  }
 
-	/**
-	 * Creates a hierarchy.
-	 * 
-	 * @param subName
-	 *          Name of this hierarchy.
-	 * @param hasAll
-	 *          Whether hierarchy has an 'all' member
-	 * @param closureFor
-	 *          Hierarchy for which the new hierarchy is a closure; null for
-	 *          regular hierarchies
-	 * @return Hierarchy
-	 */
-	RolapHierarchy newHierarchy(String subName, boolean hasAll,
-			RolapHierarchy closureFor) {
-		RolapHierarchy hierarchy = new RolapHierarchy(this, subName, caption,
-				visible, description, hasAll, closureFor,
-				Collections.<String, Annotation> emptyMap());
-		this.hierarchies = Util.append(this.hierarchies, hierarchy);
-		return hierarchy;
-	}
+  /**
+   * Initializes a dimension within the context of a cube.
+   */
+  void init(MondrianDef.CubeDimension xmlDimension) {
+    for (int i = 0; i < hierarchies.length; i++) {
+      if (hierarchies[i] != null) {
+        ((RolapHierarchy) hierarchies[i]).init(xmlDimension);
+      }
+    }
+  }
 
-	/**
-	 * Returns the hierarchy of an expression.
-	 * 
-	 * <p>
-	 * In this case, the expression is a dimension, so the hierarchy is the
-	 * dimension's default hierarchy (its first).
-	 */
-	public Hierarchy getHierarchy() {
-		return hierarchies[0];
-	}
+  /**
+   * Creates a hierarchy.
+   * 
+   * @param subName
+   *          Name of this hierarchy.
+   * @param hasAll
+   *          Whether hierarchy has an 'all' member
+   * @param closureFor
+   *          Hierarchy for which the new hierarchy is a closure; null for
+   *          regular hierarchies
+   * @return Hierarchy
+   */
+  RolapHierarchy newHierarchy(String subName, boolean hasAll,
+    RolapHierarchy closureFor) {
+    RolapHierarchy hierarchy = new RolapHierarchy(this, subName, caption, visible,
+      description, hasAll, closureFor, Collections.<String, Annotation> emptyMap());
+    this.hierarchies = Util.append(this.hierarchies, hierarchy);
+    return hierarchy;
+  }
 
-	public Schema getSchema() {
-		return schema;
-	}
+  /**
+   * Returns the hierarchy of an expression.
+   * 
+   * <p>
+   * In this case, the expression is a dimension, so the hierarchy is the
+   * dimension's default hierarchy (its first).
+   */
+  public Hierarchy getHierarchy() {
+    return hierarchies[0];
+  }
 
-	public Map<String, Annotation> getAnnotationMap() {
-		return annotationMap;
-	}
+  public Schema getSchema() {
+    return schema;
+  }
+
+  public Map<String, Annotation> getAnnotationMap() {
+    return annotationMap;
+  }
 }
 
 // End RolapDimension.java

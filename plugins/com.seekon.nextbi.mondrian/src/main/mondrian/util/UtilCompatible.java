@@ -36,30 +36,30 @@ import java.lang.reflect.Method;
  * @since Feb 5, 2007
  */
 public interface UtilCompatible {
-	BigDecimal makeBigDecimalFromDouble(double d);
+  BigDecimal makeBigDecimalFromDouble(double d);
 
-	String quotePattern(String s);
+  String quotePattern(String s);
 
-	<T> T getAnnotation(Method method, String annotationClassName, T defaultValue);
+  <T> T getAnnotation(Method method, String annotationClassName, T defaultValue);
 
-	String generateUuidString();
+  String generateUuidString();
 
-	/**
-	 * Compiles a script to yield a Java interface.
-	 * 
-	 * @param iface
-	 *          Interface script should implement
-	 * @param script
-	 *          Script code
-	 * @param engineName
-	 *          Name of engine (e.g. "JavaScript")
-	 * @param <T>
-	 *          Interface
-	 * @return Object that implements given interface
-	 */
-	<T> T compileScript(Class<T> iface, String script, String engineName);
+  /**
+   * Compiles a script to yield a Java interface.
+   * 
+   * @param iface
+   *          Interface script should implement
+   * @param script
+   *          Script code
+   * @param engineName
+   *          Name of engine (e.g. "JavaScript")
+   * @param <T>
+   *          Interface
+   * @return Object that implements given interface
+   */
+  <T> T compileScript(Class<T> iface, String script, String engineName);
 
-	<T> void threadLocalRemove(ThreadLocal<T> threadLocal);
+  <T> void threadLocalRemove(ThreadLocal<T> threadLocal);
 }
 
 // End UtilCompatible.java

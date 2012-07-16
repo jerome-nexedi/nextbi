@@ -20,17 +20,17 @@ import org.apache.log4j.Logger;
  *          //open/mondrian/src/main/mondrian/recorder/LoggerRecorder.java#7 $
  */
 public class LoggerRecorder extends AbstractRecorder {
-	private final Logger logger;
+  private final Logger logger;
 
-	public LoggerRecorder(final Logger logger) {
-		this.logger = logger;
-	}
+  public LoggerRecorder(final Logger logger) {
+    this.logger = logger;
+  }
 
-	protected void recordMessage(final String msg, final Object info,
-			final MsgType msgType) {
-		String context = getContext();
-		logMessage(context, msg, msgType, logger);
-	}
+  protected void recordMessage(final String msg, final Object info,
+    final MsgType msgType) {
+    String context = getContext();
+    logMessage(context, msg, msgType, logger);
+  }
 }
 
 // End LoggerRecorder.java

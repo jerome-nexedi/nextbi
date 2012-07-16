@@ -52,49 +52,47 @@ import java.lang.reflect.*;
  *          .java#7 $
  */
 public abstract class DelegatingInvocationHandler implements InvocationHandler {
-	public Object invoke(Object proxy, Method method, Object[] args)
-			throws Throwable {
-		Class clazz = getClass();
-		Method matchingMethod;
-		try {
-			matchingMethod = clazz.getMethod(method.getName(),
-					method.getParameterTypes());
-		} catch (NoSuchMethodException e) {
-			matchingMethod = null;
-		} catch (SecurityException e) {
-			matchingMethod = null;
-		}
-		try {
-			if (matchingMethod != null) {
-				// Invoke the method in the derived class.
-				return matchingMethod.invoke(this, args);
-			}
-			final Object target = getTarget();
-			if (target == null) {
-				throw new UnsupportedOperationException("method: " + method);
-			}
-			return method.invoke(target, args);
-		} catch (InvocationTargetException e) {
-			throw e.getTargetException();
-		}
-	}
+  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    Class clazz = getClass();
+    Method matchingMethod;
+    try {
+      matchingMethod = clazz.getMethod(method.getName(), method.getParameterTypes());
+    } catch (NoSuchMethodException e) {
+      matchingMethod = null;
+    } catch (SecurityException e) {
+      matchingMethod = null;
+    }
+    try {
+      if (matchingMethod != null) {
+        // Invoke the method in the derived class.
+        return matchingMethod.invoke(this, args);
+      }
+      final Object target = getTarget();
+      if (target == null) {
+        throw new UnsupportedOperationException("method: " + method);
+      }
+      return method.invoke(target, args);
+    } catch (InvocationTargetException e) {
+      throw e.getTargetException();
+    }
+  }
 
-	/**
-	 * Returns the object to forward method calls to, should the derived class not
-	 * implement the method. Generally, this object will be a member of the
-	 * derived class, supplied as a parameter to its constructor.
-	 * 
-	 * <p>
-	 * The default implementation returns null, which will cause the
-	 * {@link #invoke(Object, java.lang.reflect.Method, Object[])} method to throw
-	 * an {@link UnsupportedOperationException} if the derived class does not have
-	 * the required method.
-	 * 
-	 * @return object to forward method calls to
-	 */
-	protected Object getTarget() {
-		return null;
-	}
+  /**
+   * Returns the object to forward method calls to, should the derived class not
+   * implement the method. Generally, this object will be a member of the
+   * derived class, supplied as a parameter to its constructor.
+   * 
+   * <p>
+   * The default implementation returns null, which will cause the
+   * {@link #invoke(Object, java.lang.reflect.Method, Object[])} method to throw
+   * an {@link UnsupportedOperationException} if the derived class does not have
+   * the required method.
+   * 
+   * @return object to forward method calls to
+   */
+  protected Object getTarget() {
+    return null;
+  }
 }
 
 // End DelegatingInvocationHandler.java

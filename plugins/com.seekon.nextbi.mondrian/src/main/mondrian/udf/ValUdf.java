@@ -22,39 +22,39 @@ import mondrian.spi.UserDefinedFunction;
  */
 public class ValUdf implements UserDefinedFunction {
 
-	public Object execute(Evaluator evaluator, Argument[] arguments) {
-		Object arg = arguments[0].evaluateScalar(evaluator);
+  public Object execute(Evaluator evaluator, Argument[] arguments) {
+    Object arg = arguments[0].evaluateScalar(evaluator);
 
-		if (arg instanceof Number) {
-			return new Double(((Number) arg).doubleValue());
-		} else {
-			return new Double(0.0);
-		}
-	}
+    if (arg instanceof Number) {
+      return new Double(((Number) arg).doubleValue());
+    } else {
+      return new Double(0.0);
+    }
+  }
 
-	public String getDescription() {
-		return "VB function Val";
-	}
+  public String getDescription() {
+    return "VB function Val";
+  }
 
-	public String getName() {
-		return "Val";
-	}
+  public String getName() {
+    return "Val";
+  }
 
-	public Type[] getParameterTypes() {
-		return new Type[] { new NumericType() };
-	}
+  public Type[] getParameterTypes() {
+    return new Type[] { new NumericType() };
+  }
 
-	public String[] getReservedWords() {
-		return null;
-	}
+  public String[] getReservedWords() {
+    return null;
+  }
 
-	public Type getReturnType(Type[] parameterTypes) {
-		return new NumericType();
-	}
+  public Type getReturnType(Type[] parameterTypes) {
+    return new NumericType();
+  }
 
-	public Syntax getSyntax() {
-		return Syntax.Function;
-	}
+  public Syntax getSyntax() {
+    return Syntax.Function;
+  }
 
 }
 

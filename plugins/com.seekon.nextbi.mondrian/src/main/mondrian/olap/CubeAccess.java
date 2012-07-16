@@ -24,156 +24,160 @@ import java.util.ArrayList;
  */
 public class CubeAccess {
 
-	private boolean hasRestrictions;
-	/** array of hierarchies with no access */
-	private Hierarchy[] noAccessHierarchies;
-	/** array of members which have limited access */
-	private Member[] limitedMembers;
-	private final List<Hierarchy> hierarchyList = new ArrayList<Hierarchy>();
-	private final List<Member> memberList = new ArrayList<Member>();
-	private final Cube mdxCube;
+  private boolean hasRestrictions;
 
-	/**
-	 * Creates a CubeAccess object.
-	 * 
-	 * <p>
-	 * User's code should be responsible for filling cubeAccess with restricted
-	 * hierarchies and restricted members by calling addSlicer(). Do NOT forget to
-	 * call {@link #normalizeCubeAccess()} after you done filling cubeAccess.
-	 */
-	public CubeAccess(Cube mdxCube) {
-		this.mdxCube = mdxCube;
-		noAccessHierarchies = null;
-		limitedMembers = null;
-		hasRestrictions = false;
-	}
+  /** array of hierarchies with no access */
+  private Hierarchy[] noAccessHierarchies;
 
-	public boolean hasRestrictions() {
-		return hasRestrictions;
-	}
+  /** array of members which have limited access */
+  private Member[] limitedMembers;
 
-	public Hierarchy[] getNoAccessHierarchies() {
-		return noAccessHierarchies;
-	}
+  private final List<Hierarchy> hierarchyList = new ArrayList<Hierarchy>();
 
-	public Member[] getLimitedMembers() {
-		return limitedMembers;
-	}
+  private final List<Member> memberList = new ArrayList<Member>();
 
-	public List<Hierarchy> getNoAccessHierarchyList() {
-		return hierarchyList;
-	}
+  private final Cube mdxCube;
 
-	public List<Member> getLimitedMemberList() {
-		return memberList;
-	}
+  /**
+   * Creates a CubeAccess object.
+   * 
+   * <p>
+   * User's code should be responsible for filling cubeAccess with restricted
+   * hierarchies and restricted members by calling addSlicer(). Do NOT forget to
+   * call {@link #normalizeCubeAccess()} after you done filling cubeAccess.
+   */
+  public CubeAccess(Cube mdxCube) {
+    this.mdxCube = mdxCube;
+    noAccessHierarchies = null;
+    limitedMembers = null;
+    hasRestrictions = false;
+  }
 
-	public boolean isHierarchyAllowed(Hierarchy mdxHierarchy) {
-		String hierName = mdxHierarchy.getUniqueName();
-		if (noAccessHierarchies == null || hierName == null) {
-			return true;
-		}
-		for (Hierarchy noAccessHierarchy : noAccessHierarchies) {
-			if (hierName.equalsIgnoreCase(noAccessHierarchy.getUniqueName())) {
-				return false;
-			}
-		}
-		return true;
-	}
+  public boolean hasRestrictions() {
+    return hasRestrictions;
+  }
 
-	public Member getLimitedMemberForHierarchy(Hierarchy mdxHierarchy) {
-		String hierName = mdxHierarchy.getUniqueName();
-		if (limitedMembers == null || hierName == null) {
-			return null;
-		}
-		for (Member limitedMember : limitedMembers) {
-			Hierarchy limitedHierarchy = limitedMember.getHierarchy();
-			if (hierName.equalsIgnoreCase(limitedHierarchy.getUniqueName())) {
-				return limitedMember;
-			}
-		}
-		return null;
-	}
+  public Hierarchy[] getNoAccessHierarchies() {
+    return noAccessHierarchies;
+  }
 
-	/**
-	 * Adds restricted hierarchy or limited member based on bMember
-	 */
-	public void addGrantCubeSlicer(String sHierarchy, String sMember,
-			boolean bMember) {
-		if (bMember) {
-			boolean fail = false;
-			List<Id.Segment> sMembers = Util.parseIdentifier(sMember);
-			SchemaReader schemaReader = mdxCube.getSchemaReader(null);
-			Member member = schemaReader.getMemberByUniqueName(sMembers, fail);
-			if (member == null) {
-				throw MondrianResource.instance().MdxCubeSlicerMemberError.ex(sMember,
-						sHierarchy, mdxCube.getUniqueName());
-			}
-			// there should be only slicer per hierarchy; ignore the rest
-			if (getLimitedMemberForHierarchy(member.getHierarchy()) == null) {
-				memberList.add(member);
-			}
-		} else {
-			boolean fail = false;
-			Hierarchy hierarchy = mdxCube.lookupHierarchy(new Id.Segment(sHierarchy,
-					Id.Quoting.UNQUOTED), fail);
-			if (hierarchy == null) {
-				throw MondrianResource.instance().MdxCubeSlicerHierarchyError.ex(
-						sHierarchy, mdxCube.getUniqueName());
-			}
-			hierarchyList.add(hierarchy);
-		}
-	}
+  public Member[] getLimitedMembers() {
+    return limitedMembers;
+  }
 
-	/**
-	 * Initializes internal arrays of restricted hierarchies and limited members.
-	 * It has to be called after all 'addSlicer()' calls.
-	 */
-	public void normalizeCubeAccess() {
-		if (memberList.size() > 0) {
-			limitedMembers = memberList.toArray(new Member[memberList.size()]);
-			hasRestrictions = true;
-		}
-		if (hierarchyList.size() > 0) {
-			noAccessHierarchies = hierarchyList.toArray(new Hierarchy[hierarchyList
-					.size()]);
-			hasRestrictions = true;
-		}
-	}
+  public List<Hierarchy> getNoAccessHierarchyList() {
+    return hierarchyList;
+  }
 
-	public boolean equals(Object object) {
-		if (!(object instanceof CubeAccess)) {
-			return false;
-		}
-		CubeAccess cubeAccess = (CubeAccess) object;
-		List<Hierarchy> hierarchyList = cubeAccess.getNoAccessHierarchyList();
-		List<Member> limitedMemberList = cubeAccess.getLimitedMemberList();
+  public List<Member> getLimitedMemberList() {
+    return memberList;
+  }
 
-		if ((this.hierarchyList.size() != hierarchyList.size())
-				|| (this.memberList.size() != limitedMemberList.size())) {
-			return false;
-		}
-		for (Hierarchy o : hierarchyList) {
-			if (!this.hierarchyList.contains(o)) {
-				return false;
-			}
-		}
-		for (Member member : limitedMemberList) {
-			if (!this.memberList.contains(member)) {
-				return false;
-			}
-		}
-		return true;
-	}
+  public boolean isHierarchyAllowed(Hierarchy mdxHierarchy) {
+    String hierName = mdxHierarchy.getUniqueName();
+    if (noAccessHierarchies == null || hierName == null) {
+      return true;
+    }
+    for (Hierarchy noAccessHierarchy : noAccessHierarchies) {
+      if (hierName.equalsIgnoreCase(noAccessHierarchy.getUniqueName())) {
+        return false;
+      }
+    }
+    return true;
+  }
 
-	public int hashCode() {
-		int h = mdxCube.hashCode();
-		h = Util.hash(h, hierarchyList);
-		h = Util.hash(h, memberList);
-		h = Util.hashArray(h, noAccessHierarchies);
-		h = Util.hashArray(h, limitedMembers);
-		return h;
-	}
+  public Member getLimitedMemberForHierarchy(Hierarchy mdxHierarchy) {
+    String hierName = mdxHierarchy.getUniqueName();
+    if (limitedMembers == null || hierName == null) {
+      return null;
+    }
+    for (Member limitedMember : limitedMembers) {
+      Hierarchy limitedHierarchy = limitedMember.getHierarchy();
+      if (hierName.equalsIgnoreCase(limitedHierarchy.getUniqueName())) {
+        return limitedMember;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Adds restricted hierarchy or limited member based on bMember
+   */
+  public void addGrantCubeSlicer(String sHierarchy, String sMember, boolean bMember) {
+    if (bMember) {
+      boolean fail = false;
+      List<Id.Segment> sMembers = Util.parseIdentifier(sMember);
+      SchemaReader schemaReader = mdxCube.getSchemaReader(null);
+      Member member = schemaReader.getMemberByUniqueName(sMembers, fail);
+      if (member == null) {
+        throw MondrianResource.instance().MdxCubeSlicerMemberError.ex(sMember,
+          sHierarchy, mdxCube.getUniqueName());
+      }
+      // there should be only slicer per hierarchy; ignore the rest
+      if (getLimitedMemberForHierarchy(member.getHierarchy()) == null) {
+        memberList.add(member);
+      }
+    } else {
+      boolean fail = false;
+      Hierarchy hierarchy = mdxCube.lookupHierarchy(new Id.Segment(sHierarchy,
+        Id.Quoting.UNQUOTED), fail);
+      if (hierarchy == null) {
+        throw MondrianResource.instance().MdxCubeSlicerHierarchyError.ex(sHierarchy,
+          mdxCube.getUniqueName());
+      }
+      hierarchyList.add(hierarchy);
+    }
+  }
+
+  /**
+   * Initializes internal arrays of restricted hierarchies and limited members.
+   * It has to be called after all 'addSlicer()' calls.
+   */
+  public void normalizeCubeAccess() {
+    if (memberList.size() > 0) {
+      limitedMembers = memberList.toArray(new Member[memberList.size()]);
+      hasRestrictions = true;
+    }
+    if (hierarchyList.size() > 0) {
+      noAccessHierarchies = hierarchyList
+        .toArray(new Hierarchy[hierarchyList.size()]);
+      hasRestrictions = true;
+    }
+  }
+
+  public boolean equals(Object object) {
+    if (!(object instanceof CubeAccess)) {
+      return false;
+    }
+    CubeAccess cubeAccess = (CubeAccess) object;
+    List<Hierarchy> hierarchyList = cubeAccess.getNoAccessHierarchyList();
+    List<Member> limitedMemberList = cubeAccess.getLimitedMemberList();
+
+    if ((this.hierarchyList.size() != hierarchyList.size())
+      || (this.memberList.size() != limitedMemberList.size())) {
+      return false;
+    }
+    for (Hierarchy o : hierarchyList) {
+      if (!this.hierarchyList.contains(o)) {
+        return false;
+      }
+    }
+    for (Member member : limitedMemberList) {
+      if (!this.memberList.contains(member)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public int hashCode() {
+    int h = mdxCube.hashCode();
+    h = Util.hash(h, hierarchyList);
+    h = Util.hash(h, memberList);
+    h = Util.hashArray(h, noAccessHierarchies);
+    h = Util.hashArray(h, limitedMembers);
+    return h;
+  }
 }
 
 // End CubeAccess.java

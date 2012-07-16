@@ -16,12 +16,12 @@ package mondrian.olap.fun;
  * Thrown while evaluating a cell expression
  */
 public class MondrianEvaluationException extends RuntimeException {
-	public MondrianEvaluationException() {
-	}
+  public MondrianEvaluationException() {
+  }
 
-	public MondrianEvaluationException(String s) {
-		super(s);
-	}
+  public MondrianEvaluationException(String s) {
+    super(s);
+  }
 }
 
 // End MondrianEvaluationException.java

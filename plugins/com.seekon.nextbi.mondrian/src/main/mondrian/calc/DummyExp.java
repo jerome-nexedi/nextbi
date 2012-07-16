@@ -23,39 +23,39 @@ import java.io.PrintWriter;
  * @since Sep 26, 2005
  */
 public class DummyExp implements Exp {
-	private final Type type;
+  private final Type type;
 
-	public DummyExp(Type type) {
-		this.type = type;
-	}
+  public DummyExp(Type type) {
+    this.type = type;
+  }
 
-	public DummyExp clone() {
-		throw new UnsupportedOperationException();
-	}
+  public DummyExp clone() {
+    throw new UnsupportedOperationException();
+  }
 
-	public int getCategory() {
-		throw new UnsupportedOperationException();
-	}
+  public int getCategory() {
+    throw new UnsupportedOperationException();
+  }
 
-	public Type getType() {
-		return type;
-	}
+  public Type getType() {
+    return type;
+  }
 
-	public void unparse(PrintWriter pw) {
-		throw new UnsupportedOperationException();
-	}
+  public void unparse(PrintWriter pw) {
+    throw new UnsupportedOperationException();
+  }
 
-	public Exp accept(Validator validator) {
-		throw new UnsupportedOperationException();
-	}
+  public Exp accept(Validator validator) {
+    throw new UnsupportedOperationException();
+  }
 
-	public Calc accept(ExpCompiler compiler) {
-		throw new UnsupportedOperationException();
-	}
+  public Calc accept(ExpCompiler compiler) {
+    throw new UnsupportedOperationException();
+  }
 
-	public Object accept(MdxVisitor visitor) {
-		throw new UnsupportedOperationException();
-	}
+  public Object accept(MdxVisitor visitor) {
+    throw new UnsupportedOperationException();
+  }
 
 }
 

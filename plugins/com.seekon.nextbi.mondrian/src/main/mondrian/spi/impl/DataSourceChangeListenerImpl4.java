@@ -47,54 +47,56 @@ import mondrian.rolap.agg.Aggregation;
  */
 
 public class DataSourceChangeListenerImpl4 implements DataSourceChangeListener {
-	private int flushInverseFrequencyHierarchy;
-	private int flushInverseFrequencyAggregation;
-	final Random random = new Random(123456);
+  private int flushInverseFrequencyHierarchy;
 
-	/** Creates a new instance of DataSourceChangeListenerImpl2 */
-	public DataSourceChangeListenerImpl4() {
-		this(0, 0);
-	}
+  private int flushInverseFrequencyAggregation;
 
-	public DataSourceChangeListenerImpl4(int flushInverseFrequencyHierarchy,
-			int flushInverseFrequencyAggregation) {
-		this.flushInverseFrequencyHierarchy = flushInverseFrequencyHierarchy;
-		this.flushInverseFrequencyAggregation = flushInverseFrequencyAggregation;
-	}
+  final Random random = new Random(123456);
 
-	public synchronized boolean isHierarchyChanged(RolapHierarchy hierarchy) {
-		if (flushInverseFrequencyHierarchy != 0) {
-			if (random.nextInt(flushInverseFrequencyHierarchy) == 0) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return true;
-		}
-	}
+  /** Creates a new instance of DataSourceChangeListenerImpl2 */
+  public DataSourceChangeListenerImpl4() {
+    this(0, 0);
+  }
 
-	public synchronized boolean isAggregationChanged(Aggregation aggregation) {
-		if (flushInverseFrequencyAggregation != 0) {
-			if (random.nextInt(flushInverseFrequencyAggregation) == 0) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return true;
-		}
-	}
+  public DataSourceChangeListenerImpl4(int flushInverseFrequencyHierarchy,
+    int flushInverseFrequencyAggregation) {
+    this.flushInverseFrequencyHierarchy = flushInverseFrequencyHierarchy;
+    this.flushInverseFrequencyAggregation = flushInverseFrequencyAggregation;
+  }
 
-	public String getTableName(RolapHierarchy hierarchy) {
-		MondrianDef.RelationOrJoin relation = hierarchy.getRelation();
-		if (relation instanceof MondrianDef.Table) {
-			MondrianDef.Table tableRelation = (MondrianDef.Table) relation;
-			return tableRelation.name;
-		} else {
-			return null;
-		}
-	}
+  public synchronized boolean isHierarchyChanged(RolapHierarchy hierarchy) {
+    if (flushInverseFrequencyHierarchy != 0) {
+      if (random.nextInt(flushInverseFrequencyHierarchy) == 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return true;
+    }
+  }
+
+  public synchronized boolean isAggregationChanged(Aggregation aggregation) {
+    if (flushInverseFrequencyAggregation != 0) {
+      if (random.nextInt(flushInverseFrequencyAggregation) == 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return true;
+    }
+  }
+
+  public String getTableName(RolapHierarchy hierarchy) {
+    MondrianDef.RelationOrJoin relation = hierarchy.getRelation();
+    if (relation instanceof MondrianDef.Table) {
+      MondrianDef.Table tableRelation = (MondrianDef.Table) relation;
+      return tableRelation.name;
+    } else {
+      return null;
+    }
+  }
 }
 
 // End DataSourceChangeListenerImpl4.java

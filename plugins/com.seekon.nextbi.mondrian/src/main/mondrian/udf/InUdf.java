@@ -25,44 +25,43 @@ import java.util.regex.*;
  */
 public class InUdf implements UserDefinedFunction {
 
-	public Object execute(Evaluator evaluator, Argument[] arguments) {
-		Object arg0 = arguments[0].evaluate(evaluator);
-		List arg1 = (List) arguments[1].evaluate(evaluator);
+  public Object execute(Evaluator evaluator, Argument[] arguments) {
+    Object arg0 = arguments[0].evaluate(evaluator);
+    List arg1 = (List) arguments[1].evaluate(evaluator);
 
-		for (Object anArg1 : arg1) {
-			if (((Member) arg0).getUniqueName().equals(
-					((Member) anArg1).getUniqueName())) {
-				return Boolean.TRUE;
-			}
-		}
-		return Boolean.FALSE;
-	}
+    for (Object anArg1 : arg1) {
+      if (((Member) arg0).getUniqueName().equals(((Member) anArg1).getUniqueName())) {
+        return Boolean.TRUE;
+      }
+    }
+    return Boolean.FALSE;
+  }
 
-	public String getDescription() {
-		return "Returns true if the member argument is contained in the set "
-				+ "argument.";
-	}
+  public String getDescription() {
+    return "Returns true if the member argument is contained in the set "
+      + "argument.";
+  }
 
-	public String getName() {
-		return "IN";
-	}
+  public String getName() {
+    return "IN";
+  }
 
-	public Type[] getParameterTypes() {
-		return new Type[] { MemberType.Unknown, new SetType(MemberType.Unknown) };
-	}
+  public Type[] getParameterTypes() {
+    return new Type[] { MemberType.Unknown, new SetType(MemberType.Unknown) };
+  }
 
-	public String[] getReservedWords() {
-		// This function does not require any reserved words.
-		return null;
-	}
+  public String[] getReservedWords() {
+    // This function does not require any reserved words.
+    return null;
+  }
 
-	public Type getReturnType(Type[] parameterTypes) {
-		return new BooleanType();
-	}
+  public Type getReturnType(Type[] parameterTypes) {
+    return new BooleanType();
+  }
 
-	public Syntax getSyntax() {
-		return Syntax.Infix;
-	}
+  public Syntax getSyntax() {
+    return Syntax.Infix;
+  }
 
 }
 

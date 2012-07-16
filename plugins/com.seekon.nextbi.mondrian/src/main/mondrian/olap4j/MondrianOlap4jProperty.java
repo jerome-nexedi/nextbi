@@ -25,57 +25,57 @@ import java.util.*;
  * @since Nov 12, 2007
  */
 class MondrianOlap4jProperty implements Property, Named {
-	final mondrian.olap.Property property;
+  final mondrian.olap.Property property;
 
-	MondrianOlap4jProperty(mondrian.olap.Property property) {
-		this.property = property;
-	}
+  MondrianOlap4jProperty(mondrian.olap.Property property) {
+    this.property = property;
+  }
 
-	public Datatype getDatatype() {
-		switch (property.getType()) {
-		case TYPE_BOOLEAN:
-			return Datatype.BOOLEAN;
-		case TYPE_NUMERIC:
-			return Datatype.UNSIGNED_INTEGER;
-		case TYPE_STRING:
-			return Datatype.STRING;
-		case TYPE_OTHER:
-			return Datatype.VARIANT;
-		default:
-			throw new RuntimeException("unexpected: " + property.getType());
-		}
-	}
+  public Datatype getDatatype() {
+    switch (property.getType()) {
+    case TYPE_BOOLEAN:
+      return Datatype.BOOLEAN;
+    case TYPE_NUMERIC:
+      return Datatype.UNSIGNED_INTEGER;
+    case TYPE_STRING:
+      return Datatype.STRING;
+    case TYPE_OTHER:
+      return Datatype.VARIANT;
+    default:
+      throw new RuntimeException("unexpected: " + property.getType());
+    }
+  }
 
-	public Set<TypeFlag> getType() {
-		return property.isCellProperty() ? TypeFlag.CELL_TYPE_FLAG
-				: TypeFlag.MEMBER_TYPE_FLAG;
-	}
+  public Set<TypeFlag> getType() {
+    return property.isCellProperty() ? TypeFlag.CELL_TYPE_FLAG
+      : TypeFlag.MEMBER_TYPE_FLAG;
+  }
 
-	public String getName() {
-		return property.name;
-	}
+  public String getName() {
+    return property.name;
+  }
 
-	public String getUniqueName() {
-		return property.name;
-	}
+  public String getUniqueName() {
+    return property.name;
+  }
 
-	public String getCaption() {
-		// todo: i18n
-		return property.getCaption();
-	}
+  public String getCaption() {
+    // todo: i18n
+    return property.getCaption();
+  }
 
-	public String getDescription() {
-		// todo: i18n
-		return property.getDescription();
-	}
+  public String getDescription() {
+    // todo: i18n
+    return property.getDescription();
+  }
 
-	public boolean isVisible() {
-		return !property.isInternal();
-	}
+  public boolean isVisible() {
+    return !property.isInternal();
+  }
 
-	public ContentType getContentType() {
-		return ContentType.REGULAR;
-	}
+  public ContentType getContentType() {
+    return ContentType.REGULAR;
+  }
 }
 
 // End MondrianOlap4jProperty.java

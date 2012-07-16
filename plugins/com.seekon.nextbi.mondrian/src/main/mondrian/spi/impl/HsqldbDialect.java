@@ -24,32 +24,32 @@ import java.util.List;
  */
 public class HsqldbDialect extends JdbcDialectImpl {
 
-	public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
-			HsqldbDialect.class, DatabaseProduct.HSQLDB);
+  public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
+    HsqldbDialect.class, DatabaseProduct.HSQLDB);
 
-	/**
-	 * Creates a FirebirdDialect.
-	 * 
-	 * @param connection
-	 *          Connection
-	 */
-	public HsqldbDialect(Connection connection) throws SQLException {
-		super(connection);
-	}
+  /**
+   * Creates a FirebirdDialect.
+   * 
+   * @param connection
+   *          Connection
+   */
+  public HsqldbDialect(Connection connection) throws SQLException {
+    super(connection);
+  }
 
-	protected void quoteDateLiteral(StringBuilder buf, String value, Date date) {
-		// Hsqldb accepts '2008-01-23' but not SQL:2003 format.
-		Util.singleQuoteString(value, buf);
-	}
+  protected void quoteDateLiteral(StringBuilder buf, String value, Date date) {
+    // Hsqldb accepts '2008-01-23' but not SQL:2003 format.
+    Util.singleQuoteString(value, buf);
+  }
 
-	public String generateInline(List<String> columnNames,
-			List<String> columnTypes, List<String[]> valueList) {
-		// Fall back to using the FoodMart 'days' table, because
-		// HQLDB's SQL has no way to generate values not from a table.
-		// (Same as Access.)
-		return generateInlineGeneric(columnNames, columnTypes, valueList,
-				" from \"days\" where \"day\" = 1", false);
-	}
+  public String generateInline(List<String> columnNames, List<String> columnTypes,
+    List<String[]> valueList) {
+    // Fall back to using the FoodMart 'days' table, because
+    // HQLDB's SQL has no way to generate values not from a table.
+    // (Same as Access.)
+    return generateInlineGeneric(columnNames, columnTypes, valueList,
+      " from \"days\" where \"day\" = 1", false);
+  }
 }
 
 // End HsqldbDialect.java

@@ -25,33 +25,33 @@ import mondrian.olap.Member;
  *          java#1 $
  */
 public abstract class AbstractTupleCursor implements TupleCursor {
-	protected final int arity;
+  protected final int arity;
 
-	public AbstractTupleCursor(int arity) {
-		super();
-		this.arity = arity;
-	}
+  public AbstractTupleCursor(int arity) {
+    super();
+    this.arity = arity;
+  }
 
-	public void setContext(Evaluator evaluator) {
-		evaluator.setContext(current());
-	}
+  public void setContext(Evaluator evaluator) {
+    evaluator.setContext(current());
+  }
 
-	public void currentToArray(Member[] members, int offset) {
-		if (offset == 0) {
-			current().toArray(members);
-		} else {
-			// noinspection SuspiciousSystemArraycopy
-			System.arraycopy(current().toArray(), 0, members, offset, arity);
-		}
-	}
+  public void currentToArray(Member[] members, int offset) {
+    if (offset == 0) {
+      current().toArray(members);
+    } else {
+      // noinspection SuspiciousSystemArraycopy
+      System.arraycopy(current().toArray(), 0, members, offset, arity);
+    }
+  }
 
-	public int getArity() {
-		return arity;
-	}
+  public int getArity() {
+    return arity;
+  }
 
-	public Member member(int column) {
-		return current().get(column);
-	}
+  public Member member(int column) {
+    return current().get(column);
+  }
 }
 
 // End AbstractTupleCursor.java

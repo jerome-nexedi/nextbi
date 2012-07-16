@@ -28,14 +28,14 @@ package mondrian.spi;
  * @version $Id: //open/mondrian/src/main/mondrian/spi/CellFormatter.java#1 $
  */
 public interface CellFormatter {
-	/**
-	 * Formats a cell value.
-	 * 
-	 * @param value
-	 *          Cell value
-	 * @return the formatted value
-	 */
-	String formatCell(Object value);
+  /**
+   * Formats a cell value.
+   * 
+   * @param value
+   *          Cell value
+   * @return the formatted value
+   */
+  String formatCell(Object value);
 }
 
 // End CellFormatter.java

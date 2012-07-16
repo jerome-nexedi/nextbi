@@ -26,22 +26,21 @@ import java.io.PrintWriter;
  * @since October, 2010
  */
 public final class Unsafe {
-	public static final Unsafe INSTANCE = new Unsafe();
+  public static final Unsafe INSTANCE = new Unsafe();
 
-	private Unsafe() {
-	}
+  private Unsafe() {
+  }
 
-	public void setStatementProfiling(OlapStatement statement,
-			final PrintWriter pw) {
-		((MondrianOlap4jStatement) statement).enableProfiling(new ProfileHandler() {
-			public void explain(String plan, QueryTiming timing) {
-				pw.println(plan);
-				if (timing != null) {
-					pw.println(timing);
-				}
-			}
-		});
-	}
+  public void setStatementProfiling(OlapStatement statement, final PrintWriter pw) {
+    ((MondrianOlap4jStatement) statement).enableProfiling(new ProfileHandler() {
+      public void explain(String plan, QueryTiming timing) {
+        pw.println(plan);
+        if (timing != null) {
+          pw.println(timing);
+        }
+      }
+    });
+  }
 }
 
 // End Unsafe.java

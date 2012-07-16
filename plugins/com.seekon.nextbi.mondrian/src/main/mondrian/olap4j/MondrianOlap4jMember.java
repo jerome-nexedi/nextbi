@@ -30,175 +30,175 @@ import mondrian.rolap.RolapMeasure;
  * @since May 25, 2007
  */
 class MondrianOlap4jMember implements Member, Named {
-	final mondrian.olap.Member member;
-	final MondrianOlap4jSchema olap4jSchema;
+  final mondrian.olap.Member member;
 
-	MondrianOlap4jMember(MondrianOlap4jSchema olap4jSchema,
-			mondrian.olap.Member mondrianMember) {
-		assert mondrianMember != null;
-		assert mondrianMember instanceof RolapMeasure == this instanceof MondrianOlap4jMeasure;
-		this.olap4jSchema = olap4jSchema;
-		this.member = mondrianMember;
-	}
+  final MondrianOlap4jSchema olap4jSchema;
 
-	public boolean equals(Object obj) {
-		return obj instanceof MondrianOlap4jMember
-				&& member.equals(((MondrianOlap4jMember) obj).member);
-	}
+  MondrianOlap4jMember(MondrianOlap4jSchema olap4jSchema,
+    mondrian.olap.Member mondrianMember) {
+    assert mondrianMember != null;
+    assert mondrianMember instanceof RolapMeasure == this instanceof MondrianOlap4jMeasure;
+    this.olap4jSchema = olap4jSchema;
+    this.member = mondrianMember;
+  }
 
-	public int hashCode() {
-		return member.hashCode();
-	}
+  public boolean equals(Object obj) {
+    return obj instanceof MondrianOlap4jMember
+      && member.equals(((MondrianOlap4jMember) obj).member);
+  }
 
-	public String toString() {
-		return getUniqueName();
-	}
+  public int hashCode() {
+    return member.hashCode();
+  }
 
-	public NamedList<MondrianOlap4jMember> getChildMembers() throws OlapException {
-		final List<mondrian.olap.Member> children = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection
-				.getMondrianConnection().getSchemaReader().withLocus()
-				.getMemberChildren(member);
-		return new AbstractNamedList<MondrianOlap4jMember>() {
-			protected String getName(MondrianOlap4jMember member) {
-				return member.getName();
-			}
+  public String toString() {
+    return getUniqueName();
+  }
 
-			public MondrianOlap4jMember get(int index) {
-				return new MondrianOlap4jMember(olap4jSchema, children.get(index));
-			}
+  public NamedList<MondrianOlap4jMember> getChildMembers() throws OlapException {
+    final List<mondrian.olap.Member> children = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection
+      .getMondrianConnection().getSchemaReader().withLocus().getMemberChildren(
+        member);
+    return new AbstractNamedList<MondrianOlap4jMember>() {
+      protected String getName(MondrianOlap4jMember member) {
+        return member.getName();
+      }
 
-			public int size() {
-				return children.size();
-			}
-		};
-	}
+      public MondrianOlap4jMember get(int index) {
+        return new MondrianOlap4jMember(olap4jSchema, children.get(index));
+      }
 
-	public int getChildMemberCount() throws OlapException {
-		return olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection
-				.getMondrianConnection().getSchemaReader().withLocus()
-				.getMemberChildren(member).size();
-	}
+      public int size() {
+        return children.size();
+      }
+    };
+  }
 
-	public MondrianOlap4jMember getParentMember() {
-		final mondrian.olap.Member parentMember = member.getParentMember();
-		if (parentMember == null
-				|| !olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection
-						.getMondrianConnection2().getSchemaReader().withLocus()
-						.isVisible(parentMember)) {
-			return null;
-		}
-		return new MondrianOlap4jMember(olap4jSchema, parentMember);
-	}
+  public int getChildMemberCount() throws OlapException {
+    return olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection
+      .getMondrianConnection().getSchemaReader().withLocus().getMemberChildren(
+        member).size();
+  }
 
-	public Level getLevel() {
-		return new MondrianOlap4jLevel(olap4jSchema, member.getLevel());
-	}
+  public MondrianOlap4jMember getParentMember() {
+    final mondrian.olap.Member parentMember = member.getParentMember();
+    if (parentMember == null
+      || !olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection
+        .getMondrianConnection2().getSchemaReader().withLocus().isVisible(
+          parentMember)) {
+      return null;
+    }
+    return new MondrianOlap4jMember(olap4jSchema, parentMember);
+  }
 
-	public Hierarchy getHierarchy() {
-		return new MondrianOlap4jHierarchy(olap4jSchema, member.getHierarchy());
-	}
+  public Level getLevel() {
+    return new MondrianOlap4jLevel(olap4jSchema, member.getLevel());
+  }
 
-	public Dimension getDimension() {
-		return new MondrianOlap4jDimension(olap4jSchema, member.getDimension());
-	}
+  public Hierarchy getHierarchy() {
+    return new MondrianOlap4jHierarchy(olap4jSchema, member.getHierarchy());
+  }
 
-	public Type getMemberType() {
-		return Type.valueOf(member.getMemberType().name());
-	}
+  public Dimension getDimension() {
+    return new MondrianOlap4jDimension(olap4jSchema, member.getDimension());
+  }
 
-	public boolean isAll() {
-		return member.isAll();
-	}
+  public Type getMemberType() {
+    return Type.valueOf(member.getMemberType().name());
+  }
 
-	public boolean isChildOrEqualTo(Member member) {
-		throw new UnsupportedOperationException();
-	}
+  public boolean isAll() {
+    return member.isAll();
+  }
 
-	public boolean isCalculated() {
-		return getMemberType() == Type.FORMULA;
-	}
+  public boolean isChildOrEqualTo(Member member) {
+    throw new UnsupportedOperationException();
+  }
 
-	public int getSolveOrder() {
-		return member.getSolveOrder();
-	}
+  public boolean isCalculated() {
+    return getMemberType() == Type.FORMULA;
+  }
 
-	public ParseTreeNode getExpression() {
-		throw new UnsupportedOperationException();
-	}
+  public int getSolveOrder() {
+    return member.getSolveOrder();
+  }
 
-	public List<Member> getAncestorMembers() {
-		final List<Member> list = new ArrayList<Member>();
-		MondrianOlap4jMember m = getParentMember();
-		while (m != null) {
-			list.add(m);
-			m = m.getParentMember();
-		}
-		return list;
-	}
+  public ParseTreeNode getExpression() {
+    throw new UnsupportedOperationException();
+  }
 
-	public boolean isCalculatedInQuery() {
-		return member.isCalculatedInQuery();
-	}
+  public List<Member> getAncestorMembers() {
+    final List<Member> list = new ArrayList<Member>();
+    MondrianOlap4jMember m = getParentMember();
+    while (m != null) {
+      list.add(m);
+      m = m.getParentMember();
+    }
+    return list;
+  }
 
-	public Object getPropertyValue(Property property) {
-		return member.getPropertyValue(property.getName());
-	}
+  public boolean isCalculatedInQuery() {
+    return member.isCalculatedInQuery();
+  }
 
-	public String getPropertyFormattedValue(Property property) {
-		return member.getPropertyFormattedValue(property.getName());
-	}
+  public Object getPropertyValue(Property property) {
+    return member.getPropertyValue(property.getName());
+  }
 
-	public void setProperty(Property property, Object value) throws OlapException {
-		member.setProperty(property.getName(), value);
-	}
+  public String getPropertyFormattedValue(Property property) {
+    return member.getPropertyFormattedValue(property.getName());
+  }
 
-	public NamedList<Property> getProperties() {
-		return getLevel().getProperties();
-	}
+  public void setProperty(Property property, Object value) throws OlapException {
+    member.setProperty(property.getName(), value);
+  }
 
-	public int getOrdinal() {
-		final Number ordinal = (Number) member
-				.getPropertyValue(Property.StandardMemberProperty.MEMBER_ORDINAL
-						.getName());
-		return ordinal.intValue();
-	}
+  public NamedList<Property> getProperties() {
+    return getLevel().getProperties();
+  }
 
-	public boolean isHidden() {
-		return member.isHidden();
-	}
+  public int getOrdinal() {
+    final Number ordinal = (Number) member
+      .getPropertyValue(Property.StandardMemberProperty.MEMBER_ORDINAL.getName());
+    return ordinal.intValue();
+  }
 
-	public int getDepth() {
-		return member.getDepth();
-	}
+  public boolean isHidden() {
+    return member.isHidden();
+  }
 
-	public Member getDataMember() {
-		final mondrian.olap.Member dataMember = member.getDataMember();
-		if (dataMember == null) {
-			return null;
-		}
-		return new MondrianOlap4jMember(olap4jSchema, dataMember);
-	}
+  public int getDepth() {
+    return member.getDepth();
+  }
 
-	public String getName() {
-		return member.getName();
-	}
+  public Member getDataMember() {
+    final mondrian.olap.Member dataMember = member.getDataMember();
+    if (dataMember == null) {
+      return null;
+    }
+    return new MondrianOlap4jMember(olap4jSchema, dataMember);
+  }
 
-	public String getUniqueName() {
-		return member.getUniqueName();
-	}
+  public String getName() {
+    return member.getName();
+  }
 
-	public String getCaption() {
-		return member.getCaption();
-	}
+  public String getUniqueName() {
+    return member.getUniqueName();
+  }
 
-	public String getDescription() {
-		return member.getDescription();
-	}
+  public String getCaption() {
+    return member.getCaption();
+  }
 
-	public boolean isVisible() {
-		return (Boolean) member.getPropertyValue(mondrian.olap.Property.VISIBLE
-				.getName());
-	}
+  public String getDescription() {
+    return member.getDescription();
+  }
+
+  public boolean isVisible() {
+    return (Boolean) member.getPropertyValue(mondrian.olap.Property.VISIBLE
+      .getName());
+  }
 }
 
 // End MondrianOlap4jMember.java

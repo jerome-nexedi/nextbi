@@ -30,259 +30,262 @@ import java.util.List;
  */
 public class QueryAxis extends QueryPart {
 
-	private boolean nonEmpty;
-	private boolean ordered;
-	private Exp exp;
-	private final AxisOrdinal axisOrdinal;
+  private boolean nonEmpty;
 
-	/**
-	 * Whether to show subtotals on this axis. The "(show\hide)Subtotals"
-	 * operation changes its valud.
-	 */
-	private SubtotalVisibility subtotalVisibility;
-	private final Id[] dimensionProperties;
+  private boolean ordered;
 
-	/**
-	 * Creates an axis.
-	 * 
-	 * @param nonEmpty
-	 *          Whether to filter out members of this axis whose cells are all
-	 *          empty
-	 * @param set
-	 *          Expression to populate the axis
-	 * @param axisOrdinal
-	 *          Which axis (ROWS, COLUMNS, etc.)
-	 * @param subtotalVisibility
-	 *          Whether to show subtotals
-	 * @param dimensionProperties
-	 *          List of dimension properties
-	 */
-	public QueryAxis(boolean nonEmpty, Exp set, AxisOrdinal axisOrdinal,
-			SubtotalVisibility subtotalVisibility, Id[] dimensionProperties) {
-		assert dimensionProperties != null;
-		assert axisOrdinal != null;
-		this.nonEmpty = nonEmpty
-				|| (MondrianProperties.instance().EnableNonEmptyOnAllAxis.get() && !axisOrdinal
-						.isFilter());
-		this.exp = set;
-		this.axisOrdinal = axisOrdinal;
-		this.subtotalVisibility = subtotalVisibility;
-		this.dimensionProperties = dimensionProperties;
-		this.ordered = false;
-	}
+  private Exp exp;
 
-	/**
-	 * Creates an axis with no dimension properties.
-	 * 
-	 * @see #QueryAxis(boolean,Exp,AxisOrdinal,mondrian.olap.QueryAxis.SubtotalVisibility,Id[])
-	 */
-	public QueryAxis(boolean nonEmpty, Exp set, AxisOrdinal axisOrdinal,
-			SubtotalVisibility subtotalVisibility) {
-		this(nonEmpty, set, axisOrdinal, subtotalVisibility, new Id[0]);
-	}
+  private final AxisOrdinal axisOrdinal;
 
-	public Object clone() {
-		return new QueryAxis(nonEmpty, exp.clone(), axisOrdinal,
-				subtotalVisibility, dimensionProperties.clone());
-	}
+  /**
+   * Whether to show subtotals on this axis. The "(show\hide)Subtotals"
+   * operation changes its valud.
+   */
+  private SubtotalVisibility subtotalVisibility;
 
-	static QueryAxis[] cloneArray(QueryAxis[] a) {
-		QueryAxis[] a2 = new QueryAxis[a.length];
-		for (int i = 0; i < a.length; i++) {
-			a2[i] = (QueryAxis) a[i].clone();
-		}
-		return a2;
-	}
+  private final Id[] dimensionProperties;
 
-	public Object accept(MdxVisitor visitor) {
-		final Object o = visitor.visit(this);
+  /**
+   * Creates an axis.
+   * 
+   * @param nonEmpty
+   *          Whether to filter out members of this axis whose cells are all
+   *          empty
+   * @param set
+   *          Expression to populate the axis
+   * @param axisOrdinal
+   *          Which axis (ROWS, COLUMNS, etc.)
+   * @param subtotalVisibility
+   *          Whether to show subtotals
+   * @param dimensionProperties
+   *          List of dimension properties
+   */
+  public QueryAxis(boolean nonEmpty, Exp set, AxisOrdinal axisOrdinal,
+    SubtotalVisibility subtotalVisibility, Id[] dimensionProperties) {
+    assert dimensionProperties != null;
+    assert axisOrdinal != null;
+    this.nonEmpty = nonEmpty
+      || (MondrianProperties.instance().EnableNonEmptyOnAllAxis.get() && !axisOrdinal
+        .isFilter());
+    this.exp = set;
+    this.axisOrdinal = axisOrdinal;
+    this.subtotalVisibility = subtotalVisibility;
+    this.dimensionProperties = dimensionProperties;
+    this.ordered = false;
+  }
 
-		if (visitor.shouldVisitChildren()) {
-			// visit the expression which forms the axis
-			exp.accept(visitor);
-		}
-		return o;
-	}
+  /**
+   * Creates an axis with no dimension properties.
+   * 
+   * @see #QueryAxis(boolean,Exp,AxisOrdinal,mondrian.olap.QueryAxis.SubtotalVisibility,Id[])
+   */
+  public QueryAxis(boolean nonEmpty, Exp set, AxisOrdinal axisOrdinal,
+    SubtotalVisibility subtotalVisibility) {
+    this(nonEmpty, set, axisOrdinal, subtotalVisibility, new Id[0]);
+  }
 
-	public Calc compile(ExpCompiler compiler, ResultStyle resultStyle) {
-		Exp exp = this.exp;
-		if (axisOrdinal.isFilter()) {
-			exp = normalizeSlicerExpression(exp);
-			exp = exp.accept(compiler.getValidator());
-		}
-		switch (resultStyle) {
-		case LIST:
-			return compiler.compileList(exp, false);
-		case MUTABLE_LIST:
-			return compiler.compileList(exp, true);
-		case ITERABLE:
-			return compiler.compileIter(exp);
-		default:
-			throw Util.unexpected(resultStyle);
-		}
-	}
+  public Object clone() {
+    return new QueryAxis(nonEmpty, exp.clone(), axisOrdinal, subtotalVisibility,
+      dimensionProperties.clone());
+  }
 
-	private static Exp normalizeSlicerExpression(Exp exp) {
-		Exp slicer = exp;
-		if (slicer instanceof LevelExpr || slicer instanceof HierarchyExpr
-				|| slicer instanceof DimensionExpr) {
-			slicer = new UnresolvedFunCall("DefaultMember", Syntax.Property,
-					new Exp[] { slicer });
-		}
-		if (slicer == null) {
-			;
-		} else if (slicer instanceof FunCall
-				&& ((FunCall) slicer).getSyntax() == Syntax.Parentheses) {
-			slicer = new UnresolvedFunCall("{}", Syntax.Braces, new Exp[] { slicer });
-		} else {
-			slicer = new UnresolvedFunCall("{}", Syntax.Braces,
-					new Exp[] { new UnresolvedFunCall("()", Syntax.Parentheses,
-							new Exp[] { slicer }) });
-		}
+  static QueryAxis[] cloneArray(QueryAxis[] a) {
+    QueryAxis[] a2 = new QueryAxis[a.length];
+    for (int i = 0; i < a.length; i++) {
+      a2[i] = (QueryAxis) a[i].clone();
+    }
+    return a2;
+  }
 
-		return slicer;
-	}
+  public Object accept(MdxVisitor visitor) {
+    final Object o = visitor.visit(this);
 
-	public String getAxisName() {
-		return axisOrdinal.name();
-	}
+    if (visitor.shouldVisitChildren()) {
+      // visit the expression which forms the axis
+      exp.accept(visitor);
+    }
+    return o;
+  }
 
-	/**
-	 * Returns the ordinal of this axis, for example
-	 * {@link mondrian.olap.AxisOrdinal.StandardAxisOrdinal#ROWS}.
-	 */
-	public AxisOrdinal getAxisOrdinal() {
-		return axisOrdinal;
-	}
+  public Calc compile(ExpCompiler compiler, ResultStyle resultStyle) {
+    Exp exp = this.exp;
+    if (axisOrdinal.isFilter()) {
+      exp = normalizeSlicerExpression(exp);
+      exp = exp.accept(compiler.getValidator());
+    }
+    switch (resultStyle) {
+    case LIST:
+      return compiler.compileList(exp, false);
+    case MUTABLE_LIST:
+      return compiler.compileList(exp, true);
+    case ITERABLE:
+      return compiler.compileIter(exp);
+    default:
+      throw Util.unexpected(resultStyle);
+    }
+  }
 
-	/**
-	 * Returns whether the axis has the <code>NON EMPTY</code> property set.
-	 */
-	public boolean isNonEmpty() {
-		return nonEmpty;
-	}
+  private static Exp normalizeSlicerExpression(Exp exp) {
+    Exp slicer = exp;
+    if (slicer instanceof LevelExpr || slicer instanceof HierarchyExpr
+      || slicer instanceof DimensionExpr) {
+      slicer = new UnresolvedFunCall("DefaultMember", Syntax.Property,
+        new Exp[] { slicer });
+    }
+    if (slicer == null) {
+      ;
+    } else if (slicer instanceof FunCall
+      && ((FunCall) slicer).getSyntax() == Syntax.Parentheses) {
+      slicer = new UnresolvedFunCall("{}", Syntax.Braces, new Exp[] { slicer });
+    } else {
+      slicer = new UnresolvedFunCall("{}", Syntax.Braces,
+        new Exp[] { new UnresolvedFunCall("()", Syntax.Parentheses,
+          new Exp[] { slicer }) });
+    }
 
-	/**
-	 * Sets whether the axis has the <code>NON EMPTY</code> property set. See
-	 * {@link #isNonEmpty()}.
-	 */
-	public void setNonEmpty(boolean nonEmpty) {
-		this.nonEmpty = nonEmpty;
-	}
+    return slicer;
+  }
 
-	/**
-	 * Returns whether the axis has the <code>ORDER</code> property set.
-	 */
-	public boolean isOrdered() {
-		return ordered;
-	}
+  public String getAxisName() {
+    return axisOrdinal.name();
+  }
 
-	/**
-	 * Sets whether the axis has the <code>ORDER</code> property set.
-	 */
-	public void setOrdered(boolean ordered) {
-		this.ordered = ordered;
-	}
+  /**
+   * Returns the ordinal of this axis, for example
+   * {@link mondrian.olap.AxisOrdinal.StandardAxisOrdinal#ROWS}.
+   */
+  public AxisOrdinal getAxisOrdinal() {
+    return axisOrdinal;
+  }
 
-	/**
-	 * Returns the expression which is used to compute the value of this axis.
-	 */
-	public Exp getSet() {
-		return exp;
-	}
+  /**
+   * Returns whether the axis has the <code>NON EMPTY</code> property set.
+   */
+  public boolean isNonEmpty() {
+    return nonEmpty;
+  }
 
-	/**
-	 * Sets the expression which is used to compute the value of this axis. See
-	 * {@link #getSet()}.
-	 */
-	public void setSet(Exp set) {
-		this.exp = set;
-	}
+  /**
+   * Sets whether the axis has the <code>NON EMPTY</code> property set. See
+   * {@link #isNonEmpty()}.
+   */
+  public void setNonEmpty(boolean nonEmpty) {
+    this.nonEmpty = nonEmpty;
+  }
 
-	public void resolve(Validator validator) {
-		exp = validator.validate(exp, false);
-		final Type type = exp.getType();
-		if (!TypeUtil.isSet(type)) {
-			// If expression is a member or a tuple, implicitly convert it
-			// into a set. Dimensions and hierarchies can be converted to
-			// members, thence to sets.
-			if (type instanceof MemberType || type instanceof TupleType
-					|| type instanceof DimensionType || type instanceof HierarchyType) {
-				exp = new UnresolvedFunCall("{}", Syntax.Braces, new Exp[] { exp });
-				exp = validator.validate(exp, false);
-			} else {
-				throw MondrianResource.instance().MdxAxisIsNotSet
-						.ex(axisOrdinal.name());
-			}
-		}
-	}
+  /**
+   * Returns whether the axis has the <code>ORDER</code> property set.
+   */
+  public boolean isOrdered() {
+    return ordered;
+  }
 
-	public Object[] getChildren() {
-		return new Object[] { exp };
-	}
+  /**
+   * Sets whether the axis has the <code>ORDER</code> property set.
+   */
+  public void setOrdered(boolean ordered) {
+    this.ordered = ordered;
+  }
 
-	public void unparse(PrintWriter pw) {
-		if (nonEmpty) {
-			pw.print("NON EMPTY ");
-		}
-		if (exp != null) {
-			exp.unparse(pw);
-		}
-		if (dimensionProperties.length > 0) {
-			pw.print(" DIMENSION PROPERTIES ");
-			for (int i = 0; i < dimensionProperties.length; i++) {
-				Id dimensionProperty = dimensionProperties[i];
-				if (i > 0) {
-					pw.print(", ");
-				}
-				dimensionProperty.unparse(pw);
-			}
-		}
-		if (!axisOrdinal.isFilter()) {
-			pw.print(" ON " + axisOrdinal.name());
-		}
-	}
+  /**
+   * Returns the expression which is used to compute the value of this axis.
+   */
+  public Exp getSet() {
+    return exp;
+  }
 
-	public void addLevel(Level level) {
-		Util.assertTrue(level != null, "addLevel needs level");
-		exp = new UnresolvedFunCall("Crossjoin", Syntax.Function, new Exp[] {
-				exp,
-				new UnresolvedFunCall("Members", Syntax.Property,
-						new Exp[] { new LevelExpr(level) }) });
-	}
+  /**
+   * Sets the expression which is used to compute the value of this axis. See
+   * {@link #getSet()}.
+   */
+  public void setSet(Exp set) {
+    this.exp = set;
+  }
 
-	void setSubtotalVisibility(boolean bShowSubtotals) {
-		subtotalVisibility = bShowSubtotals ? SubtotalVisibility.Show
-				: SubtotalVisibility.Hide;
-	}
+  public void resolve(Validator validator) {
+    exp = validator.validate(exp, false);
+    final Type type = exp.getType();
+    if (!TypeUtil.isSet(type)) {
+      // If expression is a member or a tuple, implicitly convert it
+      // into a set. Dimensions and hierarchies can be converted to
+      // members, thence to sets.
+      if (type instanceof MemberType || type instanceof TupleType
+        || type instanceof DimensionType || type instanceof HierarchyType) {
+        exp = new UnresolvedFunCall("{}", Syntax.Braces, new Exp[] { exp });
+        exp = validator.validate(exp, false);
+      } else {
+        throw MondrianResource.instance().MdxAxisIsNotSet.ex(axisOrdinal.name());
+      }
+    }
+  }
 
-	public SubtotalVisibility getSubtotalVisibility() {
-		return subtotalVisibility;
-	}
+  public Object[] getChildren() {
+    return new Object[] { exp };
+  }
 
-	public void resetSubtotalVisibility() {
-		this.subtotalVisibility = SubtotalVisibility.Undefined;
-	}
+  public void unparse(PrintWriter pw) {
+    if (nonEmpty) {
+      pw.print("NON EMPTY ");
+    }
+    if (exp != null) {
+      exp.unparse(pw);
+    }
+    if (dimensionProperties.length > 0) {
+      pw.print(" DIMENSION PROPERTIES ");
+      for (int i = 0; i < dimensionProperties.length; i++) {
+        Id dimensionProperty = dimensionProperties[i];
+        if (i > 0) {
+          pw.print(", ");
+        }
+        dimensionProperty.unparse(pw);
+      }
+    }
+    if (!axisOrdinal.isFilter()) {
+      pw.print(" ON " + axisOrdinal.name());
+    }
+  }
 
-	public void validate(Validator validator) {
-		if (axisOrdinal.isFilter()) {
-			if (exp != null) {
-				exp = validator.validate(exp, false);
-			}
-		}
-	}
+  public void addLevel(Level level) {
+    Util.assertTrue(level != null, "addLevel needs level");
+    exp = new UnresolvedFunCall("Crossjoin", Syntax.Function, new Exp[] {
+      exp,
+      new UnresolvedFunCall("Members", Syntax.Property, new Exp[] { new LevelExpr(
+        level) }) });
+  }
 
-	public Id[] getDimensionProperties() {
-		return dimensionProperties;
-	}
+  void setSubtotalVisibility(boolean bShowSubtotals) {
+    subtotalVisibility = bShowSubtotals ? SubtotalVisibility.Show
+      : SubtotalVisibility.Hide;
+  }
 
-	/**
-	 * <code>SubtotalVisibility</code> enumerates the allowed values of whether
-	 * subtotals are visible.
-	 */
-	public enum SubtotalVisibility {
-		Undefined, Hide, Show;
-	}
+  public SubtotalVisibility getSubtotalVisibility() {
+    return subtotalVisibility;
+  }
+
+  public void resetSubtotalVisibility() {
+    this.subtotalVisibility = SubtotalVisibility.Undefined;
+  }
+
+  public void validate(Validator validator) {
+    if (axisOrdinal.isFilter()) {
+      if (exp != null) {
+        exp = validator.validate(exp, false);
+      }
+    }
+  }
+
+  public Id[] getDimensionProperties() {
+    return dimensionProperties;
+  }
+
+  /**
+   * <code>SubtotalVisibility</code> enumerates the allowed values of whether
+   * subtotals are visible.
+   */
+  public enum SubtotalVisibility {
+    Undefined, Hide, Show;
+  }
 
 }
 

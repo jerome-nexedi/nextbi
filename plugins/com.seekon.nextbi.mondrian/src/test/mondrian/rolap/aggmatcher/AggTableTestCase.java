@@ -6,58 +6,52 @@
 // Copyright (C) 2005-2009 Julian Hyde and others
 // All Rights Reserved.
 // You must accept the terms of that agreement to use this software.
-*/
+ */
 package mondrian.rolap.aggmatcher;
 
 import mondrian.test.loader.CsvDBTestCase;
 import mondrian.olap.MondrianProperties;
 
 /**
- * This abstract class can be used as the basis for writing aggregate table
- * test in the "testsrc/main/mondrian/rolap/aggmatcher" directory. Taken care
- * of is the setting of the Caching and Aggregate Read/Use properties and
- * the reloading of the aggregate tables after the CSV tables are loaded.
- * The particular cube definition and CSV file to use are abstract methods.
- *
+ * This abstract class can be used as the basis for writing aggregate table test
+ * in the "testsrc/main/mondrian/rolap/aggmatcher" directory. Taken care of is
+ * the setting of the Caching and Aggregate Read/Use properties and the
+ * reloading of the aggregate tables after the CSV tables are loaded. The
+ * particular cube definition and CSV file to use are abstract methods.
+ * 
  * @author <a>Richard M. Emberson</a>
- * @version  $Id: //open/mondrian/testsrc/main/mondrian/rolap/aggmatcher/AggTableTestCase.java#8 $
+ * @version $Id:
+ *          //open/mondrian/testsrc/main/mondrian/rolap/aggmatcher/AggTableTestCase
+ *          .java#8 $
  */
 public abstract class AggTableTestCase extends CsvDBTestCase {
 
-    private static final String DIRECTORY =
-                            "testsrc/main/mondrian/rolap/aggmatcher";
+  private static final String DIRECTORY = "testsrc/main/mondrian/rolap/aggmatcher";
 
-    public AggTableTestCase() {
-        super();
-    }
-    public AggTableTestCase(String name) {
-        super(name);
-    }
+  public AggTableTestCase() {
+    super();
+  }
 
-    protected void setUp() throws Exception {
-        super.setUp();
+  public AggTableTestCase(String name) {
+    super(name);
+  }
 
-        // store current property values
-        MondrianProperties props = MondrianProperties.instance();
+  protected void setUp() throws Exception {
+    super.setUp();
 
-        // turn off caching
-        propSaver.set(
-            props.DisableCaching,
-            true);
-        propSaver.set(
-            props.UseAggregates,
-            true);
-        propSaver.set(
-            props.ReadAggregates,
-            false);
-        propSaver.set(
-            props.ReadAggregates,
-            true);
-    }
+    // store current property values
+    MondrianProperties props = MondrianProperties.instance();
 
-    protected String getDirectoryName() {
-        return DIRECTORY;
-    }
+    // turn off caching
+    propSaver.set(props.DisableCaching, true);
+    propSaver.set(props.UseAggregates, true);
+    propSaver.set(props.ReadAggregates, false);
+    propSaver.set(props.ReadAggregates, true);
+  }
+
+  protected String getDirectoryName() {
+    return DIRECTORY;
+  }
 }
 
 // End AggTableTestCase.java

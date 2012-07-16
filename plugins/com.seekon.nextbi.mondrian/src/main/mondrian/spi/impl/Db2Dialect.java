@@ -22,30 +22,30 @@ import java.sql.SQLException;
  */
 public class Db2Dialect extends JdbcDialectImpl {
 
-	public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
-			Db2Dialect.class, DatabaseProduct.DB2);
+  public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
+    Db2Dialect.class, DatabaseProduct.DB2);
 
-	/**
-	 * Creates a Db2Dialect.
-	 * 
-	 * @param connection
-	 *          Connection
-	 */
-	public Db2Dialect(Connection connection) throws SQLException {
-		super(connection);
-	}
+  /**
+   * Creates a Db2Dialect.
+   * 
+   * @param connection
+   *          Connection
+   */
+  public Db2Dialect(Connection connection) throws SQLException {
+    super(connection);
+  }
 
-	public String toUpper(String expr) {
-		return "UCASE(" + expr + ")";
-	}
+  public String toUpper(String expr) {
+    return "UCASE(" + expr + ")";
+  }
 
-	public boolean supportsGroupingSets() {
-		return true;
-	}
+  public boolean supportsGroupingSets() {
+    return true;
+  }
 
-	public boolean requiresOrderByAlias() {
-		return true;
-	}
+  public boolean requiresOrderByAlias() {
+    return true;
+  }
 }
 
 // End Db2Dialect.java

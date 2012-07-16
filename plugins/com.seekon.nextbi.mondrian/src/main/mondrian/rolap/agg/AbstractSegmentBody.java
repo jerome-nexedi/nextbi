@@ -20,25 +20,26 @@ import java.util.SortedSet;
  *          java#3 $
  */
 abstract class AbstractSegmentBody implements SegmentBody {
-	private static final long serialVersionUID = -7094121704771005640L;
+  private static final long serialVersionUID = -7094121704771005640L;
 
-	private final SortedSet<Comparable<?>>[] axisValueSets;
-	private final boolean[] nullAxisFlags;
+  private final SortedSet<Comparable<?>>[] axisValueSets;
 
-	public AbstractSegmentBody(SortedSet<Comparable<?>>[] axisValueSets,
-			boolean[] nullAxisFlags) {
-		super();
-		this.axisValueSets = axisValueSets.clone();
-		this.nullAxisFlags = nullAxisFlags.clone();
-	}
+  private final boolean[] nullAxisFlags;
 
-	public SortedSet<Comparable<?>>[] getAxisValueSets() {
-		return axisValueSets;
-	}
+  public AbstractSegmentBody(SortedSet<Comparable<?>>[] axisValueSets,
+    boolean[] nullAxisFlags) {
+    super();
+    this.axisValueSets = axisValueSets.clone();
+    this.nullAxisFlags = nullAxisFlags.clone();
+  }
 
-	public boolean[] getNullAxisFlags() {
-		return nullAxisFlags;
-	}
+  public SortedSet<Comparable<?>>[] getAxisValueSets() {
+    return axisValueSets;
+  }
+
+  public boolean[] getNullAxisFlags() {
+    return nullAxisFlags;
+  }
 }
 
 // End AbstractSegmentBody.java

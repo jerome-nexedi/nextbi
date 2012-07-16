@@ -29,31 +29,32 @@ import java.net.MalformedURLException;
  *          .java#6 $
  */
 public class ServletContextCatalogLocator implements CatalogLocator {
-	private ServletContext servletContext;
+  private ServletContext servletContext;
 
-	public ServletContextCatalogLocator(ServletContext servletContext) {
-		this.servletContext = servletContext;
-	}
+  public ServletContextCatalogLocator(ServletContext servletContext) {
+    this.servletContext = servletContext;
+  }
 
-	public String locate(String catalogPath) {
-		// If the catalog is an absolute path, it refers to a resource inside
-		// our WAR file, so replace the URL.
-		if (catalogPath != null && catalogPath.startsWith("/")) {
-			try {
-				URL url = servletContext.getResource(catalogPath);
-				if (url == null) {
-					// The catalogPath does not exist, but construct a feasible
-					// URL so that the error message makes sense.
-					url = servletContext.getResource("/");
-					url = new URL(url.getProtocol(), url.getHost(), url.getPort(),
-							url.getFile() + catalogPath.substring(1));
-				}
-				catalogPath = url.toString();
-			} catch (MalformedURLException ignored) {
-			}
-		}
-		return catalogPath;
-	}
+  public String locate(String catalogPath) {
+    // If the catalog is an absolute path, it refers to a resource inside
+    // our WAR file, so replace the URL.
+    if (catalogPath != null && catalogPath.startsWith("/")) {
+      try {
+        URL url = servletContext.getResource(catalogPath);
+        if (url == null) {
+          // The catalogPath does not exist, but construct a feasible
+          // URL so that the error message makes sense.
+          url = servletContext.getResource("/");
+          url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url
+            .getFile()
+            + catalogPath.substring(1));
+        }
+        catalogPath = url.toString();
+      } catch (MalformedURLException ignored) {
+      }
+    }
+    return catalogPath;
+  }
 }
 
 // End ServletContextCatalogLocator.java

@@ -25,39 +25,39 @@ import mondrian.mdx.ResolvedFunCall;
  * @since Mar 23, 2006
  */
 class StdevFunDef extends AbstractAggregateFunDef {
-	static final ReflectiveMultiResolver StdevResolver = new ReflectiveMultiResolver(
-			"Stdev",
-			"Stdev(<Set>[, <Numeric Expression>])",
-			"Returns the standard deviation of a numeric expression evaluated over a set (unbiased).",
-			new String[] { "fnx", "fnxn" }, StdevFunDef.class);
+  static final ReflectiveMultiResolver StdevResolver = new ReflectiveMultiResolver(
+    "Stdev",
+    "Stdev(<Set>[, <Numeric Expression>])",
+    "Returns the standard deviation of a numeric expression evaluated over a set (unbiased).",
+    new String[] { "fnx", "fnxn" }, StdevFunDef.class);
 
-	static final ReflectiveMultiResolver StddevResolver = new ReflectiveMultiResolver(
-			"Stddev", "Stddev(<Set>[, <Numeric Expression>])", "Alias for Stdev.",
-			new String[] { "fnx", "fnxn" }, StdevFunDef.class);
+  static final ReflectiveMultiResolver StddevResolver = new ReflectiveMultiResolver(
+    "Stddev", "Stddev(<Set>[, <Numeric Expression>])", "Alias for Stdev.",
+    new String[] { "fnx", "fnxn" }, StdevFunDef.class);
 
-	public StdevFunDef(FunDef dummyFunDef) {
-		super(dummyFunDef);
-	}
+  public StdevFunDef(FunDef dummyFunDef) {
+    super(dummyFunDef);
+  }
 
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
-		final ListCalc listCalc = compiler.compileList(call.getArg(0));
-		final Calc calc = call.getArgCount() > 1 ? compiler.compileScalar(
-				call.getArg(1), true) : new ValueCalc(call);
-		return new AbstractDoubleCalc(call, new Calc[] { listCalc, calc }) {
-			public double evaluateDouble(Evaluator evaluator) {
-				TupleList memberList = evaluateCurrentList(listCalc, evaluator);
-				final int savepoint = evaluator.savepoint();
-				evaluator.setNonEmpty(false);
-				final double stdev = (Double) stdev(evaluator, memberList, calc, false);
-				evaluator.restore(savepoint);
-				return stdev;
-			}
+  public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    final ListCalc listCalc = compiler.compileList(call.getArg(0));
+    final Calc calc = call.getArgCount() > 1 ? compiler.compileScalar(
+      call.getArg(1), true) : new ValueCalc(call);
+    return new AbstractDoubleCalc(call, new Calc[] { listCalc, calc }) {
+      public double evaluateDouble(Evaluator evaluator) {
+        TupleList memberList = evaluateCurrentList(listCalc, evaluator);
+        final int savepoint = evaluator.savepoint();
+        evaluator.setNonEmpty(false);
+        final double stdev = (Double) stdev(evaluator, memberList, calc, false);
+        evaluator.restore(savepoint);
+        return stdev;
+      }
 
-			public boolean dependsOn(Hierarchy hierarchy) {
-				return anyDependsButFirst(getCalcs(), hierarchy);
-			}
-		};
-	}
+      public boolean dependsOn(Hierarchy hierarchy) {
+        return anyDependsButFirst(getCalcs(), hierarchy);
+      }
+    };
+  }
 }
 
 // End StdevFunDef.java

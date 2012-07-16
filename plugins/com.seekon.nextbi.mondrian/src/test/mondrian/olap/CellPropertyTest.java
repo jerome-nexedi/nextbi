@@ -8,7 +8,7 @@
 // All Rights Reserved.
 // You must accept the terms of that agreement to use this software.
 //
-*/
+ */
 
 package mondrian.olap;
 
@@ -16,31 +16,32 @@ import junit.framework.TestCase;
 
 /**
  * Test for <code>Cell Property<code>
- *
+ * 
  * @author Shishir
- * @version $Id: //open/mondrian/testsrc/main/mondrian/olap/CellPropertyTest.java#4 $
+ * @version $Id:
+ *          //open/mondrian/testsrc/main/mondrian/olap/CellPropertyTest.java#4 $
  * @since 08 May, 2007
  */
 
 public class CellPropertyTest extends TestCase {
-    private CellProperty cellProperty;
+  private CellProperty cellProperty;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-        cellProperty = new CellProperty("[Format_String]");
-    }
+  protected void setUp() throws Exception {
+    super.setUp();
+    cellProperty = new CellProperty("[Format_String]");
+  }
 
-    public void testIsNameEquals() {
-        assertTrue(cellProperty.isNameEquals("Format_String"));
-    }
+  public void testIsNameEquals() {
+    assertTrue(cellProperty.isNameEquals("Format_String"));
+  }
 
-    public void testIsNameEqualsDoesCaseInsensitiveMatch() {
-        assertTrue(cellProperty.isNameEquals("format_string"));
-    }
+  public void testIsNameEqualsDoesCaseInsensitiveMatch() {
+    assertTrue(cellProperty.isNameEquals("format_string"));
+  }
 
-    public void testIsNameEqualsParameterShouldNotBeQuoted() {
-        assertFalse(cellProperty.isNameEquals("[Format_String]"));
-    }
+  public void testIsNameEqualsParameterShouldNotBeQuoted() {
+    assertFalse(cellProperty.isNameEquals("[Format_String]"));
+  }
 
 }
 

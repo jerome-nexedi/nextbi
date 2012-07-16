@@ -7,7 +7,7 @@
 // All Rights Reserved.
 // You must accept the terms of that agreement to use this software.
 //
-*/
+ */
 package mondrian.test.clearview;
 
 import junit.framework.*;
@@ -15,37 +15,39 @@ import junit.framework.*;
 import mondrian.test.*;
 
 /**
- * <code>MiscTest</code> is a test suite which tests miscellaneous
- * complex queries against the FoodMart database. MDX queries and their
- * expected results are maintained separately in MiscTest.ref.xml file.
- * If you would prefer to see them as inlined Java string literals, run
- * ant target "generateDiffRepositoryJUnit" and then use
- * file MiscTestJUnit.java which will be generated in this directory.
- *
+ * <code>MiscTest</code> is a test suite which tests miscellaneous complex
+ * queries against the FoodMart database. MDX queries and their expected results
+ * are maintained separately in MiscTest.ref.xml file. If you would prefer to
+ * see them as inlined Java string literals, run ant target
+ * "generateDiffRepositoryJUnit" and then use file MiscTestJUnit.java which will
+ * be generated in this directory.
+ * 
  * @author Khanh Vu
- * @version $Id: //open/mondrian/testsrc/main/mondrian/test/clearview/MiscTest.java#4 $
+ * @version $Id:
+ *          //open/mondrian/testsrc/main/mondrian/test/clearview/MiscTest.java#4
+ *          $
  */
 public class MiscTest extends ClearViewBase {
 
-    public MiscTest() {
-        super();
-    }
+  public MiscTest() {
+    super();
+  }
 
-    public MiscTest(String name) {
-        super(name);
-    }
+  public MiscTest(String name) {
+    super(name);
+  }
 
-    public DiffRepository getDiffRepos() {
-        return getDiffReposStatic();
-    }
+  public DiffRepository getDiffRepos() {
+    return getDiffReposStatic();
+  }
 
-    private static DiffRepository getDiffReposStatic() {
-        return DiffRepository.lookup(MiscTest.class);
-    }
+  private static DiffRepository getDiffReposStatic() {
+    return DiffRepository.lookup(MiscTest.class);
+  }
 
-    public static TestSuite suite() {
-        return constructSuite(getDiffReposStatic(), MiscTest.class);
-    }
+  public static TestSuite suite() {
+    return constructSuite(getDiffReposStatic(), MiscTest.class);
+  }
 
 }
 

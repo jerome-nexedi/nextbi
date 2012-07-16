@@ -22,11 +22,11 @@ import java.util.Set;
  * times as "ParamRef".
  */
 public class QueryPrintWriter extends PrintWriter {
-	final Set<Parameter> parameters = new HashSet<Parameter>();
+  final Set<Parameter> parameters = new HashSet<Parameter>();
 
-	public QueryPrintWriter(Writer writer) {
-		super(writer);
-	}
+  public QueryPrintWriter(Writer writer) {
+    super(writer);
+  }
 }
 
 // End QueryPrintWriter.java

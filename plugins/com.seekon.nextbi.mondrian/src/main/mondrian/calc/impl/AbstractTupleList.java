@@ -23,142 +23,143 @@ import java.util.*;
  *          $
  * @author jhyde
  */
-public abstract class AbstractTupleList extends AbstractList<List<Member>>
-		implements RandomAccess, Cloneable, TupleList {
-	protected final int arity;
-	protected boolean mutable = true;
+public abstract class AbstractTupleList extends AbstractList<List<Member>> implements
+  RandomAccess, Cloneable, TupleList {
+  protected final int arity;
 
-	public AbstractTupleList(int arity) {
-		this.arity = arity;
-	}
+  protected boolean mutable = true;
 
-	public int getArity() {
-		return arity;
-	}
+  public AbstractTupleList(int arity) {
+    this.arity = arity;
+  }
 
-	protected abstract TupleIterator tupleIteratorInternal();
+  public int getArity() {
+    return arity;
+  }
 
-	@Override
-	public abstract TupleList subList(int fromIndex, int toIndex);
+  protected abstract TupleIterator tupleIteratorInternal();
 
-	public TupleList fix() {
-		return new DelegatingTupleList(arity, new ArrayList<List<Member>>(this));
-	}
+  @Override
+  public abstract TupleList subList(int fromIndex, int toIndex);
 
-	@Override
-	public final Iterator<List<Member>> iterator() {
-		return tupleIteratorInternal();
-	}
+  public TupleList fix() {
+    return new DelegatingTupleList(arity, new ArrayList<List<Member>>(this));
+  }
 
-	public final TupleIterator tupleIterator() {
-		return tupleIteratorInternal();
-	}
+  @Override
+  public final Iterator<List<Member>> iterator() {
+    return tupleIteratorInternal();
+  }
 
-	/**
-	 * Creates a {@link TupleCursor} over this list.
-	 * 
-	 * <p>
-	 * Any implementation of {@link TupleList} must implement all three methods
-	 * {@link #iterator()}, {@link #tupleIterator()} and {@code tupleCursor}. The
-	 * default implementation returns the same for all three, but a derived
-	 * classes can override this method to create a more efficient implementation
-	 * that implements cursor but not iterator.
-	 * 
-	 * @return A cursor over this list
-	 */
-	public TupleCursor tupleCursor() {
-		return tupleIteratorInternal();
-	}
+  public final TupleIterator tupleIterator() {
+    return tupleIteratorInternal();
+  }
 
-	public void addCurrent(TupleCursor tupleIter) {
-		add(tupleIter.current());
-	}
+  /**
+   * Creates a {@link TupleCursor} over this list.
+   * 
+   * <p>
+   * Any implementation of {@link TupleList} must implement all three methods
+   * {@link #iterator()}, {@link #tupleIterator()} and {@code tupleCursor}. The
+   * default implementation returns the same for all three, but a derived
+   * classes can override this method to create a more efficient implementation
+   * that implements cursor but not iterator.
+   * 
+   * @return A cursor over this list
+   */
+  public TupleCursor tupleCursor() {
+    return tupleIteratorInternal();
+  }
 
-	public Member get(int slice, int index) {
-		return get(index).get(slice);
-	}
+  public void addCurrent(TupleCursor tupleIter) {
+    add(tupleIter.current());
+  }
 
-	/**
-	 * Implementation of {@link mondrian.calc.TupleIterator} for
-	 * {@link ArrayTupleList}. Based upon AbstractList.Itr, but with concurrent
-	 * modification checking removed.
-	 */
-	protected class AbstractTupleListIterator implements TupleIterator {
-		/**
-		 * Index of element to be returned by subsequent call to next.
-		 */
-		int cursor = 0;
+  public Member get(int slice, int index) {
+    return get(index).get(slice);
+  }
 
-		/**
-		 * Index of element returned by most recent call to next or previous. Reset
-		 * to -1 if this element is deleted by a call to remove.
-		 */
-		int lastRet = -1;
+  /**
+   * Implementation of {@link mondrian.calc.TupleIterator} for
+   * {@link ArrayTupleList}. Based upon AbstractList.Itr, but with concurrent
+   * modification checking removed.
+   */
+  protected class AbstractTupleListIterator implements TupleIterator {
+    /**
+     * Index of element to be returned by subsequent call to next.
+     */
+    int cursor = 0;
 
-		public boolean hasNext() {
-			return cursor != size();
-		}
+    /**
+     * Index of element returned by most recent call to next or previous. Reset
+     * to -1 if this element is deleted by a call to remove.
+     */
+    int lastRet = -1;
 
-		public List<Member> next() {
-			try {
-				List<Member> next = get(cursor);
-				lastRet = cursor++;
-				return next;
-			} catch (IndexOutOfBoundsException e) {
-				throw new NoSuchElementException();
-			}
-		}
+    public boolean hasNext() {
+      return cursor != size();
+    }
 
-		public boolean forward() {
-			if (cursor == size()) {
-				return false;
-			}
-			lastRet = cursor++;
-			return true;
-		}
+    public List<Member> next() {
+      try {
+        List<Member> next = get(cursor);
+        lastRet = cursor++;
+        return next;
+      } catch (IndexOutOfBoundsException e) {
+        throw new NoSuchElementException();
+      }
+    }
 
-		public List<Member> current() {
-			return get(lastRet);
-		}
+    public boolean forward() {
+      if (cursor == size()) {
+        return false;
+      }
+      lastRet = cursor++;
+      return true;
+    }
 
-		public void currentToArray(Member[] members, int offset) {
-			final List<Member> current = current();
-			if (offset == 0) {
-				current.toArray(members);
-			} else {
-				// noinspection SuspiciousSystemArraycopy
-				System.arraycopy(current.toArray(), 0, members, offset, arity);
-			}
-		}
+    public List<Member> current() {
+      return get(lastRet);
+    }
 
-		public int getArity() {
-			return AbstractTupleList.this.getArity();
-		}
+    public void currentToArray(Member[] members, int offset) {
+      final List<Member> current = current();
+      if (offset == 0) {
+        current.toArray(members);
+      } else {
+        // noinspection SuspiciousSystemArraycopy
+        System.arraycopy(current.toArray(), 0, members, offset, arity);
+      }
+    }
 
-		public void remove() {
-			assert mutable;
-			if (lastRet == -1) {
-				throw new IllegalStateException();
-			}
-			try {
-				AbstractTupleList.this.remove(lastRet);
-				if (lastRet < cursor) {
-					cursor--;
-				}
-				lastRet = -1;
-			} catch (IndexOutOfBoundsException e) {
-				throw new ConcurrentModificationException();
-			}
-		}
+    public int getArity() {
+      return AbstractTupleList.this.getArity();
+    }
 
-		public void setContext(Evaluator evaluator) {
-			evaluator.setContext(current());
-		}
+    public void remove() {
+      assert mutable;
+      if (lastRet == -1) {
+        throw new IllegalStateException();
+      }
+      try {
+        AbstractTupleList.this.remove(lastRet);
+        if (lastRet < cursor) {
+          cursor--;
+        }
+        lastRet = -1;
+      } catch (IndexOutOfBoundsException e) {
+        throw new ConcurrentModificationException();
+      }
+    }
 
-		public Member member(int column) {
-			return get(lastRet).get(column);
-		}
-	}
+    public void setContext(Evaluator evaluator) {
+      evaluator.setContext(current());
+    }
+
+    public Member member(int column) {
+      return get(lastRet).get(column);
+    }
+  }
 }
 
 // End AbstractTupleList.java

@@ -27,93 +27,93 @@ import java.util.SortedSet;
  *          //open/mondrian/src/main/mondrian/rolap/agg/SegmentDataset.java#12 $
  */
 public interface SegmentDataset extends Iterable<Map.Entry<CellKey, Object>> {
-	/**
-	 * Returns the value at a given coordinate, as an {@link Object}.
-	 * 
-	 * @param pos
-	 *          Coordinate position
-	 * @return Value
-	 */
-	Object getObject(CellKey pos);
+  /**
+   * Returns the value at a given coordinate, as an {@link Object}.
+   * 
+   * @param pos
+   *          Coordinate position
+   * @return Value
+   */
+  Object getObject(CellKey pos);
 
-	/**
-	 * Returns the value at a given coordinate, as an {@code int}.
-	 * 
-	 * @param pos
-	 *          Coordinate position
-	 * @return Value
-	 */
-	int getInt(CellKey pos);
+  /**
+   * Returns the value at a given coordinate, as an {@code int}.
+   * 
+   * @param pos
+   *          Coordinate position
+   * @return Value
+   */
+  int getInt(CellKey pos);
 
-	/**
-	 * Returns the value at a given coordinate, as a {@code double}.
-	 * 
-	 * @param pos
-	 *          Coordinate position
-	 * @return Value
-	 */
-	double getDouble(CellKey pos);
+  /**
+   * Returns the value at a given coordinate, as a {@code double}.
+   * 
+   * @param pos
+   *          Coordinate position
+   * @return Value
+   */
+  double getDouble(CellKey pos);
 
-	/**
-	 * Returns whether the cell at a given coordinate is null.
-	 * 
-	 * @param pos
-	 *          Coordinate position
-	 * @return Whether cell value is null
-	 */
-	boolean isNull(CellKey pos);
+  /**
+   * Returns whether the cell at a given coordinate is null.
+   * 
+   * @param pos
+   *          Coordinate position
+   * @return Whether cell value is null
+   */
+  boolean isNull(CellKey pos);
 
-	/**
-	 * Returns whether there is a value at a given coordinate.
-	 * 
-	 * @param pos
-	 *          Coordinate position
-	 * @return Whether there is a value
-	 */
-	boolean exists(CellKey pos);
+  /**
+   * Returns whether there is a value at a given coordinate.
+   * 
+   * @param pos
+   *          Coordinate position
+   * @return Whether there is a value
+   */
+  boolean exists(CellKey pos);
 
-	/**
-	 * Returns the number of bytes occupied by this dataset.
-	 * 
-	 * @return number of bytes
-	 */
-	double getBytes();
+  /**
+   * Returns the number of bytes occupied by this dataset.
+   * 
+   * @return number of bytes
+   */
+  double getBytes();
 
-	void populateFrom(int[] pos, SegmentDataset data, CellKey key);
+  void populateFrom(int[] pos, SegmentDataset data, CellKey key);
 
-	/**
-	 * Sets the value a given ordinal.
-	 * 
-	 * @param pos
-	 *          Ordinal
-	 * @param rowList
-	 *          Row list
-	 * @param column
-	 *          Column of row list
-	 */
-	void populateFrom(int[] pos, SegmentLoader.RowList rowList, int column);
+  /**
+   * Sets the value a given ordinal.
+   * 
+   * @param pos
+   *          Ordinal
+   * @param rowList
+   *          Row list
+   * @param column
+   *          Column of row list
+   */
+  void populateFrom(int[] pos, SegmentLoader.RowList rowList, int column);
 
-	/**
-	 * Returns the SQL type of the data contained in this dataset.
-	 * 
-	 * @return A value of SqlStatement.Type
-	 */
-	SqlStatement.Type getType();
+  /**
+   * Returns the SQL type of the data contained in this dataset.
+   * 
+   * @return A value of SqlStatement.Type
+   */
+  SqlStatement.Type getType();
 
-	/**
-	 * Must return an immutable, final and serializable implementation of a
-	 * SegmentBody in order to cache this dataset.
-	 * 
-	 * @param axisValueSets
-	 *          An array of SortedSets of Comparables. This is supplied by the
-	 *          {@link SegmentLoader}.
-	 * @param nullAxisFlags
-	 *          An array of booleans indicating which segment axis has null
-	 *          values. This is supplied by the {@link SegmentLoader}.
-	 * @see SegmentBody#createSegmentDataset(Segment)
-	 * @return A {@link SegmentBody} object.
-	 */
-	SegmentBody createSegmentBody(SortedSet<Comparable<?>>[] axisValueSets,
-			boolean[] nullAxisFlags);
+  /**
+   * Must return an immutable, final and serializable implementation of a
+   * SegmentBody in order to cache this dataset.
+   * 
+   * @param axisValueSets
+   *          An array of SortedSets of Comparables. This is supplied by the
+   *          {@link SegmentLoader}.
+   * @param nullAxisFlags
+   *          An array of booleans indicating which segment axis has null
+   *          values. This is supplied by the {@link SegmentLoader}.
+   * @see SegmentBody#createSegmentDataset(Segment)
+   * @return A {@link SegmentBody} object.
+   */
+  SegmentBody createSegmentBody(SortedSet<Comparable<?>>[] axisValueSets,
+    boolean[] nullAxisFlags);
 }
 // End SegmentDataset.java

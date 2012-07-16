@@ -46,27 +46,27 @@ import mondrian.rolap.agg.Aggregation;
 
 public class DataSourceChangeListenerImpl3 implements DataSourceChangeListener {
 
-	/** Creates a new instance of DataSourceChangeListenerImpl2 */
-	public DataSourceChangeListenerImpl3() {
-	}
+  /** Creates a new instance of DataSourceChangeListenerImpl2 */
+  public DataSourceChangeListenerImpl3() {
+  }
 
-	public synchronized boolean isHierarchyChanged(RolapHierarchy hierarchy) {
-		return true;
-	}
+  public synchronized boolean isHierarchyChanged(RolapHierarchy hierarchy) {
+    return true;
+  }
 
-	public synchronized boolean isAggregationChanged(Aggregation aggregation) {
-		return true;
-	}
+  public synchronized boolean isAggregationChanged(Aggregation aggregation) {
+    return true;
+  }
 
-	public String getTableName(RolapHierarchy hierarchy) {
-		MondrianDef.RelationOrJoin relation = hierarchy.getRelation();
-		if (relation instanceof MondrianDef.Table) {
-			MondrianDef.Table tableRelation = (MondrianDef.Table) relation;
-			return tableRelation.name;
-		} else {
-			return null;
-		}
-	}
+  public String getTableName(RolapHierarchy hierarchy) {
+    MondrianDef.RelationOrJoin relation = hierarchy.getRelation();
+    if (relation instanceof MondrianDef.Table) {
+      MondrianDef.Table tableRelation = (MondrianDef.Table) relation;
+      return tableRelation.name;
+    } else {
+      return null;
+    }
+  }
 }
 
 // End DataSourceChangeListenerImpl3.java

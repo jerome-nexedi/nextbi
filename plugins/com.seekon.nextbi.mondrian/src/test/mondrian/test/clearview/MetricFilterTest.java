@@ -7,7 +7,7 @@
 // All Rights Reserved.
 // You must accept the terms of that agreement to use this software.
 //
-*/
+ */
 package mondrian.test.clearview;
 
 import junit.framework.*;
@@ -18,37 +18,38 @@ import mondrian.util.Bug;
 
 /**
  * <code>MetricFilterTest</code> is a test suite which tests scenarios of
- * filtering out measures' values in the FoodMart database.
- * MDX queries and their expected results are maintained separately in
- * MetricFilterTest.ref.xml file.If you would prefer to see them as inlined
- * Java string literals, run ant target "generateDiffRepositoryJUnit" and
- * then use file MetricFilterTestJUnit.java which will be generated in
- * this directory.
- *
+ * filtering out measures' values in the FoodMart database. MDX queries and
+ * their expected results are maintained separately in MetricFilterTest.ref.xml
+ * file.If you would prefer to see them as inlined Java string literals, run ant
+ * target "generateDiffRepositoryJUnit" and then use file
+ * MetricFilterTestJUnit.java which will be generated in this directory.
+ * 
  * @author Khanh Vu
- * @version $Id: //open/mondrian/testsrc/main/mondrian/test/clearview/MetricFilterTest.java#7 $
+ * @version $Id:
+ *          //open/mondrian/testsrc/main/mondrian/test/clearview/MetricFilterTest
+ *          .java#7 $
  */
 public class MetricFilterTest extends ClearViewBase {
 
-    public MetricFilterTest() {
-        super();
-    }
+  public MetricFilterTest() {
+    super();
+  }
 
-    public MetricFilterTest(String name) {
-        super(name);
-    }
+  public MetricFilterTest(String name) {
+    super(name);
+  }
 
-    public DiffRepository getDiffRepos() {
-        return getDiffReposStatic();
-    }
+  public DiffRepository getDiffRepos() {
+    return getDiffReposStatic();
+  }
 
-    private static DiffRepository getDiffReposStatic() {
-        return DiffRepository.lookup(MetricFilterTest.class);
-    }
+  private static DiffRepository getDiffReposStatic() {
+    return DiffRepository.lookup(MetricFilterTest.class);
+  }
 
-    public static TestSuite suite() {
-        return constructSuite(getDiffReposStatic(), MetricFilterTest.class);
-    }
+  public static TestSuite suite() {
+    return constructSuite(getDiffReposStatic(), MetricFilterTest.class);
+  }
 
 }
 

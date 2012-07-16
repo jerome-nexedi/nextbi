@@ -22,9 +22,9 @@ package mondrian.server;
  * @author Julian Hyde
  */
 public interface RepositoryContentFinder {
-	String getContent();
+  String getContent();
 
-	void shutdown();
+  void shutdown();
 }
 
 // End RepositoryContentFinder.java

@@ -24,39 +24,38 @@ import mondrian.rolap.aggmatcher.AggStar;
  */
 public class DefaultTupleConstraint implements TupleConstraint {
 
-	private static final TupleConstraint instance = new DefaultTupleConstraint();
+  private static final TupleConstraint instance = new DefaultTupleConstraint();
 
-	protected DefaultTupleConstraint() {
-	}
+  protected DefaultTupleConstraint() {
+  }
 
-	public void addConstraint(SqlQuery sqlQuery, RolapCube baseCube,
-			AggStar aggStar) {
-	}
+  public void addConstraint(SqlQuery sqlQuery, RolapCube baseCube, AggStar aggStar) {
+  }
 
-	public void addLevelConstraint(SqlQuery query, RolapCube baseCube,
-			AggStar aggStar, RolapLevel level) {
-	}
+  public void addLevelConstraint(SqlQuery query, RolapCube baseCube,
+    AggStar aggStar, RolapLevel level) {
+  }
 
-	public MemberChildrenConstraint getMemberChildrenConstraint(RolapMember parent) {
-		return DefaultMemberChildrenConstraint.instance();
-	}
+  public MemberChildrenConstraint getMemberChildrenConstraint(RolapMember parent) {
+    return DefaultMemberChildrenConstraint.instance();
+  }
 
-	public String toString() {
-		return "DefaultTupleConstraint";
-	}
+  public String toString() {
+    return "DefaultTupleConstraint";
+  }
 
-	public Object getCacheKey() {
-		// we have no state, so all instances are equal
-		return this;
-	}
+  public Object getCacheKey() {
+    // we have no state, so all instances are equal
+    return this;
+  }
 
-	public static TupleConstraint instance() {
-		return instance;
-	}
+  public static TupleConstraint instance() {
+    return instance;
+  }
 
-	public Evaluator getEvaluator() {
-		return null;
-	}
+  public Evaluator getEvaluator() {
+    return null;
+  }
 
 }
 

@@ -39,151 +39,146 @@ import java.util.List;
  * @since Dec, 2007
  */
 public class HighCardSqlTupleReader extends SqlTupleReader {
-	private ResultLoader resultLoader;
-	private boolean moreRows;
+  private ResultLoader resultLoader;
 
-	int maxRows = 0;
+  private boolean moreRows;
 
-	public HighCardSqlTupleReader(final TupleConstraint constraint) {
-		super(constraint);
-	}
+  int maxRows = 0;
 
-	public void addLevelMembers(final RolapLevel level,
-			final MemberBuilder memberBuilder, final List<RolapMember> srcMembers) {
-		targets.add(new Target(level, memberBuilder, srcMembers, constraint, this));
-	}
+  public HighCardSqlTupleReader(final TupleConstraint constraint) {
+    super(constraint);
+  }
 
-	protected void prepareTuples(final DataSource dataSource,
-			final TupleList partialResult,
-			final List<List<RolapMember>> newPartialResult) {
-		String message = "Populating member cache with members for " + targets;
-		SqlStatement stmt = null;
-		boolean execQuery = (partialResult == null);
-		try {
-			if (execQuery) {
-				// we're only reading tuples from the targets that are
-				// non-enum targets
-				List<TargetBase> partialTargets = new ArrayList<TargetBase>();
-				for (TargetBase target : targets) {
-					if (target.getSrcMembers() == null) {
-						partialTargets.add(target);
-					}
-				}
-				final Pair<String, List<SqlStatement.Type>> pair = makeLevelMembersSql(dataSource);
-				String sql = pair.left;
-				List<SqlStatement.Type> types = pair.right;
-				stmt = RolapUtil
-						.executeQuery(dataSource, sql, types, maxRows, 0,
-								new Locus(Locus.peek().execution,
-										"HighCardSqlTupleReader.readTuples " + partialTargets,
-										message), -1, -1);
-			}
+  public void addLevelMembers(final RolapLevel level,
+    final MemberBuilder memberBuilder, final List<RolapMember> srcMembers) {
+    targets.add(new Target(level, memberBuilder, srcMembers, constraint, this));
+  }
 
-			for (TargetBase target : targets) {
-				target.open();
-			}
+  protected void prepareTuples(final DataSource dataSource,
+    final TupleList partialResult, final List<List<RolapMember>> newPartialResult) {
+    String message = "Populating member cache with members for " + targets;
+    SqlStatement stmt = null;
+    boolean execQuery = (partialResult == null);
+    try {
+      if (execQuery) {
+        // we're only reading tuples from the targets that are
+        // non-enum targets
+        List<TargetBase> partialTargets = new ArrayList<TargetBase>();
+        for (TargetBase target : targets) {
+          if (target.getSrcMembers() == null) {
+            partialTargets.add(target);
+          }
+        }
+        final Pair<String, List<SqlStatement.Type>> pair = makeLevelMembersSql(dataSource);
+        String sql = pair.left;
+        List<SqlStatement.Type> types = pair.right;
+        stmt = RolapUtil.executeQuery(dataSource, sql, types, maxRows, 0, new Locus(
+          Locus.peek().execution, "HighCardSqlTupleReader.readTuples "
+            + partialTargets, message), -1, -1);
+      }
 
-			// determine how many enum targets we have
-			int enumTargetCount = getEnumTargetCount();
+      for (TargetBase target : targets) {
+        target.open();
+      }
 
-			int currPartialResultIdx = 0;
-			if (execQuery) {
-				this.moreRows = stmt.getResultSet().next();
-				if (this.moreRows) {
-					++stmt.rowCount;
-				}
-			} else {
-				this.moreRows = currPartialResultIdx < partialResult.size();
-			}
+      // determine how many enum targets we have
+      int enumTargetCount = getEnumTargetCount();
 
-			this.resultLoader = new ResultLoader(enumTargetCount, targets, stmt,
-					execQuery, partialResult, newPartialResult);
+      int currPartialResultIdx = 0;
+      if (execQuery) {
+        this.moreRows = stmt.getResultSet().next();
+        if (this.moreRows) {
+          ++stmt.rowCount;
+        }
+      } else {
+        this.moreRows = currPartialResultIdx < partialResult.size();
+      }
 
-			// Read first and second elements if exists (or marks
-			// source as having "no more rows")
-			readNextTuple();
-			readNextTuple();
-		} catch (SQLException sqle) {
-			if (stmt != null) {
-				throw stmt.handle(sqle);
-			} else {
-				throw Util.newError(sqle, message);
-			}
-		} finally {
-			if (!moreRows) {
-				if (stmt != null) {
-					stmt.close();
-				}
-			}
-		}
-	}
+      this.resultLoader = new ResultLoader(enumTargetCount, targets, stmt,
+        execQuery, partialResult, newPartialResult);
 
-	public TupleList readMembers(final DataSource dataSource,
-			final TupleList partialResult,
-			final List<List<RolapMember>> newPartialResult) {
-		prepareTuples(dataSource, partialResult, newPartialResult);
-		assert targets.size() == 1;
-		return new UnaryTupleList(Util.<Member> cast(targets.get(0).close()));
-	}
+      // Read first and second elements if exists (or marks
+      // source as having "no more rows")
+      readNextTuple();
+      readNextTuple();
+    } catch (SQLException sqle) {
+      if (stmt != null) {
+        throw stmt.handle(sqle);
+      } else {
+        throw Util.newError(sqle, message);
+      }
+    } finally {
+      if (!moreRows) {
+        if (stmt != null) {
+          stmt.close();
+        }
+      }
+    }
+  }
 
-	public TupleList readTuples(final DataSource jdbcConnection,
-			final TupleList partialResult,
-			final List<List<RolapMember>> newPartialResult) {
-		prepareTuples(jdbcConnection, partialResult, newPartialResult);
+  public TupleList readMembers(final DataSource dataSource,
+    final TupleList partialResult, final List<List<RolapMember>> newPartialResult) {
+    prepareTuples(dataSource, partialResult, newPartialResult);
+    assert targets.size() == 1;
+    return new UnaryTupleList(Util.<Member> cast(targets.get(0).close()));
+  }
 
-		// List of tuples
-		final int n = targets.size();
-		@SuppressWarnings({ "unchecked" })
-		final List<Member>[] lists = new List[n];
-		for (int i = 0; i < n; i++) {
-			lists[i] = targets.get(i).close();
-		}
+  public TupleList readTuples(final DataSource jdbcConnection,
+    final TupleList partialResult, final List<List<RolapMember>> newPartialResult) {
+    prepareTuples(jdbcConnection, partialResult, newPartialResult);
 
-		final List<List<Member>> list = new TraversalList<Member>(lists,
-				Member.class);
-		TupleList tupleList = new DelegatingTupleList(n, list);
+    // List of tuples
+    final int n = targets.size();
+    @SuppressWarnings( { "unchecked" })
+    final List<Member>[] lists = new List[n];
+    for (int i = 0; i < n; i++) {
+      lists[i] = targets.get(i).close();
+    }
 
-		// need to hierarchize the columns from the enumerated targets
-		// since we didn't necessarily add them in the order in which
-		// they originally appeared in the cross product
-		int enumTargetCount = getEnumTargetCount();
-		if (enumTargetCount > 0) {
-			tupleList = FunUtil.hierarchizeTupleList(tupleList, false);
-		}
-		return tupleList;
-	}
+    final List<List<Member>> list = new TraversalList<Member>(lists, Member.class);
+    TupleList tupleList = new DelegatingTupleList(n, list);
 
-	/**
-	 * Reads next tuple notifing all internal targets.
-	 * 
-	 * @return whether there are any more rows
-	 */
-	public boolean readNextTuple() {
-		if (!this.moreRows) {
-			return false;
-		}
-		try {
-			this.moreRows = this.resultLoader.loadResult();
-		} catch (SQLException sqle) {
-			this.moreRows = false;
-			throw this.resultLoader.handle(sqle);
-		}
-		if (!this.moreRows) {
-			this.resultLoader.close();
-		}
-		return this.moreRows;
-	}
+    // need to hierarchize the columns from the enumerated targets
+    // since we didn't necessarily add them in the order in which
+    // they originally appeared in the cross product
+    int enumTargetCount = getEnumTargetCount();
+    if (enumTargetCount > 0) {
+      tupleList = FunUtil.hierarchizeTupleList(tupleList, false);
+    }
+    return tupleList;
+  }
 
-	public void setMaxRows(int maxRows) {
-		this.maxRows = maxRows;
-	}
+  /**
+   * Reads next tuple notifing all internal targets.
+   * 
+   * @return whether there are any more rows
+   */
+  public boolean readNextTuple() {
+    if (!this.moreRows) {
+      return false;
+    }
+    try {
+      this.moreRows = this.resultLoader.loadResult();
+    } catch (SQLException sqle) {
+      this.moreRows = false;
+      throw this.resultLoader.handle(sqle);
+    }
+    if (!this.moreRows) {
+      this.resultLoader.close();
+    }
+    return this.moreRows;
+  }
 
-	public int getMaxRows() {
-		return maxRows;
-	}
+  public void setMaxRows(int maxRows) {
+    this.maxRows = maxRows;
+  }
 
-	Collection<RolapCube> getBaseCubeCollection(final Query query) {
-		return query.getBaseCubes();
-	}
+  public int getMaxRows() {
+    return maxRows;
+  }
+
+  Collection<RolapCube> getBaseCubeCollection(final Query query) {
+    return query.getBaseCubes();
+  }
 }
 // End HighCardSqlTupleReader.java

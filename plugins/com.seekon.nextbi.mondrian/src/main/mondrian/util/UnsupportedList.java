@@ -35,204 +35,201 @@ import java.util.NoSuchElementException;
  * @since Jan 16, 2007
  */
 public abstract class UnsupportedList<T> implements List<T> {
-	private static final Logger LOGGER = Logger.getLogger(UnsupportedList.class);
+  private static final Logger LOGGER = Logger.getLogger(UnsupportedList.class);
 
-	protected UnsupportedList() {
-	}
+  protected UnsupportedList() {
+  }
 
-	public boolean isEmpty() {
-		return (size() == 0);
-	}
+  public boolean isEmpty() {
+    return (size() == 0);
+  }
 
-	public int size() {
-		throw new UnsupportedOperationException(getClass().getName() + ".size");
-	}
+  public int size() {
+    throw new UnsupportedOperationException(getClass().getName() + ".size");
+  }
 
-	public T get(int index) {
-		throw new UnsupportedOperationException(getClass().getName() + ".get");
-	}
+  public T get(int index) {
+    throw new UnsupportedOperationException(getClass().getName() + ".get");
+  }
 
-	public T set(int index, T element) {
-		throw new UnsupportedOperationException(getClass().getName() + ".set");
-	}
+  public T set(int index, T element) {
+    throw new UnsupportedOperationException(getClass().getName() + ".set");
+  }
 
-	public Object[] toArray() {
-		throw new UnsupportedOperationException(getClass().getName() + ".toArray");
-	}
+  public Object[] toArray() {
+    throw new UnsupportedOperationException(getClass().getName() + ".toArray");
+  }
 
-	public void add(int index, T element) {
-		throw new UnsupportedOperationException(getClass().getName() + ".add");
-	}
+  public void add(int index, T element) {
+    throw new UnsupportedOperationException(getClass().getName() + ".add");
+  }
 
-	public T remove(int index) {
-		throw new UnsupportedOperationException(getClass().getName() + ".remove");
-	}
+  public T remove(int index) {
+    throw new UnsupportedOperationException(getClass().getName() + ".remove");
+  }
 
-	public int indexOf(Object o) {
-		throw new UnsupportedOperationException(getClass().getName() + ".indexOf");
-	}
+  public int indexOf(Object o) {
+    throw new UnsupportedOperationException(getClass().getName() + ".indexOf");
+  }
 
-	public int lastIndexOf(Object o) {
-		throw new UnsupportedOperationException(getClass().getName()
-				+ ".lastIndexOf");
-	}
+  public int lastIndexOf(Object o) {
+    throw new UnsupportedOperationException(getClass().getName() + ".lastIndexOf");
+  }
 
-	public List<T> subList(int fromIndex, int toIndex) {
-		throw new UnsupportedOperationException(getClass().getName() + ".subList");
-	}
+  public List<T> subList(int fromIndex, int toIndex) {
+    throw new UnsupportedOperationException(getClass().getName() + ".subList");
+  }
 
-	public boolean contains(Object o) {
-		throw new UnsupportedOperationException(getClass().getName() + ".contains");
-	}
+  public boolean contains(Object o) {
+    throw new UnsupportedOperationException(getClass().getName() + ".contains");
+  }
 
-	public <T> T[] toArray(T[] a) {
-		throw new UnsupportedOperationException(getClass().getName() + ".toArray");
-	}
+  public <T> T[] toArray(T[] a) {
+    throw new UnsupportedOperationException(getClass().getName() + ".toArray");
+  }
 
-	public boolean add(T o) {
-		throw new UnsupportedOperationException(getClass().getName() + ".add");
-	}
+  public boolean add(T o) {
+    throw new UnsupportedOperationException(getClass().getName() + ".add");
+  }
 
-	public boolean remove(Object o) {
-		throw new UnsupportedOperationException(getClass().getName() + ".remove");
-	}
+  public boolean remove(Object o) {
+    throw new UnsupportedOperationException(getClass().getName() + ".remove");
+  }
 
-	public boolean containsAll(Collection<?> c) {
-		throw new UnsupportedOperationException(getClass().getName()
-				+ ".containsAll");
-	}
+  public boolean containsAll(Collection<?> c) {
+    throw new UnsupportedOperationException(getClass().getName() + ".containsAll");
+  }
 
-	public boolean addAll(Collection<? extends T> c) {
-		throw new UnsupportedOperationException(getClass().getName() + ".addAll");
-	}
+  public boolean addAll(Collection<? extends T> c) {
+    throw new UnsupportedOperationException(getClass().getName() + ".addAll");
+  }
 
-	public boolean addAll(int index, Collection<? extends T> c) {
-		throw new UnsupportedOperationException(getClass().getName() + ".addAll");
-	}
+  public boolean addAll(int index, Collection<? extends T> c) {
+    throw new UnsupportedOperationException(getClass().getName() + ".addAll");
+  }
 
-	public boolean removeAll(Collection<?> c) {
-		throw new UnsupportedOperationException(getClass().getName() + ".removeAll");
-	}
+  public boolean removeAll(Collection<?> c) {
+    throw new UnsupportedOperationException(getClass().getName() + ".removeAll");
+  }
 
-	public boolean retainAll(Collection<?> c) {
-		throw new UnsupportedOperationException(getClass().getName() + ".retainAll");
-	}
+  public boolean retainAll(Collection<?> c) {
+    throw new UnsupportedOperationException(getClass().getName() + ".retainAll");
+  }
 
-	public void clear() {
-		throw new UnsupportedOperationException(getClass().getName() + ".clear");
-	}
+  public void clear() {
+    throw new UnsupportedOperationException(getClass().getName() + ".clear");
+  }
 
-	public boolean equals(Object o) {
-		throw new UnsupportedOperationException(getClass().getName() + ".equals");
-	}
+  public boolean equals(Object o) {
+    throw new UnsupportedOperationException(getClass().getName() + ".equals");
+  }
 
-	public int hashCode() {
-		throw new UnsupportedOperationException(getClass().getName() + ".hashCode");
-	}
+  public int hashCode() {
+    throw new UnsupportedOperationException(getClass().getName() + ".hashCode");
+  }
 
-	public ListIterator<T> listIterator() {
-		throw new UnsupportedOperationException(getClass().getName()
-				+ ".listIterator");
-	}
+  public ListIterator<T> listIterator() {
+    throw new UnsupportedOperationException(getClass().getName() + ".listIterator");
+  }
 
-	public ListIterator<T> listIterator(int index) {
-		throw new UnsupportedOperationException(getClass().getName()
-				+ ".listIterator");
-	}
+  public ListIterator<T> listIterator(int index) {
+    throw new UnsupportedOperationException(getClass().getName() + ".listIterator");
+  }
 
-	public Iterator<T> iterator() {
-		throw new UnsupportedOperationException(getClass().getName() + ".iterator");
-	}
+  public Iterator<T> iterator() {
+    throw new UnsupportedOperationException(getClass().getName() + ".iterator");
+  }
 
-	protected class Itr implements Iterator<T> {
-		protected int cursor;
-		protected int lastRet;
+  protected class Itr implements Iterator<T> {
+    protected int cursor;
 
-		public Itr() {
-			this.cursor = 0;
-			this.lastRet = -1;
-		}
+    protected int lastRet;
 
-		public boolean hasNext() {
-			return (cursor != size());
-		}
+    public Itr() {
+      this.cursor = 0;
+      this.lastRet = -1;
+    }
 
-		public T next() {
-			try {
-				T next = get(cursor);
-				lastRet = cursor++;
-				return next;
-			} catch (IndexOutOfBoundsException e) {
-				LOGGER.error("UnsupportedList.Itr.next: cursor=" + cursor + ", size="
-						+ size(), e);
-				throw new NoSuchElementException();
-			}
-		}
+    public boolean hasNext() {
+      return (cursor != size());
+    }
 
-		public void remove() {
-			throw new UnsupportedOperationException(getClass().getName() + ".remove");
-		}
-	}
+    public T next() {
+      try {
+        T next = get(cursor);
+        lastRet = cursor++;
+        return next;
+      } catch (IndexOutOfBoundsException e) {
+        LOGGER.error("UnsupportedList.Itr.next: cursor=" + cursor + ", size="
+          + size(), e);
+        throw new NoSuchElementException();
+      }
+    }
 
-	protected class ListItr extends Itr implements ListIterator<T> {
-		public ListItr(int index) {
-			this.cursor = index;
-		}
+    public void remove() {
+      throw new UnsupportedOperationException(getClass().getName() + ".remove");
+    }
+  }
 
-		public boolean hasPrevious() {
-			return cursor != 0;
-		}
+  protected class ListItr extends Itr implements ListIterator<T> {
+    public ListItr(int index) {
+      this.cursor = index;
+    }
 
-		public T previous() {
-			try {
-				int i = cursor - 1;
-				T previous = get(i);
-				lastRet = cursor = i;
-				return previous;
-			} catch (IndexOutOfBoundsException e) {
-				throw new NoSuchElementException();
-			}
-		}
+    public boolean hasPrevious() {
+      return cursor != 0;
+    }
 
-		public int nextIndex() {
-			return cursor;
-		}
+    public T previous() {
+      try {
+        int i = cursor - 1;
+        T previous = get(i);
+        lastRet = cursor = i;
+        return previous;
+      } catch (IndexOutOfBoundsException e) {
+        throw new NoSuchElementException();
+      }
+    }
 
-		public int previousIndex() {
-			return cursor - 1;
-		}
+    public int nextIndex() {
+      return cursor;
+    }
 
-		public void set(T o) {
-			/*
-			 * if (lastRet == -1) throw new IllegalStateException(); try {
-			 * MemberList.this.set(lastRet, o); } catch (IndexOutOfBoundsException e)
-			 * { throw new ConcurrentModificationException(); }
-			 */
-			throw new UnsupportedOperationException(getClass().getName() + ".set");
-		}
+    public int previousIndex() {
+      return cursor - 1;
+    }
 
-		public void add(T o) {
-			throw new UnsupportedOperationException(getClass().getName() + ".add");
-		}
-	}
+    public void set(T o) {
+      /*
+       * if (lastRet == -1) throw new IllegalStateException(); try {
+       * MemberList.this.set(lastRet, o); } catch (IndexOutOfBoundsException e)
+       * { throw new ConcurrentModificationException(); }
+       */
+      throw new UnsupportedOperationException(getClass().getName() + ".set");
+    }
 
-	/**
-	 * Iterator for arrays of a priori unknown size.
-	 */
-	protected class ItrUnknownSize extends Itr {
-		public ItrUnknownSize() {
-			super();
-		}
+    public void add(T o) {
+      throw new UnsupportedOperationException(getClass().getName() + ".add");
+    }
+  }
 
-		public boolean hasNext() {
-			try {
-				get(cursor);
-				return true;
-			} catch (IndexOutOfBoundsException e) {
-				return false;
-			}
-		}
-	}
+  /**
+   * Iterator for arrays of a priori unknown size.
+   */
+  protected class ItrUnknownSize extends Itr {
+    public ItrUnknownSize() {
+      super();
+    }
+
+    public boolean hasNext() {
+      try {
+        get(cursor);
+        return true;
+      } catch (IndexOutOfBoundsException e) {
+        return false;
+      }
+    }
+  }
 }
 
 // End UnsupportedList.java

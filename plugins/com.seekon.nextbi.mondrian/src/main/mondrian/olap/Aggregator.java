@@ -23,23 +23,23 @@ import mondrian.calc.TupleList;
  * @version $Id: //open/mondrian/src/main/mondrian/olap/Aggregator.java#7 $
  */
 public interface Aggregator {
-	/**
-	 * Returns the aggregator used to combine sub-totals into a grand-total.
-	 */
-	Aggregator getRollup();
+  /**
+   * Returns the aggregator used to combine sub-totals into a grand-total.
+   */
+  Aggregator getRollup();
 
-	/**
-	 * Applies this aggregator to an expression over a set of members and returns
-	 * the result.
-	 * 
-	 * @param evaluator
-	 *          Evaluation context
-	 * @param members
-	 *          List of members, not null
-	 * @param calc
-	 *          Expression to evaluate
-	 */
-	Object aggregate(Evaluator evaluator, TupleList members, Calc calc);
+  /**
+   * Applies this aggregator to an expression over a set of members and returns
+   * the result.
+   * 
+   * @param evaluator
+   *          Evaluation context
+   * @param members
+   *          List of members, not null
+   * @param calc
+   *          Expression to evaluate
+   */
+  Object aggregate(Evaluator evaluator, TupleList members, Calc calc);
 }
 
 // End Aggregator.java

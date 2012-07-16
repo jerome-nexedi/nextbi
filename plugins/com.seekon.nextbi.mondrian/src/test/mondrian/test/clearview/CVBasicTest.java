@@ -7,7 +7,7 @@
 // All Rights Reserved.
 // You must accept the terms of that agreement to use this software.
 //
-*/
+ */
 package mondrian.test.clearview;
 
 import junit.framework.*;
@@ -15,37 +15,39 @@ import junit.framework.*;
 import mondrian.test.*;
 
 /**
- * <code>CVBasicTest</code> is a test suite which tests
- * complex queries against the FoodMart database. MDX queries and their
- * expected results are maintained separately in CVBasicTest.ref.xml file.
- * If you would prefer to see them as inlined Java string literals, run
- * ant target "generateDiffRepositoryJUnit" and then use
- * file CVBasicTestJUnit.java which will be generated in this directory.
- *
+ * <code>CVBasicTest</code> is a test suite which tests complex queries against
+ * the FoodMart database. MDX queries and their expected results are maintained
+ * separately in CVBasicTest.ref.xml file. If you would prefer to see them as
+ * inlined Java string literals, run ant target "generateDiffRepositoryJUnit"
+ * and then use file CVBasicTestJUnit.java which will be generated in this
+ * directory.
+ * 
  * @author Khanh Vu
- * @version $Id: //open/mondrian/testsrc/main/mondrian/test/clearview/CVBasicTest.java#5 $
+ * @version $Id:
+ *          //open/mondrian/testsrc/main/mondrian/test/clearview/CVBasicTest
+ *          .java#5 $
  */
 public class CVBasicTest extends ClearViewBase {
 
-    public CVBasicTest() {
-        super();
-    }
+  public CVBasicTest() {
+    super();
+  }
 
-    public CVBasicTest(String name) {
-        super(name);
-    }
+  public CVBasicTest(String name) {
+    super(name);
+  }
 
-    public DiffRepository getDiffRepos() {
-        return getDiffReposStatic();
-    }
+  public DiffRepository getDiffRepos() {
+    return getDiffReposStatic();
+  }
 
-    private static DiffRepository getDiffReposStatic() {
-        return DiffRepository.lookup(CVBasicTest.class);
-    }
+  private static DiffRepository getDiffReposStatic() {
+    return DiffRepository.lookup(CVBasicTest.class);
+  }
 
-    public static TestSuite suite() {
-        return constructSuite(getDiffReposStatic(), CVBasicTest.class);
-    }
+  public static TestSuite suite() {
+    return constructSuite(getDiffReposStatic(), CVBasicTest.class);
+  }
 
 }
 

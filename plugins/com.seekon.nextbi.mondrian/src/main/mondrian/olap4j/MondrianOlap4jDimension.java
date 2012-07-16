@@ -28,75 +28,76 @@ import org.olap4j.metadata.*;
  * @since May 24, 2007
  */
 class MondrianOlap4jDimension implements Dimension, Named {
-	private final MondrianOlap4jSchema olap4jSchema;
-	private final mondrian.olap.Dimension dimension;
+  private final MondrianOlap4jSchema olap4jSchema;
 
-	MondrianOlap4jDimension(MondrianOlap4jSchema olap4jSchema,
-			mondrian.olap.Dimension dimension) {
-		this.olap4jSchema = olap4jSchema;
-		this.dimension = dimension;
-	}
+  private final mondrian.olap.Dimension dimension;
 
-	public boolean equals(Object obj) {
-		return obj instanceof MondrianOlap4jDimension
-				&& dimension.equals(((MondrianOlap4jDimension) obj).dimension);
-	}
+  MondrianOlap4jDimension(MondrianOlap4jSchema olap4jSchema,
+    mondrian.olap.Dimension dimension) {
+    this.olap4jSchema = olap4jSchema;
+    this.dimension = dimension;
+  }
 
-	public int hashCode() {
-		return dimension.hashCode();
-	}
+  public boolean equals(Object obj) {
+    return obj instanceof MondrianOlap4jDimension
+      && dimension.equals(((MondrianOlap4jDimension) obj).dimension);
+  }
 
-	public NamedList<Hierarchy> getHierarchies() {
-		final NamedList<MondrianOlap4jHierarchy> list = new NamedListImpl<MondrianOlap4jHierarchy>();
-		final MondrianOlap4jConnection olap4jConnection = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
-		final mondrian.olap.SchemaReader schemaReader = olap4jConnection
-				.getMondrianConnection2().getSchemaReader().withLocus();
-		for (mondrian.olap.Hierarchy hierarchy : schemaReader
-				.getDimensionHierarchies(dimension)) {
-			list.add(olap4jConnection.toOlap4j(hierarchy));
-		}
-		return Olap4jUtil.cast(list);
-	}
+  public int hashCode() {
+    return dimension.hashCode();
+  }
 
-	public Hierarchy getDefaultHierarchy() {
-		return getHierarchies().get(0);
-	}
+  public NamedList<Hierarchy> getHierarchies() {
+    final NamedList<MondrianOlap4jHierarchy> list = new NamedListImpl<MondrianOlap4jHierarchy>();
+    final MondrianOlap4jConnection olap4jConnection = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
+    final mondrian.olap.SchemaReader schemaReader = olap4jConnection
+      .getMondrianConnection2().getSchemaReader().withLocus();
+    for (mondrian.olap.Hierarchy hierarchy : schemaReader
+      .getDimensionHierarchies(dimension)) {
+      list.add(olap4jConnection.toOlap4j(hierarchy));
+    }
+    return Olap4jUtil.cast(list);
+  }
 
-	public Type getDimensionType() throws OlapException {
-		final DimensionType dimensionType = dimension.getDimensionType();
-		switch (dimensionType) {
-		case StandardDimension:
-			return Type.OTHER;
-		case MeasuresDimension:
-			return Type.MEASURE;
-		case TimeDimension:
-			return Type.TIME;
-		default:
-			throw Util.unexpected(dimensionType);
-		}
-	}
+  public Hierarchy getDefaultHierarchy() {
+    return getHierarchies().get(0);
+  }
 
-	public String getName() {
-		return dimension.getName();
-	}
+  public Type getDimensionType() throws OlapException {
+    final DimensionType dimensionType = dimension.getDimensionType();
+    switch (dimensionType) {
+    case StandardDimension:
+      return Type.OTHER;
+    case MeasuresDimension:
+      return Type.MEASURE;
+    case TimeDimension:
+      return Type.TIME;
+    default:
+      throw Util.unexpected(dimensionType);
+    }
+  }
 
-	public String getUniqueName() {
-		return dimension.getUniqueName();
-	}
+  public String getName() {
+    return dimension.getName();
+  }
 
-	public String getCaption() {
-		return dimension.getLocalized(OlapElement.LocalizedProperty.CAPTION,
-				olap4jSchema.getLocale());
-	}
+  public String getUniqueName() {
+    return dimension.getUniqueName();
+  }
 
-	public String getDescription() {
-		return dimension.getLocalized(OlapElement.LocalizedProperty.DESCRIPTION,
-				olap4jSchema.getLocale());
-	}
+  public String getCaption() {
+    return dimension.getLocalized(OlapElement.LocalizedProperty.CAPTION,
+      olap4jSchema.getLocale());
+  }
 
-	public boolean isVisible() {
-		return dimension.isVisible();
-	}
+  public String getDescription() {
+    return dimension.getLocalized(OlapElement.LocalizedProperty.DESCRIPTION,
+      olap4jSchema.getLocale());
+  }
+
+  public boolean isVisible() {
+    return dimension.isVisible();
+  }
 }
 
 // End MondrianOlap4jDimension.java

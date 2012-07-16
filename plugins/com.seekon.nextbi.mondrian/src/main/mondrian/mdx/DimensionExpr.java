@@ -23,56 +23,56 @@ import mondrian.calc.impl.ConstantCalc;
  * @since Sep 26, 2005
  */
 public class DimensionExpr extends ExpBase implements Exp {
-	private final Dimension dimension;
+  private final Dimension dimension;
 
-	/**
-	 * Creates a dimension expression.
-	 * 
-	 * @param dimension
-	 *          Dimension
-	 * @pre dimension != null
-	 */
-	public DimensionExpr(Dimension dimension) {
-		Util.assertPrecondition(dimension != null, "dimension != null");
-		this.dimension = dimension;
-	}
+  /**
+   * Creates a dimension expression.
+   * 
+   * @param dimension
+   *          Dimension
+   * @pre dimension != null
+   */
+  public DimensionExpr(Dimension dimension) {
+    Util.assertPrecondition(dimension != null, "dimension != null");
+    this.dimension = dimension;
+  }
 
-	/**
-	 * Returns the dimension.
-	 * 
-	 * @post return != null
-	 */
-	public Dimension getDimension() {
-		return dimension;
-	}
+  /**
+   * Returns the dimension.
+   * 
+   * @post return != null
+   */
+  public Dimension getDimension() {
+    return dimension;
+  }
 
-	public String toString() {
-		return dimension.getUniqueName();
-	}
+  public String toString() {
+    return dimension.getUniqueName();
+  }
 
-	public Type getType() {
-		return DimensionType.forDimension(dimension);
-	}
+  public Type getType() {
+    return DimensionType.forDimension(dimension);
+  }
 
-	public DimensionExpr clone() {
-		return new DimensionExpr(dimension);
-	}
+  public DimensionExpr clone() {
+    return new DimensionExpr(dimension);
+  }
 
-	public int getCategory() {
-		return Category.Dimension;
-	}
+  public int getCategory() {
+    return Category.Dimension;
+  }
 
-	public Exp accept(Validator validator) {
-		return this;
-	}
+  public Exp accept(Validator validator) {
+    return this;
+  }
 
-	public Calc accept(ExpCompiler compiler) {
-		return ConstantCalc.constantDimension(dimension);
-	}
+  public Calc accept(ExpCompiler compiler) {
+    return ConstantCalc.constantDimension(dimension);
+  }
 
-	public Object accept(MdxVisitor visitor) {
-		return visitor.visit(this);
-	}
+  public Object accept(MdxVisitor visitor) {
+    return visitor.visit(this);
+  }
 
 }
 

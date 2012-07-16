@@ -28,23 +28,22 @@ import mondrian.calc.Calc;
  *          $
  * @since Sep 27, 2005
  */
-public abstract class AbstractTupleCalc extends AbstractCalc implements
-		TupleCalc {
-	/**
-	 * Creates an AbstractTupleCalc.
-	 * 
-	 * @param exp
-	 *          Source expression
-	 * @param calcs
-	 *          Child compiled expressions
-	 */
-	protected AbstractTupleCalc(Exp exp, Calc[] calcs) {
-		super(exp, calcs);
-	}
+public abstract class AbstractTupleCalc extends AbstractCalc implements TupleCalc {
+  /**
+   * Creates an AbstractTupleCalc.
+   * 
+   * @param exp
+   *          Source expression
+   * @param calcs
+   *          Child compiled expressions
+   */
+  protected AbstractTupleCalc(Exp exp, Calc[] calcs) {
+    super(exp, calcs);
+  }
 
-	public Object evaluate(Evaluator evaluator) {
-		return evaluateTuple(evaluator);
-	}
+  public Object evaluate(Evaluator evaluator) {
+    return evaluateTuple(evaluator);
+  }
 }
 
 // End AbstractTupleCalc.java

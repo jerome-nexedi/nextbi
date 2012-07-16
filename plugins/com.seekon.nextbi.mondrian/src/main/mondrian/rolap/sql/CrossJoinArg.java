@@ -21,15 +21,15 @@ import java.util.List;
  * one of member.children, level.members, member.descendants, {enumeration}.
  */
 public interface CrossJoinArg {
-	CrossJoinArg[] EMPTY_ARRAY = new CrossJoinArg[0];
+  CrossJoinArg[] EMPTY_ARRAY = new CrossJoinArg[0];
 
-	RolapLevel getLevel();
+  RolapLevel getLevel();
 
-	List<RolapMember> getMembers();
+  List<RolapMember> getMembers();
 
-	void addConstraint(SqlQuery sqlQuery, RolapCube baseCube, AggStar aggStar);
+  void addConstraint(SqlQuery sqlQuery, RolapCube baseCube, AggStar aggStar);
 
-	boolean isPreferInterpreter(boolean joinArg);
+  boolean isPreferInterpreter(boolean joinArg);
 }
 
 // End CrossJoinArg.java

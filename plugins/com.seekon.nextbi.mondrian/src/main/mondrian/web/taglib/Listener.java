@@ -30,44 +30,41 @@ import javax.servlet.ServletContextListener;
 
 public class Listener implements ServletContextListener {
 
-	ApplicationContext applicationContext;
+  ApplicationContext applicationContext;
 
-	public Listener() {
-	}
+  public Listener() {
+  }
 
-	public void contextInitialized(ServletContextEvent event) {
-		Class clazz;
-		try {
-			clazz = Class.forName("mondrian.web.taglib.ApplResources");
-		} catch (ClassNotFoundException e) {
-			throw new Error("Received [" + e.toString()
-					+ "] while initializing servlet");
-		}
-		Object o = null;
-		try {
-			o = clazz.newInstance();
-		} catch (InstantiationException e) {
-			throw new Error("Received [" + e.toString()
-					+ "] while initializing servlet");
-		} catch (IllegalAccessException e) {
-			throw new Error("Received [" + e.toString()
-					+ "] while initializing servlet");
-		}
-		applicationContext = (ApplicationContext) o;
-		applicationContext.init(event);
-	}
+  public void contextInitialized(ServletContextEvent event) {
+    Class clazz;
+    try {
+      clazz = Class.forName("mondrian.web.taglib.ApplResources");
+    } catch (ClassNotFoundException e) {
+      throw new Error("Received [" + e.toString() + "] while initializing servlet");
+    }
+    Object o = null;
+    try {
+      o = clazz.newInstance();
+    } catch (InstantiationException e) {
+      throw new Error("Received [" + e.toString() + "] while initializing servlet");
+    } catch (IllegalAccessException e) {
+      throw new Error("Received [" + e.toString() + "] while initializing servlet");
+    }
+    applicationContext = (ApplicationContext) o;
+    applicationContext.init(event);
+  }
 
-	public void contextDestroyed(ServletContextEvent event) {
-		if (applicationContext != null) {
-			applicationContext.destroy(event);
-		}
-	}
+  public void contextDestroyed(ServletContextEvent event) {
+    if (applicationContext != null) {
+      applicationContext.destroy(event);
+    }
+  }
 
-	interface ApplicationContext {
-		void init(ServletContextEvent event);
+  interface ApplicationContext {
+    void init(ServletContextEvent event);
 
-		void destroy(ServletContextEvent event);
-	}
+    void destroy(ServletContextEvent event);
+  }
 }
 
 // End Listener.java

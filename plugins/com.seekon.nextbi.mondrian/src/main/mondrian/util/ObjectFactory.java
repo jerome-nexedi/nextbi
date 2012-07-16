@@ -269,402 +269,401 @@ import java.util.Properties;
  */
 public abstract class ObjectFactory<V> {
 
-	private static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
-	private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+  private static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
 
-	/**
-	 * The type of the object to be generated.
-	 */
-	private final Class<V> interfaceClass;
+  private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
-	/**
-	 * Creates a new factory object. The <code>interfaceClass</code> parameter is
-	 * used to cast the object generated to type right type.
-	 * 
-	 * @param interfaceClass
-	 *          the class object for the interface implemented by the objects
-	 *          returned by this factory
-	 * 
-	 */
-	protected ObjectFactory(final Class<V> interfaceClass) {
-		this.interfaceClass = interfaceClass;
-	}
+  /**
+   * The type of the object to be generated.
+   */
+  private final Class<V> interfaceClass;
 
-	/**
-	 * Constructs an object where the System Properties can be used to look up a
-	 * class name. The constructor for the object takes no parameters.
-	 * 
-	 * @return the newly created object
-	 * @throws CreationException
-	 *           if unable to create the object
-	 */
-	protected final V getObject() throws CreationException {
-		return getObject(System.getProperties());
-	}
+  /**
+   * Creates a new factory object. The <code>interfaceClass</code> parameter is
+   * used to cast the object generated to type right type.
+   * 
+   * @param interfaceClass
+   *          the class object for the interface implemented by the objects
+   *          returned by this factory
+   * 
+   */
+  protected ObjectFactory(final Class<V> interfaceClass) {
+    this.interfaceClass = interfaceClass;
+  }
 
-	/**
-	 * Constructs an object where the <code>Properties</code> parameter can be
-	 * used to look up a class name. The constructor for the object takes no
-	 * parameters.
-	 * 
-	 * @param props
-	 *          the property definitions to use to determine the implementation
-	 *          class
-	 * 
-	 * @return the newly created object
-	 * @throws CreationException
-	 *           if unable to create the object
-	 */
-	protected final V getObject(final Properties props) throws CreationException {
-		return getObject(props, EMPTY_CLASS_ARRAY, EMPTY_OBJECT_ARRAY);
-	}
+  /**
+   * Constructs an object where the System Properties can be used to look up a
+   * class name. The constructor for the object takes no parameters.
+   * 
+   * @return the newly created object
+   * @throws CreationException
+   *           if unable to create the object
+   */
+  protected final V getObject() throws CreationException {
+    return getObject(System.getProperties());
+  }
 
-	/**
-	 * Constructs an object where the <code>parameterTypes</code> and
-	 * <code>parameterValues</code> are constructor parameters and System
-	 * Properties are used to look up a class name.
-	 * 
-	 * @param parameterTypes
-	 *          the class parameters that define the signature of the constructor
-	 *          to use
-	 * @param parameterValues
-	 *          the values to use to construct the current instance of the object
-	 * @return the newly created object
-	 * @throws CreationException
-	 *           if unable to create the object
-	 */
-	protected final V getObject(final Class[] parameterTypes,
-			final Object[] parameterValues) throws CreationException {
-		return getObject(System.getProperties(), parameterTypes, parameterValues);
-	}
+  /**
+   * Constructs an object where the <code>Properties</code> parameter can be
+   * used to look up a class name. The constructor for the object takes no
+   * parameters.
+   * 
+   * @param props
+   *          the property definitions to use to determine the implementation
+   *          class
+   * 
+   * @return the newly created object
+   * @throws CreationException
+   *           if unable to create the object
+   */
+  protected final V getObject(final Properties props) throws CreationException {
+    return getObject(props, EMPTY_CLASS_ARRAY, EMPTY_OBJECT_ARRAY);
+  }
 
-	/**
-	 * Constructs an object where the <code>parameterTypes</code> and
-	 * <code>parameterValues</code> are constructor parameters and Properties
-	 * parameter is used to look up a class name.
-	 * <p>
-	 * This returns a new instance of the Object each time its called (assuming
-	 * that if the method <code>getDefault</code>, which derived classes
-	 * implement), if called, creates a new object each time.
-	 * 
-	 * @param props
-	 *          the property definitions to use to determine the
-	 * @param parameterTypes
-	 *          the class parameters that define the signature of the constructor
-	 *          to use
-	 * @param parameterValues
-	 *          the values to use to construct the current instance of the object
-	 * @return the newly created object
-	 * @throws CreationException
-	 *           if unable to create the object
-	 */
-	protected V getObject(final Properties props, final Class[] parameterTypes,
-			final Object[] parameterValues) throws CreationException {
-		// Unit test override
-		final String className = getClassName();
-		if (className != null) {
-			return getObject(className, parameterTypes, parameterValues);
-		}
+  /**
+   * Constructs an object where the <code>parameterTypes</code> and
+   * <code>parameterValues</code> are constructor parameters and System
+   * Properties are used to look up a class name.
+   * 
+   * @param parameterTypes
+   *          the class parameters that define the signature of the constructor
+   *          to use
+   * @param parameterValues
+   *          the values to use to construct the current instance of the object
+   * @return the newly created object
+   * @throws CreationException
+   *           if unable to create the object
+   */
+  protected final V getObject(final Class[] parameterTypes,
+    final Object[] parameterValues) throws CreationException {
+    return getObject(System.getProperties(), parameterTypes, parameterValues);
+  }
 
-		final String propClassName = getClassName(props);
-		return (propClassName != null)
-		// User overriding application default
-		? getObject(propClassName, parameterTypes, parameterValues)
-				// Get application default
-				: getDefault(parameterTypes, parameterValues);
-	}
+  /**
+   * Constructs an object where the <code>parameterTypes</code> and
+   * <code>parameterValues</code> are constructor parameters and Properties
+   * parameter is used to look up a class name.
+   * <p>
+   * This returns a new instance of the Object each time its called (assuming
+   * that if the method <code>getDefault</code>, which derived classes
+   * implement), if called, creates a new object each time.
+   * 
+   * @param props
+   *          the property definitions to use to determine the
+   * @param parameterTypes
+   *          the class parameters that define the signature of the constructor
+   *          to use
+   * @param parameterValues
+   *          the values to use to construct the current instance of the object
+   * @return the newly created object
+   * @throws CreationException
+   *           if unable to create the object
+   */
+  protected V getObject(final Properties props, final Class[] parameterTypes,
+    final Object[] parameterValues) throws CreationException {
+    // Unit test override
+    final String className = getClassName();
+    if (className != null) {
+      return getObject(className, parameterTypes, parameterValues);
+    }
 
-	/**
-	 * Creates an instance with the given <code>className</code>,
-	 * <code>parameterTypes</code> and <code>parameterValues</code> or throw a
-	 * <code>CreationException</code>. There are two different mechanims
-	 * available. The first is to uses reflection to create the instance typing
-	 * the generated Object based upon the <code>interfaceClass</code> factory
-	 * instance object. With the second the <code>className</code> is an class
-	 * that implements the <code>InvocationHandler</code> interface and in this
-	 * case the <code>java.lang.reflect.Proxy</code> class is used to generate a
-	 * proxy.
-	 * 
-	 * @param className
-	 *          the class name used to create Object instance
-	 * @param parameterTypes
-	 *          the class parameters that define the signature of the constructor
-	 *          to use
-	 * @param parameterValues
-	 *          the values to use to construct the current instance of the object
-	 * @return the newly created object
-	 * @throws CreationException
-	 *           if unable to create the object
-	 */
-	protected V getObject(final String className, final Class[] parameterTypes,
-			final Object[] parameterValues) throws CreationException {
-		try {
-			// As a place to begin google:
-			// org.apache.cxf.BusFactoryHelper.java
-			final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-			final Class<?> genericClass = Class.forName(className, true, loader);
+    final String propClassName = getClassName(props);
+    return (propClassName != null)
+    // User overriding application default
+    ? getObject(propClassName, parameterTypes, parameterValues)
+      // Get application default
+      : getDefault(parameterTypes, parameterValues);
+  }
 
-			// Are we creating a Proxy or an instance?
-			if (InvocationHandler.class.isAssignableFrom(genericClass)) {
-				final Constructor constructor = genericClass
-						.getConstructor(parameterTypes);
-				InvocationHandler handler = (InvocationHandler) constructor
-						.newInstance(parameterValues);
-				return (V) Proxy.newProxyInstance(loader,
-						new Class[] { this.interfaceClass }, handler);
-			} else {
-				final Class<? extends V> specificClass = asSubclass(
-						this.interfaceClass, genericClass);
-				final Constructor<? extends V> constructor = specificClass
-						.getConstructor(parameterTypes);
+  /**
+   * Creates an instance with the given <code>className</code>,
+   * <code>parameterTypes</code> and <code>parameterValues</code> or throw a
+   * <code>CreationException</code>. There are two different mechanims
+   * available. The first is to uses reflection to create the instance typing
+   * the generated Object based upon the <code>interfaceClass</code> factory
+   * instance object. With the second the <code>className</code> is an class
+   * that implements the <code>InvocationHandler</code> interface and in this
+   * case the <code>java.lang.reflect.Proxy</code> class is used to generate a
+   * proxy.
+   * 
+   * @param className
+   *          the class name used to create Object instance
+   * @param parameterTypes
+   *          the class parameters that define the signature of the constructor
+   *          to use
+   * @param parameterValues
+   *          the values to use to construct the current instance of the object
+   * @return the newly created object
+   * @throws CreationException
+   *           if unable to create the object
+   */
+  protected V getObject(final String className, final Class[] parameterTypes,
+    final Object[] parameterValues) throws CreationException {
+    try {
+      // As a place to begin google:
+      // org.apache.cxf.BusFactoryHelper.java
+      final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+      final Class<?> genericClass = Class.forName(className, true, loader);
 
-				return constructor.newInstance(parameterValues);
-			}
-		} catch (Exception exc) {
-			throw new CreationException("Error creating object of type \""
-					+ this.interfaceClass.getName() + "\"", exc);
-		}
-	}
+      // Are we creating a Proxy or an instance?
+      if (InvocationHandler.class.isAssignableFrom(genericClass)) {
+        final Constructor constructor = genericClass.getConstructor(parameterTypes);
+        InvocationHandler handler = (InvocationHandler) constructor
+          .newInstance(parameterValues);
+        return (V) Proxy.newProxyInstance(loader,
+          new Class[] { this.interfaceClass }, handler);
+      } else {
+        final Class<? extends V> specificClass = asSubclass(this.interfaceClass,
+          genericClass);
+        final Constructor<? extends V> constructor = specificClass
+          .getConstructor(parameterTypes);
 
-	/**
-	 * This is a back port of a 1.5 version Class method.
-	 * 
-	 * @param clazz
-	 *          the base class which the genericClass will be case
-	 * @param genericClass
-	 *          the class to be cast to the base clazz
-	 * @return this <tt>Class</tt> object, cast to represent a subclass of the
-	 *         specified class object.
-	 * @throws ClassCastException
-	 *           if this <tt>Class</tt> object does not represent a subclass of
-	 *           the specified class (here "subclass" includes the class itself).
-	 */
-	private static <V> Class<? extends V> asSubclass(final Class<V> clazz,
-			final Class<?> genericClass) {
-		if (clazz.isAssignableFrom(genericClass)) {
-			return (Class<? extends V>) genericClass;
-		} else {
-			throw new ClassCastException(genericClass.toString());
-		}
-	}
+        return constructor.newInstance(parameterValues);
+      }
+    } catch (Exception exc) {
+      throw new CreationException("Error creating object of type \""
+        + this.interfaceClass.getName() + "\"", exc);
+    }
+  }
 
-	/**
-	 * Returns the name of a class to use to create an object. The default
-	 * implementation returns null but derived classes can return a class name.
-	 * <p>
-	 * This method is the primary mechanism for supporting Unit testing. A derived
-	 * class can have, as an example, this method return the value of a
-	 * <code>ThreadLocal</code>. For testing it return a class name while for
-	 * normal use it returns <code>null</code>.
-	 * 
-	 * @return <code>null</code> or a class name
-	 */
-	protected String getClassName() {
-		return null;
-	}
+  /**
+   * This is a back port of a 1.5 version Class method.
+   * 
+   * @param clazz
+   *          the base class which the genericClass will be case
+   * @param genericClass
+   *          the class to be cast to the base clazz
+   * @return this <tt>Class</tt> object, cast to represent a subclass of the
+   *         specified class object.
+   * @throws ClassCastException
+   *           if this <tt>Class</tt> object does not represent a subclass of
+   *           the specified class (here "subclass" includes the class itself).
+   */
+  private static <V> Class<? extends V> asSubclass(final Class<V> clazz,
+    final Class<?> genericClass) {
+    if (clazz.isAssignableFrom(genericClass)) {
+      return (Class<? extends V>) genericClass;
+    } else {
+      throw new ClassCastException(genericClass.toString());
+    }
+  }
 
-	/**
-	 * Returns the name of a class to use to create an object. The factory's
-	 * <code>StringProperty</code> is gotten and if it has a non-null value, then
-	 * that is returned. Otherwise, the <code>StringProperty</code>'s name (path)
-	 * is used as the name to probe the <code>Properties</code> object for a
-	 * value. This method is allowed to return null.
-	 * 
-	 * @return <code>null</code> or a class name
-	 */
-	protected String getClassName(final Properties props) {
-		final StringProperty stringProp = getStringProperty();
-		final String className = stringProp.get();
-		return (className != null) ? className : (props == null) ? null : props
-				.getProperty(stringProp.getPath());
-	}
+  /**
+   * Returns the name of a class to use to create an object. The default
+   * implementation returns null but derived classes can return a class name.
+   * <p>
+   * This method is the primary mechanism for supporting Unit testing. A derived
+   * class can have, as an example, this method return the value of a
+   * <code>ThreadLocal</code>. For testing it return a class name while for
+   * normal use it returns <code>null</code>.
+   * 
+   * @return <code>null</code> or a class name
+   */
+  protected String getClassName() {
+    return null;
+  }
 
-	/**
-	 * Return the <code>StringProperty</code> associated with this factory.
-	 * 
-	 * @return the <code>StringProperty</code>
-	 */
-	protected abstract StringProperty getStringProperty();
+  /**
+   * Returns the name of a class to use to create an object. The factory's
+   * <code>StringProperty</code> is gotten and if it has a non-null value, then
+   * that is returned. Otherwise, the <code>StringProperty</code>'s name (path)
+   * is used as the name to probe the <code>Properties</code> object for a
+   * value. This method is allowed to return null.
+   * 
+   * @return <code>null</code> or a class name
+   */
+  protected String getClassName(final Properties props) {
+    final StringProperty stringProp = getStringProperty();
+    final String className = stringProp.get();
+    return (className != null) ? className : (props == null) ? null : props
+      .getProperty(stringProp.getPath());
+  }
 
-	/**
-	 * For most uses (other than testing) this is the method that derived classes
-	 * implement that return the desired object.
-	 * 
-	 * @param parameterTypes
-	 *          the class parameters that define the signature of the constructor
-	 *          to use
-	 * @param parameterValues
-	 *          the values to use to construct the current instance of the object
-	 * @return the newly created object
-	 * @throws CreationException
-	 *           if unable to create the object
-	 */
-	protected abstract V getDefault(Class[] parameterTypes,
-			Object[] parameterValues) throws CreationException;
+  /**
+   * Return the <code>StringProperty</code> associated with this factory.
+   * 
+   * @return the <code>StringProperty</code>
+   */
+  protected abstract StringProperty getStringProperty();
 
-	/**
-	 * Factory method which creates an exception to be thrown if an object can not
-	 * be created.
-	 * 
-	 * @return an exception to be thrown if an object can not be created
-	 */
-	// REVIEW: jhyde, 2007/2/4: CreationException is superfluous, since it's
-	// unlikely that anyone will want to handle it. This code should wrap the
-	// error using Util.newError, just like elsewhere in mondrian.
-	protected CreationException defaultCreationException() {
-		return new CreationException("Error creating object of type \""
-				+ this.interfaceClass.getName() + "\"");
-	}
+  /**
+   * For most uses (other than testing) this is the method that derived classes
+   * implement that return the desired object.
+   * 
+   * @param parameterTypes
+   *          the class parameters that define the signature of the constructor
+   *          to use
+   * @param parameterValues
+   *          the values to use to construct the current instance of the object
+   * @return the newly created object
+   * @throws CreationException
+   *           if unable to create the object
+   */
+  protected abstract V getDefault(Class[] parameterTypes, Object[] parameterValues)
+    throws CreationException;
 
-	/**
-	 * Get the current override values in the opaque context object and clear
-	 * those values within the Factory.
-	 * <p>
-	 * This is used in testing.
-	 * 
-	 * @return the test <code>Context</code> object.
-	 */
-	public Object removeContext() {
-		return null;
-	}
+  /**
+   * Factory method which creates an exception to be thrown if an object can not
+   * be created.
+   * 
+   * @return an exception to be thrown if an object can not be created
+   */
+  // REVIEW: jhyde, 2007/2/4: CreationException is superfluous, since it's
+  // unlikely that anyone will want to handle it. This code should wrap the
+  // error using Util.newError, just like elsewhere in mondrian.
+  protected CreationException defaultCreationException() {
+    return new CreationException("Error creating object of type \""
+      + this.interfaceClass.getName() + "\"");
+  }
 
-	/**
-	 * Restore the context object resetting override values.
-	 * <p>
-	 * This is used in testing.
-	 * 
-	 * @param context
-	 *          the context object to be restored.
-	 */
-	public void restoreContext(final Object context) {
-		// empty
-	}
+  /**
+   * Get the current override values in the opaque context object and clear
+   * those values within the Factory.
+   * <p>
+   * This is used in testing.
+   * 
+   * @return the test <code>Context</code> object.
+   */
+  public Object removeContext() {
+    return null;
+  }
 
-	/**
-	 * Implementation of ObjectFactory that returns only a single instance of the
-	 * Object.
-	 */
-	public abstract static class Singleton<T> extends ObjectFactory<T> {
+  /**
+   * Restore the context object resetting override values.
+   * <p>
+   * This is used in testing.
+   * 
+   * @param context
+   *          the context object to be restored.
+   */
+  public void restoreContext(final Object context) {
+    // empty
+  }
 
-		/**
-		 * The single instance of the object created by the factory.
-		 */
-		protected T singleInstance;
+  /**
+   * Implementation of ObjectFactory that returns only a single instance of the
+   * Object.
+   */
+  public abstract static class Singleton<T> extends ObjectFactory<T> {
 
-		/**
-		 * The test single instance of the object created by the factory. Creating
-		 * this <code>testSingleInstance</code> does not change the current value of
-		 * the <code>singleInstance</code> variable.
-		 */
-		protected T testSingleInstance;
+    /**
+     * The single instance of the object created by the factory.
+     */
+    protected T singleInstance;
 
-		/**
-		 * Creates a new singleton factory object. The <code>interfaceClass</code>
-		 * parameter is used to cast the object generated to type right type.
-		 * 
-		 * @param interfaceClass
-		 *          the class object for the interface implemented by the objects
-		 *          returned by this factory
-		 */
-		protected Singleton(final Class<T> interfaceClass) {
-			super(interfaceClass);
-		}
+    /**
+     * The test single instance of the object created by the factory. Creating
+     * this <code>testSingleInstance</code> does not change the current value of
+     * the <code>singleInstance</code> variable.
+     */
+    protected T testSingleInstance;
 
-		/**
-		 * Returns the singleton Object. The first time this is called, an object is
-		 * created where the <code>parameterTypes</code> and
-		 * <code>parameterValues</code> are constructor parameters and Properties
-		 * parameter is used to look up a class name.
-		 * <p>
-		 * This returns a same instance of the Object each time its called except if
-		 * the <code>getClassName</code> method returns a non-null class name which
-		 * should only happen as needed for unit testing.
-		 * 
-		 * @param props
-		 *          the property definitions to use to determine the
-		 * @param parameterTypes
-		 *          the class parameters that define the signature of the
-		 *          constructor to use
-		 * @param parameterValues
-		 *          the values to use to construct the current instance of the
-		 *          object
-		 * @return the newly created object
-		 * @throws CreationException
-		 *           if unable to create the object
-		 */
-		protected T getObject(final Properties props, final Class[] parameterTypes,
-				final Object[] parameterValues) throws CreationException {
-			// Unit test override, do not use application instance.
-			final String className = getClassName();
-			if (className != null) {
-				if (this.testSingleInstance == null) {
-					this.testSingleInstance = getTestObject(className, parameterTypes,
-							parameterValues);
-				}
-				return this.testSingleInstance;
-			}
+    /**
+     * Creates a new singleton factory object. The <code>interfaceClass</code>
+     * parameter is used to cast the object generated to type right type.
+     * 
+     * @param interfaceClass
+     *          the class object for the interface implemented by the objects
+     *          returned by this factory
+     */
+    protected Singleton(final Class<T> interfaceClass) {
+      super(interfaceClass);
+    }
 
-			// NOTE: Should we distinguish between any Properties Object
-			// and that returned by System? When its the System's
-			// Properties Object (which is not a final instance variable
-			// within the System class), then its for sure the user
-			// providing a global override. If its not the System
-			// Properties object, then it may or may not be a global
-			// override so we may not want to set the singleInstance
-			// to it. For now I am ignoring the issue.
-			if (this.singleInstance == null) {
-				final String propClassName = getClassName(props);
+    /**
+     * Returns the singleton Object. The first time this is called, an object is
+     * created where the <code>parameterTypes</code> and
+     * <code>parameterValues</code> are constructor parameters and Properties
+     * parameter is used to look up a class name.
+     * <p>
+     * This returns a same instance of the Object each time its called except if
+     * the <code>getClassName</code> method returns a non-null class name which
+     * should only happen as needed for unit testing.
+     * 
+     * @param props
+     *          the property definitions to use to determine the
+     * @param parameterTypes
+     *          the class parameters that define the signature of the
+     *          constructor to use
+     * @param parameterValues
+     *          the values to use to construct the current instance of the
+     *          object
+     * @return the newly created object
+     * @throws CreationException
+     *           if unable to create the object
+     */
+    protected T getObject(final Properties props, final Class[] parameterTypes,
+      final Object[] parameterValues) throws CreationException {
+      // Unit test override, do not use application instance.
+      final String className = getClassName();
+      if (className != null) {
+        if (this.testSingleInstance == null) {
+          this.testSingleInstance = getTestObject(className, parameterTypes,
+            parameterValues);
+        }
+        return this.testSingleInstance;
+      }
 
-				this.singleInstance = (propClassName != null)
-				// The user overriding application default
-				? getObject(propClassName, parameterTypes, parameterValues)
-						// Get application default
-						: getDefault(parameterTypes, parameterValues);
-			}
-			return this.singleInstance;
-		}
+      // NOTE: Should we distinguish between any Properties Object
+      // and that returned by System? When its the System's
+      // Properties Object (which is not a final instance variable
+      // within the System class), then its for sure the user
+      // providing a global override. If its not the System
+      // Properties object, then it may or may not be a global
+      // override so we may not want to set the singleInstance
+      // to it. For now I am ignoring the issue.
+      if (this.singleInstance == null) {
+        final String propClassName = getClassName(props);
 
-		/**
-		 * Create an instance for test purposes.
-		 * 
-		 * @param className
-		 *          the class name used to create Object instance
-		 * @param parameterTypes
-		 *          the class parameters that define the signature of the
-		 *          constructor to use
-		 * @param parameterValues
-		 *          the values to use to construct the current instance of the
-		 *          object
-		 * @return the newly created object
-		 * @throws CreationException
-		 *           if unable to create the object
-		 */
-		protected T getTestObject(final String className,
-				final Class[] parameterTypes, final Object[] parameterValues)
-				throws CreationException {
-			return getObject(className, parameterTypes, parameterValues);
-		}
-	}
+        this.singleInstance = (propClassName != null)
+        // The user overriding application default
+        ? getObject(propClassName, parameterTypes, parameterValues)
+          // Get application default
+          : getDefault(parameterTypes, parameterValues);
+      }
+      return this.singleInstance;
+    }
 
-	/**
-	 * This is for testing only.
-	 * <p>
-	 * <code>Context</code> contain the Factory implementation specific
-	 * non-default values and mechanism for overriding the default instance type
-	 * returned by the Factory. Factory implementation can extend the
-	 * <code>Context</code> interface to capture its specific override values. If,
-	 * for example, a Factory implementation uses a <code>ThreadLocal</code> to
-	 * override the default instance type for unit tests, then the
-	 * <code>Context</code> will hold the current value of the
-	 * <code>ThreadLocal</code>. Getting the Context, clears the
-	 * <code>ThreadLocal</code> value. This allows the tester who wishes to create
-	 * code that will provide a wrapper around the default instance type to
-	 * register their wrapper class name with the <code>ThreadLocal</code>, and,
-	 * within the wrapper constructor, get the <code>Context</code>, get a default
-	 * instance, and then restore the <code>Context</code>.
-	 */
-	public interface Context {
-	}
+    /**
+     * Create an instance for test purposes.
+     * 
+     * @param className
+     *          the class name used to create Object instance
+     * @param parameterTypes
+     *          the class parameters that define the signature of the
+     *          constructor to use
+     * @param parameterValues
+     *          the values to use to construct the current instance of the
+     *          object
+     * @return the newly created object
+     * @throws CreationException
+     *           if unable to create the object
+     */
+    protected T getTestObject(final String className, final Class[] parameterTypes,
+      final Object[] parameterValues) throws CreationException {
+      return getObject(className, parameterTypes, parameterValues);
+    }
+  }
+
+  /**
+   * This is for testing only.
+   * <p>
+   * <code>Context</code> contain the Factory implementation specific
+   * non-default values and mechanism for overriding the default instance type
+   * returned by the Factory. Factory implementation can extend the
+   * <code>Context</code> interface to capture its specific override values. If,
+   * for example, a Factory implementation uses a <code>ThreadLocal</code> to
+   * override the default instance type for unit tests, then the
+   * <code>Context</code> will hold the current value of the
+   * <code>ThreadLocal</code>. Getting the Context, clears the
+   * <code>ThreadLocal</code> value. This allows the tester who wishes to create
+   * code that will provide a wrapper around the default instance type to
+   * register their wrapper class name with the <code>ThreadLocal</code>, and,
+   * within the wrapper constructor, get the <code>Context</code>, get a default
+   * instance, and then restore the <code>Context</code>.
+   */
+  public interface Context {
+  }
 }
 
 // End ObjectFactory.java

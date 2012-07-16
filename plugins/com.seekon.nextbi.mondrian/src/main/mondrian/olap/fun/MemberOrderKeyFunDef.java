@@ -30,44 +30,44 @@ import mondrian.olap.Evaluator;
  * @since Nov 10, 2008
  */
 public final class MemberOrderKeyFunDef extends FunDefBase {
-	static final MemberOrderKeyFunDef instance = new MemberOrderKeyFunDef();
+  static final MemberOrderKeyFunDef instance = new MemberOrderKeyFunDef();
 
-	/**
-	 * Creates the singleton MemberOrderKeyFunDef.
-	 */
-	private MemberOrderKeyFunDef() {
-		super("OrderKey", "Returns the member order key.", "pvm");
-	}
+  /**
+   * Creates the singleton MemberOrderKeyFunDef.
+   */
+  private MemberOrderKeyFunDef() {
+    super("OrderKey", "Returns the member order key.", "pvm");
+  }
 
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
-		final MemberCalc memberCalc = compiler.compileMember(call.getArg(0));
-		return new CalcImpl(call, memberCalc);
-	}
+  public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    final MemberCalc memberCalc = compiler.compileMember(call.getArg(0));
+    return new CalcImpl(call, memberCalc);
+  }
 
-	public static class CalcImpl extends AbstractCalc {
-		private final MemberCalc memberCalc;
+  public static class CalcImpl extends AbstractCalc {
+    private final MemberCalc memberCalc;
 
-		/**
-		 * Creates a CalcImpl.
-		 * 
-		 * @param exp
-		 *          Source expression
-		 * @param memberCalc
-		 *          Compiled expression to calculate member
-		 */
-		public CalcImpl(Exp exp, MemberCalc memberCalc) {
-			super(exp, new Calc[] { memberCalc });
-			this.memberCalc = memberCalc;
-		}
+    /**
+     * Creates a CalcImpl.
+     * 
+     * @param exp
+     *          Source expression
+     * @param memberCalc
+     *          Compiled expression to calculate member
+     */
+    public CalcImpl(Exp exp, MemberCalc memberCalc) {
+      super(exp, new Calc[] { memberCalc });
+      this.memberCalc = memberCalc;
+    }
 
-		public OrderKey evaluate(Evaluator evaluator) {
-			return new OrderKey(memberCalc.evaluateMember(evaluator));
-		}
+    public OrderKey evaluate(Evaluator evaluator) {
+      return new OrderKey(memberCalc.evaluateMember(evaluator));
+    }
 
-		protected String getName() {
-			return "OrderKey";
-		}
-	}
+    protected String getName() {
+      return "OrderKey";
+    }
+  }
 }
 
 // End MemberOrderKeyFunDef.java

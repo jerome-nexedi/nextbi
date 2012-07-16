@@ -24,22 +24,22 @@ import mondrian.olap.FunDef;
  */
 class UnorderFunDef extends FunDefBase {
 
-	static final ReflectiveMultiResolver Resolver = new ReflectiveMultiResolver(
-			"Unorder", "Unorder(<Set>)",
-			"Removes any enforced ordering from a specified set.",
-			new String[] { "fxx" }, UnorderFunDef.class);
+  static final ReflectiveMultiResolver Resolver = new ReflectiveMultiResolver(
+    "Unorder", "Unorder(<Set>)",
+    "Removes any enforced ordering from a specified set.", new String[] { "fxx" },
+    UnorderFunDef.class);
 
-	public UnorderFunDef(FunDef dummyFunDef) {
-		super(dummyFunDef);
-	}
+  public UnorderFunDef(FunDef dummyFunDef) {
+    super(dummyFunDef);
+  }
 
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
-		// Currently Unorder has no effect. In future, we may use the function
-		// as a marker to weaken the ordering required from an expression and
-		// therefore allow the compiler to use a more efficient implementation
-		// that does not return a strict order.
-		return compiler.compile(call.getArg(0));
-	}
+  public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    // Currently Unorder has no effect. In future, we may use the function
+    // as a marker to weaken the ordering required from an expression and
+    // therefore allow the compiler to use a more efficient implementation
+    // that does not return a strict order.
+    return compiler.compile(call.getArg(0));
+  }
 }
 
 // End UnorderFunDef.java

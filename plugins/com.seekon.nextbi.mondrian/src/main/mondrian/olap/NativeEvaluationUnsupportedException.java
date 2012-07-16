@@ -21,17 +21,17 @@ package mondrian.olap;
  *          .java#4 $
  */
 public class NativeEvaluationUnsupportedException extends
-		ResultLimitExceededException {
+  ResultLimitExceededException {
 
-	/**
-	 * Creates a NativeEvaluationUnsupportedException.
-	 * 
-	 * @param message
-	 *          Localized error message
-	 */
-	public NativeEvaluationUnsupportedException(String message) {
-		super(message);
-	}
+  /**
+   * Creates a NativeEvaluationUnsupportedException.
+   * 
+   * @param message
+   *          Localized error message
+   */
+  public NativeEvaluationUnsupportedException(String message) {
+    super(message);
+  }
 }
 
 // End NativeEvaluationUnsupportedException.java

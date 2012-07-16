@@ -23,42 +23,42 @@ import java.io.PrintWriter;
  */
 public abstract class ExpBase extends QueryPart implements Exp {
 
-	protected static Exp[] cloneArray(Exp[] a) {
-		Exp[] a2 = new Exp[a.length];
-		for (int i = 0; i < a.length; i++) {
-			a2[i] = a[i].clone();
-		}
-		return a2;
-	}
+  protected static Exp[] cloneArray(Exp[] a) {
+    Exp[] a2 = new Exp[a.length];
+    for (int i = 0; i < a.length; i++) {
+      a2[i] = a[i].clone();
+    }
+    return a2;
+  }
 
-	protected ExpBase() {
-	}
+  protected ExpBase() {
+  }
 
-	public abstract Exp clone();
+  public abstract Exp clone();
 
-	public static void unparseList(PrintWriter pw, Exp[] exps, String start,
-			String mid, String end) {
-		pw.print(start);
-		for (int i = 0; i < exps.length; i++) {
-			if (i > 0) {
-				pw.print(mid);
-			}
-			exps[i].unparse(pw);
-		}
-		pw.print(end);
-	}
+  public static void unparseList(PrintWriter pw, Exp[] exps, String start,
+    String mid, String end) {
+    pw.print(start);
+    for (int i = 0; i < exps.length; i++) {
+      if (i > 0) {
+        pw.print(mid);
+      }
+      exps[i].unparse(pw);
+    }
+    pw.print(end);
+  }
 
-	public static int[] getTypes(Exp[] exps) {
-		int[] types = new int[exps.length];
-		for (int i = 0; i < exps.length; i++) {
-			types[i] = exps[i].getCategory();
-		}
-		return types;
-	}
+  public static int[] getTypes(Exp[] exps) {
+    int[] types = new int[exps.length];
+    for (int i = 0; i < exps.length; i++) {
+      types[i] = exps[i].getCategory();
+    }
+    return types;
+  }
 
-	public Calc accept(ExpCompiler compiler) {
-		throw new UnsupportedOperationException(this.toString());
-	}
+  public Calc accept(ExpCompiler compiler) {
+    throw new UnsupportedOperationException(this.toString());
+  }
 }
 
 // End ExpBase.java

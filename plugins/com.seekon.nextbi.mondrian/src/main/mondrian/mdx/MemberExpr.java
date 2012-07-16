@@ -23,60 +23,61 @@ import mondrian.calc.impl.ConstantCalc;
  * @since Sep 26, 2005
  */
 public class MemberExpr extends ExpBase implements Exp {
-	private final Member member;
-	private MemberType type;
+  private final Member member;
 
-	/**
-	 * Creates a member expression.
-	 * 
-	 * @param member
-	 *          Member
-	 * @pre member != null
-	 */
-	public MemberExpr(Member member) {
-		Util.assertPrecondition(member != null, "member != null");
-		this.member = member;
-	}
+  private MemberType type;
 
-	/**
-	 * Returns the member.
-	 * 
-	 * @post return != null
-	 */
-	public Member getMember() {
-		return member;
-	}
+  /**
+   * Creates a member expression.
+   * 
+   * @param member
+   *          Member
+   * @pre member != null
+   */
+  public MemberExpr(Member member) {
+    Util.assertPrecondition(member != null, "member != null");
+    this.member = member;
+  }
 
-	public String toString() {
-		return member.getUniqueName();
-	}
+  /**
+   * Returns the member.
+   * 
+   * @post return != null
+   */
+  public Member getMember() {
+    return member;
+  }
 
-	public Type getType() {
-		if (type == null) {
-			type = MemberType.forMember(member);
-		}
-		return type;
-	}
+  public String toString() {
+    return member.getUniqueName();
+  }
 
-	public MemberExpr clone() {
-		return new MemberExpr(member);
-	}
+  public Type getType() {
+    if (type == null) {
+      type = MemberType.forMember(member);
+    }
+    return type;
+  }
 
-	public int getCategory() {
-		return Category.Member;
-	}
+  public MemberExpr clone() {
+    return new MemberExpr(member);
+  }
 
-	public Exp accept(Validator validator) {
-		return this;
-	}
+  public int getCategory() {
+    return Category.Member;
+  }
 
-	public Calc accept(ExpCompiler compiler) {
-		return ConstantCalc.constantMember(member);
-	}
+  public Exp accept(Validator validator) {
+    return this;
+  }
 
-	public Object accept(MdxVisitor visitor) {
-		return visitor.visit(this);
-	}
+  public Calc accept(ExpCompiler compiler) {
+    return ConstantCalc.constantMember(member);
+  }
+
+  public Object accept(MdxVisitor visitor) {
+    return visitor.visit(this);
+  }
 }
 
 // End MemberExpr.java

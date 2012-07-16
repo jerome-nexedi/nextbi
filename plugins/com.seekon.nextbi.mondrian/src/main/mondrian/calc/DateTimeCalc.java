@@ -26,14 +26,14 @@ import java.util.Date;
  * @since Sep 26, 2005
  */
 public interface DateTimeCalc extends Calc {
-	/**
-	 * Evaluates this expression to yield a {@link Date} value.
-	 * 
-	 * @param evaluator
-	 *          Evaluation context
-	 * @return evaluation result
-	 */
-	Date evaluateDateTime(Evaluator evaluator);
+  /**
+   * Evaluates this expression to yield a {@link Date} value.
+   * 
+   * @param evaluator
+   *          Evaluation context
+   * @return evaluation result
+   */
+  Date evaluateDateTime(Evaluator evaluator);
 }
 
 // End DateTimeCalc.java

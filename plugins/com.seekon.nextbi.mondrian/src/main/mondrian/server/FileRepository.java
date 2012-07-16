@@ -39,208 +39,212 @@ import java.util.concurrent.*;
  * @author Julian Hyde, Luc Boudreau
  */
 public class FileRepository implements Repository {
-	private final static Object SERVER_INFO_LOCK = new Object();
-	private ServerInfo serverInfo;
-	private final RepositoryContentFinder repositoryContentFinder;
+  private final static Object SERVER_INFO_LOCK = new Object();
 
-	private static final Logger LOGGER = Logger.getLogger(MondrianServer.class);
+  private ServerInfo serverInfo;
 
-	private final static ScheduledExecutorService executorService = Util
-			.getScheduledExecutorService(1,
-					"mondrian.server.DynamicContentFinder$executorService");
+  private final RepositoryContentFinder repositoryContentFinder;
 
-	private final ScheduledFuture<?> scheduledFuture;
-	private final CatalogLocator locator;
+  private static final Logger LOGGER = Logger.getLogger(MondrianServer.class);
 
-	public FileRepository(RepositoryContentFinder repositoryContentFinder,
-			CatalogLocator locator) {
-		this.repositoryContentFinder = repositoryContentFinder;
-		this.locator = locator;
-		assert repositoryContentFinder != null;
-		scheduledFuture = executorService.scheduleWithFixedDelay(new Runnable() {
-			public void run() {
-				synchronized (SERVER_INFO_LOCK) {
-					serverInfo = null;
-				}
-			}
-		}, 0, MondrianProperties.instance().XmlaSchemaRefreshInterval.get(),
-				TimeUnit.MILLISECONDS);
-	}
+  private final static ScheduledExecutorService executorService = Util
+    .getScheduledExecutorService(1,
+      "mondrian.server.DynamicContentFinder$executorService");
 
-	public List<Map<String, Object>> getDatabases(RolapConnection connection) {
-		final List<Map<String, Object>> propsList = new ArrayList<Map<String, Object>>();
-		for (DatabaseInfo dsInfo : getServerInfo().datasourceMap.values()) {
-			propsList.add(dsInfo.properties);
-		}
-		return propsList;
-	}
+  private final ScheduledFuture<?> scheduledFuture;
 
-	public OlapConnection getConnection(MondrianServer server,
-			String databaseName, String catalogName, String roleName, Properties props)
-			throws SQLException {
-		final ServerInfo serverInfo = getServerInfo();
-		final DatabaseInfo datasourceInfo;
-		if (databaseName == null) {
-			if (serverInfo.datasourceMap.size() == 0) {
-				throw new OlapException("No databases configured on this server");
-			}
-			datasourceInfo = serverInfo.datasourceMap.values().iterator().next();
-		} else {
-			datasourceInfo = serverInfo.datasourceMap.get(databaseName);
-		}
-		if (datasourceInfo == null) {
-			throw Util.newError("Unknown database '" + databaseName + "'");
-		}
+  private final CatalogLocator locator;
 
-		final CatalogInfo catalogInfo;
-		if (catalogName == null) {
-			if (datasourceInfo.catalogMap.size() == 0) {
-				throw new OlapException("No catalogs in the database named "
-						+ datasourceInfo.name);
-			}
-			catalogInfo = datasourceInfo.catalogMap.values().iterator().next();
-		} else {
-			catalogInfo = datasourceInfo.catalogMap.get(catalogName);
-		}
-		if (catalogInfo == null) {
-			throw Util.newError("Unknown catalog '" + catalogName + "'");
-		}
-		String connectString = catalogInfo.olap4jConnectString;
-		final Properties properties = new Properties();
-		properties.setProperty(RolapConnectionProperties.Instance.name(),
-				server.getId());
-		if (roleName != null) {
-			properties.setProperty(RolapConnectionProperties.Role.name(), roleName);
-		}
-		properties.putAll(props);
-		// Make sure we load the Mondrian driver into
-		// the ClassLoader.
-		try {
-			Class.forName(MondrianOlap4jDriver.class.getName());
-		} catch (ClassNotFoundException e) {
-			throw new OlapException("Cannot find mondrian olap4j driver.");
-		}
-		// Now create the connection
-		final java.sql.Connection connection = java.sql.DriverManager
-				.getConnection(connectString, properties);
-		return ((OlapWrapper) connection).unwrap(OlapConnection.class);
-	}
+  public FileRepository(RepositoryContentFinder repositoryContentFinder,
+    CatalogLocator locator) {
+    this.repositoryContentFinder = repositoryContentFinder;
+    this.locator = locator;
+    assert repositoryContentFinder != null;
+    scheduledFuture = executorService.scheduleWithFixedDelay(new Runnable() {
+      public void run() {
+        synchronized (SERVER_INFO_LOCK) {
+          serverInfo = null;
+        }
+      }
+    }, 0, MondrianProperties.instance().XmlaSchemaRefreshInterval.get(),
+      TimeUnit.MILLISECONDS);
+  }
 
-	public void shutdown() {
-		scheduledFuture.cancel(true);
-		repositoryContentFinder.shutdown();
-	}
+  public List<Map<String, Object>> getDatabases(RolapConnection connection) {
+    final List<Map<String, Object>> propsList = new ArrayList<Map<String, Object>>();
+    for (DatabaseInfo dsInfo : getServerInfo().datasourceMap.values()) {
+      propsList.add(dsInfo.properties);
+    }
+    return propsList;
+  }
 
-	private ServerInfo getServerInfo() {
-		synchronized (SERVER_INFO_LOCK) {
-			if (this.serverInfo != null) {
-				return this.serverInfo;
-			}
+  public OlapConnection getConnection(MondrianServer server, String databaseName,
+    String catalogName, String roleName, Properties props) throws SQLException {
+    final ServerInfo serverInfo = getServerInfo();
+    final DatabaseInfo datasourceInfo;
+    if (databaseName == null) {
+      if (serverInfo.datasourceMap.size() == 0) {
+        throw new OlapException("No databases configured on this server");
+      }
+      datasourceInfo = serverInfo.datasourceMap.values().iterator().next();
+    } else {
+      datasourceInfo = serverInfo.datasourceMap.get(databaseName);
+    }
+    if (datasourceInfo == null) {
+      throw Util.newError("Unknown database '" + databaseName + "'");
+    }
 
-			final String content = repositoryContentFinder.getContent();
-			DataSourcesConfig.DataSources xmlDataSources = XmlaSupport
-					.parseDataSources(content, LOGGER);
-			ServerInfo serverInfo = new ServerInfo();
+    final CatalogInfo catalogInfo;
+    if (catalogName == null) {
+      if (datasourceInfo.catalogMap.size() == 0) {
+        throw new OlapException("No catalogs in the database named "
+          + datasourceInfo.name);
+      }
+      catalogInfo = datasourceInfo.catalogMap.values().iterator().next();
+    } else {
+      catalogInfo = datasourceInfo.catalogMap.get(catalogName);
+    }
+    if (catalogInfo == null) {
+      throw Util.newError("Unknown catalog '" + catalogName + "'");
+    }
+    String connectString = catalogInfo.olap4jConnectString;
+    final Properties properties = new Properties();
+    properties
+      .setProperty(RolapConnectionProperties.Instance.name(), server.getId());
+    if (roleName != null) {
+      properties.setProperty(RolapConnectionProperties.Role.name(), roleName);
+    }
+    properties.putAll(props);
+    // Make sure we load the Mondrian driver into
+    // the ClassLoader.
+    try {
+      Class.forName(MondrianOlap4jDriver.class.getName());
+    } catch (ClassNotFoundException e) {
+      throw new OlapException("Cannot find mondrian olap4j driver.");
+    }
+    // Now create the connection
+    final java.sql.Connection connection = java.sql.DriverManager.getConnection(
+      connectString, properties);
+    return ((OlapWrapper) connection).unwrap(OlapConnection.class);
+  }
 
-			for (DataSourcesConfig.DataSource xmlDataSource : xmlDataSources.dataSources) {
-				final Map<String, Object> dsPropsMap = Olap4jUtil
-						.<String, Object> mapOf("DataSourceName",
-								xmlDataSource.getDataSourceName(), "DataSourceDescription",
-								xmlDataSource.getDataSourceDescription(), "URL",
-								xmlDataSource.getURL(), "DataSourceInfo",
-								xmlDataSource.getDataSourceName(), "ProviderName",
-								xmlDataSource.getProviderName(), "ProviderType",
-								xmlDataSource.providerType, "AuthenticationMode",
-								xmlDataSource.authenticationMode);
-				final DatabaseInfo databaseInfo = new DatabaseInfo(xmlDataSource.name,
-						dsPropsMap);
-				serverInfo.datasourceMap.put(xmlDataSource.name, databaseInfo);
-				for (DataSourcesConfig.Catalog xmlCatalog : xmlDataSource.catalogs.catalogs) {
-					if (databaseInfo.catalogMap.containsKey(xmlCatalog.name)) {
-						throw Util.newError("more than one DataSource object has name '"
-								+ xmlCatalog.name + "'");
-					}
-					String connectString = xmlCatalog.dataSourceInfo != null ? xmlCatalog.dataSourceInfo
-							: xmlDataSource.dataSourceInfo;
-					// Check if the catalog is part of the connect
-					// string. If not, add it.
-					final Util.PropertyList connectProperties = Util
-							.parseConnectString(connectString);
-					if (connectProperties.get(RolapConnectionProperties.Catalog.name()) == null) {
-						connectString += ";" + RolapConnectionProperties.Catalog.name()
-								+ "=" + xmlCatalog.definition;
-					}
-					final CatalogInfo catalogInfo = new CatalogInfo(xmlCatalog.name,
-							connectString, locator);
-					databaseInfo.catalogMap.put(xmlCatalog.name, catalogInfo);
-				}
-			}
-			this.serverInfo = serverInfo;
-			return serverInfo;
-		}
-	}
+  public void shutdown() {
+    scheduledFuture.cancel(true);
+    repositoryContentFinder.shutdown();
+  }
 
-	public List<String> getCatalogNames(RolapConnection connection,
-			String databaseName) {
-		return new ArrayList<String>(
-				getServerInfo().datasourceMap.get(databaseName).catalogMap.keySet());
-	}
+  private ServerInfo getServerInfo() {
+    synchronized (SERVER_INFO_LOCK) {
+      if (this.serverInfo != null) {
+        return this.serverInfo;
+      }
 
-	public List<String> getDatabaseNames(RolapConnection connection) {
-		return new ArrayList<String>(getServerInfo().datasourceMap.keySet());
-	}
+      final String content = repositoryContentFinder.getContent();
+      DataSourcesConfig.DataSources xmlDataSources = XmlaSupport.parseDataSources(
+        content, LOGGER);
+      ServerInfo serverInfo = new ServerInfo();
 
-	public Map<String, RolapSchema> getRolapSchemas(RolapConnection connection,
-			String databaseName, String catalogName) {
-		final RolapSchema schema = getServerInfo().datasourceMap.get(databaseName).catalogMap
-				.get(catalogName).getRolapSchema();
-		return Collections.singletonMap(schema.getName(), schema);
-	}
+      for (DataSourcesConfig.DataSource xmlDataSource : xmlDataSources.dataSources) {
+        final Map<String, Object> dsPropsMap = Olap4jUtil.<String, Object> mapOf(
+          "DataSourceName", xmlDataSource.getDataSourceName(),
+          "DataSourceDescription", xmlDataSource.getDataSourceDescription(), "URL",
+          xmlDataSource.getURL(), "DataSourceInfo", xmlDataSource
+            .getDataSourceName(), "ProviderName", xmlDataSource.getProviderName(),
+          "ProviderType", xmlDataSource.providerType, "AuthenticationMode",
+          xmlDataSource.authenticationMode);
+        final DatabaseInfo databaseInfo = new DatabaseInfo(xmlDataSource.name,
+          dsPropsMap);
+        serverInfo.datasourceMap.put(xmlDataSource.name, databaseInfo);
+        for (DataSourcesConfig.Catalog xmlCatalog : xmlDataSource.catalogs.catalogs) {
+          if (databaseInfo.catalogMap.containsKey(xmlCatalog.name)) {
+            throw Util.newError("more than one DataSource object has name '"
+              + xmlCatalog.name + "'");
+          }
+          String connectString = xmlCatalog.dataSourceInfo != null ? xmlCatalog.dataSourceInfo
+            : xmlDataSource.dataSourceInfo;
+          // Check if the catalog is part of the connect
+          // string. If not, add it.
+          final Util.PropertyList connectProperties = Util
+            .parseConnectString(connectString);
+          if (connectProperties.get(RolapConnectionProperties.Catalog.name()) == null) {
+            connectString += ";" + RolapConnectionProperties.Catalog.name() + "="
+              + xmlCatalog.definition;
+          }
+          final CatalogInfo catalogInfo = new CatalogInfo(xmlCatalog.name,
+            connectString, locator);
+          databaseInfo.catalogMap.put(xmlCatalog.name, catalogInfo);
+        }
+      }
+      this.serverInfo = serverInfo;
+      return serverInfo;
+    }
+  }
 
-	private static class ServerInfo {
-		private Map<String, DatabaseInfo> datasourceMap = new HashMap<String, DatabaseInfo>();
-	}
+  public List<String> getCatalogNames(RolapConnection connection, String databaseName) {
+    return new ArrayList<String>(
+      getServerInfo().datasourceMap.get(databaseName).catalogMap.keySet());
+  }
 
-	private static class DatabaseInfo {
-		private final String name;
-		private final Map<String, Object> properties;
-		private Map<String, CatalogInfo> catalogMap = new HashMap<String, CatalogInfo>();
+  public List<String> getDatabaseNames(RolapConnection connection) {
+    return new ArrayList<String>(getServerInfo().datasourceMap.keySet());
+  }
 
-		DatabaseInfo(String name, Map<String, Object> properties) {
-			this.name = name;
-			this.properties = properties;
-		}
-	}
+  public Map<String, RolapSchema> getRolapSchemas(RolapConnection connection,
+    String databaseName, String catalogName) {
+    final RolapSchema schema = getServerInfo().datasourceMap.get(databaseName).catalogMap
+      .get(catalogName).getRolapSchema();
+    return Collections.singletonMap(schema.getName(), schema);
+  }
 
-	private static class CatalogInfo {
-		private final String connectString;
-		private RolapSchema rolapSchema; // populated on demand
-		private final String olap4jConnectString;
-		private final CatalogLocator locator;
+  private static class ServerInfo {
+    private Map<String, DatabaseInfo> datasourceMap = new HashMap<String, DatabaseInfo>();
+  }
 
-		CatalogInfo(String name, String connectString, CatalogLocator locator) {
-			this.connectString = connectString;
-			this.locator = locator;
-			this.olap4jConnectString = connectString.startsWith("jdbc:") ? connectString
-					: "jdbc:mondrian:" + connectString;
-		}
+  private static class DatabaseInfo {
+    private final String name;
 
-		private RolapSchema getRolapSchema() {
-			if (rolapSchema == null) {
-				RolapConnection rolapConnection = null;
-				try {
-					rolapConnection = (RolapConnection) DriverManager.getConnection(
-							connectString, this.locator);
-					rolapSchema = rolapConnection.getSchema();
-				} finally {
-					if (rolapConnection != null) {
-						rolapConnection.close();
-					}
-				}
-			}
-			return rolapSchema;
-		}
-	}
+    private final Map<String, Object> properties;
+
+    private Map<String, CatalogInfo> catalogMap = new HashMap<String, CatalogInfo>();
+
+    DatabaseInfo(String name, Map<String, Object> properties) {
+      this.name = name;
+      this.properties = properties;
+    }
+  }
+
+  private static class CatalogInfo {
+    private final String connectString;
+
+    private RolapSchema rolapSchema; // populated on demand
+
+    private final String olap4jConnectString;
+
+    private final CatalogLocator locator;
+
+    CatalogInfo(String name, String connectString, CatalogLocator locator) {
+      this.connectString = connectString;
+      this.locator = locator;
+      this.olap4jConnectString = connectString.startsWith("jdbc:") ? connectString
+        : "jdbc:mondrian:" + connectString;
+    }
+
+    private RolapSchema getRolapSchema() {
+      if (rolapSchema == null) {
+        RolapConnection rolapConnection = null;
+        try {
+          rolapConnection = (RolapConnection) DriverManager.getConnection(
+            connectString, this.locator);
+          rolapSchema = rolapConnection.getSchema();
+        } finally {
+          if (rolapConnection != null) {
+            rolapConnection.close();
+          }
+        }
+      }
+      return rolapSchema;
+    }
+  }
 }
 
 // End FileRepository.java

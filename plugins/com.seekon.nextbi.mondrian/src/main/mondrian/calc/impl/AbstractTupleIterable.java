@@ -32,33 +32,33 @@ import java.util.List;
  *          .java#1 $
  */
 public abstract class AbstractTupleIterable implements TupleIterable {
-	protected final int arity;
+  protected final int arity;
 
-	/**
-	 * Creates an AbstractTupleIterable.
-	 * 
-	 * @param arity
-	 *          Arity (number of members per tuple)
-	 */
-	public AbstractTupleIterable(int arity) {
-		this.arity = arity;
-	}
+  /**
+   * Creates an AbstractTupleIterable.
+   * 
+   * @param arity
+   *          Arity (number of members per tuple)
+   */
+  public AbstractTupleIterable(int arity) {
+    this.arity = arity;
+  }
 
-	public int getArity() {
-		return arity;
-	}
+  public int getArity() {
+    return arity;
+  }
 
-	public Iterable<Member> slice(int column) {
-		return TupleCollections.slice(this, column);
-	}
+  public Iterable<Member> slice(int column) {
+    return TupleCollections.slice(this, column);
+  }
 
-	public final Iterator<List<Member>> iterator() {
-		return tupleIterator();
-	}
+  public final Iterator<List<Member>> iterator() {
+    return tupleIterator();
+  }
 
-	public TupleIterator tupleIterator() {
-		return TupleCollections.iterator(tupleCursor());
-	}
+  public TupleIterator tupleIterator() {
+    return TupleCollections.iterator(tupleCursor());
+  }
 }
 
 // End AbstractTupleIterable.java

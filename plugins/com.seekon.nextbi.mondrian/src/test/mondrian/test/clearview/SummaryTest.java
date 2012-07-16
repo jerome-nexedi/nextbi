@@ -7,7 +7,7 @@
 // All Rights Reserved.
 // You must accept the terms of that agreement to use this software.
 //
-*/
+ */
 package mondrian.test.clearview;
 
 import junit.framework.*;
@@ -17,52 +17,52 @@ import mondrian.test.*;
 import mondrian.util.Bug;
 
 /**
- * <code>SummaryTest</code> is a test suite which tests scenarios of
- * summing unit sales against the FoodMart database.
- * MDX queries and their expected results are maintained separately in
- * SummaryTest.ref.xml file.If you would prefer to see them as inlined
- * Java string literals, run ant target "generateDiffRepositoryJUnit" and
- * then use file SummaryTestJUnit.java which will be generated in
- * this directory.
- *
+ * <code>SummaryTest</code> is a test suite which tests scenarios of summing
+ * unit sales against the FoodMart database. MDX queries and their expected
+ * results are maintained separately in SummaryTest.ref.xml file.If you would
+ * prefer to see them as inlined Java string literals, run ant target
+ * "generateDiffRepositoryJUnit" and then use file SummaryTestJUnit.java which
+ * will be generated in this directory.
+ * 
  * @author Khanh Vu
- * @version $Id: //open/mondrian/testsrc/main/mondrian/test/clearview/SummaryTest.java#9 $
+ * @version $Id:
+ *          //open/mondrian/testsrc/main/mondrian/test/clearview/SummaryTest
+ *          .java#9 $
  */
 public class SummaryTest extends ClearViewBase {
 
-    public SummaryTest() {
-        super();
-    }
+  public SummaryTest() {
+    super();
+  }
 
-    public SummaryTest(String name) {
-        super(name);
-    }
+  public SummaryTest(String name) {
+    super(name);
+  }
 
-    public DiffRepository getDiffRepos() {
-        return getDiffReposStatic();
-    }
+  public DiffRepository getDiffRepos() {
+    return getDiffReposStatic();
+  }
 
-    private static DiffRepository getDiffReposStatic() {
-        return DiffRepository.lookup(SummaryTest.class);
-    }
+  private static DiffRepository getDiffReposStatic() {
+    return DiffRepository.lookup(SummaryTest.class);
+  }
 
-    public static TestSuite suite() {
-        return constructSuite(getDiffReposStatic(), SummaryTest.class);
-    }
+  public static TestSuite suite() {
+    return constructSuite(getDiffReposStatic(), SummaryTest.class);
+  }
 
-    @Override
-    protected void runTest() throws Exception {
-        if (!Bug.BugMondrian785Fixed
-            && (getName().equals("testRankExpandNonNative")
-                || getName().equals("testCountExpandNonNative")
-                || getName().equals("testCountOverTimeExpandNonNative"))
-            && MondrianProperties.instance().EnableNativeCrossJoin.get())
-        {
-            // Tests give wrong results if native crossjoin is disabled.
-            return;
-        }
-        super.runTest();
+  @Override
+  protected void runTest() throws Exception {
+    if (!Bug.BugMondrian785Fixed
+      && (getName().equals("testRankExpandNonNative")
+        || getName().equals("testCountExpandNonNative") || getName().equals(
+        "testCountOverTimeExpandNonNative"))
+      && MondrianProperties.instance().EnableNativeCrossJoin.get()) {
+      // Tests give wrong results if native crossjoin is disabled.
+      return;
     }
+    super.runTest();
+  }
 }
 
 // End SummaryTest.java

@@ -21,22 +21,22 @@ import java.sql.SQLException;
  */
 public class InformixDialect extends JdbcDialectImpl {
 
-	public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
-			InformixDialect.class, DatabaseProduct.INFORMIX);
+  public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
+    InformixDialect.class, DatabaseProduct.INFORMIX);
 
-	/**
-	 * Creates an InformixDialect.
-	 * 
-	 * @param connection
-	 *          Connection
-	 */
-	public InformixDialect(Connection connection) throws SQLException {
-		super(connection);
-	}
+  /**
+   * Creates an InformixDialect.
+   * 
+   * @param connection
+   *          Connection
+   */
+  public InformixDialect(Connection connection) throws SQLException {
+    super(connection);
+  }
 
-	public boolean allowsFromQuery() {
-		return false;
-	}
+  public boolean allowsFromQuery() {
+    return false;
+  }
 }
 
 // End InformixDialect.java

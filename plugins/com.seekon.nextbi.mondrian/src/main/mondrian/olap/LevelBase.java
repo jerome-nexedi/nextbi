@@ -23,96 +23,103 @@ import mondrian.spi.MemberFormatter;
  * @version $Id: //open/mondrian/src/main/mondrian/olap/LevelBase.java#27 $
  */
 public abstract class LevelBase extends OlapElementBase implements Level {
-	protected final Hierarchy hierarchy;
-	protected final String name;
-	protected final String uniqueName;
-	protected final String description;
-	protected final int depth;
-	protected final LevelType levelType;
-	protected MemberFormatter memberFormatter;
-	protected int approxRowCount;
+  protected final Hierarchy hierarchy;
 
-	protected LevelBase(Hierarchy hierarchy, String name, String caption,
-			boolean visible, String description, int depth, LevelType levelType) {
-		this.hierarchy = hierarchy;
-		this.name = name;
-		this.caption = caption;
-		this.visible = visible;
-		this.description = description;
-		this.uniqueName = Util.makeFqName(hierarchy, name);
-		this.depth = depth;
-		this.levelType = levelType;
-	}
+  protected final String name;
 
-	/**
-	 * Sets the approximate number of members in this Level.
-	 * 
-	 * @see #getApproxRowCount()
-	 */
-	public void setApproxRowCount(int approxRowCount) {
-		this.approxRowCount = approxRowCount;
-	}
+  protected final String uniqueName;
 
-	// from Element
-	public String getQualifiedName() {
-		return MondrianResource.instance().MdxLevelName.str(getUniqueName());
-	}
+  protected final String description;
 
-	public LevelType getLevelType() {
-		return levelType;
-	}
+  protected final int depth;
 
-	public String getUniqueName() {
-		return uniqueName;
-	}
+  protected final LevelType levelType;
 
-	public String getName() {
-		return name;
-	}
+  protected MemberFormatter memberFormatter;
 
-	public String getDescription() {
-		return description;
-	}
+  protected int approxRowCount;
 
-	public Hierarchy getHierarchy() {
-		return hierarchy;
-	}
+  protected LevelBase(Hierarchy hierarchy, String name, String caption,
+    boolean visible, String description, int depth, LevelType levelType) {
+    this.hierarchy = hierarchy;
+    this.name = name;
+    this.caption = caption;
+    this.visible = visible;
+    this.description = description;
+    this.uniqueName = Util.makeFqName(hierarchy, name);
+    this.depth = depth;
+    this.levelType = levelType;
+  }
 
-	public Dimension getDimension() {
-		return hierarchy.getDimension();
-	}
+  /**
+   * Sets the approximate number of members in this Level.
+   * 
+   * @see #getApproxRowCount()
+   */
+  public void setApproxRowCount(int approxRowCount) {
+    this.approxRowCount = approxRowCount;
+  }
 
-	public int getDepth() {
-		return depth;
-	}
+  // from Element
+  public String getQualifiedName() {
+    return MondrianResource.instance().MdxLevelName.str(getUniqueName());
+  }
 
-	public Level getChildLevel() {
-		int childDepth = depth + 1;
-		Level[] levels = hierarchy.getLevels();
-		return (childDepth < levels.length) ? levels[childDepth] : null;
-	}
+  public LevelType getLevelType() {
+    return levelType;
+  }
 
-	public Level getParentLevel() {
-		int parentDepth = depth - 1;
-		Level[] levels = hierarchy.getLevels();
-		return (parentDepth >= 0) ? levels[parentDepth] : null;
-	}
+  public String getUniqueName() {
+    return uniqueName;
+  }
 
-	public abstract boolean isAll();
+  public String getName() {
+    return name;
+  }
 
-	public boolean isMeasure() {
-		return hierarchy.getName().equals("Measures");
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public OlapElement lookupChild(SchemaReader schemaReader, Id.Segment s,
-			MatchType matchType) {
-		return areMembersUnique() ? Util.lookupHierarchyRootMember(schemaReader,
-				hierarchy, s, matchType) : null;
-	}
+  public Hierarchy getHierarchy() {
+    return hierarchy;
+  }
 
-	public MemberFormatter getMemberFormatter() {
-		return memberFormatter;
-	}
+  public Dimension getDimension() {
+    return hierarchy.getDimension();
+  }
+
+  public int getDepth() {
+    return depth;
+  }
+
+  public Level getChildLevel() {
+    int childDepth = depth + 1;
+    Level[] levels = hierarchy.getLevels();
+    return (childDepth < levels.length) ? levels[childDepth] : null;
+  }
+
+  public Level getParentLevel() {
+    int parentDepth = depth - 1;
+    Level[] levels = hierarchy.getLevels();
+    return (parentDepth >= 0) ? levels[parentDepth] : null;
+  }
+
+  public abstract boolean isAll();
+
+  public boolean isMeasure() {
+    return hierarchy.getName().equals("Measures");
+  }
+
+  public OlapElement lookupChild(SchemaReader schemaReader, Id.Segment s,
+    MatchType matchType) {
+    return areMembersUnique() ? Util.lookupHierarchyRootMember(schemaReader,
+      hierarchy, s, matchType) : null;
+  }
+
+  public MemberFormatter getMemberFormatter() {
+    return memberFormatter;
+  }
 }
 
 // End LevelBase.java

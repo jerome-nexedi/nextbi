@@ -31,58 +31,58 @@ import java.util.List;
  */
 abstract class ArrayMemberSource implements MemberSource {
 
-	protected final RolapHierarchy hierarchy;
-	protected final List<RolapMember> members;
+  protected final RolapHierarchy hierarchy;
 
-	ArrayMemberSource(RolapHierarchy hierarchy, List<RolapMember> members) {
-		this.hierarchy = hierarchy;
-		this.members = members;
-	}
+  protected final List<RolapMember> members;
 
-	public RolapHierarchy getHierarchy() {
-		return hierarchy;
-	}
+  ArrayMemberSource(RolapHierarchy hierarchy, List<RolapMember> members) {
+    this.hierarchy = hierarchy;
+    this.members = members;
+  }
 
-	public boolean setCache(MemberCache cache) {
-		return false; // we do not support cache writeback
-	}
+  public RolapHierarchy getHierarchy() {
+    return hierarchy;
+  }
 
-	public List<RolapMember> getMembers() {
-		return members;
-	}
+  public boolean setCache(MemberCache cache) {
+    return false; // we do not support cache writeback
+  }
 
-	public int getMemberCount() {
-		return members.size();
-	}
+  public List<RolapMember> getMembers() {
+    return members;
+  }
 
-	public List<RolapMember> getRootMembers() {
-		return Collections.emptyList();
-	}
+  public int getMemberCount() {
+    return members.size();
+  }
 
-	public void getMemberChildren(RolapMember parentMember,
-			List<RolapMember> children) {
-		// there are no children
-	}
+  public List<RolapMember> getRootMembers() {
+    return Collections.emptyList();
+  }
 
-	public void getMemberChildren(List<RolapMember> parentMembers,
-			List<RolapMember> children) {
-		// there are no children
-	}
+  public void getMemberChildren(RolapMember parentMember, List<RolapMember> children) {
+    // there are no children
+  }
 
-	public RolapMember lookupMember(List<Id.Segment> uniqueNameParts,
-			boolean failIfNotFound) {
-		String uniqueName = Util.implode(uniqueNameParts);
-		for (RolapMember member : members) {
-			if (member.getUniqueName().equals(uniqueName)) {
-				return member;
-			}
-		}
-		if (failIfNotFound) {
-			throw MondrianResource.instance().MdxCantFindMember.ex(uniqueName);
-		} else {
-			return null;
-		}
-	}
+  public void getMemberChildren(List<RolapMember> parentMembers,
+    List<RolapMember> children) {
+    // there are no children
+  }
+
+  public RolapMember lookupMember(List<Id.Segment> uniqueNameParts,
+    boolean failIfNotFound) {
+    String uniqueName = Util.implode(uniqueNameParts);
+    for (RolapMember member : members) {
+      if (member.getUniqueName().equals(uniqueName)) {
+        return member;
+      }
+    }
+    if (failIfNotFound) {
+      throw MondrianResource.instance().MdxCantFindMember.ex(uniqueName);
+    } else {
+      return null;
+    }
+  }
 }
 
 // End ArrayMemberSource.java

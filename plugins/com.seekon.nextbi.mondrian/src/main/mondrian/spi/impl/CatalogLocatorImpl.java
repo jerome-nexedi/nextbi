@@ -21,11 +21,11 @@ import mondrian.spi.CatalogLocator;
  * @since Dec 22, 2005
  */
 public class CatalogLocatorImpl implements CatalogLocator {
-	public static final CatalogLocator INSTANCE = new CatalogLocatorImpl();
+  public static final CatalogLocator INSTANCE = new CatalogLocatorImpl();
 
-	public String locate(String catalogPath) {
-		return catalogPath;
-	}
+  public String locate(String catalogPath) {
+    return catalogPath;
+  }
 }
 
 // End CatalogLocatorImpl.java

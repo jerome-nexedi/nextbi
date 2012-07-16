@@ -24,15 +24,15 @@ import javax.naming.InitialContext;
  *          .java#1 $
  */
 public class JndiDataSourceResolver implements DataSourceResolver {
-	/**
-	 * Public constructor, required for plugin instantiation.
-	 */
-	public JndiDataSourceResolver() {
-	}
+  /**
+   * Public constructor, required for plugin instantiation.
+   */
+  public JndiDataSourceResolver() {
+  }
 
-	public DataSource lookup(String dataSourceName) throws NamingException {
-		return (DataSource) new InitialContext().lookup(dataSourceName);
-	}
+  public DataSource lookup(String dataSourceName) throws NamingException {
+    return (DataSource) new InitialContext().lookup(dataSourceName);
+  }
 }
 
 // End JndiDataSourceResolver.java

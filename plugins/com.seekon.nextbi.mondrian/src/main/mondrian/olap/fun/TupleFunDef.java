@@ -32,115 +32,115 @@ import java.util.List;
  *          $
  */
 public class TupleFunDef extends FunDefBase {
-	private final int[] argTypes;
-	static final ResolverImpl Resolver = new ResolverImpl();
+  private final int[] argTypes;
 
-	private TupleFunDef(int[] argTypes) {
-		super(
-				"()",
-				"(<Member> [, <Member>]...)",
-				"Parenthesis operator constructs a tuple.  If there is only one member, the expression is equivalent to the member expression.",
-				Syntax.Parentheses, Category.Tuple, argTypes);
-		this.argTypes = argTypes;
-	}
+  static final ResolverImpl Resolver = new ResolverImpl();
 
-	public int getReturnCategory() {
-		return Category.Tuple;
-	}
+  private TupleFunDef(int[] argTypes) {
+    super(
+      "()",
+      "(<Member> [, <Member>]...)",
+      "Parenthesis operator constructs a tuple.  If there is only one member, the expression is equivalent to the member expression.",
+      Syntax.Parentheses, Category.Tuple, argTypes);
+    this.argTypes = argTypes;
+  }
 
-	public int[] getParameterCategories() {
-		return argTypes;
-	}
+  public int getReturnCategory() {
+    return Category.Tuple;
+  }
 
-	public void unparse(Exp[] args, PrintWriter pw) {
-		ExpBase.unparseList(pw, args, "(", ", ", ")");
-	}
+  public int[] getParameterCategories() {
+    return argTypes;
+  }
 
-	public Type getResultType(Validator validator, Exp[] args) {
-		// _Tuple(<Member1>[,<MemberI>]...), which is written
-		// (<Member1>[,<MemberI>]...), has type [Hie1] x ... x [HieN].
-		//
-		// If there is only one member, it merely represents a parenthesized
-		// expression, whose Hierarchy is that of the member.
-		if (args.length == 1) {
-			return TypeUtil.toMemberType(args[0].getType());
-		} else {
-			MemberType[] types = new MemberType[args.length];
-			for (int i = 0; i < args.length; i++) {
-				Exp arg = args[i];
-				types[i] = TypeUtil.toMemberType(arg.getType());
-			}
-			TupleType.checkHierarchies(types);
-			return new TupleType(types);
-		}
-	}
+  public void unparse(Exp[] args, PrintWriter pw) {
+    ExpBase.unparseList(pw, args, "(", ", ", ")");
+  }
 
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
-		final Exp[] args = call.getArgs();
-		final MemberCalc[] memberCalcs = new MemberCalc[args.length];
-		for (int i = 0; i < args.length; i++) {
-			memberCalcs[i] = compiler.compileMember(args[i]);
-		}
-		return new CalcImpl(call, memberCalcs);
-	}
+  public Type getResultType(Validator validator, Exp[] args) {
+    // _Tuple(<Member1>[,<MemberI>]...), which is written
+    // (<Member1>[,<MemberI>]...), has type [Hie1] x ... x [HieN].
+    //
+    // If there is only one member, it merely represents a parenthesized
+    // expression, whose Hierarchy is that of the member.
+    if (args.length == 1) {
+      return TypeUtil.toMemberType(args[0].getType());
+    } else {
+      MemberType[] types = new MemberType[args.length];
+      for (int i = 0; i < args.length; i++) {
+        Exp arg = args[i];
+        types[i] = TypeUtil.toMemberType(arg.getType());
+      }
+      TupleType.checkHierarchies(types);
+      return new TupleType(types);
+    }
+  }
 
-	public static class CalcImpl extends AbstractTupleCalc {
-		private final MemberCalc[] memberCalcs;
+  public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    final Exp[] args = call.getArgs();
+    final MemberCalc[] memberCalcs = new MemberCalc[args.length];
+    for (int i = 0; i < args.length; i++) {
+      memberCalcs[i] = compiler.compileMember(args[i]);
+    }
+    return new CalcImpl(call, memberCalcs);
+  }
 
-		public CalcImpl(ResolvedFunCall call, MemberCalc[] memberCalcs) {
-			super(call, memberCalcs);
-			this.memberCalcs = memberCalcs;
-		}
+  public static class CalcImpl extends AbstractTupleCalc {
+    private final MemberCalc[] memberCalcs;
 
-		public Member[] evaluateTuple(Evaluator evaluator) {
-			final Member[] members = new Member[memberCalcs.length];
-			for (int i = 0; i < members.length; i++) {
-				final Member member = members[i] = memberCalcs[i]
-						.evaluateMember(evaluator);
-				if (member == null || member.isNull()) {
-					return null;
-				}
-			}
-			return members;
-		}
+    public CalcImpl(ResolvedFunCall call, MemberCalc[] memberCalcs) {
+      super(call, memberCalcs);
+      this.memberCalcs = memberCalcs;
+    }
 
-		public MemberCalc[] getMemberCalcs() {
-			return memberCalcs;
-		}
-	}
+    public Member[] evaluateTuple(Evaluator evaluator) {
+      final Member[] members = new Member[memberCalcs.length];
+      for (int i = 0; i < members.length; i++) {
+        final Member member = members[i] = memberCalcs[i].evaluateMember(evaluator);
+        if (member == null || member.isNull()) {
+          return null;
+        }
+      }
+      return members;
+    }
 
-	private static class ResolverImpl extends ResolverBase {
-		public ResolverImpl() {
-			super("()", null, null, Syntax.Parentheses);
-		}
+    public MemberCalc[] getMemberCalcs() {
+      return memberCalcs;
+    }
+  }
 
-		public FunDef resolve(Exp[] args, Validator validator,
-				List<Conversion> conversions) {
-			// Compare with TupleFunDef.getReturnCategory(). For example,
-			// ([Gender].members) is a set,
-			// ([Gender].[M]) is a member,
-			// (1 + 2) is a numeric,
-			// but
-			// ([Gender].[M], [Marital Status].[S]) is a tuple.
-			if (args.length == 1) {
-				return new ParenthesesFunDef(args[0].getCategory());
-			} else {
-				final int[] argTypes = new int[args.length];
-				for (int i = 0; i < args.length; i++) {
-					// Arg must be a member:
-					// OK: ([Gender].[S], [Time].[1997]) (member, member)
-					// OK: ([Gender], [Time]) (dimension, dimension)
-					// Not OK:
-					// ([Gender].[S], [Store].[Store City]) (member, level)
-					if (!validator.canConvert(i, args[i], Category.Member, conversions)) {
-						return null;
-					}
-					argTypes[i] = Category.Member;
-				}
-				return new TupleFunDef(argTypes);
-			}
-		}
-	}
+  private static class ResolverImpl extends ResolverBase {
+    public ResolverImpl() {
+      super("()", null, null, Syntax.Parentheses);
+    }
+
+    public FunDef resolve(Exp[] args, Validator validator,
+      List<Conversion> conversions) {
+      // Compare with TupleFunDef.getReturnCategory(). For example,
+      // ([Gender].members) is a set,
+      // ([Gender].[M]) is a member,
+      // (1 + 2) is a numeric,
+      // but
+      // ([Gender].[M], [Marital Status].[S]) is a tuple.
+      if (args.length == 1) {
+        return new ParenthesesFunDef(args[0].getCategory());
+      } else {
+        final int[] argTypes = new int[args.length];
+        for (int i = 0; i < args.length; i++) {
+          // Arg must be a member:
+          // OK: ([Gender].[S], [Time].[1997]) (member, member)
+          // OK: ([Gender], [Time]) (dimension, dimension)
+          // Not OK:
+          // ([Gender].[S], [Store].[Store City]) (member, level)
+          if (!validator.canConvert(i, args[i], Category.Member, conversions)) {
+            return null;
+          }
+          argTypes[i] = Category.Member;
+        }
+        return new TupleFunDef(argTypes);
+      }
+    }
+  }
 }
 
 // End TupleFunDef.java

@@ -23,43 +23,43 @@ import java.sql.*;
  */
 public class DerbyDialect extends JdbcDialectImpl {
 
-	public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
-			DerbyDialect.class, DatabaseProduct.DERBY);
+  public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
+    DerbyDialect.class, DatabaseProduct.DERBY);
 
-	/**
-	 * Creates a DerbyDialect.
-	 * 
-	 * @param connection
-	 *          Connection
-	 */
-	public DerbyDialect(Connection connection) throws SQLException {
-		super(connection);
-	}
+  /**
+   * Creates a DerbyDialect.
+   * 
+   * @param connection
+   *          Connection
+   */
+  public DerbyDialect(Connection connection) throws SQLException {
+    super(connection);
+  }
 
-	protected void quoteDateLiteral(StringBuilder buf, String value, Date date) {
-		// Derby accepts DATE('2008-01-23') but not SQL:2003 format.
-		buf.append("DATE(");
-		Util.singleQuoteString(value, buf);
-		buf.append(")");
-	}
+  protected void quoteDateLiteral(StringBuilder buf, String value, Date date) {
+    // Derby accepts DATE('2008-01-23') but not SQL:2003 format.
+    buf.append("DATE(");
+    Util.singleQuoteString(value, buf);
+    buf.append(")");
+  }
 
-	public boolean requiresAliasForFromQuery() {
-		return true;
-	}
+  public boolean requiresAliasForFromQuery() {
+    return true;
+  }
 
-	public boolean allowsMultipleCountDistinct() {
-		// Derby allows at most one distinct-count per query.
-		return false;
-	}
+  public boolean allowsMultipleCountDistinct() {
+    // Derby allows at most one distinct-count per query.
+    return false;
+  }
 
-	public String generateInline(List<String> columnNames,
-			List<String> columnTypes, List<String[]> valueList) {
-		return generateInlineForAnsi("t", columnNames, columnTypes, valueList, true);
-	}
+  public String generateInline(List<String> columnNames, List<String> columnTypes,
+    List<String[]> valueList) {
+    return generateInlineForAnsi("t", columnNames, columnTypes, valueList, true);
+  }
 
-	public boolean supportsGroupByExpressions() {
-		return false;
-	}
+  public boolean supportsGroupByExpressions() {
+    return false;
+  }
 }
 
 // End DerbyDialect.java

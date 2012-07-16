@@ -23,62 +23,62 @@ package mondrian.olap;
  * @version $Id: //open/mondrian/src/main/mondrian/olap/DelegatingRole.java#8 $
  */
 public class DelegatingRole implements Role {
-	protected final Role role;
+  protected final Role role;
 
-	/**
-	 * Creates a DelegatingRole.
-	 * 
-	 * @param role
-	 *          Underlying role
-	 */
-	public DelegatingRole(Role role) {
-		assert role != null;
-		this.role = role;
-	}
+  /**
+   * Creates a DelegatingRole.
+   * 
+   * @param role
+   *          Underlying role
+   */
+  public DelegatingRole(Role role) {
+    assert role != null;
+    this.role = role;
+  }
 
-	public Access getAccess(Schema schema) {
-		return role.getAccess(schema);
-	}
+  public Access getAccess(Schema schema) {
+    return role.getAccess(schema);
+  }
 
-	public Access getAccess(Cube cube) {
-		return role.getAccess(cube);
-	}
+  public Access getAccess(Cube cube) {
+    return role.getAccess(cube);
+  }
 
-	public Access getAccess(Dimension dimension) {
-		return role.getAccess(dimension);
-	}
+  public Access getAccess(Dimension dimension) {
+    return role.getAccess(dimension);
+  }
 
-	public Access getAccess(Hierarchy hierarchy) {
-		return role.getAccess(hierarchy);
-	}
+  public Access getAccess(Hierarchy hierarchy) {
+    return role.getAccess(hierarchy);
+  }
 
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * <p>
-	 * This implementation returns the same access as the underlying role. Derived
-	 * class may choose to refine access by creating a subclass of
-	 * {@link mondrian.olap.RoleImpl.DelegatingHierarchyAccess}.
-	 */
-	public HierarchyAccess getAccessDetails(Hierarchy hierarchy) {
-		return role.getAccessDetails(hierarchy);
-	}
+  /**
+   * {@inheritDoc}
+   * 
+   * <p>
+   * This implementation returns the same access as the underlying role. Derived
+   * class may choose to refine access by creating a subclass of
+   * {@link mondrian.olap.RoleImpl.DelegatingHierarchyAccess}.
+   */
+  public HierarchyAccess getAccessDetails(Hierarchy hierarchy) {
+    return role.getAccessDetails(hierarchy);
+  }
 
-	public Access getAccess(Level level) {
-		return role.getAccess(level);
-	}
+  public Access getAccess(Level level) {
+    return role.getAccess(level);
+  }
 
-	public Access getAccess(Member member) {
-		return role.getAccess(member);
-	}
+  public Access getAccess(Member member) {
+    return role.getAccess(member);
+  }
 
-	public Access getAccess(NamedSet set) {
-		return role.getAccess(set);
-	}
+  public Access getAccess(NamedSet set) {
+    return role.getAccess(set);
+  }
 
-	public boolean canAccess(OlapElement olapElement) {
-		return role.canAccess(olapElement);
-	}
+  public boolean canAccess(OlapElement olapElement) {
+    return role.canAccess(olapElement);
+  }
 }
 
 // End DelegatingRole.java

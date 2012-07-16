@@ -6,7 +6,7 @@
 // Copyright (C) 2010-2011 Julian Hyde
 // All Rights Reserved.
 // You must accept the terms of that agreement to use this software.
-*/
+ */
 package mondrian.udf;
 
 import mondrian.test.FoodMartTestCase;
@@ -14,39 +14,36 @@ import mondrian.test.TestContext;
 
 /**
  * Tests the CurrentDateMemberUdf class.
- *
+ * 
  * @author Luc Boudreau
- * @version $Id: //open/mondrian/testsrc/main/mondrian/udf/CurrentDateMemberUdfTest.java#2 $
+ * @version $Id:
+ *          //open/mondrian/testsrc/main/mondrian/udf/CurrentDateMemberUdfTest
+ *          .java#2 $
  */
 public class CurrentDateMemberUdfTest extends FoodMartTestCase {
-    public CurrentDateMemberUdfTest() {
-        super();
-    }
-    public CurrentDateMemberUdfTest(String name) {
-        super(name);
-    }
+  public CurrentDateMemberUdfTest() {
+    super();
+  }
 
-    public void testCurrentDateMemberUdf() {
-        TestContext context = TestContext.instance().create(
-            null,
-            null,
-            null,
-            null,
-            "<UserDefinedFunction name=\"MockCurrentDateMember\" "
-            + "className=\"mondrian.udf.MockCurrentDateMember\" /> ",
-            null);
-        context.assertQueryReturns(
-            "SELECT NON EMPTY {[Measures].[Org Salary]} ON COLUMNS, "
-            + "NON EMPTY {MockCurrentDateMember([Time].[Time], \"[yyyy]\")} ON ROWS "
-            + "FROM [HR] ",
-            "Axis #0:\n"
-            + "{}\n"
-            + "Axis #1:\n"
-            + "{[Measures].[Org Salary]}\n"
-            + "Axis #2:\n"
-            + "{[Time].[1997]}\n"
-            + "Row #0: $39,431.67\n");
-    }
+  public CurrentDateMemberUdfTest(String name) {
+    super(name);
+  }
+
+  public void testCurrentDateMemberUdf() {
+    TestContext context = TestContext.instance().create(
+      null,
+      null,
+      null,
+      null,
+      "<UserDefinedFunction name=\"MockCurrentDateMember\" "
+        + "className=\"mondrian.udf.MockCurrentDateMember\" /> ", null);
+    context.assertQueryReturns(
+      "SELECT NON EMPTY {[Measures].[Org Salary]} ON COLUMNS, "
+        + "NON EMPTY {MockCurrentDateMember([Time].[Time], \"[yyyy]\")} ON ROWS "
+        + "FROM [HR] ", "Axis #0:\n" + "{}\n" + "Axis #1:\n"
+        + "{[Measures].[Org Salary]}\n" + "Axis #2:\n" + "{[Time].[1997]}\n"
+        + "Row #0: $39,431.67\n");
+  }
 }
 
 // End CurrentDateMemberUdfTest.java

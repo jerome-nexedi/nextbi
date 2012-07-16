@@ -66,118 +66,118 @@ import java.util.*;
  * @since May 22, 2007
  */
 public class MondrianOlap4jDriver implements Driver {
-	protected final Factory factory;
+  protected final Factory factory;
 
-	static {
-		try {
-			register();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+  static {
+    try {
+      register();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
 
-	/**
-	 * Creates a MondrianOlap4jDriver.
-	 */
-	public MondrianOlap4jDriver() {
-		this.factory = createFactory();
-	}
+  /**
+   * Creates a MondrianOlap4jDriver.
+   */
+  public MondrianOlap4jDriver() {
+    this.factory = createFactory();
+  }
 
-	protected Factory createFactory() {
-		String factoryClassName;
-		try {
-			Class.forName("java.sql.Wrapper");
-			factoryClassName = "mondrian.olap4j.FactoryJdbc4Impl";
-		} catch (ClassNotFoundException e) {
-			// java.sql.Wrapper is not present. This means we are running JDBC
-			// 3.0 or earlier (probably JDK 1.5). Load the JDBC 3.0 factory
-			factoryClassName = "mondrian.olap4j.FactoryJdbc3Impl";
-		}
-		try {
-			final Class<?> clazz = Class.forName(factoryClassName);
-			return (Factory) clazz.newInstance();
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		} catch (InstantiationException e) {
-			throw new RuntimeException(e);
-		}
-	}
+  protected Factory createFactory() {
+    String factoryClassName;
+    try {
+      Class.forName("java.sql.Wrapper");
+      factoryClassName = "mondrian.olap4j.FactoryJdbc4Impl";
+    } catch (ClassNotFoundException e) {
+      // java.sql.Wrapper is not present. This means we are running JDBC
+      // 3.0 or earlier (probably JDK 1.5). Load the JDBC 3.0 factory
+      factoryClassName = "mondrian.olap4j.FactoryJdbc3Impl";
+    }
+    try {
+      final Class<?> clazz = Class.forName(factoryClassName);
+      return (Factory) clazz.newInstance();
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    } catch (InstantiationException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	/**
-	 * Registers an instance of MondrianOlap4jDriver.
-	 * 
-	 * <p>
-	 * Called implicitly on class load, and implements the traditional
-	 * 'Class.forName' way of registering JDBC drivers.
-	 * 
-	 * @throws SQLException
-	 *           on error
-	 */
-	private static void register() throws SQLException {
-		DriverManager.registerDriver(new MondrianOlap4jDriver());
-	}
+  /**
+   * Registers an instance of MondrianOlap4jDriver.
+   * 
+   * <p>
+   * Called implicitly on class load, and implements the traditional
+   * 'Class.forName' way of registering JDBC drivers.
+   * 
+   * @throws SQLException
+   *           on error
+   */
+  private static void register() throws SQLException {
+    DriverManager.registerDriver(new MondrianOlap4jDriver());
+  }
 
-	public Connection connect(String url, Properties info) throws SQLException {
-		if (!MondrianOlap4jConnection.acceptsURL(url)) {
-			return null;
-		}
-		return factory.newConnection(this, url, info);
-	}
+  public Connection connect(String url, Properties info) throws SQLException {
+    if (!MondrianOlap4jConnection.acceptsURL(url)) {
+      return null;
+    }
+    return factory.newConnection(this, url, info);
+  }
 
-	public boolean acceptsURL(String url) throws SQLException {
-		return MondrianOlap4jConnection.acceptsURL(url);
-	}
+  public boolean acceptsURL(String url) throws SQLException {
+    return MondrianOlap4jConnection.acceptsURL(url);
+  }
 
-	public DriverPropertyInfo[] getPropertyInfo(String url, Properties info)
-			throws SQLException {
-		List<DriverPropertyInfo> list = new ArrayList<DriverPropertyInfo>();
+  public DriverPropertyInfo[] getPropertyInfo(String url, Properties info)
+    throws SQLException {
+    List<DriverPropertyInfo> list = new ArrayList<DriverPropertyInfo>();
 
-		// First, add the contents of info
-		for (Map.Entry<Object, Object> entry : info.entrySet()) {
-			list.add(new DriverPropertyInfo((String) entry.getKey(), (String) entry
-					.getValue()));
-		}
-		// Next, add property defns not mentioned in info
-		for (RolapConnectionProperties p : RolapConnectionProperties.values()) {
-			if (info.containsKey(p.name())) {
-				continue;
-			}
-			list.add(new DriverPropertyInfo(p.name(), null));
-		}
-		return list.toArray(new DriverPropertyInfo[list.size()]);
-	}
+    // First, add the contents of info
+    for (Map.Entry<Object, Object> entry : info.entrySet()) {
+      list.add(new DriverPropertyInfo((String) entry.getKey(), (String) entry
+        .getValue()));
+    }
+    // Next, add property defns not mentioned in info
+    for (RolapConnectionProperties p : RolapConnectionProperties.values()) {
+      if (info.containsKey(p.name())) {
+        continue;
+      }
+      list.add(new DriverPropertyInfo(p.name(), null));
+    }
+    return list.toArray(new DriverPropertyInfo[list.size()]);
+  }
 
-	/**
-	 * Returns the driver name. Not in the JDBC API.
-	 * 
-	 * @return Driver name
-	 */
-	String getName() {
-		return MondrianOlap4jDriverVersion.NAME;
-	}
+  /**
+   * Returns the driver name. Not in the JDBC API.
+   * 
+   * @return Driver name
+   */
+  String getName() {
+    return MondrianOlap4jDriverVersion.NAME;
+  }
 
-	/**
-	 * Returns the driver version. Not in the JDBC API.
-	 * 
-	 * @return Driver version
-	 */
-	String getVersion() {
-		return MondrianOlap4jDriverVersion.VERSION;
-	}
+  /**
+   * Returns the driver version. Not in the JDBC API.
+   * 
+   * @return Driver version
+   */
+  String getVersion() {
+    return MondrianOlap4jDriverVersion.VERSION;
+  }
 
-	public int getMajorVersion() {
-		return MondrianOlap4jDriverVersion.MAJOR_VERSION;
-	}
+  public int getMajorVersion() {
+    return MondrianOlap4jDriverVersion.MAJOR_VERSION;
+  }
 
-	public int getMinorVersion() {
-		return MondrianOlap4jDriverVersion.MINOR_VERSION;
-	}
+  public int getMinorVersion() {
+    return MondrianOlap4jDriverVersion.MINOR_VERSION;
+  }
 
-	public boolean jdbcCompliant() {
-		return false;
-	}
+  public boolean jdbcCompliant() {
+    return false;
+  }
 }
 
 // End MondrianOlap4jDriver.java

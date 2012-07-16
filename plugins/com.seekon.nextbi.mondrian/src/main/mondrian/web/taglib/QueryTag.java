@@ -41,56 +41,56 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 public class QueryTag extends BodyTagSupport {
 
-	public QueryTag() {
-	}
+  public QueryTag() {
+  }
 
-	public int doAfterBody() throws JspException {
-		try {
-			ApplResources ar = ApplResources.getInstance(pageContext
-					.getServletContext());
-			ResultCache rc = ResultCache.getInstance(pageContext.getSession(),
-					pageContext.getServletContext(), name);
-			// if this is the first call, we have to parse the mdx query
-			if (!resultCache || rc.getQuery() == null) {
-				String mdx = getBodyContent().getString();
-				rc.parse(mdx);
-			}
-			return SKIP_BODY;
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new JspException(e);
-		}
-	}
+  public int doAfterBody() throws JspException {
+    try {
+      ApplResources ar = ApplResources.getInstance(pageContext.getServletContext());
+      ResultCache rc = ResultCache.getInstance(pageContext.getSession(), pageContext
+        .getServletContext(), name);
+      // if this is the first call, we have to parse the mdx query
+      if (!resultCache || rc.getQuery() == null) {
+        String mdx = getBodyContent().getString();
+        rc.parse(mdx);
+      }
+      return SKIP_BODY;
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new JspException(e);
+    }
+  }
 
-	/**
-	 * Sets string attribute <code>name</code>, which identifies this query within
-	 * its page. The {@link TransformTag#setQuery &lt;transform query&gt;}
-	 * attribute uses this.
-	 */
-	public void setName(String newName) {
-		name = newName;
-	}
+  /**
+   * Sets string attribute <code>name</code>, which identifies this query within
+   * its page. The {@link TransformTag#setQuery &lt;transform query&gt;}
+   * attribute uses this.
+   */
+  public void setName(String newName) {
+    name = newName;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	/**
-	 * Sets boolean attribute <code>resultCache</code>; if true, the query is
-	 * parsed, executed, and converted to an XML document at most once. This
-	 * improves performance and consistency, but the results may become out of
-	 * date. We also need a way to prevent the cache using too much memory.
-	 */
-	public void setResultCache(boolean newResultCache) {
-		resultCache = newResultCache;
-	}
+  /**
+   * Sets boolean attribute <code>resultCache</code>; if true, the query is
+   * parsed, executed, and converted to an XML document at most once. This
+   * improves performance and consistency, but the results may become out of
+   * date. We also need a way to prevent the cache using too much memory.
+   */
+  public void setResultCache(boolean newResultCache) {
+    resultCache = newResultCache;
+  }
 
-	public boolean isResultCache() {
-		return resultCache;
-	}
+  public boolean isResultCache() {
+    return resultCache;
+  }
 
-	private String name;
-	private boolean resultCache;
+  private String name;
+
+  private boolean resultCache;
 }
 
 // End QueryTag.java

@@ -18,8 +18,8 @@ import org.eigenbase.resgen.*;
  */
 
 public class MondrianResource_de_DE extends MondrianResource {
-	public MondrianResource_de_DE() throws IOException {
-	}
+  public MondrianResource_de_DE() throws IOException {
+  }
 }
 
 // End MondrianResource_de_DE.java

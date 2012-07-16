@@ -23,16 +23,16 @@ import mondrian.olap.Evaluator;
  * @since Sep 27, 2005
  */
 public interface IntegerCalc extends Calc {
-	/**
-	 * Evaluates this expression to yield an <code>int</code> value. If the result
-	 * is null, returns the special {@link mondrian.olap.fun.FunUtil#IntegerNull}
-	 * value.
-	 * 
-	 * @param evaluator
-	 *          Evaluation context
-	 * @return evaluation result
-	 */
-	int evaluateInteger(Evaluator evaluator);
+  /**
+   * Evaluates this expression to yield an <code>int</code> value. If the result
+   * is null, returns the special {@link mondrian.olap.fun.FunUtil#IntegerNull}
+   * value.
+   * 
+   * @param evaluator
+   *          Evaluation context
+   * @return evaluation result
+   */
+  int evaluateInteger(Evaluator evaluator);
 }
 
 // End IntegerCalc.java

@@ -19,15 +19,15 @@ package mondrian.olap;
  *          $
  */
 public class QueryTimeoutException extends ResultLimitExceededException {
-	/**
-	 * Creates a QueryTimeoutException.
-	 * 
-	 * @param message
-	 *          Localized error message
-	 */
-	public QueryTimeoutException(String message) {
-		super(message);
-	}
+  /**
+   * Creates a QueryTimeoutException.
+   * 
+   * @param message
+   *          Localized error message
+   */
+  public QueryTimeoutException(String message) {
+    super(message);
+  }
 }
 
 // End QueryTimeoutException.java

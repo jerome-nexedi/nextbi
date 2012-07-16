@@ -30,197 +30,196 @@ import java.util.*;
  */
 public class MemberCacheHelper implements MemberCache {
 
-	private final SqlConstraintFactory sqlConstraintFactory = SqlConstraintFactory
-			.instance();
+  private final SqlConstraintFactory sqlConstraintFactory = SqlConstraintFactory
+    .instance();
 
-	/** maps a parent member to a list of its children */
-	final SmartMemberListCache<RolapMember, List<RolapMember>> mapMemberToChildren;
+  /** maps a parent member to a list of its children */
+  final SmartMemberListCache<RolapMember, List<RolapMember>> mapMemberToChildren;
 
-	/** a cache for all members to ensure uniqueness */
-	SmartCache<Object, RolapMember> mapKeyToMember;
-	RolapHierarchy rolapHierarchy;
-	DataSourceChangeListener changeListener;
+  /** a cache for all members to ensure uniqueness */
+  SmartCache<Object, RolapMember> mapKeyToMember;
 
-	/** maps a level to its members */
-	final SmartMemberListCache<RolapLevel, List<RolapMember>> mapLevelToMembers;
+  RolapHierarchy rolapHierarchy;
 
-	/**
-	 * Creates a MemberCacheHelper.
-	 * 
-	 * @param rolapHierarchy
-	 *          Hierarchy
-	 */
-	public MemberCacheHelper(RolapHierarchy rolapHierarchy) {
-		this.rolapHierarchy = rolapHierarchy;
-		this.mapLevelToMembers = new SmartMemberListCache<RolapLevel, List<RolapMember>>();
-		this.mapKeyToMember = new SoftSmartCache<Object, RolapMember>();
-		this.mapMemberToChildren = new SmartMemberListCache<RolapMember, List<RolapMember>>();
+  DataSourceChangeListener changeListener;
 
-		if (rolapHierarchy != null) {
-			changeListener = rolapHierarchy.getRolapSchema()
-					.getDataSourceChangeListener();
-		} else {
-			changeListener = null;
-		}
-	}
+  /** maps a level to its members */
+  final SmartMemberListCache<RolapLevel, List<RolapMember>> mapLevelToMembers;
 
-	// implement MemberCache
-	// synchronization: Must synchronize, because uses mapKeyToMember
-	public synchronized RolapMember getMember(Object key,
-			boolean mustCheckCacheStatus) {
-		if (mustCheckCacheStatus) {
-			checkCacheStatus();
-		}
-		return mapKeyToMember.get(key);
-	}
+  /**
+   * Creates a MemberCacheHelper.
+   * 
+   * @param rolapHierarchy
+   *          Hierarchy
+   */
+  public MemberCacheHelper(RolapHierarchy rolapHierarchy) {
+    this.rolapHierarchy = rolapHierarchy;
+    this.mapLevelToMembers = new SmartMemberListCache<RolapLevel, List<RolapMember>>();
+    this.mapKeyToMember = new SoftSmartCache<Object, RolapMember>();
+    this.mapMemberToChildren = new SmartMemberListCache<RolapMember, List<RolapMember>>();
 
-	// implement MemberCache
-	// synchronization: Must synchronize, because modifies mapKeyToMember
-	public synchronized Object putMember(Object key, RolapMember value) {
-		return mapKeyToMember.put(key, value);
-	}
+    if (rolapHierarchy != null) {
+      changeListener = rolapHierarchy.getRolapSchema().getDataSourceChangeListener();
+    } else {
+      changeListener = null;
+    }
+  }
 
-	// implement MemberCache
-	public Object makeKey(RolapMember parent, Object key) {
-		return new MemberKey(parent, key);
-	}
+  // implement MemberCache
+  // synchronization: Must synchronize, because uses mapKeyToMember
+  public synchronized RolapMember getMember(Object key, boolean mustCheckCacheStatus) {
+    if (mustCheckCacheStatus) {
+      checkCacheStatus();
+    }
+    return mapKeyToMember.get(key);
+  }
 
-	// implement MemberCache
-	// synchronization: Must synchronize, because modifies mapKeyToMember
-	public synchronized RolapMember getMember(Object key) {
-		return getMember(key, true);
-	}
+  // implement MemberCache
+  // synchronization: Must synchronize, because modifies mapKeyToMember
+  public synchronized Object putMember(Object key, RolapMember value) {
+    return mapKeyToMember.put(key, value);
+  }
 
-	public synchronized void checkCacheStatus() {
-		if (changeListener != null) {
-			if (changeListener.isHierarchyChanged(rolapHierarchy)) {
-				flushCache();
-			}
-		}
-	}
+  // implement MemberCache
+  public Object makeKey(RolapMember parent, Object key) {
+    return new MemberKey(parent, key);
+  }
 
-	/**
-	 * Deprecated in favor of
-	 * {@link #putChildren(RolapLevel, TupleConstraint, List)}
-	 */
-	// synchronization: Must synchronize, because modifies mapKeyToMember
-	@Deprecated
-	public synchronized void putLevelMembersInCache(RolapLevel level,
-			TupleConstraint constraint, List<RolapMember> members) {
-		putChildren(level, constraint, members);
-	}
+  // implement MemberCache
+  // synchronization: Must synchronize, because modifies mapKeyToMember
+  public synchronized RolapMember getMember(Object key) {
+    return getMember(key, true);
+  }
 
-	public synchronized void putChildren(RolapLevel level,
-			TupleConstraint constraint, List<RolapMember> members) {
-		mapLevelToMembers.put(level, constraint, members);
-	}
+  public synchronized void checkCacheStatus() {
+    if (changeListener != null) {
+      if (changeListener.isHierarchyChanged(rolapHierarchy)) {
+        flushCache();
+      }
+    }
+  }
 
-	public synchronized List<RolapMember> getChildrenFromCache(
-			RolapMember member, MemberChildrenConstraint constraint) {
-		if (constraint == null) {
-			constraint = sqlConstraintFactory.getMemberChildrenConstraint(null);
-		}
-		return mapMemberToChildren.get(member, constraint);
-	}
+  /**
+   * Deprecated in favor of
+   * {@link #putChildren(RolapLevel, TupleConstraint, List)}
+   */
+  // synchronization: Must synchronize, because modifies mapKeyToMember
+  @Deprecated
+  public synchronized void putLevelMembersInCache(RolapLevel level,
+    TupleConstraint constraint, List<RolapMember> members) {
+    putChildren(level, constraint, members);
+  }
 
-	public synchronized void putChildren(RolapMember member,
-			MemberChildrenConstraint constraint, List<RolapMember> children) {
-		if (constraint == null) {
-			constraint = sqlConstraintFactory.getMemberChildrenConstraint(null);
-		}
-		mapMemberToChildren.put(member, constraint, children);
-	}
+  public synchronized void putChildren(RolapLevel level, TupleConstraint constraint,
+    List<RolapMember> members) {
+    mapLevelToMembers.put(level, constraint, members);
+  }
 
-	public synchronized List<RolapMember> getLevelMembersFromCache(
-			RolapLevel level, TupleConstraint constraint) {
-		if (constraint == null) {
-			constraint = sqlConstraintFactory.getLevelMembersConstraint(null);
-		}
-		return mapLevelToMembers.get(level, constraint);
-	}
+  public synchronized List<RolapMember> getChildrenFromCache(RolapMember member,
+    MemberChildrenConstraint constraint) {
+    if (constraint == null) {
+      constraint = sqlConstraintFactory.getMemberChildrenConstraint(null);
+    }
+    return mapMemberToChildren.get(member, constraint);
+  }
 
-	public synchronized void flushCache() {
-		mapMemberToChildren.clear();
-		mapKeyToMember.clear();
-		mapLevelToMembers.clear();
-	}
+  public synchronized void putChildren(RolapMember member,
+    MemberChildrenConstraint constraint, List<RolapMember> children) {
+    if (constraint == null) {
+      constraint = sqlConstraintFactory.getMemberChildrenConstraint(null);
+    }
+    mapMemberToChildren.put(member, constraint, children);
+  }
 
-	public DataSourceChangeListener getChangeListener() {
-		return changeListener;
-	}
+  public synchronized List<RolapMember> getLevelMembersFromCache(RolapLevel level,
+    TupleConstraint constraint) {
+    if (constraint == null) {
+      constraint = sqlConstraintFactory.getLevelMembersConstraint(null);
+    }
+    return mapLevelToMembers.get(level, constraint);
+  }
 
-	public void setChangeListener(DataSourceChangeListener listener) {
-		changeListener = listener;
-	}
+  public synchronized void flushCache() {
+    mapMemberToChildren.clear();
+    mapKeyToMember.clear();
+    mapLevelToMembers.clear();
+  }
 
-	public boolean isMutable() {
-		return true;
-	}
+  public DataSourceChangeListener getChangeListener() {
+    return changeListener;
+  }
 
-	public synchronized RolapMember removeMember(Object key) {
-		RolapMember member = getMember(key);
-		if (member == null) {
-			// not in cache
-			return null;
-		}
+  public void setChangeListener(DataSourceChangeListener listener) {
+    changeListener = listener;
+  }
 
-		// Drop member from the level-to-members map.
-		// Cache key is a (level, constraint) pair,
-		// cache value is a list of RolapMember.
-		// For each cache key whose level matches, remove from the list,
-		// regardless of the constraint.
-		RolapLevel level = member.getLevel();
-		for (Map.Entry<Pair<RolapLevel, Object>, List<RolapMember>> entry : mapLevelToMembers
-				.getCache()) {
-			if (entry.getKey().left.equals(level)) {
-				List<RolapMember> peers = entry.getValue();
-				boolean removedIt = peers.remove(member);
-				Util.discard(removedIt);
-			}
-		}
+  public boolean isMutable() {
+    return true;
+  }
 
-		// Drop member from the member-to-children map, wherever it occurs as
-		// a parent or as a child, regardless of the constraint.
-		RolapMember parent = member.getParentMember();
-		final Iterator<Map.Entry<Pair<RolapMember, Object>, List<RolapMember>>> iter = mapMemberToChildren
-				.getCache().iterator();
-		while (iter.hasNext()) {
-			Map.Entry<Pair<RolapMember, Object>, List<RolapMember>> entry = iter
-					.next();
-			final RolapMember member1 = entry.getKey().left;
-			final Object constraint = entry.getKey().right;
+  public synchronized RolapMember removeMember(Object key) {
+    RolapMember member = getMember(key);
+    if (member == null) {
+      // not in cache
+      return null;
+    }
 
-			// Cache key is (member's parent, constraint);
-			// cache value is a list of member's siblings;
-			// If constraint is trivial remove member from list of siblings;
-			// otherwise it's safer to nuke the cache entry
-			if (Util.equals(member1, parent)) {
-				if (constraint == DefaultMemberChildrenConstraint.instance()) {
-					List<RolapMember> siblings = entry.getValue();
-					boolean removedIt = siblings.remove(member);
-					Util.discard(removedIt);
-				} else {
-					iter.remove();
-				}
-			}
+    // Drop member from the level-to-members map.
+    // Cache key is a (level, constraint) pair,
+    // cache value is a list of RolapMember.
+    // For each cache key whose level matches, remove from the list,
+    // regardless of the constraint.
+    RolapLevel level = member.getLevel();
+    for (Map.Entry<Pair<RolapLevel, Object>, List<RolapMember>> entry : mapLevelToMembers
+      .getCache()) {
+      if (entry.getKey().left.equals(level)) {
+        List<RolapMember> peers = entry.getValue();
+        boolean removedIt = peers.remove(member);
+        Util.discard(removedIt);
+      }
+    }
 
-			// cache is (member, some constraint);
-			// cache value is list of member's children;
-			// remove cache entry
-			if (Util.equals(member1, member)) {
-				iter.remove();
-			}
-		}
+    // Drop member from the member-to-children map, wherever it occurs as
+    // a parent or as a child, regardless of the constraint.
+    RolapMember parent = member.getParentMember();
+    final Iterator<Map.Entry<Pair<RolapMember, Object>, List<RolapMember>>> iter = mapMemberToChildren
+      .getCache().iterator();
+    while (iter.hasNext()) {
+      Map.Entry<Pair<RolapMember, Object>, List<RolapMember>> entry = iter.next();
+      final RolapMember member1 = entry.getKey().left;
+      final Object constraint = entry.getKey().right;
 
-		// drop it from the lookup-cache
-		return mapKeyToMember.put(key, null);
-	}
+      // Cache key is (member's parent, constraint);
+      // cache value is a list of member's siblings;
+      // If constraint is trivial remove member from list of siblings;
+      // otherwise it's safer to nuke the cache entry
+      if (Util.equals(member1, parent)) {
+        if (constraint == DefaultMemberChildrenConstraint.instance()) {
+          List<RolapMember> siblings = entry.getValue();
+          boolean removedIt = siblings.remove(member);
+          Util.discard(removedIt);
+        } else {
+          iter.remove();
+        }
+      }
 
-	public synchronized RolapMember removeMemberAndDescendants(Object key) {
-		// Can use mapMemberToChildren recursively. No need to update inferior
-		// lists of children. Do need to update inferior lists of level-peers.
-		return null; // STUB
-	}
+      // cache is (member, some constraint);
+      // cache value is list of member's children;
+      // remove cache entry
+      if (Util.equals(member1, member)) {
+        iter.remove();
+      }
+    }
+
+    // drop it from the lookup-cache
+    return mapKeyToMember.put(key, null);
+  }
+
+  public synchronized RolapMember removeMemberAndDescendants(Object key) {
+    // Can use mapMemberToChildren recursively. No need to update inferior
+    // lists of children. Do need to update inferior lists of level-peers.
+    return null; // STUB
+  }
 
 }
 

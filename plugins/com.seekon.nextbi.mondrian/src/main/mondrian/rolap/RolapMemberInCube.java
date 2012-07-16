@@ -25,16 +25,16 @@ package mondrian.rolap;
  *          //open/mondrian/src/main/mondrian/rolap/RolapMemberInCube.java#1 $
  */
 public interface RolapMemberInCube extends RolapMember {
-	/**
-	 * Returns the cube this cube member belongs to.
-	 * 
-	 * <p>
-	 * This method is not in the {@link RolapMember} interface, because regular
-	 * members may be shared, and therefore do not belong to a specific cube.
-	 * 
-	 * @return Cube this cube member belongs to, never null
-	 */
-	RolapCube getCube();
+  /**
+   * Returns the cube this cube member belongs to.
+   * 
+   * <p>
+   * This method is not in the {@link RolapMember} interface, because regular
+   * members may be shared, and therefore do not belong to a specific cube.
+   * 
+   * @return Cube this cube member belongs to, never null
+   */
+  RolapCube getCube();
 }
 
 // End RolapMemberInCube.java

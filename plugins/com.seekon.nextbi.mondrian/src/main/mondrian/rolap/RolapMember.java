@@ -24,16 +24,16 @@ import mondrian.olap.*;
  * @version $Id: //open/mondrian/src/main/mondrian/rolap/RolapMember.java#98 $
  */
 public interface RolapMember extends Member, RolapCalculation {
-	Object getKey();
+  Object getKey();
 
-	RolapMember getParentMember();
+  RolapMember getParentMember();
 
-	RolapHierarchy getHierarchy();
+  RolapHierarchy getHierarchy();
 
-	RolapLevel getLevel();
+  RolapLevel getLevel();
 
-	/** @deprecated will be removed in mondrian-4.0 */
-	boolean isAllMember();
+  /** @deprecated will be removed in mondrian-4.0 */
+  boolean isAllMember();
 }
 
 // End RolapMember.java

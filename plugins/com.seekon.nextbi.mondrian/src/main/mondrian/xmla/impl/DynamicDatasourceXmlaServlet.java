@@ -21,14 +21,14 @@ import mondrian.server.RepositoryContentFinder;
  *          .java#9 $
  */
 public class DynamicDatasourceXmlaServlet extends MondrianXmlaServlet {
-	protected RepositoryContentFinder makeContentFinder(String dataSources) {
-		return new DynamicContentFinder(dataSources);
-	}
+  protected RepositoryContentFinder makeContentFinder(String dataSources) {
+    return new DynamicContentFinder(dataSources);
+  }
 
-	@Override
-	public void destroy() {
-		super.destroy();
-	}
+  @Override
+  public void destroy() {
+    super.destroy();
+  }
 }
 
 // End DynamicDatasourceXmlaServlet.java

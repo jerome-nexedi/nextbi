@@ -24,81 +24,82 @@ import org.apache.log4j.Logger;
  */
 class RolapProperty extends Property {
 
-	private static final Logger LOGGER = Logger.getLogger(RolapProperty.class);
+  private static final Logger LOGGER = Logger.getLogger(RolapProperty.class);
 
-	/** Array of RolapProperty of length 0. */
-	static final RolapProperty[] emptyArray = new RolapProperty[0];
+  /** Array of RolapProperty of length 0. */
+  static final RolapProperty[] emptyArray = new RolapProperty[0];
 
-	private final PropertyFormatter formatter;
-	private final String caption;
-	private final boolean dependsOnLevelValue;
+  private final PropertyFormatter formatter;
 
-	/** The column or expression which yields the property's value. */
-	private final MondrianDef.Expression exp;
+  private final String caption;
 
-	/**
-	 * Creates a RolapProperty.
-	 * 
-	 * @param name
-	 *          Name of property
-	 * @param type
-	 *          Datatype
-	 * @param exp
-	 *          Expression for property's value; often a literal
-	 * @param formatter
-	 *          A property formatter, or null
-	 * @param caption
-	 *          Caption
-	 * @param dependsOnLevelValue
-	 *          Whether the property is functionally dependent on the level with
-	 *          which it is associated
-	 * @param internal
-	 *          Whether property is internal
-	 */
-	RolapProperty(String name, Datatype type, MondrianDef.Expression exp,
-			PropertyFormatter formatter, String caption, Boolean dependsOnLevelValue,
-			boolean internal) {
-		super(name, type, -1, internal, false, false, null);
-		this.exp = exp;
-		this.caption = caption;
-		this.formatter = formatter;
-		this.dependsOnLevelValue = dependsOnLevelValue != null
-				&& dependsOnLevelValue;
-	}
+  private final boolean dependsOnLevelValue;
 
-	MondrianDef.Expression getExp() {
-		return exp;
-	}
+  /** The column or expression which yields the property's value. */
+  private final MondrianDef.Expression exp;
 
-	public PropertyFormatter getFormatter() {
-		return formatter;
-	}
+  /**
+   * Creates a RolapProperty.
+   * 
+   * @param name
+   *          Name of property
+   * @param type
+   *          Datatype
+   * @param exp
+   *          Expression for property's value; often a literal
+   * @param formatter
+   *          A property formatter, or null
+   * @param caption
+   *          Caption
+   * @param dependsOnLevelValue
+   *          Whether the property is functionally dependent on the level with
+   *          which it is associated
+   * @param internal
+   *          Whether property is internal
+   */
+  RolapProperty(String name, Datatype type, MondrianDef.Expression exp,
+    PropertyFormatter formatter, String caption, Boolean dependsOnLevelValue,
+    boolean internal) {
+    super(name, type, -1, internal, false, false, null);
+    this.exp = exp;
+    this.caption = caption;
+    this.formatter = formatter;
+    this.dependsOnLevelValue = dependsOnLevelValue != null && dependsOnLevelValue;
+  }
 
-	/**
-	 * @return Returns the caption.
-	 */
-	public String getCaption() {
-		if (caption == null) {
-			return getName();
-		}
-		return caption;
-	}
+  MondrianDef.Expression getExp() {
+    return exp;
+  }
 
-	/**
-	 * @return <p>
-	 *         Returns the dependsOnLevelValue setting (if unset, returns false).
-	 *         This indicates whether the property is functionally dependent on
-	 *         the level with which it is associated.
-	 *         </p>
-	 * 
-	 *         <p>
-	 *         If true, then the property column can be eliminated from the GROUP
-	 *         BY clause for queries on certain databases such as MySQL.
-	 *         </p>
-	 */
-	public boolean dependsOnLevelValue() {
-		return dependsOnLevelValue;
-	}
+  public PropertyFormatter getFormatter() {
+    return formatter;
+  }
+
+  /**
+   * @return Returns the caption.
+   */
+  public String getCaption() {
+    if (caption == null) {
+      return getName();
+    }
+    return caption;
+  }
+
+  /**
+   * @return <p>
+   *         Returns the dependsOnLevelValue setting (if unset, returns false).
+   *         This indicates whether the property is functionally dependent on
+   *         the level with which it is associated.
+   *         </p>
+   * 
+   *         <p>
+   *         If true, then the property column can be eliminated from the GROUP
+   *         BY clause for queries on certain databases such as MySQL.
+   *         </p>
+   */
+  public boolean dependsOnLevelValue() {
+    return dependsOnLevelValue;
+  }
 }
 
 // End RolapProperty.java

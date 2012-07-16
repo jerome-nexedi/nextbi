@@ -21,38 +21,38 @@ import java.io.PrintWriter;
  * @author jhyde
  */
 public abstract class QueryPart implements Walkable {
-	/**
-	 * Creates a QueryPart.
-	 */
-	QueryPart() {
-	}
+  /**
+   * Creates a QueryPart.
+   */
+  QueryPart() {
+  }
 
-	/**
-	 * Writes a string representation of this parse tree node to the given writer.
-	 * 
-	 * @param pw
-	 *          writer
-	 */
-	public void unparse(PrintWriter pw) {
-		pw.print(toString());
-	}
+  /**
+   * Writes a string representation of this parse tree node to the given writer.
+   * 
+   * @param pw
+   *          writer
+   */
+  public void unparse(PrintWriter pw) {
+    pw.print(toString());
+  }
 
-	// implement Walkable
-	public Object[] getChildren() {
-		// By default, a QueryPart is atomic (has no children).
-		return null;
-	}
+  // implement Walkable
+  public Object[] getChildren() {
+    // By default, a QueryPart is atomic (has no children).
+    return null;
+  }
 
-	/**
-	 * Returns the plan that Mondrian intends to use to execute this query.
-	 * 
-	 * @param pw
-	 *          Print writer
-	 */
-	public void explain(PrintWriter pw) {
-		throw new UnsupportedOperationException("explain not implemented for "
-				+ this + " (" + getClass() + ")");
-	}
+  /**
+   * Returns the plan that Mondrian intends to use to execute this query.
+   * 
+   * @param pw
+   *          Print writer
+   */
+  public void explain(PrintWriter pw) {
+    throw new UnsupportedOperationException("explain not implemented for " + this
+      + " (" + getClass() + ")");
+  }
 }
 
 // End QueryPart.java

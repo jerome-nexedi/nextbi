@@ -30,34 +30,34 @@ import mondrian.calc.*;
  * @since Oct 24, 2008
  */
 public abstract class AbstractIterCalc extends AbstractCalc implements IterCalc {
-	/**
-	 * Creates an abstract implementation of a compiled expression which returns a
-	 * {@link TupleIterable}.
-	 * 
-	 * @param exp
-	 *          Expression which was compiled
-	 * @param calcs
-	 *          List of child compiled expressions (for dependency analysis)
-	 */
-	protected AbstractIterCalc(Exp exp, Calc[] calcs) {
-		super(exp, calcs);
-	}
+  /**
+   * Creates an abstract implementation of a compiled expression which returns a
+   * {@link TupleIterable}.
+   * 
+   * @param exp
+   *          Expression which was compiled
+   * @param calcs
+   *          List of child compiled expressions (for dependency analysis)
+   */
+  protected AbstractIterCalc(Exp exp, Calc[] calcs) {
+    super(exp, calcs);
+  }
 
-	public SetType getType() {
-		return (SetType) super.getType();
-	}
+  public SetType getType() {
+    return (SetType) super.getType();
+  }
 
-	public final Object evaluate(Evaluator evaluator) {
-		return evaluateIterable(evaluator);
-	}
+  public final Object evaluate(Evaluator evaluator) {
+    return evaluateIterable(evaluator);
+  }
 
-	public ResultStyle getResultStyle() {
-		return ResultStyle.ITERABLE;
-	}
+  public ResultStyle getResultStyle() {
+    return ResultStyle.ITERABLE;
+  }
 
-	public String toString() {
-		return "AbstractIterCalc object";
-	}
+  public String toString() {
+    return "AbstractIterCalc object";
+  }
 }
 
 // End AbstractIterCalc.java
