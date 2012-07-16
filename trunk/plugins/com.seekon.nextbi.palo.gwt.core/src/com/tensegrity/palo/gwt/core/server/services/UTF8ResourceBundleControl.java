@@ -12,45 +12,44 @@ import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 public class UTF8ResourceBundleControl extends ResourceBundle.Control {
-	public List<String> getFormats(String basename) {
-		if (basename == null)
-			throw new NullPointerException();
+  public List<String> getFormats(String basename) {
+    if (basename == null)
+      throw new NullPointerException();
 
-		return Arrays.asList("properties");
-	}
+    return Arrays.asList("properties");
+  }
 
-	public ResourceBundle newBundle(String baseName, Locale locale,
-			String format, ClassLoader loader, boolean reload)
-			throws IllegalAccessException, InstantiationException, IOException {
+  public ResourceBundle newBundle(String baseName, Locale locale, String format,
+    ClassLoader loader, boolean reload) throws IllegalAccessException,
+    InstantiationException, IOException {
 
-		if (baseName == null || locale == null || format == null
-				|| loader == null)
-			throw new NullPointerException();
-		ResourceBundle bundle = null;
-		if (format.equals("properties")) {
-			String bundleName = toBundleName(baseName, locale);
-			String resourceName = toResourceName(bundleName, format);
-			InputStream stream = null;
-			if (reload) {
-				URL url = loader.getResource(resourceName);
-				if (url != null) {
-					URLConnection connection = url.openConnection();
+    if (baseName == null || locale == null || format == null || loader == null)
+      throw new NullPointerException();
+    ResourceBundle bundle = null;
+    if (format.equals("properties")) {
+      String bundleName = toBundleName(baseName, locale);
+      String resourceName = toResourceName(bundleName, format);
+      InputStream stream = null;
+      if (reload) {
+        URL url = loader.getResource(resourceName);
+        if (url != null) {
+          URLConnection connection = url.openConnection();
 
-					if (connection != null) {
-						connection.setUseCaches(false);
-						stream = connection.getInputStream();
-					}
-				}
-			} else {
-				stream = loader.getResourceAsStream(resourceName);
-			}
+          if (connection != null) {
+            connection.setUseCaches(false);
+            stream = connection.getInputStream();
+          }
+        }
+      } else {
+        stream = loader.getResourceAsStream(resourceName);
+      }
 
-			if (stream != null) {
-				InputStreamReader is = new InputStreamReader(stream, "UTF-8");
-				bundle = new PropertyResourceBundle(is);
-				is.close();
-			}
-		}
-		return bundle;
-	}
+      if (stream != null) {
+        InputStreamReader is = new InputStreamReader(stream, "UTF-8");
+        bundle = new PropertyResourceBundle(is);
+        is.close();
+      }
+    }
+    return bundle;
+  }
 }
