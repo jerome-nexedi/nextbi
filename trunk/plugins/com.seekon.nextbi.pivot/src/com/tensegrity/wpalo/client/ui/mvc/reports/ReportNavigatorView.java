@@ -1,33 +1,33 @@
 /*
-*
-* @file ReportNavigatorView.java
-*
-* Copyright (C) 2006-2009 Tensegrity Software GmbH
-*
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of the GNU General Public License (Version 2) as published
-* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-* more details.
-*
-* You should have received a copy of the GNU General Public License along with
-* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
-* Place, Suite 330, Boston, MA 02111-1307 USA
-*
-* If you are developing and distributing open source applications under the
-* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
-* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
-* and distribute their source code under the GPL, Tensegrity provides a flexible
-* OEM Commercial License.
-*
-* @author Philipp Bouillon <Philipp.Bouillon@tensegrity-software.com>
-*
-* @version $Id: ReportNavigatorView.java,v 1.24 2010/02/12 13:49:50 PhilippBouillon Exp $
-*
-*/
+ *
+ * @file ReportNavigatorView.java
+ *
+ * Copyright (C) 2006-2009 Tensegrity Software GmbH
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License (Version 2) as published
+ * by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ * If you are developing and distributing open source applications under the
+ * GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+ * ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+ * and distribute their source code under the GPL, Tensegrity provides a flexible
+ * OEM Commercial License.
+ *
+ * @author Philipp Bouillon <Philipp.Bouillon@tensegrity-software.com>
+ *
+ * @version $Id: ReportNavigatorView.java,v 1.24 2010/02/12 13:49:50 PhilippBouillon Exp $
+ *
+ */
 
 /*
  * (c) Tensegrity Software 2008
@@ -80,240 +80,245 @@ import com.tensegrity.wpalo.client.ui.mvc.workbench.Workbench;
 /**
  * <code>AdminNavigator</code> TODO DOCUMENT ME
  * 
- * @version $Id: ReportNavigatorView.java,v 1.24 2010/02/12 13:49:50 PhilippBouillon Exp $
+ * @version $Id: ReportNavigatorView.java,v 1.24 2010/02/12 13:49:50
+ *          PhilippBouillon Exp $
  */
 public class ReportNavigatorView extends View {
 
-	/** id to access a navigator instance via the global {@link Registry} */
-	public static final String ID = "com.tensegrity.wpalo.reports.reportnavigator";
+  /** id to access a navigator instance via the global {@link Registry} */
+  public static final String ID = "com.tensegrity.wpalo.reports.reportnavigator";
 
-	private ContentPanel navigator;
-	private TreeLoader<TreeNode> treeLoader;
-	private XUser user;
-	private TreeStore<TreeNode> store;
-	
-	public ReportNavigatorView(Controller controller) {
-		super(controller);
-		//registry serves as a global context:
-		Registry.register(ID, this);
-	}
+  private ContentPanel navigator;
 
-	public final XView[] getViews() {
-		List<XView> views = new ArrayList<XView>();
-		List<TreeNode> items = store.getAllItems();
-		for(TreeNode node : items) {
-			if(node.getXObject() instanceof XView) {
-				views.add((XView)node.getXObject());
-			}
-		}
-		return views.toArray(new XView[0]);
-	}
-	
-	@Override
-	protected void handleEvent(AppEvent event) {
-		switch (event.type) {
-		case WPaloEvent.INIT:
-			if (event.data instanceof XUser) {
-				user = (XUser) event.data;
-			}
-			initUI();
-			// Create initial tree structure:
-						
-			
-			Dispatcher.forwardEvent(WPaloEvent.EXPANDED_REPORT_SECTION,
-					new ReportTreeModel(user).getRoot());
-			
-			break;
-		case WPaloEvent.EXPANDED_REPORT_SECTION:
-			//load tree data
-			TreeNode node = (TreeNode) event.data;
-			if (node != null) {
-				treeLoader.load(node);
-			}
-		case WPaloEvent.UPDATE_WORKBOOKS:
-			if (event.data instanceof XObject) {
-				reload((XObject) event.data);
-			}
-			break;
-		}
-	}
+  private TreeLoader<TreeNode> treeLoader;
 
-	void reload(XObject obj) {
-		List <TreeNode> nodes = store.getAllItems();
-		for (TreeNode n: nodes) {
-			if (obj.equals(n.getXObject())) {
-				store.getLoader().loadChildren(n);
-				break;
-			}
-		}
-	}
-	
-	void reload(TreeNode node) {
-		if (node.getParent() == null) {
-			store.getLoader().load(node);
-		} else {
-			store.getLoader().loadChildren(node.getParent());
-		}
-	}	
-	
-	private final void initUI() {		
-		navigator = new ContentPanel();
-		navigator.setHeading(WPalo.i18n.reportNavigatorView_heading());
-//				"Report Templates");
-		navigator.setScrollMode(Scroll.AUTO);
-		// connect with dispatcher:
-		navigator.addListener(Events.Expand, new Listener<ComponentEvent>() {
-			public void handleEvent(ComponentEvent be) {
-				Dispatcher.get().dispatch(WPaloEvent.EXPANDED_REPORT_SECTION);
-			}
-		});
+  private XUser user;
 
-		//create the tree which displays the data:
-		treeLoader = new BaseTreeLoader<TreeNode>(new TreeLoaderProxy()){
-			public boolean hasChildren(TreeNode data) {
-				return data != null && data.getXObject() != null &&
-				       data.getXObject().hasChildren();
-			}
-		};
-		final Tree reportsTree = createTree(treeLoader);
-		
-		ToolBar toolbar = new ToolBar();
-		TextToolItem addFolder = new TextToolItem("", "icon-create-folder");
-		addFolder.setToolTip(WPalo.i18n.reportNavigatorView_addFolderToolTip());
-//				"Create new Folder");
-		toolbar.add(addFolder);
-		
-		TextToolItem addSheet = new TextToolItem("", "icon-create-sheet");
-		toolbar.add(addSheet);
-		addSheet.setToolTip(WPalo.i18n.reportNavigatorView_addWorkbookTemplateToolTip());
-//				"Create new Workbook Template");
-		addSheet.addSelectionListener(new CreateNewSheet(reportsTree));
-		TextToolItem addView = new TextToolItem("", "icon-create-view");
-		addView.setToolTip(WPalo.i18n.reportNavigatorView_addAdhocViewTemplateToolTip());
-//				"Create new AdHoc View Template");
-		toolbar.add(addView);
+  private TreeStore<TreeNode> store;
 
-		toolbar.add(new SeparatorToolItem());
-		TextToolItem delItems = new TextToolItem("", "icon-delete");
-		delItems.setToolTip(WPalo.i18n.reportNavigatorView_deleteItemsToolTip());
-//				"Delete items");
-		toolbar.add(delItems);
-		delItems.addSelectionListener(new SelectionListener<ComponentEvent>(){
-			public void componentSelected(ComponentEvent ce) {
-			}
-		});
-		navigator.setTopComponent(toolbar);
-		
-		reportsTree.addListener(Events.OnClick, new Listener<BaseEvent>() {
-			public void handleEvent(BaseEvent be) {
-				TreeNode node = (TreeNode) reportsTree.getSelectedItem().getModel();
-				if (node.getXObject() instanceof XView) {
-					fireEvent(new AppEvent<TreeNode>(WPaloEvent.SHOW_TEMPLATE_VIEW, node));
-				}			
-			}			
-		});
-		reportsTree.addListener(Events.OnDoubleClick, new Listener<BaseEvent>(){
-			public void handleEvent(BaseEvent be) {
-				TreeNode node = (TreeNode) reportsTree.getSelectedItem().getModel();
-				if (node.getXObject() instanceof XTemplate) {
-					fireEvent(new AppEvent<TreeNode>(WPaloEvent.EDIT_TEMPLATE_ITEM, node));
-				}
-				else if (node.getXObject() instanceof XView) {
-					fireEvent(new AppEvent<TreeNode>(WPaloEvent.EDIT_TEMPLATE_VIEW, node));
-				}
-			}
-		});
+  public ReportNavigatorView(Controller controller) {
+    super(controller);
+    // registry serves as a global context:
+    Registry.register(ID, this);
+  }
 
-		navigator.add(reportsTree);
-		
-		Workbench wb = (Workbench)Registry.get(Workbench.ID);
-		wb.addToViewPanel(navigator);
-	}
+  public final XView[] getViews() {
+    List<XView> views = new ArrayList<XView>();
+    List<TreeNode> items = store.getAllItems();
+    for (TreeNode node : items) {
+      if (node.getXObject() instanceof XView) {
+        views.add((XView) node.getXObject());
+      }
+    }
+    return views.toArray(new XView[0]);
+  }
 
-	private final Tree createTree(TreeLoader<TreeNode> loader) {
-		Tree tree = new Tree();
-		tree.setIndentWidth(6);
-		store = new TreeStore<TreeNode>(loader);
-		TreeBinder<TreeNode> binder = new TreeNodeBinder(tree, store);
-		binder.setDisplayProperty("name");
-		binder.setAutoSelect(true);
-		binder.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
-			public void selectionChanged(SelectionChangedEvent<ModelData> se) {
-				TreeNode node = (TreeNode) se.getSelectedItem(); // single selection
-//				switch (node.getType()) {
-//				case TreeNodeType.USER_ITEM:
-//					fireEvent(new AppEvent<TreeNode>(WPaloEvent.EDIT_USER_ITEM, node));
-//					break;
-//				case TreeNodeType.GROUP_ITEM:
-//					fireEvent(new AppEvent<TreeNode>(WPaloEvent.EDIT_GROUP_ITEM, node));
-//					break;
-//				case TreeNodeType.ROLE_ITEM:
-//					fireEvent(new AppEvent<TreeNode>(WPaloEvent.EDIT_ROLE_ITEM, node));
-//					break;
-//				}
-			}
-		});
-		return tree;
-	}
+  @Override
+  protected void handleEvent(AppEvent event) {
+    switch (event.type) {
+    case WPaloEvent.INIT:
+      if (event.data instanceof XUser) {
+        user = (XUser) event.data;
+      }
+      initUI();
+      // Create initial tree structure:
+
+      Dispatcher.forwardEvent(WPaloEvent.EXPANDED_REPORT_SECTION,
+        new ReportTreeModel(user).getRoot());
+
+      break;
+    case WPaloEvent.EXPANDED_REPORT_SECTION:
+      // load tree data
+      TreeNode node = (TreeNode) event.data;
+      if (node != null) {
+        treeLoader.load(node);
+      }
+    case WPaloEvent.UPDATE_WORKBOOKS:
+      if (event.data instanceof XObject) {
+        reload((XObject) event.data);
+      }
+      break;
+    }
+  }
+
+  void reload(XObject obj) {
+    List<TreeNode> nodes = store.getAllItems();
+    for (TreeNode n : nodes) {
+      if (obj.equals(n.getXObject())) {
+        store.getLoader().loadChildren(n);
+        break;
+      }
+    }
+  }
+
+  void reload(TreeNode node) {
+    if (node.getParent() == null) {
+      store.getLoader().load(node);
+    } else {
+      store.getLoader().loadChildren(node.getParent());
+    }
+  }
+
+  private final void initUI() {
+    navigator = new ContentPanel();
+    navigator.setHeading(WPalo.i18n.reportNavigatorView_heading());
+    // "Report Templates");
+    navigator.setScrollMode(Scroll.AUTO);
+    // connect with dispatcher:
+    navigator.addListener(Events.Expand, new Listener<ComponentEvent>() {
+      public void handleEvent(ComponentEvent be) {
+        Dispatcher.get().dispatch(WPaloEvent.EXPANDED_REPORT_SECTION);
+      }
+    });
+
+    // create the tree which displays the data:
+    treeLoader = new BaseTreeLoader<TreeNode>(new TreeLoaderProxy()) {
+      public boolean hasChildren(TreeNode data) {
+        return data != null && data.getXObject() != null
+          && data.getXObject().hasChildren();
+      }
+    };
+    final Tree reportsTree = createTree(treeLoader);
+
+    ToolBar toolbar = new ToolBar();
+    TextToolItem addFolder = new TextToolItem("", "icon-create-folder");
+    addFolder.setToolTip(WPalo.i18n.reportNavigatorView_addFolderToolTip());
+    // "Create new Folder");
+    toolbar.add(addFolder);
+
+    TextToolItem addSheet = new TextToolItem("", "icon-create-sheet");
+    toolbar.add(addSheet);
+    addSheet.setToolTip(WPalo.i18n.reportNavigatorView_addWorkbookTemplateToolTip());
+    // "Create new Workbook Template");
+    addSheet.addSelectionListener(new CreateNewSheet(reportsTree));
+    TextToolItem addView = new TextToolItem("", "icon-create-view");
+    addView.setToolTip(WPalo.i18n.reportNavigatorView_addAdhocViewTemplateToolTip());
+    // "Create new AdHoc View Template");
+    toolbar.add(addView);
+
+    toolbar.add(new SeparatorToolItem());
+    TextToolItem delItems = new TextToolItem("", "icon-delete");
+    delItems.setToolTip(WPalo.i18n.reportNavigatorView_deleteItemsToolTip());
+    // "Delete items");
+    toolbar.add(delItems);
+    delItems.addSelectionListener(new SelectionListener<ComponentEvent>() {
+      public void componentSelected(ComponentEvent ce) {
+      }
+    });
+    navigator.setTopComponent(toolbar);
+
+    reportsTree.addListener(Events.OnClick, new Listener<BaseEvent>() {
+      public void handleEvent(BaseEvent be) {
+        TreeNode node = (TreeNode) reportsTree.getSelectedItem().getModel();
+        if (node.getXObject() instanceof XView) {
+          fireEvent(new AppEvent<TreeNode>(WPaloEvent.SHOW_TEMPLATE_VIEW, node));
+        }
+      }
+    });
+    reportsTree.addListener(Events.OnDoubleClick, new Listener<BaseEvent>() {
+      public void handleEvent(BaseEvent be) {
+        TreeNode node = (TreeNode) reportsTree.getSelectedItem().getModel();
+        if (node.getXObject() instanceof XTemplate) {
+          fireEvent(new AppEvent<TreeNode>(WPaloEvent.EDIT_TEMPLATE_ITEM, node));
+        } else if (node.getXObject() instanceof XView) {
+          fireEvent(new AppEvent<TreeNode>(WPaloEvent.EDIT_TEMPLATE_VIEW, node));
+        }
+      }
+    });
+
+    navigator.add(reportsTree);
+
+    Workbench wb = (Workbench) Registry.get(Workbench.ID);
+    wb.addToViewPanel(navigator);
+  }
+
+  private final Tree createTree(TreeLoader<TreeNode> loader) {
+    Tree tree = new Tree();
+    tree.setIndentWidth(6);
+    store = new TreeStore<TreeNode>(loader);
+    TreeBinder<TreeNode> binder = new TreeNodeBinder(tree, store);
+    binder.setDisplayProperty("name");
+    binder.setAutoSelect(true);
+    binder.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
+      public void selectionChanged(SelectionChangedEvent<ModelData> se) {
+        TreeNode node = (TreeNode) se.getSelectedItem(); // single selection
+        // switch (node.getType()) {
+        // case TreeNodeType.USER_ITEM:
+        // fireEvent(new AppEvent<TreeNode>(WPaloEvent.EDIT_USER_ITEM,
+        // node));
+        // break;
+        // case TreeNodeType.GROUP_ITEM:
+        // fireEvent(new AppEvent<TreeNode>(WPaloEvent.EDIT_GROUP_ITEM,
+        // node));
+        // break;
+        // case TreeNodeType.ROLE_ITEM:
+        // fireEvent(new AppEvent<TreeNode>(WPaloEvent.EDIT_ROLE_ITEM,
+        // node));
+        // break;
+        // }
+      }
+    });
+    return tree;
+  }
 }
 
 class TreeNodeBinder extends TreeBinder<TreeNode> {
 
-	TreeNodeBinder(Tree tree, TreeStore<TreeNode> store) {
-		super(tree, store);
-	}
+  TreeNodeBinder(Tree tree, TreeStore<TreeNode> store) {
+    super(tree, store);
+  }
 
-	protected TreeItem createItem(TreeNode model) {
-		TreeItem item = super.createItem(model);		
-		
-		if (model.getXObject() instanceof XAccount) {
-			model.set("name", ((XAccount) model.getXObject()).getConnection().getName());
-		}
+  protected TreeItem createItem(TreeNode model) {
+    TreeItem item = super.createItem(model);
 
-		if (model.getXObject() instanceof XTemplate) {
-			item.setIconStyle("icon-sheet");
-		}
-		
-		if (model.getXObject() instanceof XView) {
-			item.setIconStyle("icon-view");
-		}
-		
-		if (model.getType().equals(XStaticReportFolder.class.getName())) {
-			item.setIconStyle("icon-group");
-		}
-		
-		return item;
-	}
+    if (model.getXObject() instanceof XAccount) {
+      model.set("name", ((XAccount) model.getXObject()).getConnection().getName());
+    }
+
+    if (model.getXObject() instanceof XTemplate) {
+      item.setIconStyle("icon-sheet");
+    }
+
+    if (model.getXObject() instanceof XView) {
+      item.setIconStyle("icon-view");
+    }
+
+    if (model.getType().equals(XStaticReportFolder.class.getName())) {
+      item.setIconStyle("icon-group");
+    }
+
+    return item;
+  }
 }
 
 class ReportTreeModel {
-	private final TreeNode root;
-	
-	public ReportTreeModel(XUser user) {
-		//children:
-		XNode sheetTemplates = new XNode(user, XConstants.TYPE_SHEET_TEMPLATES_NODE);
-		sheetTemplates.setName(WPalo.i18n.reportNavigatorView_sheetTemplatesName());
-//				"Sheet Templates");
-		sheetTemplates.setHasChildren(true);
-		sheetTemplates.setId("ReportNavigatorView#SheetTemplatesNode");
-		
-		XNode adhocTemplates = new XNode(user, XConstants.TYPE_ADHOC_TEMPLATES_NODE);
-		adhocTemplates.setName(WPalo.i18n.reportNavigatorView_adhocTemplatesName());
-//				"Adhoc Templates");
-		adhocTemplates.setHasChildren(true);
-		adhocTemplates.setId("ReportNavigatorView#AdhocTemplatesNodes");
-		
-		//root node
-		XNode rootNode = new XNode(null, XConstants.TYPE_ROOT_NODE);
-		rootNode.setId("ReportNavigatorView#RootNode");
-		rootNode.addChild(sheetTemplates);
-		rootNode.addChild(adhocTemplates);
-		rootNode.setHasChildren(true);
-		
-		root = new TreeNode(null, rootNode);
-	}
-	
-	public final TreeNode getRoot() {
-		return root;
-	}
+  private final TreeNode root;
+
+  public ReportTreeModel(XUser user) {
+    // children:
+    XNode sheetTemplates = new XNode(user, XConstants.TYPE_SHEET_TEMPLATES_NODE);
+    sheetTemplates.setName(WPalo.i18n.reportNavigatorView_sheetTemplatesName());
+    // "Sheet Templates");
+    sheetTemplates.setHasChildren(true);
+    sheetTemplates.setId("ReportNavigatorView#SheetTemplatesNode");
+
+    XNode adhocTemplates = new XNode(user, XConstants.TYPE_ADHOC_TEMPLATES_NODE);
+    adhocTemplates.setName(WPalo.i18n.reportNavigatorView_adhocTemplatesName());
+    // "Adhoc Templates");
+    adhocTemplates.setHasChildren(true);
+    adhocTemplates.setId("ReportNavigatorView#AdhocTemplatesNodes");
+
+    // root node
+    XNode rootNode = new XNode(null, XConstants.TYPE_ROOT_NODE);
+    rootNode.setId("ReportNavigatorView#RootNode");
+    rootNode.addChild(sheetTemplates);
+    rootNode.addChild(adhocTemplates);
+    rootNode.setHasChildren(true);
+
+    root = new TreeNode(null, rootNode);
+  }
+
+  public final TreeNode getRoot() {
+    return root;
+  }
 }

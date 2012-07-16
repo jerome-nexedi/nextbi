@@ -38,8 +38,7 @@ import com.tensegrity.wpalo.client.ui.mvc.cubeview.FullHierarchyTree;
  * An item that can be contained within a
  * {@link com.google.gwt.widgetideas.client.FastTree}.
  * <p>
- * <h3>Example</h3>
- * {@example com.google.gwt.examples.TreeExample}
+ * <h3>Example</h3> {@example com.google.gwt.examples.TreeExample}
  */
 
 public class FastMSTreeItem extends UIObject implements HasHTML, HasFastMSTreeItems {
@@ -48,16 +47,25 @@ public class FastMSTreeItem extends UIObject implements HasHTML, HasFastMSTreeIt
   // TODO(ECC) change states to enums and move style names to FastTree where
   // they below.
   private static final int TREE_NODE_LEAF = 1;
+
   private static final int TREE_NODE_INTERIOR_NEVER_OPENED = 2;
+
   private static final int TREE_NODE_INTERIOR_OPEN = 3;
+
   private static final int TREE_NODE_INTERIOR_CLOSED = 4;
+
   private static final String STYLENAME_CHILDREN = "children";
+
   private static final String STYLENAME_LEAF_DEFAULT = "gwt-FastTreeItem gwt-FastTreeItem-leaf";
+
   private static final String STYLENAME_OPEN = "open";
+
   private static final String STYLENAME_CLOSED = "closed";
+
   private static final String STYLENAME_LEAF = "leaf";
 
   private static final String STYLENAME_CONTENT = "treeItemContent";
+
   /**
    * The base tree item element that will be cloned.
    */
@@ -79,18 +87,29 @@ public class FastMSTreeItem extends UIObject implements HasHTML, HasFastMSTreeIt
   }
 
   private int state = TREE_NODE_LEAF;
+
   private int depth;
+
   private ArrayList<FastMSTreeItem> children;
+
   Element contentElem, childElems;
+
   private FastMSTreeItem parent;
+
   private FastMSTree tree;
+
   private Widget widget;
+
   private TreeNode model;
+
   private XObjectModel xObjModel;
+
   private XElementNode node;
-  private AsyncCallback <Void> finishHandler;
+
+  private AsyncCallback<Void> finishHandler;
+
   private HTML htmlWidget = null;
-  
+
   /**
    * Creates an empty tree item.
    */
@@ -101,42 +120,43 @@ public class FastMSTreeItem extends UIObject implements HasHTML, HasFastMSTreeIt
   }
 
   public HTML getHtml() {
-	  if (htmlWidget == null) {
-		  htmlWidget = new HTML(DOM.getInnerHTML(getElementToAttach()));
-	  }
-	  return htmlWidget;
+    if (htmlWidget == null) {
+      htmlWidget = new HTML(DOM.getInnerHTML(getElementToAttach()));
+    }
+    return htmlWidget;
   }
-  
-  public void setFinishHandler(AsyncCallback <Void> finishHandler) {
-	  this.finishHandler = finishHandler;
+
+  public void setFinishHandler(AsyncCallback<Void> finishHandler) {
+    this.finishHandler = finishHandler;
   }
-  
-  public AsyncCallback <Void> getFinishHandler() {
-	  return this.finishHandler;
+
+  public AsyncCallback<Void> getFinishHandler() {
+    return this.finishHandler;
   }
-  
+
   public void setModel(TreeNode node) {
-	  this.model = node;
-	  node.setItem(this);
+    this.model = node;
+    node.setItem(this);
   }
-  
+
   public TreeNode getModel() {
-	  return model;
+    return model;
   }
-  
+
   public void setXObjectModel(XObjectModel model) {
-	  xObjModel = model;
-	  model.setItem(this);
+    xObjModel = model;
+    model.setItem(this);
   }
-  
+
   public XObjectModel getXObjectModel() {
-	  return xObjModel;
+    return xObjModel;
   }
-  
+
   /**
    * Constructs a tree item with the given HTML.
    * 
-   * @param html the item's HTML
+   * @param html
+   *          the item's HTML
    */
   public FastMSTreeItem(String html) {
     this();
@@ -146,7 +166,8 @@ public class FastMSTreeItem extends UIObject implements HasHTML, HasFastMSTreeIt
   /**
    * Constructs a tree item with the given <code>Widget</code>.
    * 
-   * @param widget the item's widget
+   * @param widget
+   *          the item's widget
    */
   public FastMSTreeItem(Widget widget) {
     this();
@@ -156,44 +177,45 @@ public class FastMSTreeItem extends UIObject implements HasHTML, HasFastMSTreeIt
   /**
    * This constructor is only for use by {@link DecoratedFastTreeItem}.
    * 
-   * @param element element
+   * @param element
+   *          element
    */
   FastMSTreeItem(Element element) {
     setElement(element);
   }
 
   public int getDepth() {
-	  return depth;
+    return depth;
   }
-  
-	public void fastAddItem(FastMSTreeItem item) {
-		item.depth = depth + 1;
-		if (isLeafNode()) {
-			becomeInteriorNode();
-		}
-		if (children == null) {
-			children = new ArrayList<FastMSTreeItem>();
-		}
-		item.setParentItem(this);
-		children.add(item);
 
-		item.tree = tree;
-	}
-  
+  public void fastAddItem(FastMSTreeItem item) {
+    item.depth = depth + 1;
+    if (isLeafNode()) {
+      becomeInteriorNode();
+    }
+    if (children == null) {
+      children = new ArrayList<FastMSTreeItem>();
+    }
+    item.setParentItem(this);
+    children.add(item);
+
+    item.tree = tree;
+  }
+
   public void addItem(FastMSTreeItem item) {
     // Detach item from existing parent.
     item.depth = depth + 1;
-	if ((item.getParentItem() != null) || (item.getTree() != null)) {
+    if ((item.getParentItem() != null) || (item.getTree() != null)) {
       item.remove();
     }
     if (isLeafNode()) {
       boolean sel = isSelected();
       if (sel) {
-    	  setSelection(false, false);
+        setSelection(false, false);
       }
-      becomeInteriorNode();      
+      becomeInteriorNode();
       if (sel) {
-    	  setSelection(true, false);
+        setSelection(true, false);
       }
     }
     if (children == null) {
@@ -214,39 +236,39 @@ public class FastMSTreeItem extends UIObject implements HasHTML, HasFastMSTreeIt
       item.setTree(tree);
     }
   }
-  
+
   public boolean moveItemUp(FastMSTreeItem item) {
-	int index = children.indexOf(item);
-	if (index < 1) {
-		return false;
-	}
-	children.remove(index);
-	index--;
-	children.add(index, item);
-	Element cElem = item.getElement();
-	index = DOM.getChildIndex(childElems, cElem);
-	DOM.removeChild(childElems, cElem);
-	index--;
-	DOM.insertChild(childElems, cElem, index);
-	return true;
+    int index = children.indexOf(item);
+    if (index < 1) {
+      return false;
+    }
+    children.remove(index);
+    index--;
+    children.add(index, item);
+    Element cElem = item.getElement();
+    index = DOM.getChildIndex(childElems, cElem);
+    DOM.removeChild(childElems, cElem);
+    index--;
+    DOM.insertChild(childElems, cElem, index);
+    return true;
   }
 
   public boolean moveItemDown(FastMSTreeItem item) {
-		int index = children.indexOf(item);
-		if (index == -1 || index > children.size() - 2) {
-			return false;
-		}
-		children.remove(index);
-		index++;
-		children.add(index, item);
-		Element cElem = item.getElement();
-		index = DOM.getChildIndex(childElems, cElem);
-		DOM.removeChild(childElems, cElem);
-		index++;
-		DOM.insertChild(childElems, cElem, index);
-		return true;
+    int index = children.indexOf(item);
+    if (index == -1 || index > children.size() - 2) {
+      return false;
+    }
+    children.remove(index);
+    index++;
+    children.add(index, item);
+    Element cElem = item.getElement();
+    index = DOM.getChildIndex(childElems, cElem);
+    DOM.removeChild(childElems, cElem);
+    index++;
+    DOM.insertChild(childElems, cElem, index);
+    return true;
   }
-  
+
   public FastMSTreeItem addItem(String itemText) {
     FastMSTreeItem ret = new FastMSTreeItem(itemText);
     addItem(ret);
@@ -361,8 +383,8 @@ public class FastMSTreeItem extends UIObject implements HasHTML, HasFastMSTreeIt
   }
 
   /**
-   * Is the {@link FastMSTreeItem} open? Returns false if the {@link FastMSTreeItem}
-   * is closed or a leaf node.
+   * Is the {@link FastMSTreeItem} open? Returns false if the
+   * {@link FastMSTreeItem} is closed or a leaf node.
    */
   public boolean isOpen() {
     return state == TREE_NODE_INTERIOR_OPEN;
@@ -411,11 +433,11 @@ public class FastMSTreeItem extends UIObject implements HasHTML, HasFastMSTreeIt
   }
 
   public int getTotalSize() {
-	  int result = getChildCount();
-	  for (FastMSTreeItem it: getChildren()) {
-		  result += it.getTotalSize();
-	  }
-	  return result;
+    int result = getChildCount();
+    for (FastMSTreeItem it : getChildren()) {
+      result += it.getTotalSize();
+    }
+    return result;
   }
 
   /**
@@ -458,7 +480,8 @@ public class FastMSTreeItem extends UIObject implements HasHTML, HasFastMSTreeIt
   /**
    * Sets whether this item's children are displayed.
    * 
-   * @param open whether the item is open
+   * @param open
+   *          whether the item is open
    */
   public final void setState(boolean open) {
     setState(open, true);
@@ -467,8 +490,10 @@ public class FastMSTreeItem extends UIObject implements HasHTML, HasFastMSTreeIt
   /**
    * Sets whether this item's children are displayed.
    * 
-   * @param open whether the item is open
-   * @param fireEvents <code>true</code> to allow open/close events to be fired
+   * @param open
+   *          whether the item is open
+   * @param fireEvents
+   *          <code>true</code> to allow open/close events to be fired
    */
   public void setState(boolean open, boolean fireEvents) {
     if (open == isOpen()) {
@@ -507,19 +532,19 @@ public class FastMSTreeItem extends UIObject implements HasHTML, HasFastMSTreeIt
   }
 
   public void expandAll() {
-	  setState(true, false);
-	  for (FastMSTreeItem item: getChildren()) {
-//		  item.setState(true, false);
-		  item.expandAll();
-	  }
+    setState(true, false);
+    for (FastMSTreeItem item : getChildren()) {
+      // item.setState(true, false);
+      item.expandAll();
+    }
   }
-  
+
   public void collapseAll() {
-	  setState(false, false);
-	  for (FastMSTreeItem item: getChildren()) {
-//		  item.setState(false, false);
-		  item.collapseAll();
-	  }
+    setState(false, false);
+    for (FastMSTreeItem item : getChildren()) {
+      // item.setState(false, false);
+      item.collapseAll();
+    }
   }
 
   public void setText(String text) {
@@ -639,10 +664,10 @@ public class FastMSTreeItem extends UIObject implements HasHTML, HasFastMSTreeIt
   }
 
   public ArrayList<FastMSTreeItem> getChildren() {
-	  if (children == null) {
-		  return new ArrayList<FastMSTreeItem>();
-	  }
-	  return children;
+    if (children == null) {
+      return new ArrayList<FastMSTreeItem>();
+    }
+    return children;
   }
 
   Element getContentElem() {
@@ -662,16 +687,18 @@ public class FastMSTreeItem extends UIObject implements HasHTML, HasFastMSTreeIt
   }
 
   public void setElementNode(XElementNode nd) {
-	  this.node = nd;
+    this.node = nd;
   }
-  
+
   public XElementNode getElementNode() {
-	  return this.node;
+    return this.node;
   }
+
   /**
    * Selects or deselects this item.
    * 
-   * @param selected <code>true</code> to select the item, <code>false</code> to
+   * @param selected
+   *          <code>true</code> to select the item, <code>false</code> to
    *          deselect it
    */
   void setSelection(boolean selected, boolean fireEvents) {
@@ -689,7 +716,7 @@ public class FastMSTreeItem extends UIObject implements HasHTML, HasFastMSTreeIt
     // Early out.
     if (tree != null) {
       throw new IllegalStateException(
-          "Each Tree Item must be removed from its current tree before being added to another.");
+        "Each Tree Item must be removed from its current tree before being added to another.");
     }
     tree = newTree;
 

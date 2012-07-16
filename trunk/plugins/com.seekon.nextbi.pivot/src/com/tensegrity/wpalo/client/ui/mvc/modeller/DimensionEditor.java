@@ -1,33 +1,33 @@
 /*
-*
-* @file DimensionEditor.java
-*
-* Copyright (C) 2006-2009 Tensegrity Software GmbH
-*
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of the GNU General Public License (Version 2) as published
-* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-* more details.
-*
-* You should have received a copy of the GNU General Public License along with
-* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
-* Place, Suite 330, Boston, MA 02111-1307 USA
-*
-* If you are developing and distributing open source applications under the
-* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
-* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
-* and distribute their source code under the GPL, Tensegrity provides a flexible
-* OEM Commercial License.
-*
-* @author Philipp Bouillon <Philipp.Bouillon@tensegrity-software.com>
-*
-* @version $Id: DimensionEditor.java,v 1.17 2009/12/17 16:14:20 PhilippBouillon Exp $
-*
-*/
+ *
+ * @file DimensionEditor.java
+ *
+ * Copyright (C) 2006-2009 Tensegrity Software GmbH
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License (Version 2) as published
+ * by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ * If you are developing and distributing open source applications under the
+ * GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+ * ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+ * and distribute their source code under the GPL, Tensegrity provides a flexible
+ * OEM Commercial License.
+ *
+ * @author Philipp Bouillon <Philipp.Bouillon@tensegrity-software.com>
+ *
+ * @version $Id: DimensionEditor.java,v 1.17 2009/12/17 16:14:20 PhilippBouillon Exp $
+ *
+ */
 
 /*
  * (c) Tensegrity Software 2008
@@ -68,235 +68,232 @@ import com.tensegrity.wpalo.client.ui.editor.IEditor;
 import com.tensegrity.wpalo.client.ui.model.TreeNode;
 
 /**
- * <code>UserEditor</code>
- * TODO DOCUMENT ME
- *
- * @version $Id: DimensionEditor.java,v 1.17 2009/12/17 16:14:20 PhilippBouillon Exp $
+ * <code>UserEditor</code> TODO DOCUMENT ME
+ * 
+ * @version $Id: DimensionEditor.java,v 1.17 2009/12/17 16:14:20 PhilippBouillon
+ *          Exp $
  **/
-public class DimensionEditor implements IEditor { 
-	
-	private ContentPanel content;
-//	private Html header;
-	private EditorTab[] tabs;
-	private final TabPanel tabFolder;
-	
-	public DimensionEditor() {
-	    //create content:
-	    content = new ContentPanel();
-	    content.setBodyBorder(false);
-	    content.setHeaderVisible(false);
-	    content.setScrollMode(Scroll.AUTO);
-//		content.setHeading("Properties");
-		content.setButtonAlign(HorizontalAlignment.RIGHT);
+public class DimensionEditor implements IEditor {
 
-		//da toolbar
-		ToolBar toolbar = new ToolBar();
-		TextToolItem save = new TextToolItem("Save", "icon-save");
-		toolbar.add(save);
-		toolbar.add(new SeparatorToolItem());
-		content.setTopComponent(toolbar);
+  private ContentPanel content;
 
-		tabFolder = new TabPanel();
-		tabFolder.setTabScroll(true);
+  // private Html header;
+  private EditorTab[] tabs;
 
-		addTabs(tabFolder);
+  private final TabPanel tabFolder;
 
-		RowLayout layout = new RowLayout(Orientation.VERTICAL);
-		content.setLayout(layout);
-		content.add(tabFolder, new RowData(1, 1));
-	}
+  public DimensionEditor() {
+    // create content:
+    content = new ContentPanel();
+    content.setBodyBorder(false);
+    content.setHeaderVisible(false);
+    content.setScrollMode(Scroll.AUTO);
+    // content.setHeading("Properties");
+    content.setButtonAlign(HorizontalAlignment.RIGHT);
 
-	public void beforeClose(AsyncCallback<Boolean> cb) {
-		cb.onSuccess(true);
-	}
-	
-	public final void close(CloseObserver observer) {
-		tabFolder.removeAll();
-		tabFolder.removeFromParent();
-		if(observer != null)
-			observer.finishedClosed();
-	}
+    // da toolbar
+    ToolBar toolbar = new ToolBar();
+    TextToolItem save = new TextToolItem("Save", "icon-save");
+    toolbar.add(save);
+    toolbar.add(new SeparatorToolItem());
+    content.setTopComponent(toolbar);
 
-	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    tabFolder = new TabPanel();
+    tabFolder.setTabScroll(true);
 
+    addTabs(tabFolder);
 
-	public ContentPanel getPanel() {
-		return content;
-	}
+    RowLayout layout = new RowLayout(Orientation.VERTICAL);
+    content.setLayout(layout);
+    content.add(tabFolder, new RowData(1, 1));
+  }
 
+  public void beforeClose(AsyncCallback<Boolean> cb) {
+    cb.onSuccess(true);
+  }
 
-	public String getTitle() {
-		return "Dimension Editor";
-	}
-	
-	public final void setInput(Object input) {
-		if(input instanceof TreeNode) {			
-			XObject _input = ((TreeNode)input).getXObject();
-			for(EditorTab tab : tabs)
-				tab.set(_input);			
-		}
-	}
+  public final void close(CloseObserver observer) {
+    tabFolder.removeAll();
+    tabFolder.removeFromParent();
+    if (observer != null)
+      observer.finishedClosed();
+  }
 
-	private final void addTabs(TabPanel tabFolder) {
-		tabs = new EditorTab[] {
-				new DimGeneralTab(),
-				new ElementTab(),
-				new DimRightsTab()
-		};
-		for(EditorTab tab : tabs)
-			tabFolder.add(tab);
-	}
+  public String getId() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-	public void doSave(AsyncCallback <Boolean> cb) {
-		// TODO Auto-generated method stub
-		
-	}
+  public ContentPanel getPanel() {
+    return content;
+  }
 
-	public Object getInput() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  public String getTitle() {
+    return "Dimension Editor";
+  }
 
-	public void markDirty() {
-		// TODO Auto-generated method stub
-		
-	}
+  public final void setInput(Object input) {
+    if (input instanceof TreeNode) {
+      XObject _input = ((TreeNode) input).getXObject();
+      for (EditorTab tab : tabs)
+        tab.set(_input);
+    }
+  }
 
-	public boolean isDirty() {
-		return false;
-	}
-	
-	public void selectFirstTab() {
-		// TODO Auto-generated method stub
-		
-	}
+  private final void addTabs(TabPanel tabFolder) {
+    tabs = new EditorTab[] { new DimGeneralTab(), new ElementTab(),
+      new DimRightsTab() };
+    for (EditorTab tab : tabs)
+      tabFolder.add(tab);
+  }
 
-	public void setTextCursor() {
-		// TODO Auto-generated method stub
-		
-	}
+  public void doSave(AsyncCallback<Boolean> cb) {
+    // TODO Auto-generated method stub
+
+  }
+
+  public Object getInput() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public void markDirty() {
+    // TODO Auto-generated method stub
+
+  }
+
+  public boolean isDirty() {
+    return false;
+  }
+
+  public void selectFirstTab() {
+    // TODO Auto-generated method stub
+
+  }
+
+  public void setTextCursor() {
+    // TODO Auto-generated method stub
+
+  }
 }
 
 abstract class EditorTab extends TabItem {
-	
-	abstract void set(XObject input); 
+
+  abstract void set(XObject input);
 }
 
 class DimGeneralTab extends EditorTab {
 
-	//properties:
-	private TextField<String> dimName;
-	
-	DimGeneralTab() {
-		setText("General");
-		setIconStyle("icon-dim");
-		setClosable(false);
-		setScrollMode(Scroll.AUTO);
-		add(createPropertiesPanel());
-	}
-	
-	void set(XObject input) {
-		if(input instanceof XDimension) {
-			XDimension dim = (XDimension) input;
-			dimName.setValue(dim.getName());
-		}
-	}
-	
-	private final ContentPanel createPropertiesPanel() {
-		FormPanel panel = new FormPanel();
-		panel.setHeaderVisible(false);
-		panel.setButtonAlign(HorizontalAlignment.RIGHT);
-		panel.setStyleAttribute("padding", "20");
+  // properties:
+  private TextField<String> dimName;
 
-		dimName = new TextField<String>();
-		dimName.setFieldLabel("Dimension Name");
-		dimName.setEmptyText("Please enter the dimension name");
-		dimName.setAllowBlank(false);
-		dimName.setMinLength(1);
-		panel.add(dimName);
+  DimGeneralTab() {
+    setText("General");
+    setIconStyle("icon-dim");
+    setClosable(false);
+    setScrollMode(Scroll.AUTO);
+    add(createPropertiesPanel());
+  }
 
-		return panel;
-	}
+  void set(XObject input) {
+    if (input instanceof XDimension) {
+      XDimension dim = (XDimension) input;
+      dimName.setValue(dim.getName());
+    }
+  }
+
+  private final ContentPanel createPropertiesPanel() {
+    FormPanel panel = new FormPanel();
+    panel.setHeaderVisible(false);
+    panel.setButtonAlign(HorizontalAlignment.RIGHT);
+    panel.setStyleAttribute("padding", "20");
+
+    dimName = new TextField<String>();
+    dimName.setFieldLabel("Dimension Name");
+    dimName.setEmptyText("Please enter the dimension name");
+    dimName.setAllowBlank(false);
+    dimName.setMinLength(1);
+    panel.add(dimName);
+
+    return panel;
+  }
 }
 
 class ElementTab extends EditorTab {
-	
-	//the groups table with 3 columns: active, name, description
-	private Table elementTable;
 
-	ElementTab() {
-		setText("Elements");
-		setIconStyle("icon-dim");
-		setClosable(false);
-		// create groups table
-		List<TableColumn> columns = new ArrayList<TableColumn>();
-//		TableColumn cbox = DimensionEditor.newCheckboxColumn("grp_check");
-//		columns.add(cbox);
-		TableColumn col = new TableColumn("Name", 300);
-		col.setMinWidth(75);
-		col.setMaxWidth(300);
-		columns.add(col);
-		col = new TableColumn("Type", 100);
-		col.setMaxWidth(400);
-		col.setAlignment(HorizontalAlignment.LEFT);
-		columns.add(col);
+  // the groups table with 3 columns: active, name, description
+  private Table elementTable;
 
-		TableColumnModel cm = new TableColumnModel(columns);
+  ElementTab() {
+    setText("Elements");
+    setIconStyle("icon-dim");
+    setClosable(false);
+    // create groups table
+    List<TableColumn> columns = new ArrayList<TableColumn>();
+    // TableColumn cbox = DimensionEditor.newCheckboxColumn("grp_check");
+    // columns.add(cbox);
+    TableColumn col = new TableColumn("Name", 300);
+    col.setMinWidth(75);
+    col.setMaxWidth(300);
+    columns.add(col);
+    col = new TableColumn("Type", 100);
+    col.setMaxWidth(400);
+    col.setAlignment(HorizontalAlignment.LEFT);
+    columns.add(col);
 
-		elementTable = new Table(cm);
-		elementTable.setSelectionMode(SelectionMode.MULTI);
-		elementTable.setHorizontalScroll(true);
-		elementTable.setDeferHeight(true);
-		// disable to allow CheckBox widget!
-		elementTable.setBulkRender(false);
-		this.setLayout(new FitLayout());
-		add(elementTable);
-	}
-	void set(XObject input) {
-		if (input instanceof XDimension) {
-			final XDimension dim = (XDimension) input;
-			
-			if (input instanceof XDimension) {
-				WPaloServiceProvider.getInstance().loadElements(
-						dim, 
-						new Callback <List<XElement>> (){
-						public void onSuccess(List<XElement> elems) {
-							elementTable.removeAll();
-							for (int i = 0; i < elems.size(); i++) {
-								elementTable.add(new TableItem(new Object[] { elems.get(i).getName(), elems.get(i).getElementType()}));
-							}
-						}
-					});
-			}
-		}
-	}
+    TableColumnModel cm = new TableColumnModel(columns);
+
+    elementTable = new Table(cm);
+    elementTable.setSelectionMode(SelectionMode.MULTI);
+    elementTable.setHorizontalScroll(true);
+    elementTable.setDeferHeight(true);
+    // disable to allow CheckBox widget!
+    elementTable.setBulkRender(false);
+    this.setLayout(new FitLayout());
+    add(elementTable);
+  }
+
+  void set(XObject input) {
+    if (input instanceof XDimension) {
+      final XDimension dim = (XDimension) input;
+
+      if (input instanceof XDimension) {
+        WPaloServiceProvider.getInstance().loadElements(dim,
+          new Callback<List<XElement>>() {
+            public void onSuccess(List<XElement> elems) {
+              elementTable.removeAll();
+              for (int i = 0; i < elems.size(); i++) {
+                elementTable.add(new TableItem(new Object[] {
+                  elems.get(i).getName(), elems.get(i).getElementType() }));
+              }
+            }
+          });
+      }
+    }
+  }
 }
 
 class DimRightsTab extends EditorTab {
 
-	//properties:
-	
-	DimRightsTab() {
-		setText("Rights");
-		setIconStyle("icon-dim");
-		setClosable(false);
-		setScrollMode(Scroll.AUTO);
-		add(createPropertiesPanel());
-	}
-	
-	void set(XObject input) {
-	}
-	
-	private final ContentPanel createPropertiesPanel() {
-		FormPanel panel = new FormPanel();
-		panel.setHeaderVisible(false);
-		panel.setButtonAlign(HorizontalAlignment.RIGHT);
-		panel.setStyleAttribute("padding", "20");
+  // properties:
 
-		return panel;
-	}
+  DimRightsTab() {
+    setText("Rights");
+    setIconStyle("icon-dim");
+    setClosable(false);
+    setScrollMode(Scroll.AUTO);
+    add(createPropertiesPanel());
+  }
+
+  void set(XObject input) {
+  }
+
+  private final ContentPanel createPropertiesPanel() {
+    FormPanel panel = new FormPanel();
+    panel.setHeaderVisible(false);
+    panel.setButtonAlign(HorizontalAlignment.RIGHT);
+    panel.setStyleAttribute("padding", "20");
+
+    return panel;
+  }
 }
-

@@ -593,4 +593,4 @@
 //	private final void removeNode() {
 //		targetHierarchyTree.removeSelection();
 //	}
-//}
+// }
