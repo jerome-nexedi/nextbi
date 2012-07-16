@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="lib/clearpass-impl-1.0.8.GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-jexl-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-cas-client-3.0.5.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/inspektr-audit-1.0.5.GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/inspektr-common-1.0.5.GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/inspektr-error-1.0.5.GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/inspektr-support-spring-1.0.5.GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/perf4j-0.9.14-log4jonly.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
