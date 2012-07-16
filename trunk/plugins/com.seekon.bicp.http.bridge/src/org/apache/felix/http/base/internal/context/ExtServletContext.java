@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.Dictionary;
 
 public interface ExtServletContext extends ServletContext {
-	public boolean handleSecurity(HttpServletRequest req, HttpServletResponse res)
-			throws IOException;
-	
-	public void setInitParams(Dictionary<String, String> initParameter);
+  public boolean handleSecurity(HttpServletRequest req, HttpServletResponse res)
+    throws IOException;
+
+  public void setInitParams(Dictionary<String, String> initParameter);
 }

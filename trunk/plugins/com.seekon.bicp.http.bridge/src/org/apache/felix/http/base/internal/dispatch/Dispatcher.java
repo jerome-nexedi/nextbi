@@ -23,18 +23,18 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 
 public final class Dispatcher {
-	private final HandlerRegistry handlerRegistry;
+  private final HandlerRegistry handlerRegistry;
 
-	public Dispatcher(HandlerRegistry handlerRegistry) {
-		this.handlerRegistry = handlerRegistry;
-	}
+  public Dispatcher(HandlerRegistry handlerRegistry) {
+    this.handlerRegistry = handlerRegistry;
+  }
 
-	public void dispatch(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException {
-		ServletPipeline servletPipeline = new ServletPipeline(this.handlerRegistry
-				.getServlets());
-		FilterPipeline filterPipeline = new FilterPipeline(this.handlerRegistry
-				.getFilters(), servletPipeline);
-		filterPipeline.dispatch(req, res, new NotFoundFilterChain());
-	}
+  public void dispatch(HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+    ServletPipeline servletPipeline = new ServletPipeline(this.handlerRegistry
+      .getServlets());
+    FilterPipeline filterPipeline = new FilterPipeline(this.handlerRegistry
+      .getFilters(), servletPipeline);
+    filterPipeline.dispatch(req, res, new NotFoundFilterChain());
+  }
 }

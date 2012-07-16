@@ -22,50 +22,52 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractHandler {
-	private final static AtomicInteger ID = new AtomicInteger();
+  private final static AtomicInteger ID = new AtomicInteger();
 
-	private final String id;
-	private final ExtServletContext context;
-	private final Map<String, String> initParams;
+  private final String id;
 
-	public AbstractHandler(ExtServletContext context) {
-		this.id = "" + ID.incrementAndGet();
-		this.context = context;
-		this.initParams = new HashMap<String, String>();
-	}
+  private final ExtServletContext context;
 
-	public final String getId() {
-		return this.id;
-	}
+  private final Map<String, String> initParams;
 
-	protected final ExtServletContext getContext() {
-		return this.context;
-	}
+  public AbstractHandler(ExtServletContext context) {
+    this.id = "" + ID.incrementAndGet();
+    this.context = context;
+    this.initParams = new HashMap<String, String>();
+  }
 
-	public final Map<String, String> getInitParams() {
-		return this.initParams;
-	}
+  public final String getId() {
+    return this.id;
+  }
 
-	public final void setInitParams(Dictionary map) {
-		this.context.setInitParams(map);
-		
-		this.initParams.clear();
-		if (map == null) {
-			return;
-		}
+  protected final ExtServletContext getContext() {
+    return this.context;
+  }
 
-		Enumeration e = map.keys();
-		while (e.hasMoreElements()) {
-			Object key = e.nextElement();
-			Object value = map.get(key);
+  public final Map<String, String> getInitParams() {
+    return this.initParams;
+  }
 
-			if ((key instanceof String) && (value instanceof String)) {
-				this.initParams.put((String) key, (String) value);
-			}
-		}
-	}
+  public final void setInitParams(Dictionary map) {
+    this.context.setInitParams(map);
 
-	public abstract void init() throws ServletException;
+    this.initParams.clear();
+    if (map == null) {
+      return;
+    }
 
-	public abstract void destroy();
+    Enumeration e = map.keys();
+    while (e.hasMoreElements()) {
+      Object key = e.nextElement();
+      Object value = map.get(key);
+
+      if ((key instanceof String) && (value instanceof String)) {
+        this.initParams.put((String) key, (String) value);
+      }
+    }
+  }
+
+  public abstract void init() throws ServletException;
+
+  public abstract void destroy();
 }

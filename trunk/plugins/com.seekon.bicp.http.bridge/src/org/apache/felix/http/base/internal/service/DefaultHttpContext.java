@@ -23,25 +23,25 @@ import javax.servlet.http.HttpServletResponse;
 import java.net.URL;
 
 public final class DefaultHttpContext implements HttpContext {
-	private Bundle bundle;
+  private Bundle bundle;
 
-	public DefaultHttpContext(Bundle bundle) {
-		this.bundle = bundle;
-	}
+  public DefaultHttpContext(Bundle bundle) {
+    this.bundle = bundle;
+  }
 
-	public String getMimeType(String name) {
-		return null;
-	}
+  public String getMimeType(String name) {
+    return null;
+  }
 
-	public URL getResource(String name) {
-		if (name.startsWith("/")) {
-			name = name.substring(1);
-		}
+  public URL getResource(String name) {
+    if (name.startsWith("/")) {
+      name = name.substring(1);
+    }
 
-		return this.bundle.getResource(name);
-	}
+    return this.bundle.getResource(name);
+  }
 
-	public boolean handleSecurity(HttpServletRequest req, HttpServletResponse res) {
-		return true;
-	}
+  public boolean handleSecurity(HttpServletRequest req, HttpServletResponse res) {
+    return true;
+  }
 }

@@ -23,30 +23,32 @@ import java.util.Collections;
 import java.util.Map;
 
 public final class ServletConfigImpl implements ServletConfig {
-	private final String name;
-	private final ServletContext context;
-	private final Map<String, String> initParams;
+  private final String name;
 
-	public ServletConfigImpl(String name, ServletContext context,
-			Map<String, String> initParams) {
-		this.name = name;
-		this.context = context;
-		this.initParams = initParams;
-	}
+  private final ServletContext context;
 
-	public String getServletName() {
-		return this.name;
-	}
+  private final Map<String, String> initParams;
 
-	public ServletContext getServletContext() {
-		return this.context;
-	}
+  public ServletConfigImpl(String name, ServletContext context,
+    Map<String, String> initParams) {
+    this.name = name;
+    this.context = context;
+    this.initParams = initParams;
+  }
 
-	public String getInitParameter(String name) {
-		return this.initParams.get(name);
-	}
+  public String getServletName() {
+    return this.name;
+  }
 
-	public Enumeration getInitParameterNames() {
-		return Collections.enumeration(this.initParams.keySet());
-	}
+  public ServletContext getServletContext() {
+    return this.context;
+  }
+
+  public String getInitParameter(String name) {
+    return this.initParams.get(name);
+  }
+
+  public Enumeration getInitParameterNames() {
+    return Collections.enumeration(this.initParams.keySet());
+  }
 }

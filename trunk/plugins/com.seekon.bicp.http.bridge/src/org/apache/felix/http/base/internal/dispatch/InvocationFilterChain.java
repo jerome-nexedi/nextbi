@@ -24,28 +24,31 @@ import java.io.IOException;
 import org.apache.felix.http.base.internal.handler.FilterHandler;
 
 public final class InvocationFilterChain extends HttpFilterChain {
-	private final FilterHandler[] handlers;
-	private final ServletPipeline servletPipeline;
-	private final FilterChain proceedingChain;
-	private int index = -1;
+  private final FilterHandler[] handlers;
 
-	public InvocationFilterChain(FilterHandler[] handlers,
-			ServletPipeline servletPipeline, FilterChain proceedingChain) {
-		this.handlers = handlers;
-		this.servletPipeline = servletPipeline;
-		this.proceedingChain = proceedingChain;
-	}
+  private final ServletPipeline servletPipeline;
 
-	protected void doFilter(HttpServletRequest req, HttpServletResponse res)
-			throws IOException, ServletException {
-		this.index++;
+  private final FilterChain proceedingChain;
 
-		if (this.index < this.handlers.length) {
-			this.handlers[this.index].handle(req, res, this);
-		} else {
-			if (!this.servletPipeline.handle(req, res)) {
-				this.proceedingChain.doFilter(req, res);
-			}
-		}
-	}
+  private int index = -1;
+
+  public InvocationFilterChain(FilterHandler[] handlers,
+    ServletPipeline servletPipeline, FilterChain proceedingChain) {
+    this.handlers = handlers;
+    this.servletPipeline = servletPipeline;
+    this.proceedingChain = proceedingChain;
+  }
+
+  protected void doFilter(HttpServletRequest req, HttpServletResponse res)
+    throws IOException, ServletException {
+    this.index++;
+
+    if (this.index < this.handlers.length) {
+      this.handlers[this.index].handle(req, res, this);
+    } else {
+      if (!this.servletPipeline.handle(req, res)) {
+        this.proceedingChain.doFilter(req, res);
+      }
+    }
+  }
 }

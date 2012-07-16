@@ -31,24 +31,24 @@ import org.osgi.framework.BundleContext;
  * implementing the respective Servlet API 2.4 listener interface.
  */
 public class ServletRequestListenerManager extends
-		AbstractListenerManager<ServletRequestListener> {
+  AbstractListenerManager<ServletRequestListener> {
 
-	public ServletRequestListenerManager(BundleContext context) {
-		super(context, ServletRequestListener.class);
-	}
+  public ServletRequestListenerManager(BundleContext context) {
+    super(context, ServletRequestListener.class);
+  }
 
-	public void requestDestroyed(final ServletRequestEvent sre) {
-		final Iterator<ServletRequestListener> listeners = getContextListeners();
-		while (listeners.hasNext()) {
-			listeners.next().requestDestroyed(sre);
-		}
-	}
+  public void requestDestroyed(final ServletRequestEvent sre) {
+    final Iterator<ServletRequestListener> listeners = getContextListeners();
+    while (listeners.hasNext()) {
+      listeners.next().requestDestroyed(sre);
+    }
+  }
 
-	public void requestInitialized(final ServletRequestEvent sre) {
-		final Iterator<ServletRequestListener> listeners = getContextListeners();
-		while (listeners.hasNext()) {
-			listeners.next().requestInitialized(sre);
-		}
-	}
+  public void requestInitialized(final ServletRequestEvent sre) {
+    final Iterator<ServletRequestListener> listeners = getContextListeners();
+    while (listeners.hasNext()) {
+      listeners.next().requestInitialized(sre);
+    }
+  }
 
 }

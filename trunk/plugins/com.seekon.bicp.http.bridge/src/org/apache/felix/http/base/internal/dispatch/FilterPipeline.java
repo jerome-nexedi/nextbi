@@ -26,38 +26,38 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.felix.http.base.internal.handler.FilterHandler;
 
 public final class FilterPipeline {
-	private final FilterHandler[] handlers;
-	private final ServletPipeline servletPipeline;
+  private final FilterHandler[] handlers;
 
-	public FilterPipeline(FilterHandler[] handlers,
-			ServletPipeline servletPipeline) {
-		this.handlers = handlers;
-		this.servletPipeline = servletPipeline;
-	}
+  private final ServletPipeline servletPipeline;
 
-	public void dispatch(HttpServletRequest req, HttpServletResponse res,
-			FilterChain proceedingChain) throws ServletException, IOException {
-		FilterChain chain = new InvocationFilterChain(this.handlers,
-				this.servletPipeline, proceedingChain);
+  public FilterPipeline(FilterHandler[] handlers, ServletPipeline servletPipeline) {
+    this.handlers = handlers;
+    this.servletPipeline = servletPipeline;
+  }
 
-		if (this.servletPipeline.hasServletsMapped()) {
-			////req = new RequestWrapper(req);
-		}
+  public void dispatch(HttpServletRequest req, HttpServletResponse res,
+    FilterChain proceedingChain) throws ServletException, IOException {
+    FilterChain chain = new InvocationFilterChain(this.handlers,
+      this.servletPipeline, proceedingChain);
 
-		chain.doFilter(req, res);
-	}
+    if (this.servletPipeline.hasServletsMapped()) {
+      // //req = new RequestWrapper(req);
+    }
 
-//	private final class RequestWrapper extends HttpServletRequestWrapper {
-//		public RequestWrapper(HttpServletRequest req) {
-//			super(req);
-//		}
-//
-//		@Override
-//		public RequestDispatcher getRequestDispatcher(String path) {
-//			final RequestDispatcher dispatcher = servletPipeline
-//					.getRequestDispatcher(path);
-//			return (null != dispatcher) ? dispatcher : super
-//					.getRequestDispatcher(path);
-//		}
-//	}
+    chain.doFilter(req, res);
+  }
+
+  // private final class RequestWrapper extends HttpServletRequestWrapper {
+  // public RequestWrapper(HttpServletRequest req) {
+  // super(req);
+  // }
+  //
+  // @Override
+  // public RequestDispatcher getRequestDispatcher(String path) {
+  // final RequestDispatcher dispatcher = servletPipeline
+  // .getRequestDispatcher(path);
+  // return (null != dispatcher) ? dispatcher : super
+  // .getRequestDispatcher(path);
+  // }
+  // }
 }

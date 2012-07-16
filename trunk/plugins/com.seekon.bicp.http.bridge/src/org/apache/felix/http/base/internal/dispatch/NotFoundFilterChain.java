@@ -22,8 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public final class NotFoundFilterChain extends HttpFilterChain {
-	protected void doFilter(HttpServletRequest req, HttpServletResponse res)
-			throws IOException, ServletException {
-		res.sendError(HttpServletResponse.SC_NOT_FOUND);
-	}
+  protected void doFilter(HttpServletRequest req, HttpServletResponse res)
+    throws IOException, ServletException {
+    res.sendError(HttpServletResponse.SC_NOT_FOUND);
+  }
 }
