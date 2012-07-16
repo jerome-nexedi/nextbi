@@ -1,7 +1,6 @@
 package com.tensegrity.palojava;
 
-public abstract interface ConnectionInfo
-{
+public abstract interface ConnectionInfo {
   public abstract String getHost();
 
   public abstract String getPort();
@@ -15,7 +14,8 @@ public abstract interface ConnectionInfo
   public abstract Object getData(String paramString);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
- * Qualified Name:     com.tensegrity.palojava.ConnectionInfo
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
+ * Qualified Name: com.tensegrity.palojava.ConnectionInfo JD-Core Version: 0.5.4
  */
