@@ -1,7 +1,6 @@
 package com.tensegrity.palojava;
 
-public abstract interface PropertyInfo extends PaloInfo
-{
+public abstract interface PropertyInfo extends PaloInfo {
   public abstract String getValue();
 
   public abstract void setValue(String paramString);
@@ -23,7 +22,8 @@ public abstract interface PropertyInfo extends PaloInfo
   public abstract PropertyInfo getChild(String paramString);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
- * Qualified Name:     com.tensegrity.palojava.PropertyInfo
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
+ * Qualified Name: com.tensegrity.palojava.PropertyInfo JD-Core Version: 0.5.4
  */

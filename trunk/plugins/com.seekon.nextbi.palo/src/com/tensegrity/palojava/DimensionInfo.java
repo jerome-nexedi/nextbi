@@ -1,7 +1,6 @@
 package com.tensegrity.palojava;
 
-public abstract interface DimensionInfo extends PaloInfo, PaloConstants
-{
+public abstract interface DimensionInfo extends PaloInfo, PaloConstants {
   public abstract DatabaseInfo getDatabase();
 
   public abstract String getName();
@@ -31,7 +30,8 @@ public abstract interface DimensionInfo extends PaloInfo, PaloConstants
   public abstract HierarchyInfo[] getHierarchies();
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
- * Qualified Name:     com.tensegrity.palojava.DimensionInfo
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
+ * Qualified Name: com.tensegrity.palojava.DimensionInfo JD-Core Version: 0.5.4
  */
