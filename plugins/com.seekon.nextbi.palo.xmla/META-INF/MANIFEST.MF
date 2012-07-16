@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Xmla
+Bundle-SymbolicName: com.seekon.nextbi.palo.xmla
+Bundle-Version: 1.0.0
+Bundle-Vendor: SEEKON
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: com.tensegrity.palojava,
+ org.apache.log4j
+Require-Bundle: com.seekon.nextbi.palo
+Export-Package: com.tensegrity.palo.xmla,
+ com.tensegrity.palo.xmla.builders,
+ com.tensegrity.palo.xmla.ext.views,
+ com.tensegrity.palo.xmla.loader,
+ com.tensegrity.palo.xmla.parsers
