@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app>
+	
+	<display-name>Palo-Pivot</display-name>
+	<description>
+		Palo-Pivot - Palo Web Client Engine
+	</description>
+
+	<filter>
+    	<filter-name>CAS Authentication Filter</filter-name>
+    	<filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
+    	<init-param>
+        	<param-name>casServerLoginUrl</param-name>
+        	<param-value>http://localhost:8090/cas/login</param-value>
+    	</init-param>
+    	<init-param>
+        	<param-name>serverName</param-name>
+        	<param-value>http://localhost:8090</param-value>
+    	</init-param>
+  	</filter>
+	<filter>
+		<filter-name>NoCacheFilter</filter-name>
+		<filter-class>
+			com.tensegrity.wpalo.server.filter.NoCacheFilter
+		</filter-class>
+		<init-param>
+			<param-name>Cache-Control</param-name>
+			<param-value>private,no-cache,no-store</param-value>
+		</init-param>
+	</filter>
+   
+   <!-- 
+   <filter-mapping>
+		<filter-name>CAS Authentication Filter</filter-name>
+		<url-pattern>*.html</url-pattern>
+	</filter-mapping>
+	 -->
+	<filter-mapping>
+		<filter-name>NoCacheFilter</filter-name>
+		<url-pattern>*.css</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>NoCacheFilter</filter-name>
+		<url-pattern>*.html</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>NoCacheFilter</filter-name>
+		<url-pattern>*.js</url-pattern>
+	</filter-mapping>
+
+<!--  SERVLETS  -->
+	
+	<servlet>
+		<servlet-name>wpalo-service</servlet-name>
+		<servlet-class>
+			com.tensegrity.wpalo.server.WPaloServiceImpl
+		</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>wpalo-property-service</servlet-name>
+		<servlet-class>
+			com.tensegrity.wpalo.server.WPaloPropertyServiceImpl
+		</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>wpalo-controller</servlet-name>
+		<servlet-class>
+			com.tensegrity.wpalo.server.services.wpalo.WPaloControllerServiceImpl
+		</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>wpalo-admin-service</servlet-name>
+		<servlet-class>
+			com.tensegrity.wpalo.server.services.admin.AdminServiceImpl			
+		</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>wpalo-cubeview-service</servlet-name>
+		<servlet-class>
+			com.tensegrity.wpalo.server.services.cubeview.WPaloCubeViewServiceImpl			
+		</servlet-class>
+	</servlet>
+	<servlet>
+			<servlet-name>wpalo-folder-service</servlet-name>
+		<servlet-class>
+			com.tensegrity.wpalo.server.services.folder.WPaloFolderServiceImpl			
+		</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>DownloadServlet</servlet-name>
+		<servlet-class>com.tensegrity.wpalo.server.DownloadServlet</servlet-class>
+	</servlet>
+	<!-- 
+	<servlet>
+	  <servlet-name>remoteLoggingServiceImpl</servlet-name>
+	  <servlet-class>com.google.gwt.libideas.logging.server.RemoteLoggingServiceImpl</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+	  <servlet-name>remoteLoggingServiceImpl</servlet-name>
+	  <url-pattern>/com.tensegrity.wpalo.Palo_Pivot/logging</url-pattern>
+	</servlet-mapping>
+	 -->
+	<servlet-mapping>
+		<servlet-name>wpalo-service</servlet-name>
+		<url-pattern>
+			/com.tensegrity.wpalo.Palo_Pivot/wpalo-service
+		</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>wpalo-property-service</servlet-name>
+		<url-pattern>
+			/com.tensegrity.wpalo.Palo_Pivot/wpalo-property-service
+		</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>wpalo-controller</servlet-name>
+		<url-pattern>
+			/com.tensegrity.wpalo.Palo_Pivot/wpalo-controller
+		</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>wpalo-cubeview-service</servlet-name>
+		<url-pattern>
+			/com.tensegrity.wpalo.Palo_Pivot/wpalo-cubeview-service
+		</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>wpalo-folder-service</servlet-name>
+		<url-pattern>
+			/com.tensegrity.wpalo.Palo_Pivot/wpalo-folder-service
+		</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>wpalo-admin-service</servlet-name>
+		<url-pattern>
+			/com.tensegrity.wpalo.Palo_Pivot/wpalo-admin-service
+		</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+	    <servlet-name>DownloadServlet</servlet-name>
+	    <url-pattern>/com.tensegrity.wpalo.Palo_Pivot/wpalo-download.srv</url-pattern>
+	</servlet-mapping>
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+
+	  <error-page>
+	  	<exception-type>java.lang.Throwable</exception-type>
+	  	<location>/html/error.html</location>
+	  </error-page>
+		 
+	  <error-page>
+	  	<error-code>404</error-code>
+	  	<location>/html/error404.html</location>
+	  </error-page>
+  
+	  <error-page>
+	  	<error-code>500</error-code>
+	  	<location>/html/error.html</location>
+	  </error-page>
+
+</web-app>
