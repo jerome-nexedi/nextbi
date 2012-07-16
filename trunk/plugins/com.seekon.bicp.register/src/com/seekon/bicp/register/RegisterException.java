@@ -2,9 +2,9 @@ package com.seekon.bicp.register;
 
 public class RegisterException extends Exception {
 
-	private static final long serialVersionUID = -2027645059092269542L;
+  private static final long serialVersionUID = -2027645059092269542L;
 
-	public RegisterException() {
+  public RegisterException() {
     super();
   }
 
