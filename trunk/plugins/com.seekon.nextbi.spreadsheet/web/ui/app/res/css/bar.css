@@ -1,0 +1,37 @@
+.bar {
+	z-index: 16;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	height: 25px;
+	float: left;
+}
+
+.bar-end {
+	z-index: 17;
+	border: solid 0 black;
+	padding: 0;
+	height: 25px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 8.25pt;
+	display: block;
+	position: relative;
+}
+
+.bar-item,.bar-item:link,.bar-item:visited {
+	padding: 3px 3px 3px 3px;
+	border: 0;
+	margin: 1px;
+}
+
+.bar-item:hover {
+	background: #FFDBA3;
+	padding: 2px 2px 2px 2px;
+	border: solid 1px #000;
+}
+
+.bar-item_active {
+	background: #FFDBA3;
+	padding: 2px 2px 2px 2px;
+	border: solid 1px #000;
+}

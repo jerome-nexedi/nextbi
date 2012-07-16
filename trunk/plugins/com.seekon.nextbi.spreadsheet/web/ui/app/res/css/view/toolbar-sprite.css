@@ -1,0 +1,64 @@
+.wssUserMenubar {
+	background: transparent none repeat scroll 0;
+	padding: 2px 2px 2px 2px !important;
+	border: none !important;
+}
+
+.iconback {
+	background-image: url(../../img/bar/ico_back.png) !important;
+}
+
+.iconrecalcnow {
+	background-image: url(../../img/bar/ico_recalc_now.png) !important
+		;
+}
+
+.iconprint {
+	background-image: url(../../img/bar/ico_quick_print.png)
+		!important;
+}
+
+.iconprintpreview {
+	background-image: url(../../img/bar/ico_print_preview.png)
+		!important;
+}
+
+.iconprinttopdf {
+	background-image: url(../../img/bar/ico_pdf.png) !important;
+}
+
+.icondownload {
+	background-image: url(../../img/bar/ico_save_document.png)
+		!important;
+}
+
+.iconoptions {
+	background-image: url(../../img/bar/ico_properties.png) !important
+		;
+}
+
+.iconhelp {
+	background-image: url(../../img/bar/ico_help.png) !important;
+}
+
+.iconclose {
+	background-image: url(../../img/bar/ico_close.png) !important;
+}
+
+.icon_copy {
+	background-image: url('../../img/sprites/toolbar-sprite.png')
+		!important;
+	background-position: left -920px !important;
+}
+
+.icon_cut {
+	background-image: url('../../img/sprites/toolbar-sprite.png')
+		!important;
+	background-position: left -936px !important;
+}
+
+.icon_paste {
+	background-image: url('../../img/sprites/toolbar-sprite.png')
+		!important;
+	background-position: left -952px !important;
+}
