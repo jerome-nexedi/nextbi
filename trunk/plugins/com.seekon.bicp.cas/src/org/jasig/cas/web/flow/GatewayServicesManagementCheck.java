@@ -20,23 +20,24 @@ import javax.validation.constraints.NotNull;
  */
 public class GatewayServicesManagementCheck extends AbstractAction {
 
-    @NotNull
-    private final ServicesManager servicesManager;
+  @NotNull
+  private final ServicesManager servicesManager;
 
-    public GatewayServicesManagementCheck(final ServicesManager servicesManager) {
-        this.servicesManager = servicesManager;
+  public GatewayServicesManagementCheck(final ServicesManager servicesManager) {
+    this.servicesManager = servicesManager;
+  }
+
+  @Override
+  protected Event doExecute(final RequestContext context) throws Exception {
+    final Service service = WebUtils.getService(context);
+
+    final boolean match = this.servicesManager.matchesExistingService(service);
+
+    if (match) {
+      return success();
     }
 
-    @Override
-    protected Event doExecute(final RequestContext context) throws Exception {
-        final Service service = WebUtils.getService(context);
-
-        final boolean match = this.servicesManager.matchesExistingService(service);
-
-        if (match) {
-            return success();
-        }
-
-        throw new UnauthorizedServiceException(String.format("Service [%s] is not authorized to use CAS.", service.getId()));
-    }
+    throw new UnauthorizedServiceException(String.format(
+      "Service [%s] is not authorized to use CAS.", service.getId()));
+  }
 }

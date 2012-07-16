@@ -17,23 +17,23 @@ import org.jasig.cas.web.support.WebUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.theme.AbstractThemeResolver;
 
-public class ConfigurableUserAgentOverrideThemeResolver extends AbstractThemeResolver
-{
+public class ConfigurableUserAgentOverrideThemeResolver extends
+  AbstractThemeResolver {
   private ServicesManager servicesManager;
+
   private List<ArgumentExtractor> argumentExtractors;
+
   private Map<String, Map<Pattern, String>> overrides;
 
-  public String resolveThemeName(HttpServletRequest request)
-  {
+  public String resolveThemeName(HttpServletRequest request) {
     String themeName = resolveServiceThemeName(request);
     String userAgent;
-    if (this.overrides.containsKey(themeName))
-    {
+    if (this.overrides.containsKey(themeName)) {
       userAgent = request.getHeader("User-Agent");
 
       for (Map.Entry entry : this.overrides.get(themeName).entrySet()) {
-        if (((Pattern)entry.getKey()).matcher(userAgent).matches()) {
-          return (String)entry.getValue();
+        if (((Pattern) entry.getKey()).matcher(userAgent).matches()) {
+          return (String) entry.getValue();
         }
 
       }
@@ -43,12 +43,11 @@ public class ConfigurableUserAgentOverrideThemeResolver extends AbstractThemeRes
     return themeName;
   }
 
-  public void setThemeName(HttpServletRequest request, HttpServletResponse response, String themeName)
-  {
+  public void setThemeName(HttpServletRequest request, HttpServletResponse response,
+    String themeName) {
   }
 
-  protected String resolveServiceThemeName(HttpServletRequest request)
-  {
+  protected String resolveServiceThemeName(HttpServletRequest request) {
     if (this.servicesManager == null) {
       return getDefaultThemeName();
     }
@@ -57,27 +56,25 @@ public class ConfigurableUserAgentOverrideThemeResolver extends AbstractThemeRes
 
     RegisteredService rService = this.servicesManager.findServiceBy(service);
 
-    return ((service != null) && (rService != null) && (StringUtils.hasText(rService.getTheme()))) ? rService.getTheme() : getDefaultThemeName();
+    return ((service != null) && (rService != null) && (StringUtils.hasText(rService
+      .getTheme()))) ? rService.getTheme() : getDefaultThemeName();
   }
 
-  public void setServicesManager(ServicesManager servicesManager)
-  {
+  public void setServicesManager(ServicesManager servicesManager) {
     this.servicesManager = servicesManager;
   }
 
-  public void setArgumentExtractors(List<ArgumentExtractor> argumentExtractors)
-  {
+  public void setArgumentExtractors(List<ArgumentExtractor> argumentExtractors) {
     this.argumentExtractors = argumentExtractors;
   }
 
-  public void setOverrides(Map<String, Map<Pattern, String>> overrides)
-  {
+  public void setOverrides(Map<String, Map<Pattern, String>> overrides) {
     this.overrides = new HashMap<String, Map<Pattern, String>>();
 
     for (Map.Entry<String, Map<Pattern, String>> themeMapping : overrides.entrySet()) {
       Map mappings = new LinkedHashMap();
       for (Map.Entry browserMapping : themeMapping.getValue().entrySet()) {
-        Pattern p = Pattern.compile((String)browserMapping.getKey());
+        Pattern p = Pattern.compile((String) browserMapping.getKey());
         mappings.put(p, browserMapping.getValue());
       }
       this.overrides.put(themeMapping.getKey(), mappings);

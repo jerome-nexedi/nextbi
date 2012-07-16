@@ -29,67 +29,68 @@ import javax.validation.constraints.NotNull;
  */
 public final class Cas20ProxyHandler implements ProxyHandler {
 
-    /** The Commons Logging instance. */
-    private final Logger log = LoggerFactory.getLogger(getClass());
+  /** The Commons Logging instance. */
+  private final Logger log = LoggerFactory.getLogger(getClass());
 
-    /** The PGTIOU ticket prefix. */
-    private static final String PGTIOU_PREFIX = "PGTIOU";
+  /** The PGTIOU ticket prefix. */
+  private static final String PGTIOU_PREFIX = "PGTIOU";
 
-    /** Generate unique ids. */
-    @NotNull
-    private UniqueTicketIdGenerator uniqueTicketIdGenerator = new DefaultUniqueTicketIdGenerator();
+  /** Generate unique ids. */
+  @NotNull
+  private UniqueTicketIdGenerator uniqueTicketIdGenerator = new DefaultUniqueTicketIdGenerator();
 
-    /** Instance of Apache Commons HttpClient */
-    @NotNull
-    private HttpClient httpClient;
+  /** Instance of Apache Commons HttpClient */
+  @NotNull
+  private HttpClient httpClient;
 
-    public String handle(final Credentials credentials,
-        final String proxyGrantingTicketId) {
-        final HttpBasedServiceCredentials serviceCredentials = (HttpBasedServiceCredentials) credentials;
-        final String proxyIou = this.uniqueTicketIdGenerator
-            .getNewTicketId(PGTIOU_PREFIX);
-        final String serviceCredentialsAsString = serviceCredentials.getCallbackUrl().toExternalForm();
-        final StringBuilder stringBuffer = new StringBuilder(
-            serviceCredentialsAsString.length() + proxyIou.length()
-                + proxyGrantingTicketId.length() + 15);
+  public String handle(final Credentials credentials,
+    final String proxyGrantingTicketId) {
+    final HttpBasedServiceCredentials serviceCredentials = (HttpBasedServiceCredentials) credentials;
+    final String proxyIou = this.uniqueTicketIdGenerator
+      .getNewTicketId(PGTIOU_PREFIX);
+    final String serviceCredentialsAsString = serviceCredentials.getCallbackUrl()
+      .toExternalForm();
+    final StringBuilder stringBuffer = new StringBuilder(serviceCredentialsAsString
+      .length()
+      + proxyIou.length() + proxyGrantingTicketId.length() + 15);
 
-        stringBuffer.append(serviceCredentialsAsString);
+    stringBuffer.append(serviceCredentialsAsString);
 
-        if (serviceCredentials.getCallbackUrl().getQuery() != null) {
-            stringBuffer.append("&");
-        } else {
-            stringBuffer.append("?");
-        }
-
-        stringBuffer.append("pgtIou=");
-        stringBuffer.append(proxyIou);
-        stringBuffer.append("&pgtId=");
-        stringBuffer.append(proxyGrantingTicketId);
-
-        if (this.httpClient.isValidEndPoint(stringBuffer.toString())) {
-            if (log.isDebugEnabled()) {
-                log.debug("Sent ProxyIou of " + proxyIou + " for service: "
-                    + serviceCredentials.toString());
-            }
-            return proxyIou;
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug("Failed to send ProxyIou of " + proxyIou
-                + " for service: " + serviceCredentials.toString());
-        }
-        return null;
+    if (serviceCredentials.getCallbackUrl().getQuery() != null) {
+      stringBuffer.append("&");
+    } else {
+      stringBuffer.append("?");
     }
 
-    /**
-     * @param uniqueTicketIdGenerator The uniqueTicketIdGenerator to set.
-     */
-    public void setUniqueTicketIdGenerator(
-        final UniqueTicketIdGenerator uniqueTicketIdGenerator) {
-        this.uniqueTicketIdGenerator = uniqueTicketIdGenerator;
+    stringBuffer.append("pgtIou=");
+    stringBuffer.append(proxyIou);
+    stringBuffer.append("&pgtId=");
+    stringBuffer.append(proxyGrantingTicketId);
+
+    if (this.httpClient.isValidEndPoint(stringBuffer.toString())) {
+      if (log.isDebugEnabled()) {
+        log.debug("Sent ProxyIou of " + proxyIou + " for service: "
+          + serviceCredentials.toString());
+      }
+      return proxyIou;
     }
 
-    public void setHttpClient(final HttpClient httpClient) {
-        this.httpClient = httpClient;
+    if (log.isDebugEnabled()) {
+      log.debug("Failed to send ProxyIou of " + proxyIou + " for service: "
+        + serviceCredentials.toString());
     }
+    return null;
+  }
+
+  /**
+   * @param uniqueTicketIdGenerator The uniqueTicketIdGenerator to set.
+   */
+  public void setUniqueTicketIdGenerator(
+    final UniqueTicketIdGenerator uniqueTicketIdGenerator) {
+    this.uniqueTicketIdGenerator = uniqueTicketIdGenerator;
+  }
+
+  public void setHttpClient(final HttpClient httpClient) {
+    this.httpClient = httpClient;
+  }
 }

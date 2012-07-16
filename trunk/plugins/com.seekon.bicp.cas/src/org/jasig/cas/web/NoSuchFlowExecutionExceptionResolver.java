@@ -29,28 +29,27 @@ import org.springframework.webflow.execution.repository.NoSuchFlowExecutionExcep
  * @since 3.0
  */
 public final class NoSuchFlowExecutionExceptionResolver implements
-    HandlerExceptionResolver {
+  HandlerExceptionResolver {
 
-    /** Instance of a log. */
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+  /** Instance of a log. */
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public ModelAndView resolveException(final HttpServletRequest request,
-        final HttpServletResponse response, final Object handler,
-        final Exception exception) {
+  public ModelAndView resolveException(final HttpServletRequest request,
+    final HttpServletResponse response, final Object handler,
+    final Exception exception) {
 
-        if (!exception.getClass().equals(NoSuchFlowExecutionException.class)) {
-            return null;
-        }
-
-        final String urlToRedirectTo = request.getRequestURI()
-            + (request.getQueryString() != null ? "?"
-                + request.getQueryString() : "");
-
-        if (log.isDebugEnabled()) {
-            log.debug("Error getting flow information for URL:"
-                + urlToRedirectTo, exception);
-        }
-
-        return new ModelAndView(new RedirectView(urlToRedirectTo));
+    if (!exception.getClass().equals(NoSuchFlowExecutionException.class)) {
+      return null;
     }
+
+    final String urlToRedirectTo = request.getRequestURI()
+      + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+
+    if (log.isDebugEnabled()) {
+      log.debug("Error getting flow information for URL:" + urlToRedirectTo,
+        exception);
+    }
+
+    return new ModelAndView(new RedirectView(urlToRedirectTo));
+  }
 }

@@ -21,32 +21,34 @@ import javax.validation.constraints.NotNull;
  *
  */
 public final class RememberMeDelegatingExpirationPolicy implements ExpirationPolicy {
-    
-    /** Unique Id for Serialization */
-    private static final long serialVersionUID = -575145836880428365L;
 
-    @NotNull
-    private ExpirationPolicy rememberMeExpirationPolicy;
-    
-    @NotNull
-    private ExpirationPolicy sessionExpirationPolicy;
+  /** Unique Id for Serialization */
+  private static final long serialVersionUID = -575145836880428365L;
 
-    public boolean isExpired(TicketState ticketState) {
-        final Boolean b = (Boolean) ticketState.getAuthentication().getAttributes().get(RememberMeCredentials.AUTHENTICATION_ATTRIBUTE_REMEMBER_ME);
-        
-        if (b == null || b.equals(Boolean.FALSE)) {
-            return this.sessionExpirationPolicy.isExpired(ticketState);
-        }
-        
-        return this.rememberMeExpirationPolicy.isExpired(ticketState);
-    }
-    
-    public void setRememberMeExpirationPolicy(
-        final ExpirationPolicy rememberMeExpirationPolicy) {
-        this.rememberMeExpirationPolicy = rememberMeExpirationPolicy;
+  @NotNull
+  private ExpirationPolicy rememberMeExpirationPolicy;
+
+  @NotNull
+  private ExpirationPolicy sessionExpirationPolicy;
+
+  public boolean isExpired(TicketState ticketState) {
+    final Boolean b = (Boolean) ticketState.getAuthentication().getAttributes().get(
+      RememberMeCredentials.AUTHENTICATION_ATTRIBUTE_REMEMBER_ME);
+
+    if (b == null || b.equals(Boolean.FALSE)) {
+      return this.sessionExpirationPolicy.isExpired(ticketState);
     }
 
-    public void setSessionExpirationPolicy(final ExpirationPolicy sessionExpirationPolicy) {
-        this.sessionExpirationPolicy = sessionExpirationPolicy;
-    }
+    return this.rememberMeExpirationPolicy.isExpired(ticketState);
+  }
+
+  public void setRememberMeExpirationPolicy(
+    final ExpirationPolicy rememberMeExpirationPolicy) {
+    this.rememberMeExpirationPolicy = rememberMeExpirationPolicy;
+  }
+
+  public void setSessionExpirationPolicy(
+    final ExpirationPolicy sessionExpirationPolicy) {
+    this.sessionExpirationPolicy = sessionExpirationPolicy;
+  }
 }

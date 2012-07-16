@@ -20,20 +20,19 @@ package org.jasig.cas.authentication.principal;
  * @see org.jasig.cas.authentication.principal.SimplePrincipal
  */
 public final class UsernamePasswordCredentialsToPrincipalResolver extends
-    AbstractPersonDirectoryCredentialsToPrincipalResolver {
+  AbstractPersonDirectoryCredentialsToPrincipalResolver {
 
-    protected String extractPrincipalId(final Credentials credentials) {
-        final UsernamePasswordCredentials usernamePasswordCredentials = (UsernamePasswordCredentials) credentials;
-        return usernamePasswordCredentials.getUsername();
-    }
+  protected String extractPrincipalId(final Credentials credentials) {
+    final UsernamePasswordCredentials usernamePasswordCredentials = (UsernamePasswordCredentials) credentials;
+    return usernamePasswordCredentials.getUsername();
+  }
 
-    /**
-     * Return true if Credentials are UsernamePasswordCredentials, false
-     * otherwise.
-     */
-    public boolean supports(final Credentials credentials) {
-        return credentials != null
-            && UsernamePasswordCredentials.class.isAssignableFrom(credentials
-                .getClass());
-    }
+  /**
+   * Return true if Credentials are UsernamePasswordCredentials, false
+   * otherwise.
+   */
+  public boolean supports(final Credentials credentials) {
+    return credentials != null
+      && UsernamePasswordCredentials.class.isAssignableFrom(credentials.getClass());
+  }
 }

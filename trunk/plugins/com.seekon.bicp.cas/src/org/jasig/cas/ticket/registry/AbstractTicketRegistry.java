@@ -20,30 +20,29 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractTicketRegistry implements TicketRegistry {
 
-    /** The Commons Logging log instance. */
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+  /** The Commons Logging log instance. */
+  protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    /**
-     * @throws IllegalArgumentException if class is null.
-     * @throws ClassCastException if class does not match requested ticket
-     * class.
-     */
-    public final Ticket getTicket(final String ticketId,
-        final Class<? extends Ticket> clazz) {
-        Assert.notNull(clazz, "clazz cannot be null");
+  /**
+   * @throws IllegalArgumentException if class is null.
+   * @throws ClassCastException if class does not match requested ticket
+   * class.
+   */
+  public final Ticket getTicket(final String ticketId,
+    final Class<? extends Ticket> clazz) {
+    Assert.notNull(clazz, "clazz cannot be null");
 
-        final Ticket ticket = this.getTicket(ticketId);
+    final Ticket ticket = this.getTicket(ticketId);
 
-        if (ticket == null) {
-            return null;
-        }
-
-        if (!clazz.isAssignableFrom(ticket.getClass())) {
-            throw new ClassCastException("Ticket [" + ticket.getId()
-                + " is of type " + ticket.getClass()
-                + " when we were expecting " + clazz);
-        }
-
-        return ticket;
+    if (ticket == null) {
+      return null;
     }
+
+    if (!clazz.isAssignableFrom(ticket.getClass())) {
+      throw new ClassCastException("Ticket [" + ticket.getId() + " is of type "
+        + ticket.getClass() + " when we were expecting " + clazz);
+    }
+
+    return ticket;
+  }
 }

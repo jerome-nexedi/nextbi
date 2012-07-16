@@ -25,39 +25,44 @@ import javax.validation.constraints.NotNull;
  * @since 3.0.4
  */
 public final class SendTicketGrantingTicketAction extends AbstractAction {
-    
-    @NotNull
-    private CookieRetrievingCookieGenerator ticketGrantingTicketCookieGenerator;
-    
-    /** Instance of CentralAuthenticationService. */
-    @NotNull
-    private CentralAuthenticationService centralAuthenticationService;
-    
-    protected Event doExecute(final RequestContext context) {
-        final String ticketGrantingTicketId = WebUtils.getTicketGrantingTicketId(context); 
-        final String ticketGrantingTicketValueFromCookie = (String) context.getFlowScope().get("ticketGrantingTicketId");
-        
-        if (ticketGrantingTicketId == null) {
-            return success();
-        }
-        
-        this.ticketGrantingTicketCookieGenerator.addCookie(WebUtils.getHttpServletRequest(context), WebUtils
-            .getHttpServletResponse(context), ticketGrantingTicketId);
 
-        if (ticketGrantingTicketValueFromCookie != null && !ticketGrantingTicketId.equals(ticketGrantingTicketValueFromCookie)) {
-            this.centralAuthenticationService
-                .destroyTicketGrantingTicket(ticketGrantingTicketValueFromCookie);
-        }
+  @NotNull
+  private CookieRetrievingCookieGenerator ticketGrantingTicketCookieGenerator;
 
-        return success();
+  /** Instance of CentralAuthenticationService. */
+  @NotNull
+  private CentralAuthenticationService centralAuthenticationService;
+
+  protected Event doExecute(final RequestContext context) {
+    final String ticketGrantingTicketId = WebUtils
+      .getTicketGrantingTicketId(context);
+    final String ticketGrantingTicketValueFromCookie = (String) context
+      .getFlowScope().get("ticketGrantingTicketId");
+
+    if (ticketGrantingTicketId == null) {
+      return success();
     }
-    
-    public void setTicketGrantingTicketCookieGenerator(final CookieRetrievingCookieGenerator ticketGrantingTicketCookieGenerator) {
-        this.ticketGrantingTicketCookieGenerator= ticketGrantingTicketCookieGenerator;
+
+    this.ticketGrantingTicketCookieGenerator.addCookie(WebUtils
+      .getHttpServletRequest(context), WebUtils.getHttpServletResponse(context),
+      ticketGrantingTicketId);
+
+    if (ticketGrantingTicketValueFromCookie != null
+      && !ticketGrantingTicketId.equals(ticketGrantingTicketValueFromCookie)) {
+      this.centralAuthenticationService
+        .destroyTicketGrantingTicket(ticketGrantingTicketValueFromCookie);
     }
-    
-    public void setCentralAuthenticationService(
-        final CentralAuthenticationService centralAuthenticationService) {
-        this.centralAuthenticationService = centralAuthenticationService;
-    }
+
+    return success();
+  }
+
+  public void setTicketGrantingTicketCookieGenerator(
+    final CookieRetrievingCookieGenerator ticketGrantingTicketCookieGenerator) {
+    this.ticketGrantingTicketCookieGenerator = ticketGrantingTicketCookieGenerator;
+  }
+
+  public void setCentralAuthenticationService(
+    final CentralAuthenticationService centralAuthenticationService) {
+    this.centralAuthenticationService = centralAuthenticationService;
+  }
 }

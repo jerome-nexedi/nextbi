@@ -25,44 +25,49 @@ import java.util.Map;
  * @version $Revision$ $Date$
  * @since 3.3.5
  */
-public class LinkedAuthenticationHandlerAndCredentialsToPrincipalResolverAuthenticationManager extends AbstractAuthenticationManager {
+public class LinkedAuthenticationHandlerAndCredentialsToPrincipalResolverAuthenticationManager
+  extends AbstractAuthenticationManager {
 
-    @NotNull
-    @Size(min = 1)
-    private final Map<AuthenticationHandler, CredentialsToPrincipalResolver> linkedHandlers;
+  @NotNull
+  @Size(min = 1)
+  private final Map<AuthenticationHandler, CredentialsToPrincipalResolver> linkedHandlers;
 
-    public LinkedAuthenticationHandlerAndCredentialsToPrincipalResolverAuthenticationManager(final Map<AuthenticationHandler,CredentialsToPrincipalResolver> linkedHandlers) {
-        this.linkedHandlers = linkedHandlers; 
+  public LinkedAuthenticationHandlerAndCredentialsToPrincipalResolverAuthenticationManager(
+    final Map<AuthenticationHandler, CredentialsToPrincipalResolver> linkedHandlers) {
+    this.linkedHandlers = linkedHandlers;
+  }
+
+  @Override
+  protected Pair<AuthenticationHandler, Principal> authenticateAndObtainPrincipal(
+    final Credentials credentials) throws AuthenticationException {
+    boolean foundOneThatWorks = false;
+    for (final AuthenticationHandler authenticationHandler : this.linkedHandlers
+      .keySet()) {
+      if (!authenticationHandler.supports(credentials)) {
+        continue;
+      }
+
+      foundOneThatWorks = true;
+      boolean authenticated = false;
+      final LoggingStopWatch stopWatch = new LoggingStopWatch(authenticationHandler
+        .getClass().getSimpleName());
+
+      try {
+        authenticated = authenticationHandler.authenticate(credentials);
+      } finally {
+        stopWatch.stop();
+      }
+      if (authenticated) {
+        final Principal p = this.linkedHandlers.get(authenticationHandler)
+          .resolvePrincipal(credentials);
+        return new Pair<AuthenticationHandler, Principal>(authenticationHandler, p);
+      }
     }
 
-    @Override
-    protected Pair<AuthenticationHandler, Principal> authenticateAndObtainPrincipal(final Credentials credentials) throws AuthenticationException {
-        boolean foundOneThatWorks = false;
-        for (final AuthenticationHandler authenticationHandler : this.linkedHandlers.keySet()) {
-            if (!authenticationHandler.supports(credentials)) {
-                continue;
-            }
-
-            foundOneThatWorks = true;
-            boolean authenticated = false;
-            final LoggingStopWatch stopWatch = new LoggingStopWatch(authenticationHandler.getClass().getSimpleName());
-
-
-            try {
-                authenticated = authenticationHandler.authenticate(credentials);
-            } finally {
-                stopWatch.stop();
-            }
-            if (authenticated) {
-                final Principal p = this.linkedHandlers.get(authenticationHandler).resolvePrincipal(credentials);
-                return new Pair<AuthenticationHandler,Principal>(authenticationHandler, p);
-            }
-        }
-
-        if (foundOneThatWorks) {
-            throw BadCredentialsAuthenticationException.ERROR;
-        }
-
-        throw UnsupportedCredentialsException.ERROR;
+    if (foundOneThatWorks) {
+      throw BadCredentialsAuthenticationException.ERROR;
     }
+
+    throw UnsupportedCredentialsException.ERROR;
+  }
 }

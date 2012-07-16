@@ -24,53 +24,52 @@ import javax.validation.constraints.NotNull;
  */
 public final class RegisteredServiceValidator implements Validator {
 
-    /** Default length, which matches what is in the view. */
-    private static final int DEFAULT_MAX_DESCRIPTION_LENGTH = 300;
+  /** Default length, which matches what is in the view. */
+  private static final int DEFAULT_MAX_DESCRIPTION_LENGTH = 300;
 
-    /** ServiceRegistry to look up services. */
-    @NotNull
-    private ServicesManager servicesManager;
+  /** ServiceRegistry to look up services. */
+  @NotNull
+  private ServicesManager servicesManager;
 
-    /** The maximum length of the description we will accept. */
-    @Min(0)
-    private int maxDescriptionLength = DEFAULT_MAX_DESCRIPTION_LENGTH;
+  /** The maximum length of the description we will accept. */
+  @Min(0)
+  private int maxDescriptionLength = DEFAULT_MAX_DESCRIPTION_LENGTH;
 
-    /**
-     * Supports the RegisteredServiceImpl.
-     * 
-     * @see org.springframework.validation.Validator#supports(java.lang.Class)
-     */
-    public boolean supports(final Class clazz) {
-        return RegisteredServiceImpl.class.equals(clazz);
-    }
+  /**
+   * Supports the RegisteredServiceImpl.
+   * 
+   * @see org.springframework.validation.Validator#supports(java.lang.Class)
+   */
+  public boolean supports(final Class clazz) {
+    return RegisteredServiceImpl.class.equals(clazz);
+  }
 
-    public void validate(final Object o, final Errors errors) {
-        final RegisteredService r = (RegisteredService) o;
+  public void validate(final Object o, final Errors errors) {
+    final RegisteredService r = (RegisteredService) o;
 
-        if (r.getServiceId() != null) {
-            for (final RegisteredService service : this.servicesManager
-                .getAllServices()) {
-                if (r.getServiceId().equals(service.getServiceId())
-                    && r.getId() != service.getId()) {
-                    errors.rejectValue("serviceId",
-                        "registeredService.serviceId.exists", null);
-                    break;
-                }
-            }
+    if (r.getServiceId() != null) {
+      for (final RegisteredService service : this.servicesManager.getAllServices()) {
+        if (r.getServiceId().equals(service.getServiceId())
+          && r.getId() != service.getId()) {
+          errors
+            .rejectValue("serviceId", "registeredService.serviceId.exists", null);
+          break;
         }
-
-        if (r.getDescription() != null
-            && r.getDescription().length() > this.maxDescriptionLength) {
-            errors.rejectValue("description",
-                "registeredService.description.length", null);
-        }
+      }
     }
 
-    public void setServicesManager(final ServicesManager serviceRegistry) {
-        this.servicesManager = serviceRegistry;
+    if (r.getDescription() != null
+      && r.getDescription().length() > this.maxDescriptionLength) {
+      errors
+        .rejectValue("description", "registeredService.description.length", null);
     }
+  }
 
-    public void setMaxDescriptionLength(final int maxLength) {
-        this.maxDescriptionLength = maxLength;
-    }
+  public void setServicesManager(final ServicesManager serviceRegistry) {
+    this.servicesManager = serviceRegistry;
+  }
+
+  public void setMaxDescriptionLength(final int maxLength) {
+    this.maxDescriptionLength = maxLength;
+  }
 }

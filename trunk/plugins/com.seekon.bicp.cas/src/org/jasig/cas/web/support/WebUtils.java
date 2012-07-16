@@ -24,89 +24,83 @@ import org.springframework.webflow.execution.RequestContext;
  */
 public final class WebUtils {
 
-    public static HttpServletRequest getHttpServletRequest(
-        final RequestContext context) {
-        Assert.isInstanceOf(ServletExternalContext.class, context
-            .getExternalContext(),
-            "Cannot obtain HttpServletRequest from event of type: "
-                + context.getExternalContext().getClass().getName());
+  public static HttpServletRequest getHttpServletRequest(final RequestContext context) {
+    Assert.isInstanceOf(ServletExternalContext.class, context.getExternalContext(),
+      "Cannot obtain HttpServletRequest from event of type: "
+        + context.getExternalContext().getClass().getName());
 
-        return (HttpServletRequest) context.getExternalContext().getNativeRequest();
-    }
+    return (HttpServletRequest) context.getExternalContext().getNativeRequest();
+  }
 
-    public static HttpServletResponse getHttpServletResponse(
-        final RequestContext context) {
-        Assert.isInstanceOf(ServletExternalContext.class, context
-            .getExternalContext(),
-            "Cannot obtain HttpServletResponse from event of type: "
-                + context.getExternalContext().getClass().getName());
-        return (HttpServletResponse) context.getExternalContext()
-            .getNativeResponse();
-    }
+  public static HttpServletResponse getHttpServletResponse(
+    final RequestContext context) {
+    Assert.isInstanceOf(ServletExternalContext.class, context.getExternalContext(),
+      "Cannot obtain HttpServletResponse from event of type: "
+        + context.getExternalContext().getClass().getName());
+    return (HttpServletResponse) context.getExternalContext().getNativeResponse();
+  }
 
-    public static WebApplicationService getService(
-        final List<ArgumentExtractor> argumentExtractors,
-        final HttpServletRequest request) {
-        for (final ArgumentExtractor argumentExtractor : argumentExtractors) {
-            final WebApplicationService service = argumentExtractor
-                .extractService(request);
+  public static WebApplicationService getService(
+    final List<ArgumentExtractor> argumentExtractors,
+    final HttpServletRequest request) {
+    for (final ArgumentExtractor argumentExtractor : argumentExtractors) {
+      final WebApplicationService service = argumentExtractor
+        .extractService(request);
 
-            if (service != null) {
-                return service;
-            }
-        }
-
-        return null;
-    }
-    
-    public static WebApplicationService getService(
-        final List<ArgumentExtractor> argumentExtractors,
-        final RequestContext context) {
-        final HttpServletRequest request = WebUtils.getHttpServletRequest(context);
-        return getService(argumentExtractors, request);
+      if (service != null) {
+        return service;
+      }
     }
 
-    public static WebApplicationService getService(
-        final RequestContext context) {
-        return (WebApplicationService) context.getFlowScope().get("service");
-    }
+    return null;
+  }
 
-    public static void putTicketGrantingTicketInRequestScope(
-        final RequestContext context, final String ticketValue) {
-        context.getRequestScope().put("ticketGrantingTicketId", ticketValue);
-    }
+  public static WebApplicationService getService(
+    final List<ArgumentExtractor> argumentExtractors, final RequestContext context) {
+    final HttpServletRequest request = WebUtils.getHttpServletRequest(context);
+    return getService(argumentExtractors, request);
+  }
 
-    public static String getTicketGrantingTicketId(
-        final RequestContext context) {
-        final String tgtFromRequest = (String) context.getRequestScope().get("ticketGrantingTicketId");
-        final String tgtFromFlow = (String) context.getFlowScope().get("ticketGrantingTicketId");
-        
-        return tgtFromRequest != null ? tgtFromRequest : tgtFromFlow;
+  public static WebApplicationService getService(final RequestContext context) {
+    return (WebApplicationService) context.getFlowScope().get("service");
+  }
 
-    }
+  public static void putTicketGrantingTicketInRequestScope(
+    final RequestContext context, final String ticketValue) {
+    context.getRequestScope().put("ticketGrantingTicketId", ticketValue);
+  }
 
-    public static void putServiceTicketInRequestScope(
-        final RequestContext context, final String ticketValue) {
-        context.getRequestScope().put("serviceTicketId", ticketValue);
-    }
+  public static String getTicketGrantingTicketId(final RequestContext context) {
+    final String tgtFromRequest = (String) context.getRequestScope().get(
+      "ticketGrantingTicketId");
+    final String tgtFromFlow = (String) context.getFlowScope().get(
+      "ticketGrantingTicketId");
 
-    public static String getServiceTicketFromRequestScope(
-        final RequestContext context) {
-        return context.getRequestScope().getString("serviceTicketId");
-    }
-    
-    public static void putLoginTicket(final RequestContext context, final String ticket) {
-        context.getFlowScope().put("loginTicket", ticket);
-    }
-    
-    public static String getLoginTicketFromFlowScope(final RequestContext context) {
-        // Getting the saved LT destroys it in support of one-time-use
-        // See section 3.5.1 of http://www.jasig.org/cas/protocol
-        final String lt = (String) context.getFlowScope().remove("loginTicket");
-        return lt != null ? lt : "";
-    }
-    
-    public static String getLoginTicketFromRequest(final RequestContext context) {
-       return context.getRequestParameters().get("lt");
-    }
+    return tgtFromRequest != null ? tgtFromRequest : tgtFromFlow;
+
+  }
+
+  public static void putServiceTicketInRequestScope(final RequestContext context,
+    final String ticketValue) {
+    context.getRequestScope().put("serviceTicketId", ticketValue);
+  }
+
+  public static String getServiceTicketFromRequestScope(final RequestContext context) {
+    return context.getRequestScope().getString("serviceTicketId");
+  }
+
+  public static void putLoginTicket(final RequestContext context, final String ticket) {
+    context.getFlowScope().put("loginTicket", ticket);
+  }
+
+  public static String getLoginTicketFromFlowScope(final RequestContext context) {
+    // Getting the saved LT destroys it in support of one-time-use
+    // See section 3.5.1 of http://www.jasig.org/cas/protocol
+    final String lt = (String) context.getFlowScope().remove("loginTicket");
+    return lt != null ? lt : "";
+  }
+
+  public static String getLoginTicketFromRequest(final RequestContext context) {
+    return context.getRequestParameters().get("lt");
+  }
 }

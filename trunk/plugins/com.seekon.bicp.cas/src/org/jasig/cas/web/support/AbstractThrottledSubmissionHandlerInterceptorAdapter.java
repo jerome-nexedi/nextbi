@@ -24,80 +24,93 @@ import javax.validation.constraints.NotNull;
  * @version $Revision$ $Date$
  * @since 3.3.5
  */
-public abstract class AbstractThrottledSubmissionHandlerInterceptorAdapter extends HandlerInterceptorAdapter {
+public abstract class AbstractThrottledSubmissionHandlerInterceptorAdapter extends
+  HandlerInterceptorAdapter {
 
-    private static final int DEFAULT_FAILURE_THRESHOLD = 100;
+  private static final int DEFAULT_FAILURE_THRESHOLD = 100;
 
-    private static final int DEFAULT_FAILURE_RANGE_IN_SECONDS = 60;
+  private static final int DEFAULT_FAILURE_RANGE_IN_SECONDS = 60;
 
-    private static final String DEFAULT_USERNAME_PARAMETER = "username";
-    
-    private static final String SUCCESSFUL_AUTHENTICATION_EVENT = "success";
+  private static final String DEFAULT_USERNAME_PARAMETER = "username";
 
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+  private static final String SUCCESSFUL_AUTHENTICATION_EVENT = "success";
 
-    @Min(0)
-    private int failureThreshold = DEFAULT_FAILURE_THRESHOLD;
+  protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    @Min(0)
-    private int failureRangeInSeconds = DEFAULT_FAILURE_RANGE_IN_SECONDS;
+  @Min(0)
+  private int failureThreshold = DEFAULT_FAILURE_THRESHOLD;
 
-    @NotNull
-    private String usernameParameter = DEFAULT_USERNAME_PARAMETER;
+  @Min(0)
+  private int failureRangeInSeconds = DEFAULT_FAILURE_RANGE_IN_SECONDS;
 
-    @Override
-    public final boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object o) throws Exception {
-        // we only care about post because that's the only instance where we can get anything useful besides IP address.
-        if (!"POST".equals(request.getMethod())) {
-            return true;
-        }
+  @NotNull
+  private String usernameParameter = DEFAULT_USERNAME_PARAMETER;
 
-        final int count = findCount(request, this.usernameParameter, this.failureRangeInSeconds);
-
-        if (count >= this.failureThreshold) {
-            updateCount(request, this.usernameParameter);
-            log.warn("*** Possible Hacking Attempt from [" + request.getRemoteAddr() + "].  More than " + this.failureThreshold + " failed login attempts within " + this.failureRangeInSeconds + " seconds.");
-            response.sendError(403, "Access Denied for user [" + request.getParameter(usernameParameter) + " from IP Address [" + request.getRemoteAddr() + "]");
-            return false;
-        }
-
-        return true;
+  @Override
+  public final boolean preHandle(final HttpServletRequest request,
+    final HttpServletResponse response, final Object o) throws Exception {
+    // we only care about post because that's the only instance where we can get anything useful besides IP address.
+    if (!"POST".equals(request.getMethod())) {
+      return true;
     }
 
-    @Override
-    public final void postHandle(final HttpServletRequest request, final HttpServletResponse response, final Object o, final ModelAndView modelAndView) throws Exception {
-        if (!"POST".equals(request.getMethod())) {
-            return;
-        }
+    final int count = findCount(request, this.usernameParameter,
+      this.failureRangeInSeconds);
 
-        RequestContext context = (RequestContext) request.getAttribute("flowRequestContext");
-        
-        if (context == null || context.getCurrentEvent() == null) {
-            return;
-        }
-        
-        // User successfully authenticated
-        if (SUCCESSFUL_AUTHENTICATION_EVENT.equals(context.getCurrentEvent().getId())) {
-            return;
-        }
-
-        // User submitted invalid credentials, so we update the invalid login count
-        updateCount(request, this.usernameParameter);
+    if (count >= this.failureThreshold) {
+      updateCount(request, this.usernameParameter);
+      log.warn("*** Possible Hacking Attempt from [" + request.getRemoteAddr()
+        + "].  More than " + this.failureThreshold
+        + " failed login attempts within " + this.failureRangeInSeconds
+        + " seconds.");
+      response.sendError(403, "Access Denied for user ["
+        + request.getParameter(usernameParameter) + " from IP Address ["
+        + request.getRemoteAddr() + "]");
+      return false;
     }
 
-    protected abstract int findCount(HttpServletRequest request, final String usernameParameter, int failureRangeInSeconds);
+    return true;
+  }
 
-    protected abstract void updateCount(HttpServletRequest request, String usernameParameter);
-
-    public final void setFailureThreshold(final int failureThreshold) {
-        this.failureThreshold = failureThreshold;
+  @Override
+  public final void postHandle(final HttpServletRequest request,
+    final HttpServletResponse response, final Object o,
+    final ModelAndView modelAndView) throws Exception {
+    if (!"POST".equals(request.getMethod())) {
+      return;
     }
 
-    public final void setFailureRangeInSeconds(final int failureRangeInSeconds) {
-        this.failureRangeInSeconds = failureRangeInSeconds;
+    RequestContext context = (RequestContext) request
+      .getAttribute("flowRequestContext");
+
+    if (context == null || context.getCurrentEvent() == null) {
+      return;
     }
 
-    public final void setUsernameParameter(final String usernameParameter) {
-        this.usernameParameter = usernameParameter;
+    // User successfully authenticated
+    if (SUCCESSFUL_AUTHENTICATION_EVENT.equals(context.getCurrentEvent().getId())) {
+      return;
     }
+
+    // User submitted invalid credentials, so we update the invalid login count
+    updateCount(request, this.usernameParameter);
+  }
+
+  protected abstract int findCount(HttpServletRequest request,
+    final String usernameParameter, int failureRangeInSeconds);
+
+  protected abstract void updateCount(HttpServletRequest request,
+    String usernameParameter);
+
+  public final void setFailureThreshold(final int failureThreshold) {
+    this.failureThreshold = failureThreshold;
+  }
+
+  public final void setFailureRangeInSeconds(final int failureRangeInSeconds) {
+    this.failureRangeInSeconds = failureRangeInSeconds;
+  }
+
+  public final void setUsernameParameter(final String usernameParameter) {
+    this.usernameParameter = usernameParameter;
+  }
 }

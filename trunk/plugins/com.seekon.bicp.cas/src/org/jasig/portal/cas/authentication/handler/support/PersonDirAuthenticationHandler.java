@@ -7,16 +7,19 @@ import org.jasypt.digest.config.SimpleDigesterConfig;
 import org.jasypt.util.password.ConfigurablePasswordEncryptor;
 import org.slf4j.Logger;
 
-public class PersonDirAuthenticationHandler extends AbstractUsernamePasswordAuthenticationHandler
-{
+public class PersonDirAuthenticationHandler extends
+  AbstractUsernamePasswordAuthenticationHandler {
   private static final String MD5_PREFIX = "(MD5)";
+
   private static final String SHA256_PREFIX = "(SHA256)";
+
   private UserPasswordDao userPasswordDao;
+
   private ConfigurablePasswordEncryptor md5Encryptor;
+
   private ConfigurablePasswordEncryptor sha256Encryptor;
 
-  public PersonDirAuthenticationHandler()
-  {
+  public PersonDirAuthenticationHandler() {
     this.md5Encryptor = new ConfigurablePasswordEncryptor();
     SimpleDigesterConfig md5Config = new SimpleDigesterConfig();
     md5Config.setIterations(Integer.valueOf(1));
@@ -32,19 +35,16 @@ public class PersonDirAuthenticationHandler extends AbstractUsernamePasswordAuth
     this.sha256Encryptor.setConfig(shaConfig);
   }
 
-  public UserPasswordDao getUserPasswordDao()
-  {
+  public UserPasswordDao getUserPasswordDao() {
     return this.userPasswordDao;
   }
 
-  public void setUserPasswordDao(UserPasswordDao userPasswordDao)
-  {
+  public void setUserPasswordDao(UserPasswordDao userPasswordDao) {
     this.userPasswordDao = userPasswordDao;
   }
 
-  protected boolean authenticateUsernamePasswordInternal(UsernamePasswordCredentials credentials)
-    throws AuthenticationException
-  {
+  protected boolean authenticateUsernamePasswordInternal(
+    UsernamePasswordCredentials credentials) throws AuthenticationException {
     String username = credentials.getUsername();
     String cleartextPassword = credentials.getPassword();
 
@@ -54,18 +54,21 @@ public class PersonDirAuthenticationHandler extends AbstractUsernamePasswordAuth
       return false;
     }
 
-    if (expectedFullHash.startsWith("(MD5)"))
-    {
+    if (expectedFullHash.startsWith("(MD5)")) {
       String hashWithoutAlgorithmPrefix = expectedFullHash.substring(5);
-      return this.md5Encryptor.checkPassword(cleartextPassword, hashWithoutAlgorithmPrefix);
+      return this.md5Encryptor.checkPassword(cleartextPassword,
+        hashWithoutAlgorithmPrefix);
     }
-    if (expectedFullHash.startsWith("(SHA256)"))
-    {
+    if (expectedFullHash.startsWith("(SHA256)")) {
       String hashWithoutAlgorithmPrefix = expectedFullHash.substring(8);
-      return this.sha256Encryptor.checkPassword(cleartextPassword, hashWithoutAlgorithmPrefix);
+      return this.sha256Encryptor.checkPassword(cleartextPassword,
+        hashWithoutAlgorithmPrefix);
     }
 
-    this.log.error("Existing password hash for user '" + username + "' is not a valid hash. It does not start with a supported algorithm prefix");
+    this.log
+      .error("Existing password hash for user '"
+        + username
+        + "' is not a valid hash. It does not start with a supported algorithm prefix");
     return false;
   }
 }

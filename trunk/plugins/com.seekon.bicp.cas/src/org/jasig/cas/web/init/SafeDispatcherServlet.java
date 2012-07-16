@@ -46,81 +46,82 @@ import com.seekon.bicp.springsupport.web.servlet.OsgiSupportDispatcherServlet;
  */
 public final class SafeDispatcherServlet extends HttpServlet {
 
-    /** Unique Id for serialization. */
-    private static final long serialVersionUID = 1L;
+  /** Unique Id for serialization. */
+  private static final long serialVersionUID = 1L;
 
-    /** Key under which we will store the exception in the ServletContext. */
-    public static final String CAUGHT_THROWABLE_KEY = "exceptionCaughtByServlet";
+  /** Key under which we will store the exception in the ServletContext. */
+  public static final String CAUGHT_THROWABLE_KEY = "exceptionCaughtByServlet";
 
-    /** Instance of Commons Logging. */
-    private static final Logger log = LoggerFactory.getLogger(SafeDispatcherServlet.class);
+  /** Instance of Commons Logging. */
+  private static final Logger log = LoggerFactory
+    .getLogger(SafeDispatcherServlet.class);
 
-    /** The actual DispatcherServlet to which we will delegate to. */
-    private DispatcherServlet delegate = new OsgiSupportDispatcherServlet();////new DispatcherServlet();
+  /** The actual DispatcherServlet to which we will delegate to. */
+  private DispatcherServlet delegate = new OsgiSupportDispatcherServlet();////new DispatcherServlet();
 
-    /** Boolean to determine if the application deployed successfully. */
-    private boolean initSuccess = true;
+  /** Boolean to determine if the application deployed successfully. */
+  private boolean initSuccess = true;
 
-    public void init(final ServletConfig config) {
-        try {
-        	super.init(config);
-        	
-        	delegate.setContextConfigLocation("/web/WEB-INF/cas-servlet.xml");
-            this.delegate.init(config);
+  public void init(final ServletConfig config) {
+    try {
+      super.init(config);
 
-        } catch (final Throwable t) {
-            // let the service method know initialization failed.
-            this.initSuccess = false;
+      delegate.setContextConfigLocation("/web/WEB-INF/cas-servlet.xml");
+      this.delegate.init(config);
 
-            /*
-             * no matter what went wrong, our role is to capture this error and
-             * prevent it from blocking initialization of the servlet. logging
-             * overkill so that our deployer will find a record of this problem
-             * even if unfamiliar with Commons Logging and properly configuring
-             * it.
-             */
+    } catch (final Throwable t) {
+      // let the service method know initialization failed.
+      this.initSuccess = false;
 
-            final String message = "SafeDispatcherServlet: \n"
-                + "The Spring DispatcherServlet we wrap threw on init.\n"
-                + "But for our having caught this error, the servlet would not have initialized.";
+      /*
+       * no matter what went wrong, our role is to capture this error and
+       * prevent it from blocking initialization of the servlet. logging
+       * overkill so that our deployer will find a record of this problem
+       * even if unfamiliar with Commons Logging and properly configuring
+       * it.
+       */
 
-            // log it via Commons Logging
-            log.error(message, t);
+      final String message = "SafeDispatcherServlet: \n"
+        + "The Spring DispatcherServlet we wrap threw on init.\n"
+        + "But for our having caught this error, the servlet would not have initialized.";
 
-            // log it to System.err
-            System.err.println(message);
-            t.printStackTrace();
+      // log it via Commons Logging
+      log.error(message, t);
 
-            // log it to the ServletContext
-            ServletContext context = config.getServletContext();
-            context.log(message, t);
+      // log it to System.err
+      System.err.println(message);
+      t.printStackTrace();
 
-            /*
-             * record the error so that the application has access to later
-             * display a proper error message based on the exception.
-             */
-            context.setAttribute(CAUGHT_THROWABLE_KEY, t);
+      // log it to the ServletContext
+      ServletContext context = config.getServletContext();
+      context.log(message, t);
 
-        }
+      /*
+       * record the error so that the application has access to later
+       * display a proper error message based on the exception.
+       */
+      context.setAttribute(CAUGHT_THROWABLE_KEY, t);
+
     }
+  }
 
-    /**
-     * @throws ApplicationContextException if the DispatcherServlet does not
-     * initialize properly, but the servlet attempts to process a request.
+  /**
+   * @throws ApplicationContextException if the DispatcherServlet does not
+   * initialize properly, but the servlet attempts to process a request.
+   */
+  public void service(final ServletRequest req, final ServletResponse resp)
+    throws ServletException, IOException {
+    /*
+     * Since our container calls only this method and not any of the other
+     * HttpServlet runtime methods, such as doDelete(), etc., delegating
+     * this method is sufficient to delegate all of the methods in the
+     * HttpServlet API.
      */
-    public void service(final ServletRequest req, final ServletResponse resp)
-        throws ServletException, IOException {
-        /*
-         * Since our container calls only this method and not any of the other
-         * HttpServlet runtime methods, such as doDelete(), etc., delegating
-         * this method is sufficient to delegate all of the methods in the
-         * HttpServlet API.
-         */
-        if (this.initSuccess) {
-            this.delegate.service(req, resp);
-        } else {
-            throw new ApplicationContextException(
-                "Unable to initialize application context.");
-        }
+    if (this.initSuccess) {
+      this.delegate.service(req, resp);
+    } else {
+      throw new ApplicationContextException(
+        "Unable to initialize application context.");
     }
+  }
 }

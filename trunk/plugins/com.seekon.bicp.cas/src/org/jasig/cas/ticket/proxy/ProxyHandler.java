@@ -22,13 +22,13 @@ import org.jasig.cas.authentication.principal.Credentials;
  */
 public interface ProxyHandler {
 
-    /**
-     * Method to actually process the proxy request.
-     * 
-     * @param credentials The credentials of the item that will be proxying.
-     * @param proxyGrantingTicketId The ticketId for the ProxyGrantingTicket (in
-     * CAS 3 this is a TicketGrantingTicket)
-     * @return the String value that needs to be passed to the CAS client.
-     */
-    String handle(Credentials credentials, String proxyGrantingTicketId);
+  /**
+   * Method to actually process the proxy request.
+   * 
+   * @param credentials The credentials of the item that will be proxying.
+   * @param proxyGrantingTicketId The ticketId for the ProxyGrantingTicket (in
+   * CAS 3 this is a TicketGrantingTicket)
+   * @return the String value that needs to be passed to the CAS client.
+   */
+  String handle(Credentials credentials, String proxyGrantingTicketId);
 }

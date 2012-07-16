@@ -24,17 +24,17 @@ import org.jasig.cas.authentication.principal.Credentials;
  */
 public interface AuthenticationMetaDataPopulator {
 
-    /**
-     * Provided with an Authentication object and the original credentials
-     * presented, provide any additional attributes to the Authentication
-     * object. Implementations have the option of returning the same
-     * Authentication object, or a new one.
-     * 
-     * @param authentication The Authentication to potentially augment with
-     * additional attributes.
-     * @return the original Authentication object or a new Authentication
-     * object.
-     */
-    Authentication populateAttributes(Authentication authentication,
-        Credentials credentials);
+  /**
+   * Provided with an Authentication object and the original credentials
+   * presented, provide any additional attributes to the Authentication
+   * object. Implementations have the option of returning the same
+   * Authentication object, or a new one.
+   * 
+   * @param authentication The Authentication to potentially augment with
+   * additional attributes.
+   * @return the original Authentication object or a new Authentication
+   * object.
+   */
+  Authentication populateAttributes(Authentication authentication,
+    Credentials credentials);
 }

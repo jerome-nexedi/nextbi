@@ -34,5 +34,5 @@ import java.io.Serializable;
  * </p>
  */
 public interface Credentials extends Serializable {
-    // marker interface contains no methods
+  // marker interface contains no methods
 }

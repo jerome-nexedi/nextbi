@@ -25,35 +25,35 @@ import javax.validation.constraints.NotNull;
  */
 public final class PrivateKeyFactoryBean extends AbstractFactoryBean {
 
-    @NotNull
-    private Resource location;
-    
-    @NotNull
-    private String algorithm;
+  @NotNull
+  private Resource location;
 
-    protected Object createInstance() throws Exception {
-        final InputStream privKey = this.location.getInputStream();
-        try {
-            final byte[] bytes = new byte[privKey.available()];
-            privKey.read(bytes);
-            privKey.close();
-            final PKCS8EncodedKeySpec privSpec = new PKCS8EncodedKeySpec(bytes);
-            KeyFactory factory = KeyFactory.getInstance(this.algorithm);
-            return factory.generatePrivate(privSpec);
-        } finally {
-            privKey.close();
-        }
-    }
+  @NotNull
+  private String algorithm;
 
-    public Class getObjectType() {
-        return PrivateKey.class;
+  protected Object createInstance() throws Exception {
+    final InputStream privKey = this.location.getInputStream();
+    try {
+      final byte[] bytes = new byte[privKey.available()];
+      privKey.read(bytes);
+      privKey.close();
+      final PKCS8EncodedKeySpec privSpec = new PKCS8EncodedKeySpec(bytes);
+      KeyFactory factory = KeyFactory.getInstance(this.algorithm);
+      return factory.generatePrivate(privSpec);
+    } finally {
+      privKey.close();
     }
+  }
 
-    public void setLocation(final Resource location) {
-        this.location = location;
-    }
-    
-    public void setAlgorithm(final String algorithm) {
-        this.algorithm = algorithm;
-    }
+  public Class getObjectType() {
+    return PrivateKey.class;
+  }
+
+  public void setLocation(final Resource location) {
+    this.location = location;
+  }
+
+  public void setAlgorithm(final String algorithm) {
+    this.algorithm = algorithm;
+  }
 }

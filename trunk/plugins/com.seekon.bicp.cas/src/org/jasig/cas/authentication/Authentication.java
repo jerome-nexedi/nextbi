@@ -37,25 +37,25 @@ import org.jasig.cas.authentication.principal.Principal;
  */
 public interface Authentication extends Serializable {
 
-    /**
-     * Method to obtain the Principal.
-     * 
-     * @return a Principal implementation
-     */
-    Principal getPrincipal();
+  /**
+   * Method to obtain the Principal.
+   * 
+   * @return a Principal implementation
+   */
+  Principal getPrincipal();
 
-    /**
-     * Method to retrieve the timestamp of when this Authentication object was
-     * created.
-     * 
-     * @return the date/time the authentication occurred.
-     */
-    Date getAuthenticatedDate();
+  /**
+   * Method to retrieve the timestamp of when this Authentication object was
+   * created.
+   * 
+   * @return the date/time the authentication occurred.
+   */
+  Date getAuthenticatedDate();
 
-    /**
-     * Attributes of the authentication (not the Principal).
-     * 
-     * @return the map of attributes.
-     */
-    Map<String, Object> getAttributes();
+  /**
+   * Attributes of the authentication (not the Principal).
+   * 
+   * @return the map of attributes.
+   */
+  Map<String, Object> getAttributes();
 }

@@ -15,11 +15,11 @@ package org.jasig.cas.services;
  */
 public interface ReloadableServicesManager extends ServicesManager {
 
-    /**
-     * Inform the ServicesManager to reload its list of services if its cached
-     * them. Note that this is a suggestion and that ServicesManagers are free
-     * to reload whenever they want.
-     */
-    void reload();
+  /**
+   * Inform the ServicesManager to reload its list of services if its cached
+   * them. Note that this is a suggestion and that ServicesManagers are free
+   * to reload whenever they want.
+   */
+  void reload();
 
 }

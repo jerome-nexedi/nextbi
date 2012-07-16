@@ -13,28 +13,26 @@ package org.jasig.cas.services;
  * @version $Revision$ $Date$
  * @since 3.1
  */
-public class UnauthorizedSsoServiceException extends
-    UnauthorizedServiceException {
+public class UnauthorizedSsoServiceException extends UnauthorizedServiceException {
 
-    /**
-     * Comment for <code>serialVersionUID</code>
-     */
-    private static final long serialVersionUID = 8909291297815558561L;
+  /**
+   * Comment for <code>serialVersionUID</code>
+   */
+  private static final long serialVersionUID = 8909291297815558561L;
 
-    /** The code description. */
-    private static final String CODE = "service.not.authorized.sso";
+  /** The code description. */
+  private static final String CODE = "service.not.authorized.sso";
 
-    public UnauthorizedSsoServiceException() {
-        this(CODE);
-    }
+  public UnauthorizedSsoServiceException() {
+    this(CODE);
+  }
 
-    public UnauthorizedSsoServiceException(final String message,
-        final Throwable cause) {
-        super(message, cause);
-    }
+  public UnauthorizedSsoServiceException(final String message, final Throwable cause) {
+    super(message, cause);
+  }
 
-    public UnauthorizedSsoServiceException(final String message) {
-        super(message);
-    }
+  public UnauthorizedSsoServiceException(final String message) {
+    super(message);
+  }
 
 }

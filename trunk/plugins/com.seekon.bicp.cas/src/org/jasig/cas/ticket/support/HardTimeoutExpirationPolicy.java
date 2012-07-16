@@ -18,18 +18,18 @@ import org.jasig.cas.ticket.TicketState;
  */
 public final class HardTimeoutExpirationPolicy implements ExpirationPolicy {
 
-	/** Unique Id for serialization. */
-    private static final long serialVersionUID = -1465997330804816888L;
-    
-    /** The time to kill in milliseconds. */
-	private final long timeToKillInMilliSeconds;
+  /** Unique Id for serialization. */
+  private static final long serialVersionUID = -1465997330804816888L;
 
-	public HardTimeoutExpirationPolicy(final long timeToKillInMilliSeconds) {
-		this.timeToKillInMilliSeconds = timeToKillInMilliSeconds;
-	}
+  /** The time to kill in milliseconds. */
+  private final long timeToKillInMilliSeconds;
 
-	public boolean isExpired(final TicketState ticketState) {
-		return (ticketState == null)
-					|| (System.currentTimeMillis() - ticketState.getCreationTime() >= this.timeToKillInMilliSeconds);
-	}
+  public HardTimeoutExpirationPolicy(final long timeToKillInMilliSeconds) {
+    this.timeToKillInMilliSeconds = timeToKillInMilliSeconds;
+  }
+
+  public boolean isExpired(final TicketState ticketState) {
+    return (ticketState == null)
+      || (System.currentTimeMillis() - ticketState.getCreationTime() >= this.timeToKillInMilliSeconds);
+  }
 }

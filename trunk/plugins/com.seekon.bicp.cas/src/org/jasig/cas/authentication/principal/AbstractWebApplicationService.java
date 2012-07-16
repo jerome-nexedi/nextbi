@@ -26,131 +26,133 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractWebApplicationService implements WebApplicationService {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(SamlService.class);
-    
-    private static final Map<String, Object> EMPTY_MAP = Collections.unmodifiableMap(new HashMap<String, Object>());
-    
-    private static final UniqueTicketIdGenerator GENERATOR = new DefaultUniqueTicketIdGenerator();
-    
-    /** The id of the service. */
-    private final String id;
-    
-    /** The original url provided, used to reconstruct the redirect url. */
-    private final String originalUrl;
+  protected static final Logger LOG = LoggerFactory.getLogger(SamlService.class);
 
-    private final String artifactId;
-    
-    private Principal principal;
-    
-    private boolean loggedOutAlready = false;
-    
-    private final HttpClient httpClient;
-    
-    protected AbstractWebApplicationService(final String id, final String originalUrl, final String artifactId, final HttpClient httpClient) {
-        this.id = id;
-        this.originalUrl = originalUrl;
-        this.artifactId = artifactId;
-        this.httpClient = httpClient;
-    }
-    
-    public final String toString() {
-        return this.id;
-    }
-    
-    public final String getId() {
-        return this.id;
-    }
-    
-    public final String getArtifactId() {
-        return this.artifactId;
-    }
+  private static final Map<String, Object> EMPTY_MAP = Collections
+    .unmodifiableMap(new HashMap<String, Object>());
 
-    public final Map<String, Object> getAttributes() {
-        return EMPTY_MAP;
-    }
+  private static final UniqueTicketIdGenerator GENERATOR = new DefaultUniqueTicketIdGenerator();
 
-    protected static String cleanupUrl(final String url) {
-        if (url == null) {
-            return null;
-        }
+  /** The id of the service. */
+  private final String id;
 
-        final int jsessionPosition = url.indexOf(";jsession");
+  /** The original url provided, used to reconstruct the redirect url. */
+  private final String originalUrl;
 
-        if (jsessionPosition == -1) {
-            return url;
-        }
+  private final String artifactId;
 
-        final int questionMarkPosition = url.indexOf("?");
+  private Principal principal;
 
-        if (questionMarkPosition < jsessionPosition) {
-            return url.substring(0, url.indexOf(";jsession"));
-        }
+  private boolean loggedOutAlready = false;
 
-        return url.substring(0, jsessionPosition)
-            + url.substring(questionMarkPosition);
-    }
-    
-    protected final String getOriginalUrl() {
-        return this.originalUrl;
+  private final HttpClient httpClient;
+
+  protected AbstractWebApplicationService(final String id, final String originalUrl,
+    final String artifactId, final HttpClient httpClient) {
+    this.id = id;
+    this.originalUrl = originalUrl;
+    this.artifactId = artifactId;
+    this.httpClient = httpClient;
+  }
+
+  public final String toString() {
+    return this.id;
+  }
+
+  public final String getId() {
+    return this.id;
+  }
+
+  public final String getArtifactId() {
+    return this.artifactId;
+  }
+
+  public final Map<String, Object> getAttributes() {
+    return EMPTY_MAP;
+  }
+
+  protected static String cleanupUrl(final String url) {
+    if (url == null) {
+      return null;
     }
 
-    protected final HttpClient getHttpClient() {
-        return this.httpClient;
+    final int jsessionPosition = url.indexOf(";jsession");
+
+    if (jsessionPosition == -1) {
+      return url;
     }
 
-    public boolean equals(final Object object) {
-        if (object == null) {
-            return false;
-        }
+    final int questionMarkPosition = url.indexOf("?");
 
-        if (object instanceof Service) {
-            final Service service = (Service) object;
-
-            return getId().equals(service.getId());
-        }
-
-        return false;
-    }
-    
-    public int hashCode() {
-        final int prime = 41;
-        int result = 1;
-        result = prime * result
-            + ((this.id == null) ? 0 : this.id.hashCode());
-        return result;
-    }
-    
-    protected Principal getPrincipal() {
-        return this.principal;
+    if (questionMarkPosition < jsessionPosition) {
+      return url.substring(0, url.indexOf(";jsession"));
     }
 
-    public void setPrincipal(final Principal principal) {
-        this.principal = principal;
-    }
-    
-    public boolean matches(final Service service) {
-        return this.id.equals(service.getId());
-    }
-    
-    public synchronized boolean logOutOfService(final String sessionIdentifier) {
-        if (this.loggedOutAlready) {
-            return true;
-        }
+    return url.substring(0, jsessionPosition) + url.substring(questionMarkPosition);
+  }
 
-        LOG.debug("Sending logout request for: " + getId());
+  protected final String getOriginalUrl() {
+    return this.originalUrl;
+  }
 
-        final String logoutRequest = "<samlp:LogoutRequest xmlns:samlp=\"urn:oasis:names:tc:SAML:2.0:protocol\" ID=\""
-            + GENERATOR.getNewTicketId("LR")
-            + "\" Version=\"2.0\" IssueInstant=\"" + SamlUtils.getCurrentDateAndTime()
-            + "\"><saml:NameID xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\">@NOT_USED@</saml:NameID><samlp:SessionIndex>"
-            + sessionIdentifier + "</samlp:SessionIndex></samlp:LogoutRequest>";
-        
-        this.loggedOutAlready = true;
-        
-        if (this.httpClient != null) {
-            return this.httpClient.sendMessageToEndPoint(getOriginalUrl(), logoutRequest, true);
-        }
-        
-        return false;
+  protected final HttpClient getHttpClient() {
+    return this.httpClient;
+  }
+
+  public boolean equals(final Object object) {
+    if (object == null) {
+      return false;
     }
+
+    if (object instanceof Service) {
+      final Service service = (Service) object;
+
+      return getId().equals(service.getId());
+    }
+
+    return false;
+  }
+
+  public int hashCode() {
+    final int prime = 41;
+    int result = 1;
+    result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
+    return result;
+  }
+
+  protected Principal getPrincipal() {
+    return this.principal;
+  }
+
+  public void setPrincipal(final Principal principal) {
+    this.principal = principal;
+  }
+
+  public boolean matches(final Service service) {
+    return this.id.equals(service.getId());
+  }
+
+  public synchronized boolean logOutOfService(final String sessionIdentifier) {
+    if (this.loggedOutAlready) {
+      return true;
+    }
+
+    LOG.debug("Sending logout request for: " + getId());
+
+    final String logoutRequest = "<samlp:LogoutRequest xmlns:samlp=\"urn:oasis:names:tc:SAML:2.0:protocol\" ID=\""
+      + GENERATOR.getNewTicketId("LR")
+      + "\" Version=\"2.0\" IssueInstant=\""
+      + SamlUtils.getCurrentDateAndTime()
+      + "\"><saml:NameID xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\">@NOT_USED@</saml:NameID><samlp:SessionIndex>"
+      + sessionIdentifier + "</samlp:SessionIndex></samlp:LogoutRequest>";
+
+    this.loggedOutAlready = true;
+
+    if (this.httpClient != null) {
+      return this.httpClient.sendMessageToEndPoint(getOriginalUrl(), logoutRequest,
+        true);
+    }
+
+    return false;
+  }
 }

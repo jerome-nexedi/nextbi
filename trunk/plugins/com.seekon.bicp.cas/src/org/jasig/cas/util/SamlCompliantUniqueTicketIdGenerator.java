@@ -36,43 +36,48 @@ import java.security.MessageDigest;
  * @version $Revision$ $Date$
  * @since 3.0
  */
-public final class SamlCompliantUniqueTicketIdGenerator implements UniqueTicketIdGenerator {
+public final class SamlCompliantUniqueTicketIdGenerator implements
+  UniqueTicketIdGenerator {
 
-    /** SAML defines the source id as the server name. */
-    private final byte[] sourceIdDigest;
+  /** SAML defines the source id as the server name. */
+  private final byte[] sourceIdDigest;
 
-    /** SAML defines the source id as the server name. */
-    @NotNull
-    private final String sourceLocation;
+  /** SAML defines the source id as the server name. */
+  @NotNull
+  private final String sourceLocation;
 
-    private boolean saml2compliant;
+  private boolean saml2compliant;
 
-    /** Random generator to construct the AssertionHandle. */
-    private final RandomStringGenerator randomStringGenerator = new DefaultRandomStringGenerator(20);
+  /** Random generator to construct the AssertionHandle. */
+  private final RandomStringGenerator randomStringGenerator = new DefaultRandomStringGenerator(
+    20);
 
-    public SamlCompliantUniqueTicketIdGenerator(final String sourceId) {
-        this.sourceLocation = sourceId;
-        try {
-            final MessageDigest messageDigest = MessageDigest.getInstance("SHA");
-            messageDigest.update(sourceId.getBytes("8859_1"));
-            this.sourceIdDigest = messageDigest.digest();
-        } catch (final Exception e) {
-            throw new IllegalStateException("Exception generating digest which should not happen...EVER");
-        }
+  public SamlCompliantUniqueTicketIdGenerator(final String sourceId) {
+    this.sourceLocation = sourceId;
+    try {
+      final MessageDigest messageDigest = MessageDigest.getInstance("SHA");
+      messageDigest.update(sourceId.getBytes("8859_1"));
+      this.sourceIdDigest = messageDigest.digest();
+    } catch (final Exception e) {
+      throw new IllegalStateException(
+        "Exception generating digest which should not happen...EVER");
     }
+  }
 
-    /**
-     * We ignore prefixes for SAML compliance.
-     */
-    public String getNewTicketId(final String prefix) {
-        if (saml2compliant) {
-            return new SAMLArtifactType0002(this.randomStringGenerator.getNewStringAsBytes(), new URI(this.sourceLocation)).encode();
-        } else {
-            return new SAMLArtifactType0001(this.sourceIdDigest, this.randomStringGenerator.getNewStringAsBytes()).encode();
-        }
+  /**
+   * We ignore prefixes for SAML compliance.
+   */
+  public String getNewTicketId(final String prefix) {
+    if (saml2compliant) {
+      return new SAMLArtifactType0002(this.randomStringGenerator
+        .getNewStringAsBytes(), new URI(this.sourceLocation)).encode();
+    } else {
+      return new SAMLArtifactType0001(this.sourceIdDigest,
+        this.randomStringGenerator.getNewStringAsBytes()).encode();
     }
+  }
 
-    public void setSaml2compliant(final boolean saml2compliant) {
-        this.saml2compliant = saml2compliant;
-    }
+  public void setSaml2compliant(final boolean saml2compliant) {
+    this.saml2compliant = saml2compliant;
+  }
 }

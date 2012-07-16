@@ -18,10 +18,10 @@ package org.jasig.cas.validation;
  */
 public interface ValidationSpecification {
 
-    /**
-     * @param assertion The assertion we want to confirm is satisfied by this
-     * spec.
-     * @return true if it is, false otherwise.
-     */
-    boolean isSatisfiedBy(Assertion assertion);
+  /**
+   * @param assertion The assertion we want to confirm is satisfied by this
+   * spec.
+   * @return true if it is, false otherwise.
+   */
+  boolean isSatisfiedBy(Assertion assertion);
 }

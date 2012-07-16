@@ -20,29 +20,29 @@ import javax.validation.constraints.NotNull;
  * @since 3.1
  */
 public final class ShibbolethCompatiblePersistentIdGenerator implements
-    PersistentIdGenerator {
+  PersistentIdGenerator {
 
-    private static final byte CONST_SEPARATOR = (byte) '!';
-    
-    @NotNull
-    private byte[] salt;
+  private static final byte CONST_SEPARATOR = (byte) '!';
 
-    public String generate(final Principal principal, final Service service) {
-        try {
-            final MessageDigest md = MessageDigest.getInstance("SHA");
-            md.update(service.getId().getBytes());
-            md.update(CONST_SEPARATOR);
-            md.update(principal.getId().getBytes());
-            md.update(CONST_SEPARATOR);
+  @NotNull
+  private byte[] salt;
 
-            return Base64.encodeBase64String(md.digest(this.salt)).replaceAll(
-                System.getProperty("line.separator"), "");
-        } catch (final NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+  public String generate(final Principal principal, final Service service) {
+    try {
+      final MessageDigest md = MessageDigest.getInstance("SHA");
+      md.update(service.getId().getBytes());
+      md.update(CONST_SEPARATOR);
+      md.update(principal.getId().getBytes());
+      md.update(CONST_SEPARATOR);
+
+      return Base64.encodeBase64String(md.digest(this.salt)).replaceAll(
+        System.getProperty("line.separator"), "");
+    } catch (final NoSuchAlgorithmException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    public void setSalt(final String salt) {
-        this.salt = salt.getBytes();
-    }
+  public void setSalt(final String salt) {
+    this.salt = salt.getBytes();
+  }
 }

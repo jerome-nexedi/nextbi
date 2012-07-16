@@ -27,133 +27,135 @@ import org.springframework.util.StringUtils;
  */
 public final class SamlService extends AbstractWebApplicationService {
 
-    private static final Log log = LogFactory.getLog(SamlService.class);
+  private static final Log log = LogFactory.getLog(SamlService.class);
 
-    /** Constant representing service. */
-    private static final String CONST_PARAM_SERVICE = "TARGET";
+  /** Constant representing service. */
+  private static final String CONST_PARAM_SERVICE = "TARGET";
 
-    /** Constant representing artifact. */
-    private static final String CONST_PARAM_TICKET = "SAMLart";
+  /** Constant representing artifact. */
+  private static final String CONST_PARAM_TICKET = "SAMLart";
 
-    private static final String CONST_START_ARTIFACT_XML_TAG_NO_NAMESPACE = "<AssertionArtifact>";
+  private static final String CONST_START_ARTIFACT_XML_TAG_NO_NAMESPACE = "<AssertionArtifact>";
 
-    private static final String CONST_END_ARTIFACT_XML_TAG_NO_NAMESPACE = "</AssertionArtifact>";
-    
-    private static final String CONST_START_ARTIFACT_XML_TAG = "<samlp:AssertionArtifact>";
-    
-    private static final String CONST_END_ARTIFACT_XML_TAG = "</samlp:AssertionArtifact>";
+  private static final String CONST_END_ARTIFACT_XML_TAG_NO_NAMESPACE = "</AssertionArtifact>";
 
-    private String requestId;
+  private static final String CONST_START_ARTIFACT_XML_TAG = "<samlp:AssertionArtifact>";
 
-    /**
-     * Unique Id for serialization.
-     */
-    private static final long serialVersionUID = -6867572626767140223L;
+  private static final String CONST_END_ARTIFACT_XML_TAG = "</samlp:AssertionArtifact>";
 
-    protected SamlService(final String id) {
-        super(id, id, null, new HttpClient());
+  private String requestId;
+
+  /**
+   * Unique Id for serialization.
+   */
+  private static final long serialVersionUID = -6867572626767140223L;
+
+  protected SamlService(final String id) {
+    super(id, id, null, new HttpClient());
+  }
+
+  protected SamlService(final String id, final String originalUrl,
+    final String artifactId, final HttpClient httpClient, final String requestId) {
+    super(id, originalUrl, artifactId, httpClient);
+    this.requestId = requestId;
+  }
+
+  /**
+   * This always returns true because a SAML Service does not receive the TARGET value on validation.
+   */
+  public boolean matches(final Service service) {
+    return true;
+  }
+
+  public String getRequestID() {
+    return this.requestId;
+  }
+
+  public static SamlService createServiceFrom(final HttpServletRequest request,
+    final HttpClient httpClient) {
+    final String service = request.getParameter(CONST_PARAM_SERVICE);
+    final String artifactId;
+    final String requestBody = getRequestBody(request);
+    final String requestId;
+
+    if (!StringUtils.hasText(service) && !StringUtils.hasText(requestBody)) {
+      return null;
     }
 
-    protected SamlService(final String id, final String originalUrl, final String artifactId, final HttpClient httpClient, final String requestId) {
-        super(id, originalUrl, artifactId, httpClient);
-        this.requestId = requestId;
+    final String id = cleanupUrl(service);
+
+    if (StringUtils.hasText(requestBody)) {
+
+      final String tagStart;
+      final String tagEnd;
+      if (requestBody.contains(CONST_START_ARTIFACT_XML_TAG)) {
+        tagStart = CONST_START_ARTIFACT_XML_TAG;
+        tagEnd = CONST_END_ARTIFACT_XML_TAG;
+      } else {
+        tagStart = CONST_START_ARTIFACT_XML_TAG_NO_NAMESPACE;
+        tagEnd = CONST_END_ARTIFACT_XML_TAG_NO_NAMESPACE;
+      }
+      final int startTagLocation = requestBody.indexOf(tagStart);
+      final int artifactStartLocation = startTagLocation + tagStart.length();
+      final int endTagLocation = requestBody.indexOf(tagEnd);
+
+      artifactId = requestBody.substring(artifactStartLocation, endTagLocation)
+        .trim();
+
+      // is there a request id?
+      requestId = extractRequestId(requestBody);
+    } else {
+      artifactId = null;
+      requestId = null;
     }
 
-    /**
-     * This always returns true because a SAML Service does not receive the TARGET value on validation.
-     */
-    public boolean matches(final Service service) {
-        return true;
+    if (log.isDebugEnabled()) {
+      log.debug("Attempted to extract Request from HttpServletRequest.  Results:");
+      log.debug(String.format("Request Body: %s", requestBody));
+      log.debug(String.format("Extracted ArtifactId: %s", artifactId));
+      log.debug(String.format("Extracted Request Id: %s", requestId));
     }
 
-    public String getRequestID() {
-        return this.requestId;
+    return new SamlService(id, service, artifactId, httpClient, requestId);
+  }
+
+  public Response getResponse(final String ticketId) {
+    final Map<String, String> parameters = new HashMap<String, String>();
+
+    parameters.put(CONST_PARAM_TICKET, ticketId);
+    parameters.put(CONST_PARAM_SERVICE, getOriginalUrl());
+
+    return Response.getRedirectResponse(getOriginalUrl(), parameters);
+  }
+
+  protected static String extractRequestId(final String requestBody) {
+    if (!requestBody.contains("RequestID")) {
+      return null;
     }
 
-    public static SamlService createServiceFrom(
-        final HttpServletRequest request, final HttpClient httpClient) {
-        final String service = request.getParameter(CONST_PARAM_SERVICE);
-        final String artifactId;
-        final String requestBody = getRequestBody(request);
-        final String requestId;
-        
-        if (!StringUtils.hasText(service) && !StringUtils.hasText(requestBody)) {
-            return null;
-        }
+    try {
+      final int position = requestBody.indexOf("RequestID=\"") + 11;
+      final int nextPosition = requestBody.indexOf("\"", position);
 
-        final String id = cleanupUrl(service);
-        
-        if (StringUtils.hasText(requestBody)) {
-
-            final String tagStart;
-            final String tagEnd;
-            if (requestBody.contains(CONST_START_ARTIFACT_XML_TAG)) {
-                tagStart = CONST_START_ARTIFACT_XML_TAG;
-                tagEnd = CONST_END_ARTIFACT_XML_TAG;
-            } else {
-                tagStart = CONST_START_ARTIFACT_XML_TAG_NO_NAMESPACE;
-                tagEnd = CONST_END_ARTIFACT_XML_TAG_NO_NAMESPACE;
-            }
-            final int startTagLocation = requestBody.indexOf(tagStart);
-            final int artifactStartLocation = startTagLocation + tagStart.length();
-            final int endTagLocation = requestBody.indexOf(tagEnd);
-
-            artifactId = requestBody.substring(artifactStartLocation, endTagLocation).trim();
-
-            // is there a request id?
-            requestId = extractRequestId(requestBody);
-        } else {
-            artifactId = null;
-            requestId = null;
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug("Attempted to extract Request from HttpServletRequest.  Results:");
-            log.debug(String.format("Request Body: %s", requestBody));
-            log.debug(String.format("Extracted ArtifactId: %s", artifactId));
-            log.debug(String.format("Extracted Request Id: %s", requestId));
-        }
-
-        return new SamlService(id, service, artifactId, httpClient, requestId);
+      return requestBody.substring(position, nextPosition);
+    } catch (final Exception e) {
+      log.debug("Exception parsing RequestID from request.", e);
+      return null;
     }
+  }
 
-    public Response getResponse(final String ticketId) {
-        final Map<String, String> parameters = new HashMap<String, String>();
+  protected static String getRequestBody(final HttpServletRequest request) {
+    final StringBuilder builder = new StringBuilder();
+    try {
+      final BufferedReader reader = request.getReader();
 
-        parameters.put(CONST_PARAM_TICKET, ticketId);
-        parameters.put(CONST_PARAM_SERVICE, getOriginalUrl());
-
-        return Response.getRedirectResponse(getOriginalUrl(), parameters);
+      String line;
+      while ((line = reader.readLine()) != null) {
+        builder.append(line);
+      }
+      return builder.toString();
+    } catch (final Exception e) {
+      return null;
     }
-
-    protected static String extractRequestId(final String requestBody) {
-        if (!requestBody.contains("RequestID")) {
-            return null;
-        }
-
-        try {
-            final int position = requestBody.indexOf("RequestID=\"") + 11;
-            final int nextPosition = requestBody.indexOf("\"", position);
-
-            return requestBody.substring(position,  nextPosition);
-        } catch (final Exception e) {
-            log.debug("Exception parsing RequestID from request." ,e);
-            return null;
-        }
-    }
-    
-    protected static String getRequestBody(final HttpServletRequest request) {
-        final StringBuilder builder = new StringBuilder();
-        try {
-            final BufferedReader reader = request.getReader();
-            
-            String line;
-            while ((line = reader.readLine()) != null) {
-                builder.append(line);
-            }
-            return builder.toString();
-        } catch (final Exception e) {
-           return null;
-        }
-    }
+  }
 }

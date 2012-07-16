@@ -14,28 +14,28 @@ package org.jasig.cas.authentication.handler;
  * @since 3.0
  */
 public abstract class UncategorizedAuthenticationException extends
-    AuthenticationException {
+  AuthenticationException {
 
-    /**
-     * Constructor that allows for providing a custom error code for this class.
-     * Error codes are often used to resolve exceptions into messages. Providing
-     * a custom error code allows the use of a different message.
-     * 
-     * @param code the custom code to use with this exception.
-     */
-    public UncategorizedAuthenticationException(final String code) {
-        super(code);
-    }
+  /**
+   * Constructor that allows for providing a custom error code for this class.
+   * Error codes are often used to resolve exceptions into messages. Providing
+   * a custom error code allows the use of a different message.
+   * 
+   * @param code the custom code to use with this exception.
+   */
+  public UncategorizedAuthenticationException(final String code) {
+    super(code);
+  }
 
-    /**
-     * Constructor that allows for chaining of exceptions and a custom error
-     * code.
-     * 
-     * @param code the custom error code to use in message resolving.
-     * @param throwable the chained exception.
-     */
-    public UncategorizedAuthenticationException(final String code,
-        final Throwable throwable) {
-        super(code, throwable);
-    }
+  /**
+   * Constructor that allows for chaining of exceptions and a custom error
+   * code.
+   * 
+   * @param code the custom error code to use in message resolving.
+   * @param throwable the chained exception.
+   */
+  public UncategorizedAuthenticationException(final String code,
+    final Throwable throwable) {
+    super(code, throwable);
+  }
 }

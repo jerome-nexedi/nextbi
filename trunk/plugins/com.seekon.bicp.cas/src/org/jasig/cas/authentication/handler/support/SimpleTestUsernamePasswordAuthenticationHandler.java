@@ -19,28 +19,27 @@ import org.springframework.util.StringUtils;
  * @since 3.0
  */
 public final class SimpleTestUsernamePasswordAuthenticationHandler extends
-    AbstractUsernamePasswordAuthenticationHandler {
+  AbstractUsernamePasswordAuthenticationHandler {
 
-    public SimpleTestUsernamePasswordAuthenticationHandler() {
-        log
-            .warn(this.getClass().getName()
-                + " is only to be used in a testing environment.  NEVER enable this in a production environment.");
+  public SimpleTestUsernamePasswordAuthenticationHandler() {
+    log
+      .warn(this.getClass().getName()
+        + " is only to be used in a testing environment.  NEVER enable this in a production environment.");
+  }
+
+  public boolean authenticateUsernamePasswordInternal(
+    final UsernamePasswordCredentials credentials) {
+    final String username = credentials.getUsername();
+    final String password = credentials.getPassword();
+
+    if (StringUtils.hasText(username) && StringUtils.hasText(password)
+      && username.equals(getPasswordEncoder().encode(password))) {
+      log.debug("User [" + username + "] was successfully authenticated.");
+      return true;
     }
 
-    public boolean authenticateUsernamePasswordInternal(final UsernamePasswordCredentials credentials) {
-        final String username = credentials.getUsername();
-        final String password = credentials.getPassword();
+    log.debug("User [" + username + "] failed authentication");
 
-        if (StringUtils.hasText(username) && StringUtils.hasText(password)
-            && username.equals(getPasswordEncoder().encode(password))) {
-            log
-                .debug("User [" + username
-                    + "] was successfully authenticated.");
-            return true;
-        }
-
-        log.debug("User [" + username + "] failed authentication");
-
-        return false;
-    }
+    return false;
+  }
 }

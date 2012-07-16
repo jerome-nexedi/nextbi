@@ -20,19 +20,21 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class CasDefaultFlowUrlHandler extends DefaultFlowUrlHandler {
 
-    @Override
-    public String createFlowExecutionUrl(final String flowId, final String flowExecutionKey, final HttpServletRequest request) {
-        final StringBuffer builder = new StringBuffer();
-        builder.append(request.getRequestURI());
-        builder.append("?");
-        appendQueryParameters(builder, request.getParameterMap(), getEncodingScheme(request));
-        return builder.toString();
-    }
+  @Override
+  public String createFlowExecutionUrl(final String flowId,
+    final String flowExecutionKey, final HttpServletRequest request) {
+    final StringBuffer builder = new StringBuffer();
+    builder.append(request.getRequestURI());
+    builder.append("?");
+    appendQueryParameters(builder, request.getParameterMap(),
+      getEncodingScheme(request));
+    return builder.toString();
+  }
 
-    @Override
-    public String createFlowDefinitionUrl(final String flowId, final AttributeMap input, final HttpServletRequest request) {
-        return request.getRequestURI()
-            + (request.getQueryString() != null ? "?"
-            + request.getQueryString() : "");
-    }
+  @Override
+  public String createFlowDefinitionUrl(final String flowId,
+    final AttributeMap input, final HttpServletRequest request) {
+    return request.getRequestURI()
+      + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+  }
 }
