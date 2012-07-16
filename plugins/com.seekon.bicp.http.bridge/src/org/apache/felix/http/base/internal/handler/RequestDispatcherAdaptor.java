@@ -9,23 +9,25 @@ import javax.servlet.ServletResponse;
 
 public class RequestDispatcherAdaptor implements RequestDispatcher {
 
-	private RequestDispatcher requestDispatcher;
+  private RequestDispatcher requestDispatcher;
 
-	public RequestDispatcherAdaptor(RequestDispatcher requestDispatcher) {
-		this.requestDispatcher = requestDispatcher;
-	}
+  public RequestDispatcherAdaptor(RequestDispatcher requestDispatcher) {
+    this.requestDispatcher = requestDispatcher;
+  }
 
-	public void forward(ServletRequest req, ServletResponse resp) throws ServletException, IOException {
-		if (req instanceof ServletHandlerRequest)
-			req = ((ServletHandlerRequest) req).getRequest();
+  public void forward(ServletRequest req, ServletResponse resp)
+    throws ServletException, IOException {
+    if (req instanceof ServletHandlerRequest)
+      req = ((ServletHandlerRequest) req).getRequest();
 
-		requestDispatcher.forward(req, resp);
-	}
+    requestDispatcher.forward(req, resp);
+  }
 
-	public void include(ServletRequest req, ServletResponse resp) throws ServletException, IOException {
-		if (req instanceof ServletHandlerRequest)
-			req = ((ServletHandlerRequest) req).getRequest();
+  public void include(ServletRequest req, ServletResponse resp)
+    throws ServletException, IOException {
+    if (req instanceof ServletHandlerRequest)
+      req = ((ServletHandlerRequest) req).getRequest();
 
-		requestDispatcher.include(req, resp);
-	}
+    requestDispatcher.include(req, resp);
+  }
 }

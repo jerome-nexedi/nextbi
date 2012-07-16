@@ -31,31 +31,31 @@ import org.osgi.framework.BundleContext;
  * implementing the respective Servlet API 2.4 listener interface.
  */
 public class ServletRequestAttributeListenerManager extends
-		AbstractListenerManager<ServletRequestAttributeListener> {
+  AbstractListenerManager<ServletRequestAttributeListener> {
 
-	public ServletRequestAttributeListenerManager(BundleContext context) {
-		super(context, ServletRequestAttributeListener.class);
-	}
+  public ServletRequestAttributeListenerManager(BundleContext context) {
+    super(context, ServletRequestAttributeListener.class);
+  }
 
-	public void attributeAdded(final ServletRequestAttributeEvent srae) {
-		final Iterator<ServletRequestAttributeListener> listeners = getContextListeners();
-		while (listeners.hasNext()) {
-			listeners.next().attributeAdded(srae);
-		}
-	}
+  public void attributeAdded(final ServletRequestAttributeEvent srae) {
+    final Iterator<ServletRequestAttributeListener> listeners = getContextListeners();
+    while (listeners.hasNext()) {
+      listeners.next().attributeAdded(srae);
+    }
+  }
 
-	public void attributeRemoved(final ServletRequestAttributeEvent srae) {
-		final Iterator<ServletRequestAttributeListener> listeners = getContextListeners();
-		while (listeners.hasNext()) {
-			listeners.next().attributeRemoved(srae);
-		}
-	}
+  public void attributeRemoved(final ServletRequestAttributeEvent srae) {
+    final Iterator<ServletRequestAttributeListener> listeners = getContextListeners();
+    while (listeners.hasNext()) {
+      listeners.next().attributeRemoved(srae);
+    }
+  }
 
-	public void attributeReplaced(final ServletRequestAttributeEvent srae) {
-		final Iterator<ServletRequestAttributeListener> listeners = getContextListeners();
-		while (listeners.hasNext()) {
-			listeners.next().attributeReplaced(srae);
-		}
-	}
+  public void attributeReplaced(final ServletRequestAttributeEvent srae) {
+    final Iterator<ServletRequestAttributeListener> listeners = getContextListeners();
+    while (listeners.hasNext()) {
+      listeners.next().attributeReplaced(srae);
+    }
+  }
 
 }

@@ -30,32 +30,32 @@ import org.osgi.framework.BundleContext;
  * implementing the respective Servlet API 2.4 listener interface.
  */
 public class ServletContextAttributeListenerManager extends
-		AbstractListenerManager<ServletContextAttributeListener> implements
-		ServletContextAttributeListener {
+  AbstractListenerManager<ServletContextAttributeListener> implements
+  ServletContextAttributeListener {
 
-	public ServletContextAttributeListenerManager(BundleContext context) {
-		super(context, ServletContextAttributeListener.class);
-	}
+  public ServletContextAttributeListenerManager(BundleContext context) {
+    super(context, ServletContextAttributeListener.class);
+  }
 
-	public void attributeAdded(final ServletContextAttributeEvent scab) {
-		final Iterator<ServletContextAttributeListener> listeners = getContextListeners();
-		while (listeners.hasNext()) {
-			listeners.next().attributeAdded(scab);
-		}
-	}
+  public void attributeAdded(final ServletContextAttributeEvent scab) {
+    final Iterator<ServletContextAttributeListener> listeners = getContextListeners();
+    while (listeners.hasNext()) {
+      listeners.next().attributeAdded(scab);
+    }
+  }
 
-	public void attributeRemoved(final ServletContextAttributeEvent scab) {
-		final Iterator<ServletContextAttributeListener> listeners = getContextListeners();
-		while (listeners.hasNext()) {
-			listeners.next().attributeRemoved(scab);
-		}
-	}
+  public void attributeRemoved(final ServletContextAttributeEvent scab) {
+    final Iterator<ServletContextAttributeListener> listeners = getContextListeners();
+    while (listeners.hasNext()) {
+      listeners.next().attributeRemoved(scab);
+    }
+  }
 
-	public void attributeReplaced(final ServletContextAttributeEvent scab) {
-		final Iterator<ServletContextAttributeListener> listeners = getContextListeners();
-		while (listeners.hasNext()) {
-			listeners.next().attributeReplaced(scab);
-		}
-	}
+  public void attributeReplaced(final ServletContextAttributeEvent scab) {
+    final Iterator<ServletContextAttributeListener> listeners = getContextListeners();
+    while (listeners.hasNext()) {
+      listeners.next().attributeReplaced(scab);
+    }
+  }
 
 }

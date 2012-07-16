@@ -28,110 +28,109 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public final class ResourceServlet extends HttpServlet {
-	private final String path;
+  private final String path;
 
-	public ResourceServlet(String path) {
-		this.path = path;
-	}
+  public ResourceServlet(String path) {
+    this.path = path;
+  }
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException {
-		String target = req.getPathInfo();
-		if (target == null) {
-			target = "";
-		}
+  @Override
+  protected void doGet(HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+    String target = req.getPathInfo();
+    if (target == null) {
+      target = "";
+    }
 
-		if (!target.startsWith("/")) {
-			target += "/" + target;
-		}
+    if (!target.startsWith("/")) {
+      target += "/" + target;
+    }
 
-		String resName = this.path + target;
-		URL url = getServletContext().getResource(resName);
+    String resName = this.path + target;
+    URL url = getServletContext().getResource(resName);
 
-		if (url == null) {
-			res.sendError(HttpServletResponse.SC_NOT_FOUND);
-		} else {
-			handle(req, res, url, resName);
-		}
-	}
+    if (url == null) {
+      res.sendError(HttpServletResponse.SC_NOT_FOUND);
+    } else {
+      handle(req, res, url, resName);
+    }
+  }
 
-	private void handle(HttpServletRequest req, HttpServletResponse res, URL url,
-			String resName) throws IOException {
-		String contentType = getServletContext().getMimeType(resName);
-		if (contentType != null) {
-			res.setContentType(contentType);
-		}
+  private void handle(HttpServletRequest req, HttpServletResponse res, URL url,
+    String resName) throws IOException {
+    String contentType = getServletContext().getMimeType(resName);
+    if (contentType != null) {
+      res.setContentType(contentType);
+    }
 
-		long lastModified = getLastModified(url);
-		if (lastModified != 0) {
-			res.setDateHeader("Last-Modified", lastModified);
-		}
+    long lastModified = getLastModified(url);
+    if (lastModified != 0) {
+      res.setDateHeader("Last-Modified", lastModified);
+    }
 
-		if (!resourceModified(lastModified, req.getDateHeader("If-Modified-Since"))) {
-			res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-		} else {
-			copyResource(url, res);
-		}
-	}
+    if (!resourceModified(lastModified, req.getDateHeader("If-Modified-Since"))) {
+      res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+    } else {
+      copyResource(url, res);
+    }
+  }
 
-	private long getLastModified(URL url) {
-		long lastModified = 0;
+  private long getLastModified(URL url) {
+    long lastModified = 0;
 
-		try {
-			URLConnection conn = url.openConnection();
-			lastModified = conn.getLastModified();
-		} catch (Exception e) {
-			// Do nothing
-		}
+    try {
+      URLConnection conn = url.openConnection();
+      lastModified = conn.getLastModified();
+    } catch (Exception e) {
+      // Do nothing
+    }
 
-		if (lastModified == 0) {
-			String filepath = url.getPath();
-			if (filepath != null) {
-				File f = new File(filepath);
-				if (f.exists()) {
-					lastModified = f.lastModified();
-				}
-			}
-		}
+    if (lastModified == 0) {
+      String filepath = url.getPath();
+      if (filepath != null) {
+        File f = new File(filepath);
+        if (f.exists()) {
+          lastModified = f.lastModified();
+        }
+      }
+    }
 
-		return lastModified;
-	}
+    return lastModified;
+  }
 
-	private boolean resourceModified(long resTimestamp, long modSince) {
-		modSince /= 1000;
-		resTimestamp /= 1000;
+  private boolean resourceModified(long resTimestamp, long modSince) {
+    modSince /= 1000;
+    resTimestamp /= 1000;
 
-		return resTimestamp == 0 || modSince == -1 || resTimestamp > modSince;
-	}
+    return resTimestamp == 0 || modSince == -1 || resTimestamp > modSince;
+  }
 
-	private void copyResource(URL url, HttpServletResponse res)
-			throws IOException {
-		OutputStream os = null;
-		InputStream is = null;
+  private void copyResource(URL url, HttpServletResponse res) throws IOException {
+    OutputStream os = null;
+    InputStream is = null;
 
-		try {
-			os = res.getOutputStream();
-			is = url.openStream();
+    try {
+      os = res.getOutputStream();
+      is = url.openStream();
 
-			int len = 0;
-			byte[] buf = new byte[1024];
-			int n;
+      int len = 0;
+      byte[] buf = new byte[1024];
+      int n;
 
-			while ((n = is.read(buf, 0, buf.length)) >= 0) {
-				os.write(buf, 0, n);
-				len += n;
-			}
+      while ((n = is.read(buf, 0, buf.length)) >= 0) {
+        os.write(buf, 0, n);
+        len += n;
+      }
 
-			res.setContentLength(len);
-		} finally {
-			if (is != null) {
-				is.close();
-			}
+      res.setContentLength(len);
+    } finally {
+      if (is != null) {
+        is.close();
+      }
 
-			if (os != null) {
-				os.close();
-			}
-		}
-	}
+      if (os != null) {
+        os.close();
+      }
+    }
+  }
 }

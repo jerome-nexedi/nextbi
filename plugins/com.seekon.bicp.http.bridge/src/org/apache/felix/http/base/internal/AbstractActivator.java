@@ -22,26 +22,27 @@ import org.apache.felix.http.base.internal.logger.SystemLogger;
 import org.apache.felix.http.base.internal.logger.LogServiceLogger;
 
 public abstract class AbstractActivator implements BundleActivator {
-	private BundleContext context;
-	private LogServiceLogger logger;
+  private BundleContext context;
 
-	protected final BundleContext getBundleContext() {
-		return this.context;
-	}
+  private LogServiceLogger logger;
 
-	public final void start(BundleContext context) throws Exception {
-		this.context = context;
-		this.logger = new LogServiceLogger(context);
-		SystemLogger.setLogService(this.logger);
-		doStart();
-	}
+  protected final BundleContext getBundleContext() {
+    return this.context;
+  }
 
-	public final void stop(BundleContext context) throws Exception {
-		doStop();
-		this.logger.close();
-	}
+  public final void start(BundleContext context) throws Exception {
+    this.context = context;
+    this.logger = new LogServiceLogger(context);
+    SystemLogger.setLogService(this.logger);
+    doStart();
+  }
 
-	protected abstract void doStart() throws Exception;
+  public final void stop(BundleContext context) throws Exception {
+    doStop();
+    this.logger.close();
+  }
 
-	protected abstract void doStop() throws Exception;
+  protected abstract void doStart() throws Exception;
+
+  protected abstract void doStop() throws Exception;
 }

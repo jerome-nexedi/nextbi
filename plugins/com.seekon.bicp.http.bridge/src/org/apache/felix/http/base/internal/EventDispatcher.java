@@ -30,31 +30,31 @@ import javax.servlet.http.HttpSessionListener;
  * {@link HttpSessionListener} services.
  */
 public class EventDispatcher implements HttpSessionAttributeListener,
-		HttpSessionListener {
+  HttpSessionListener {
 
-	private final HttpServiceController controller;
+  private final HttpServiceController controller;
 
-	EventDispatcher(final HttpServiceController controller) {
-		this.controller = controller;
-	}
+  EventDispatcher(final HttpServiceController controller) {
+    this.controller = controller;
+  }
 
-	public void sessionCreated(HttpSessionEvent se) {
-		controller.getSessionListener().sessionCreated(se);
-	}
+  public void sessionCreated(HttpSessionEvent se) {
+    controller.getSessionListener().sessionCreated(se);
+  }
 
-	public void sessionDestroyed(HttpSessionEvent se) {
-		controller.getSessionListener().sessionDestroyed(se);
-	}
+  public void sessionDestroyed(HttpSessionEvent se) {
+    controller.getSessionListener().sessionDestroyed(se);
+  }
 
-	public void attributeAdded(HttpSessionBindingEvent se) {
-		controller.getSessionAttributeListener().attributeAdded(se);
-	}
+  public void attributeAdded(HttpSessionBindingEvent se) {
+    controller.getSessionAttributeListener().attributeAdded(se);
+  }
 
-	public void attributeRemoved(HttpSessionBindingEvent se) {
-		controller.getSessionAttributeListener().attributeRemoved(se);
-	}
+  public void attributeRemoved(HttpSessionBindingEvent se) {
+    controller.getSessionAttributeListener().attributeRemoved(se);
+  }
 
-	public void attributeReplaced(HttpSessionBindingEvent se) {
-		controller.getSessionAttributeListener().attributeReplaced(se);
-	}
+  public void attributeReplaced(HttpSessionBindingEvent se) {
+    controller.getSessionAttributeListener().attributeReplaced(se);
+  }
 }

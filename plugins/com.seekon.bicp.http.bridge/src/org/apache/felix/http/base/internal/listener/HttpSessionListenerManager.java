@@ -31,23 +31,23 @@ import org.osgi.framework.BundleContext;
  * implementing the respective Servlet API 2.4 listener interface.
  */
 public class HttpSessionListenerManager extends
-		AbstractListenerManager<HttpSessionListener> implements HttpSessionListener {
+  AbstractListenerManager<HttpSessionListener> implements HttpSessionListener {
 
-	public HttpSessionListenerManager(BundleContext context) {
-		super(context, HttpSessionListener.class);
-	}
+  public HttpSessionListenerManager(BundleContext context) {
+    super(context, HttpSessionListener.class);
+  }
 
-	public void sessionCreated(final HttpSessionEvent se) {
-		final Iterator<HttpSessionListener> listeners = getContextListeners();
-		while (listeners.hasNext()) {
-			listeners.next().sessionCreated(se);
-		}
-	}
+  public void sessionCreated(final HttpSessionEvent se) {
+    final Iterator<HttpSessionListener> listeners = getContextListeners();
+    while (listeners.hasNext()) {
+      listeners.next().sessionCreated(se);
+    }
+  }
 
-	public void sessionDestroyed(final HttpSessionEvent se) {
-		final Iterator<HttpSessionListener> listeners = getContextListeners();
-		while (listeners.hasNext()) {
-			listeners.next().sessionDestroyed(se);
-		}
-	}
+  public void sessionDestroyed(final HttpSessionEvent se) {
+    final Iterator<HttpSessionListener> listeners = getContextListeners();
+    while (listeners.hasNext()) {
+      listeners.next().sessionDestroyed(se);
+    }
+  }
 }

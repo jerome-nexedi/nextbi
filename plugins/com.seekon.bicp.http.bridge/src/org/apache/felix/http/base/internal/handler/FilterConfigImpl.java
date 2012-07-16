@@ -23,30 +23,32 @@ import java.util.Collections;
 import java.util.Map;
 
 public final class FilterConfigImpl implements FilterConfig {
-	private final String name;
-	private final ServletContext context;
-	private final Map<String, String> initParams;
+  private final String name;
 
-	public FilterConfigImpl(String name, ServletContext context,
-			Map<String, String> initParams) {
-		this.name = name;
-		this.context = context;
-		this.initParams = initParams;
-	}
+  private final ServletContext context;
 
-	public String getFilterName() {
-		return this.name;
-	}
+  private final Map<String, String> initParams;
 
-	public ServletContext getServletContext() {
-		return this.context;
-	}
+  public FilterConfigImpl(String name, ServletContext context,
+    Map<String, String> initParams) {
+    this.name = name;
+    this.context = context;
+    this.initParams = initParams;
+  }
 
-	public String getInitParameter(String name) {
-		return this.initParams.get(name);
-	}
+  public String getFilterName() {
+    return this.name;
+  }
 
-	public Enumeration getInitParameterNames() {
-		return Collections.enumeration(this.initParams.keySet());
-	}
+  public ServletContext getServletContext() {
+    return this.context;
+  }
+
+  public String getInitParameter(String name) {
+    return this.initParams.get(name);
+  }
+
+  public Enumeration getInitParameterNames() {
+    return Collections.enumeration(this.initParams.keySet());
+  }
 }

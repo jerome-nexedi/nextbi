@@ -25,77 +25,77 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.felix.http.base.internal.handler.ServletHandler;
 
 public final class ServletPipeline {
-	private final ServletHandler[] handlers;
+  private final ServletHandler[] handlers;
 
-	public ServletPipeline(ServletHandler[] handlers) {
-		this.handlers = handlers;
-	}
+  public ServletPipeline(ServletHandler[] handlers) {
+    this.handlers = handlers;
+  }
 
-	public boolean handle(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException {
-		for (ServletHandler handler : this.handlers) {
-			if (handler.handle(req, res)) {
-				return true;
-			}
-		}
+  public boolean handle(HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+    for (ServletHandler handler : this.handlers) {
+      if (handler.handle(req, res)) {
+        return true;
+      }
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	public boolean hasServletsMapped() {
-		return this.handlers.length > 0;
-	}
+  public boolean hasServletsMapped() {
+    return this.handlers.length > 0;
+  }
 
-//	public RequestDispatcher getRequestDispatcher(String path) {
-//		for (ServletHandler handler : this.handlers) {
-//			if (handler.matches(path)) {
-//				return new Dispatcher(path, handler);
-//			}
-//		}
-//
-//		return null;
-//	}
-//
-//	private final class Dispatcher implements RequestDispatcher {
-//		private final String path;
-//		private final ServletHandler handler;
-//
-//		public Dispatcher(String path, ServletHandler handler) {
-//			this.path = path;
-//			this.handler = handler;
-//		}
-//
-//		public void forward(ServletRequest req, ServletResponse res)
-//				throws ServletException, IOException {
-//			if (res.isCommitted()) {
-//				throw new ServletException("Response has been committed");
-//			}
-//
-//			this.handler.handle(new RequestWrapper((HttpServletRequest) req,
-//					this.path), (HttpServletResponse) res);
-//		}
-//
-//		public void include(ServletRequest req, ServletResponse res)
-//				throws ServletException, IOException {
-//			this.handler.handle((HttpServletRequest) req, (HttpServletResponse) res);
-//		}
-//	}
-//
-//	private final class RequestWrapper extends HttpServletRequestWrapper {
-//		private final String requestUri;
-//
-//		public RequestWrapper(HttpServletRequest req, String requestUri) {
-//			super(req);
-//			this.requestUri = requestUri;
-//		}
-//
-//		public String getRequestURI() {
-//			return this.requestUri;
-//		}
-//		
-//		@Override
-//		public String getPathInfo() {
-//			return this.requestUri;
-//		}
-//	}
+  // public RequestDispatcher getRequestDispatcher(String path) {
+  // for (ServletHandler handler : this.handlers) {
+  // if (handler.matches(path)) {
+  // return new Dispatcher(path, handler);
+  // }
+  // }
+  //
+  // return null;
+  // }
+  //
+  // private final class Dispatcher implements RequestDispatcher {
+  // private final String path;
+  // private final ServletHandler handler;
+  //
+  // public Dispatcher(String path, ServletHandler handler) {
+  // this.path = path;
+  // this.handler = handler;
+  // }
+  //
+  // public void forward(ServletRequest req, ServletResponse res)
+  // throws ServletException, IOException {
+  // if (res.isCommitted()) {
+  // throw new ServletException("Response has been committed");
+  // }
+  //
+  // this.handler.handle(new RequestWrapper((HttpServletRequest) req,
+  // this.path), (HttpServletResponse) res);
+  // }
+  //
+  // public void include(ServletRequest req, ServletResponse res)
+  // throws ServletException, IOException {
+  // this.handler.handle((HttpServletRequest) req, (HttpServletResponse) res);
+  // }
+  // }
+  //
+  // private final class RequestWrapper extends HttpServletRequestWrapper {
+  // private final String requestUri;
+  //
+  // public RequestWrapper(HttpServletRequest req, String requestUri) {
+  // super(req);
+  // this.requestUri = requestUri;
+  // }
+  //
+  // public String getRequestURI() {
+  // return this.requestUri;
+  // }
+  //		
+  // @Override
+  // public String getPathInfo() {
+  // return this.requestUri;
+  // }
+  // }
 }

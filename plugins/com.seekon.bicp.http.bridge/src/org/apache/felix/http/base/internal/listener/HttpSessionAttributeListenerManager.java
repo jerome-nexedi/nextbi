@@ -31,31 +31,31 @@ import org.osgi.framework.BundleContext;
  * implementing the respective Servlet API 2.4 listener interface.
  */
 public class HttpSessionAttributeListenerManager extends
-		AbstractListenerManager<HttpSessionAttributeListener> implements
-		HttpSessionAttributeListener {
+  AbstractListenerManager<HttpSessionAttributeListener> implements
+  HttpSessionAttributeListener {
 
-	public HttpSessionAttributeListenerManager(BundleContext context) {
-		super(context, HttpSessionAttributeListener.class);
-	}
+  public HttpSessionAttributeListenerManager(BundleContext context) {
+    super(context, HttpSessionAttributeListener.class);
+  }
 
-	public void attributeAdded(final HttpSessionBindingEvent se) {
-		final Iterator<HttpSessionAttributeListener> listeners = getContextListeners();
-		while (listeners.hasNext()) {
-			listeners.next().attributeAdded(se);
-		}
-	}
+  public void attributeAdded(final HttpSessionBindingEvent se) {
+    final Iterator<HttpSessionAttributeListener> listeners = getContextListeners();
+    while (listeners.hasNext()) {
+      listeners.next().attributeAdded(se);
+    }
+  }
 
-	public void attributeRemoved(final HttpSessionBindingEvent se) {
-		final Iterator<HttpSessionAttributeListener> listeners = getContextListeners();
-		while (listeners.hasNext()) {
-			listeners.next().attributeRemoved(se);
-		}
-	}
+  public void attributeRemoved(final HttpSessionBindingEvent se) {
+    final Iterator<HttpSessionAttributeListener> listeners = getContextListeners();
+    while (listeners.hasNext()) {
+      listeners.next().attributeRemoved(se);
+    }
+  }
 
-	public void attributeReplaced(final HttpSessionBindingEvent se) {
-		final Iterator<HttpSessionAttributeListener> listeners = getContextListeners();
-		while (listeners.hasNext()) {
-			listeners.next().attributeReplaced(se);
-		}
-	}
+  public void attributeReplaced(final HttpSessionBindingEvent se) {
+    final Iterator<HttpSessionAttributeListener> listeners = getContextListeners();
+    while (listeners.hasNext()) {
+      listeners.next().attributeReplaced(se);
+    }
+  }
 }

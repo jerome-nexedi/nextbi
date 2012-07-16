@@ -24,11 +24,10 @@ import org.osgi.service.http.HttpContext;
 import java.util.Dictionary;
 
 public interface ExtHttpService extends HttpService {
-	public void registerFilter(Filter filter, String pattern,
-			Dictionary initParams, int ranking, HttpContext context)
-			throws ServletException;
+  public void registerFilter(Filter filter, String pattern, Dictionary initParams,
+    int ranking, HttpContext context) throws ServletException;
 
-	public void unregisterFilter(Filter filter);
+  public void unregisterFilter(Filter filter);
 
-	public void unregisterServlet(Servlet servlet);
+  public void unregisterServlet(Servlet servlet);
 }

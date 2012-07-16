@@ -27,64 +27,63 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class AbstractListenerManager<ListenerType> extends ServiceTracker {
 
-	private ArrayList<ListenerType> allContextListeners;
+  private ArrayList<ListenerType> allContextListeners;
 
-	private final Object lock;
+  private final Object lock;
 
-	protected AbstractListenerManager(BundleContext context,
-			Class<ListenerType> clazz) {
-		super(context, clazz.getName(), null);
-		lock = new Object();
-	}
+  protected AbstractListenerManager(BundleContext context, Class<ListenerType> clazz) {
+    super(context, clazz.getName(), null);
+    lock = new Object();
+  }
 
-	@SuppressWarnings("unchecked")
-	protected final Iterator<ListenerType> getContextListeners() {
-		ArrayList<ListenerType> result = allContextListeners;
-		if (result == null) {
-			synchronized (lock) {
-				if (allContextListeners == null) {
-					Object[] services = getServices();
-					if (services != null && services.length > 0) {
-						result = new ArrayList<ListenerType>(services.length);
-						for (Object service : services) {
-							result.add((ListenerType) service);
-						}
-					} else {
-						result = new ArrayList<ListenerType>(0);
-					}
-					this.allContextListeners = result;
-				} else {
-					result = this.allContextListeners;
-				}
-			}
-		}
-		return result.iterator();
-	}
+  @SuppressWarnings("unchecked")
+  protected final Iterator<ListenerType> getContextListeners() {
+    ArrayList<ListenerType> result = allContextListeners;
+    if (result == null) {
+      synchronized (lock) {
+        if (allContextListeners == null) {
+          Object[] services = getServices();
+          if (services != null && services.length > 0) {
+            result = new ArrayList<ListenerType>(services.length);
+            for (Object service : services) {
+              result.add((ListenerType) service);
+            }
+          } else {
+            result = new ArrayList<ListenerType>(0);
+          }
+          this.allContextListeners = result;
+        } else {
+          result = this.allContextListeners;
+        }
+      }
+    }
+    return result.iterator();
+  }
 
-	@Override
-	public Object addingService(ServiceReference reference) {
-		synchronized (lock) {
-			allContextListeners = null;
-		}
+  @Override
+  public Object addingService(ServiceReference reference) {
+    synchronized (lock) {
+      allContextListeners = null;
+    }
 
-		return super.addingService(reference);
-	}
+    return super.addingService(reference);
+  }
 
-	@Override
-	public void modifiedService(ServiceReference reference, Object service) {
-		synchronized (lock) {
-			allContextListeners = null;
-		}
+  @Override
+  public void modifiedService(ServiceReference reference, Object service) {
+    synchronized (lock) {
+      allContextListeners = null;
+    }
 
-		super.modifiedService(reference, service);
-	}
+    super.modifiedService(reference, service);
+  }
 
-	@Override
-	public void removedService(ServiceReference reference, Object service) {
-		synchronized (lock) {
-			allContextListeners = null;
-		}
+  @Override
+  public void removedService(ServiceReference reference, Object service) {
+    synchronized (lock) {
+      allContextListeners = null;
+    }
 
-		super.removedService(reference, service);
-	}
+    super.removedService(reference, service);
+  }
 }

@@ -25,28 +25,29 @@ import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
 public final class HttpServiceFactory implements ServiceFactory {
-	private final ServletContext context;
-	private final ServletContextAttributeListener attributeListener;
-	private final HandlerRegistry handlerRegistry;
-	private final boolean sharedContextAttributes;
+  private final ServletContext context;
 
-	public HttpServiceFactory(ServletContext context,
-			HandlerRegistry handlerRegistry,
-			ServletContextAttributeListener attributeListener,
-			boolean sharedContextAttributes) {
-		this.context = context;
-		this.attributeListener = attributeListener;
-		this.handlerRegistry = handlerRegistry;
-		this.sharedContextAttributes = sharedContextAttributes;
-	}
+  private final ServletContextAttributeListener attributeListener;
 
-	public Object getService(Bundle bundle, ServiceRegistration reg) {
-		return new HttpServiceImpl(bundle, this.context, this.handlerRegistry,
-				this.attributeListener, this.sharedContextAttributes);
-	}
+  private final HandlerRegistry handlerRegistry;
 
-	public void ungetService(Bundle bundle, ServiceRegistration reg,
-			Object service) {
-		((HttpServiceImpl) service).unregisterAll();
-	}
+  private final boolean sharedContextAttributes;
+
+  public HttpServiceFactory(ServletContext context, HandlerRegistry handlerRegistry,
+    ServletContextAttributeListener attributeListener,
+    boolean sharedContextAttributes) {
+    this.context = context;
+    this.attributeListener = attributeListener;
+    this.handlerRegistry = handlerRegistry;
+    this.sharedContextAttributes = sharedContextAttributes;
+  }
+
+  public Object getService(Bundle bundle, ServiceRegistration reg) {
+    return new HttpServiceImpl(bundle, this.context, this.handlerRegistry,
+      this.attributeListener, this.sharedContextAttributes);
+  }
+
+  public void ungetService(Bundle bundle, ServiceRegistration reg, Object service) {
+    ((HttpServiceImpl) service).unregisterAll();
+  }
 }

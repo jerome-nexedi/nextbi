@@ -31,140 +31,140 @@ import org.osgi.service.http.HttpContext;
 import org.osgi.service.http.NamespaceException;
 
 public final class HttpServiceImpl implements ExtHttpService {
-	private final Bundle bundle;
-	private final HandlerRegistry handlerRegistry;
-	private final HashSet<Servlet> localServlets;
-	private final HashSet<Filter> localFilters;
-	private final ServletContextManager contextManager;
+  private final Bundle bundle;
 
-	public HttpServiceImpl(Bundle bundle, ServletContext context,
-			HandlerRegistry handlerRegistry,
-			ServletContextAttributeListener servletAttributeListener,
-			boolean sharedContextAttributes) {
-		this.bundle = bundle;
-		this.handlerRegistry = handlerRegistry;
-		this.localServlets = new HashSet<Servlet>();
-		this.localFilters = new HashSet<Filter>();
-		this.contextManager = new ServletContextManager(this.bundle, context,
-				servletAttributeListener, sharedContextAttributes);
-	}
+  private final HandlerRegistry handlerRegistry;
 
-	private ExtServletContext getServletContext(HttpContext context) {
-		if (context == null) {
-			context = createDefaultHttpContext();
-		}
+  private final HashSet<Servlet> localServlets;
 
-		return this.contextManager.getServletContext(context);
-	}
+  private final HashSet<Filter> localFilters;
 
-	public void registerFilter(Filter filter, String pattern,
-			Dictionary initParams, int ranking, HttpContext context)
-			throws ServletException {
-		if (filter == null) {
-			throw new IllegalArgumentException("Filter must not be null");
-		}
-		FilterHandler handler = new FilterHandler(getServletContext(context),
-				filter, pattern, ranking);
-		handler.setInitParams(initParams);
-		this.handlerRegistry.addFilter(handler);
-		this.localFilters.add(filter);
-	}
+  private final ServletContextManager contextManager;
 
-	public void unregisterFilter(Filter filter) {
-		unregisterFilter(filter, true);
-	}
+  public HttpServiceImpl(Bundle bundle, ServletContext context,
+    HandlerRegistry handlerRegistry,
+    ServletContextAttributeListener servletAttributeListener,
+    boolean sharedContextAttributes) {
+    this.bundle = bundle;
+    this.handlerRegistry = handlerRegistry;
+    this.localServlets = new HashSet<Servlet>();
+    this.localFilters = new HashSet<Filter>();
+    this.contextManager = new ServletContextManager(this.bundle, context,
+      servletAttributeListener, sharedContextAttributes);
+  }
 
-	public void unregisterServlet(Servlet servlet) {
-		unregisterServlet(servlet, true);
-	}
+  private ExtServletContext getServletContext(HttpContext context) {
+    if (context == null) {
+      context = createDefaultHttpContext();
+    }
 
-	public void registerServlet(String alias, Servlet servlet,
-			Dictionary initParams, HttpContext context) throws ServletException,
-			NamespaceException {
-		if (servlet == null) {
-			throw new IllegalArgumentException("Servlet must not be null");
-		}
-		if (!isAliasValid(alias)) {
-			throw new IllegalArgumentException("Malformed servlet alias [" + alias
-					+ "]");
-		}
-		ServletHandler handler = new ServletHandler(getServletContext(context),
-				servlet, alias);
-		handler.setInitParams(initParams);
-		this.handlerRegistry.addServlet(handler);
-		this.localServlets.add(servlet);
-	}
+    return this.contextManager.getServletContext(context);
+  }
 
-	public void registerResources(String alias, String name, HttpContext context)
-			throws NamespaceException {
-		if (!isNameValid(name)) {
-			throw new IllegalArgumentException("Malformed resource name [" + name
-					+ "]");
-		}
+  public void registerFilter(Filter filter, String pattern, Dictionary initParams,
+    int ranking, HttpContext context) throws ServletException {
+    if (filter == null) {
+      throw new IllegalArgumentException("Filter must not be null");
+    }
+    FilterHandler handler = new FilterHandler(getServletContext(context), filter,
+      pattern, ranking);
+    handler.setInitParams(initParams);
+    this.handlerRegistry.addFilter(handler);
+    this.localFilters.add(filter);
+  }
 
-		try {
-			Servlet servlet = new ResourceServlet(name);
-			registerServlet(alias, servlet, null, context);
-		} catch (ServletException e) {
-			SystemLogger.error("Failed to register resources", e);
-		}
-	}
+  public void unregisterFilter(Filter filter) {
+    unregisterFilter(filter, true);
+  }
 
-	public void unregister(String alias) {
-		unregisterServlet(this.handlerRegistry.getServletByAlias(alias));
-	}
+  public void unregisterServlet(Servlet servlet) {
+    unregisterServlet(servlet, true);
+  }
 
-	public HttpContext createDefaultHttpContext() {
-		return new DefaultHttpContext(this.bundle);
-	}
+  public void registerServlet(String alias, Servlet servlet, Dictionary initParams,
+    HttpContext context) throws ServletException, NamespaceException {
+    if (servlet == null) {
+      throw new IllegalArgumentException("Servlet must not be null");
+    }
+    if (!isAliasValid(alias)) {
+      throw new IllegalArgumentException("Malformed servlet alias [" + alias + "]");
+    }
+    ServletHandler handler = new ServletHandler(getServletContext(context), servlet,
+      alias);
+    handler.setInitParams(initParams);
+    this.handlerRegistry.addServlet(handler);
+    this.localServlets.add(servlet);
+  }
 
-	public void unregisterAll() {
-		HashSet<Servlet> servlets = new HashSet<Servlet>(this.localServlets);
-		for (Servlet servlet : servlets) {
-			unregisterServlet(servlet, false);
-		}
+  public void registerResources(String alias, String name, HttpContext context)
+    throws NamespaceException {
+    if (!isNameValid(name)) {
+      throw new IllegalArgumentException("Malformed resource name [" + name + "]");
+    }
 
-		HashSet<Filter> filters = new HashSet<Filter>(this.localFilters);
-		for (Filter fiter : filters) {
-			unregisterFilter(fiter, false);
-		}
-	}
+    try {
+      Servlet servlet = new ResourceServlet(name);
+      registerServlet(alias, servlet, null, context);
+    } catch (ServletException e) {
+      SystemLogger.error("Failed to register resources", e);
+    }
+  }
 
-	private void unregisterFilter(Filter filter, final boolean destroy) {
-		if (filter != null) {
-			this.handlerRegistry.removeFilter(filter, destroy);
-			this.localFilters.remove(filter);
-		}
-	}
+  public void unregister(String alias) {
+    unregisterServlet(this.handlerRegistry.getServletByAlias(alias));
+  }
 
-	private void unregisterServlet(Servlet servlet, final boolean destroy) {
-		if (servlet != null) {
-			this.handlerRegistry.removeServlet(servlet, destroy);
-			this.localServlets.remove(servlet);
-		}
-	}
+  public HttpContext createDefaultHttpContext() {
+    return new DefaultHttpContext(this.bundle);
+  }
 
-	private boolean isNameValid(String name) {
-		if (name == null) {
-			return false;
-		}
+  public void unregisterAll() {
+    HashSet<Servlet> servlets = new HashSet<Servlet>(this.localServlets);
+    for (Servlet servlet : servlets) {
+      unregisterServlet(servlet, false);
+    }
 
-		if (!name.equals("/") && name.endsWith("/")) {
-			return false;
-		}
+    HashSet<Filter> filters = new HashSet<Filter>(this.localFilters);
+    for (Filter fiter : filters) {
+      unregisterFilter(fiter, false);
+    }
+  }
 
-		return true;
-	}
+  private void unregisterFilter(Filter filter, final boolean destroy) {
+    if (filter != null) {
+      this.handlerRegistry.removeFilter(filter, destroy);
+      this.localFilters.remove(filter);
+    }
+  }
 
-	private boolean isAliasValid(String alias) {
-		if (alias == null) {
-			return false;
-		}
+  private void unregisterServlet(Servlet servlet, final boolean destroy) {
+    if (servlet != null) {
+      this.handlerRegistry.removeServlet(servlet, destroy);
+      this.localServlets.remove(servlet);
+    }
+  }
 
-		if (!alias.equals("/") && (!alias.startsWith("/") || alias.endsWith("/"))) {
-			return false;
-		}
+  private boolean isNameValid(String name) {
+    if (name == null) {
+      return false;
+    }
 
-		return true;
-	}
+    if (!name.equals("/") && name.endsWith("/")) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private boolean isAliasValid(String alias) {
+    if (alias == null) {
+      return false;
+    }
+
+    if (!alias.equals("/") && (!alias.startsWith("/") || alias.endsWith("/"))) {
+      return false;
+    }
+
+    return true;
+  }
 }

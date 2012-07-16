@@ -29,141 +29,146 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.felix.http.base.internal.context.ExtServletContext;
 
 public final class FilterHandler extends AbstractHandler implements
-		Comparable<FilterHandler> {
-	private final Filter filter;
-	//private final Pattern regex;
-	private final int ranking;
-	private final ClassLoader registeredContextClassLoader;
-	private final URLPattern pattern;
-	
-	public FilterHandler(ExtServletContext context, Filter filter,
-			String pattern, int ranking) {
-		super(context);
-		this.filter = filter;
-		this.ranking = ranking;
-		//this.regex = Pattern.compile(pattern);
-		this.registeredContextClassLoader = Thread.currentThread().getContextClassLoader();
-		this.pattern = this.processURLPattern(pattern);
-	}
+  Comparable<FilterHandler> {
+  private final Filter filter;
 
-	public Filter getFilter() {
-		return this.filter;
-	}
+  // private final Pattern regex;
+  private final int ranking;
 
-	public void init() throws ServletException {
-		String name = null;
-		Map<String, String> initParams = getInitParams();
-		if (initParams != null) {
-			name = initParams.get("filter-name");
-		}
-		if (name == null || name.trim().length() == 0) {
-			name = "filter_" + getId();
-		}
+  private final ClassLoader registeredContextClassLoader;
 
-		ClassLoader original = Thread.currentThread().getContextClassLoader();
-		try {
-			Thread.currentThread().setContextClassLoader(registeredContextClassLoader);
-			FilterConfig config = new FilterConfigImpl(name, getContext(), initParams);
-			this.filter.init(config);
-		} finally {
-			Thread.currentThread().setContextClassLoader(original);
-		}
-	}
+  private final URLPattern pattern;
 
-	public void destroy() {
-		ClassLoader original = Thread.currentThread().getContextClassLoader();
-		try {
-			Thread.currentThread().setContextClassLoader(registeredContextClassLoader);
-			this.filter.destroy();
-		} finally {
-			Thread.currentThread().setContextClassLoader(original);
-		}
-		
-	}
+  public FilterHandler(ExtServletContext context, Filter filter, String pattern,
+    int ranking) {
+    super(context);
+    this.filter = filter;
+    this.ranking = ranking;
+    // this.regex = Pattern.compile(pattern);
+    this.registeredContextClassLoader = Thread.currentThread()
+      .getContextClassLoader();
+    this.pattern = this.processURLPattern(pattern);
+  }
 
-	public boolean matches(String uri) {
-		// assume root if uri is null
-		if (uri == null) {
-			uri = "/";
-		}
-		//return this.regex.matcher(uri).matches();
-		
-		String prefix = this.pattern.prefix;
-		String suffix = this.pattern.suffix;
-		if (!uri.startsWith(prefix))
-			return false;
+  public Filter getFilter() {
+    return this.filter;
+  }
 
-		// perfect match
-		if (prefix.length() == uri.length())
-			return suffix == null;
+  public void init() throws ServletException {
+    String name = null;
+    Map<String, String> initParams = getInitParams();
+    if (initParams != null) {
+      name = initParams.get("filter-name");
+    }
+    if (name == null || name.trim().length() == 0) {
+      name = "filter_" + getId();
+    }
 
-		// check the next character is a path separator
-		if (uri.charAt(prefix.length()) != '/')
-			return false;
+    ClassLoader original = Thread.currentThread().getContextClassLoader();
+    try {
+      Thread.currentThread().setContextClassLoader(registeredContextClassLoader);
+      FilterConfig config = new FilterConfigImpl(name, getContext(), initParams);
+      this.filter.init(config);
+    } finally {
+      Thread.currentThread().setContextClassLoader(original);
+    }
+  }
 
-		// check for an extension match
-		if (suffix == null)
-			return true;
+  public void destroy() {
+    ClassLoader original = Thread.currentThread().getContextClassLoader();
+    try {
+      Thread.currentThread().setContextClassLoader(registeredContextClassLoader);
+      this.filter.destroy();
+    } finally {
+      Thread.currentThread().setContextClassLoader(original);
+    }
 
-		return uri.endsWith(suffix) && uri.length() > prefix.length() + suffix.length();
-	}
+  }
 
-	public void handle(HttpServletRequest req, HttpServletResponse res,
-			FilterChain chain) throws ServletException, IOException {
-		final boolean matches = matches(req.getPathInfo());
-		if (matches) {
-			doHandle(req, res, chain);
-		} else {
-			chain.doFilter(req, res);
-		}
-	}
+  public boolean matches(String uri) {
+    // assume root if uri is null
+    if (uri == null) {
+      uri = "/";
+    }
+    // return this.regex.matcher(uri).matches();
 
-	private void doHandle(HttpServletRequest req, HttpServletResponse res,
-			FilterChain chain) throws ServletException, IOException {
-		if (!getContext().handleSecurity(req, res)) {
-			res.sendError(HttpServletResponse.SC_FORBIDDEN);
-		} else {
-			ClassLoader original = Thread.currentThread().getContextClassLoader();
-			try {
-				Thread.currentThread().setContextClassLoader(registeredContextClassLoader);
-				this.filter.doFilter(req, res, chain);
-			} finally {
-				Thread.currentThread().setContextClassLoader(original);
-			}
-			
-		}
-	}
+    String prefix = this.pattern.prefix;
+    String suffix = this.pattern.suffix;
+    if (!uri.startsWith(prefix))
+      return false;
 
-	public int compareTo(FilterHandler other) {
-		return other.ranking - this.ranking;
-	}
-	
-	public URLPattern processURLPattern(String alias) {
-		if (alias == null || alias.trim().length() == 0) {
-			return new URLPattern("/", null);
-		}
+    // perfect match
+    if (prefix.length() == uri.length())
+      return suffix == null;
 
-		String prefix;
-		String suffix;
-		int lastSlash = alias.lastIndexOf('/');
-		String lastSegment = alias.substring(alias.lastIndexOf('/') + 1);
-		if (lastSegment.startsWith("*.")) { //$NON-NLS-1$
-			prefix = alias.substring(0, lastSlash);
-			suffix = lastSegment.substring(1);
-		} else {
-			prefix = alias.equals("/") ? "" : alias; //$NON-NLS-1$//$NON-NLS-2$
-			suffix = null;
-		}
-		return new URLPattern(prefix, suffix);
-	}
-	
-	class URLPattern {
-		final String prefix;
-		final String suffix;
+    // check the next character is a path separator
+    if (uri.charAt(prefix.length()) != '/')
+      return false;
 
-		public URLPattern(String prefix, String suffix) {
-			this.prefix = prefix;
-			this.suffix = suffix;
-		}
-	}
+    // check for an extension match
+    if (suffix == null)
+      return true;
+
+    return uri.endsWith(suffix) && uri.length() > prefix.length() + suffix.length();
+  }
+
+  public void handle(HttpServletRequest req, HttpServletResponse res,
+    FilterChain chain) throws ServletException, IOException {
+    final boolean matches = matches(req.getPathInfo());
+    if (matches) {
+      doHandle(req, res, chain);
+    } else {
+      chain.doFilter(req, res);
+    }
+  }
+
+  private void doHandle(HttpServletRequest req, HttpServletResponse res,
+    FilterChain chain) throws ServletException, IOException {
+    if (!getContext().handleSecurity(req, res)) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN);
+    } else {
+      ClassLoader original = Thread.currentThread().getContextClassLoader();
+      try {
+        Thread.currentThread().setContextClassLoader(registeredContextClassLoader);
+        this.filter.doFilter(req, res, chain);
+      } finally {
+        Thread.currentThread().setContextClassLoader(original);
+      }
+
+    }
+  }
+
+  public int compareTo(FilterHandler other) {
+    return other.ranking - this.ranking;
+  }
+
+  public URLPattern processURLPattern(String alias) {
+    if (alias == null || alias.trim().length() == 0) {
+      return new URLPattern("/", null);
+    }
+
+    String prefix;
+    String suffix;
+    int lastSlash = alias.lastIndexOf('/');
+    String lastSegment = alias.substring(alias.lastIndexOf('/') + 1);
+    if (lastSegment.startsWith("*.")) { //$NON-NLS-1$
+      prefix = alias.substring(0, lastSlash);
+      suffix = lastSegment.substring(1);
+    } else {
+      prefix = alias.equals("/") ? "" : alias; //$NON-NLS-1$//$NON-NLS-2$
+      suffix = null;
+    }
+    return new URLPattern(prefix, suffix);
+  }
+
+  class URLPattern {
+    final String prefix;
+
+    final String suffix;
+
+    public URLPattern(String prefix, String suffix) {
+      this.prefix = prefix;
+      this.suffix = suffix;
+    }
+  }
 }
