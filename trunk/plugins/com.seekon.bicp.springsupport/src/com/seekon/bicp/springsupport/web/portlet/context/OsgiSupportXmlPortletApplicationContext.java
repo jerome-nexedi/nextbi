@@ -22,86 +22,94 @@ import org.springframework.osgi.io.OsgiBundleResourcePatternResolver;
 
 import com.seekon.bicp.springsupport.context.OsgiApplicationContextUtil;
 
-public class OsgiSupportXmlPortletApplicationContext extends XmlPortletApplicationContext{
+public class OsgiSupportXmlPortletApplicationContext extends
+  XmlPortletApplicationContext {
 
-	private BundleContext bundleContext = null;
-	
-	private ClassLoader classLoader = null;
-	
-	private ResourcePatternResolver osgiPatternResolver;
+  private BundleContext bundleContext = null;
 
-	public BundleContext getBundleContext() {
-		return bundleContext;
-	}
+  private ClassLoader classLoader = null;
 
-	public void setBundleContext(BundleContext bundleContext) {
-		this.bundleContext = bundleContext;
-		this.osgiPatternResolver = createResourcePatternResolver();
-	}
+  private ResourcePatternResolver osgiPatternResolver;
 
-	@Override
-	protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory)
-			throws BeansException, IOException {
-		// Create a new XmlBeanDefinitionReader for the given BeanFactory.
-		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
+  public BundleContext getBundleContext() {
+    return bundleContext;
+  }
 
-		// Configure the bean definition reader with this context's
-		// resource loading environment.
-		beanDefinitionReader.setEnvironment(this.getEnvironment());
-		beanDefinitionReader.setResourceLoader(this);
-		beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
+  public void setBundleContext(BundleContext bundleContext) {
+    this.bundleContext = bundleContext;
+    this.osgiPatternResolver = createResourcePatternResolver();
+  }
 
-		final Object[] resolvers = new Object[2];
+  @Override
+  protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory)
+    throws BeansException, IOException {
+    // Create a new XmlBeanDefinitionReader for the given BeanFactory.
+    XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(
+      beanFactory);
 
-		AccessController.doPrivileged(new PrivilegedAction() {
+    // Configure the bean definition reader with this context's
+    // resource loading environment.
+    beanDefinitionReader.setEnvironment(this.getEnvironment());
+    beanDefinitionReader.setResourceLoader(this);
+    beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
 
-			public Object run() {
-				BundleContext ctx = getBundleContext();
-				String filter = BundleUtils.createNamespaceFilter(ctx);
-				resolvers[0] = OsgiApplicationContextUtil.createNamespaceHandlerResolver(ctx, filter, getClassLoader());
-				resolvers[1] = OsgiApplicationContextUtil.createEntityResolver(ctx, filter, getClassLoader());
-				return null;
-			}
-		});
-		
-		beanDefinitionReader.setNamespaceHandlerResolver((NamespaceHandlerResolver) resolvers[0]);
-		beanDefinitionReader.setEntityResolver((EntityResolver) resolvers[1]);
+    final Object[] resolvers = new Object[2];
 
-		initBeanDefinitionReader(beanDefinitionReader);
-		loadBeanDefinitions(beanDefinitionReader);
-	}
-	
-	@Override
-	public ClassLoader getClassLoader() {
-		if(classLoader == null){
-			Assert.notNull(bundleContext, "bundleContext is required");
-			classLoader = ClassLoaderFactory.getBundleClassLoaderFor(bundleContext.getBundle());
-		}
-		return classLoader;
-	}
-	
-	@Override
-	public Resource getResource(String location) {
-		return (osgiPatternResolver != null ? osgiPatternResolver.getResource(location) : null);
-	}
+    AccessController.doPrivileged(new PrivilegedAction() {
 
-	@Override
-	public Resource[] getResources(String locationPattern) throws IOException {
-		return (osgiPatternResolver != null ? osgiPatternResolver.getResources(locationPattern) : null);
-	}
-	
-	@Override
-	protected Resource getResourceByPath(String path) {
-		Assert.notNull(path, "Path is required");
-		return new OsgiBundleResource(bundleContext.getBundle(), path);
-	}
-	
-	@Override
-	protected ResourcePatternResolver getResourcePatternResolver() {
-		return osgiPatternResolver;
-	}
-	
-	protected ResourcePatternResolver createResourcePatternResolver() {
-		return new OsgiBundleResourcePatternResolver(bundleContext.getBundle());
-	}
+      public Object run() {
+        BundleContext ctx = getBundleContext();
+        String filter = BundleUtils.createNamespaceFilter(ctx);
+        resolvers[0] = OsgiApplicationContextUtil.createNamespaceHandlerResolver(
+          ctx, filter, getClassLoader());
+        resolvers[1] = OsgiApplicationContextUtil.createEntityResolver(ctx, filter,
+          getClassLoader());
+        return null;
+      }
+    });
+
+    beanDefinitionReader
+      .setNamespaceHandlerResolver((NamespaceHandlerResolver) resolvers[0]);
+    beanDefinitionReader.setEntityResolver((EntityResolver) resolvers[1]);
+
+    initBeanDefinitionReader(beanDefinitionReader);
+    loadBeanDefinitions(beanDefinitionReader);
+  }
+
+  @Override
+  public ClassLoader getClassLoader() {
+    if (classLoader == null) {
+      Assert.notNull(bundleContext, "bundleContext is required");
+      classLoader = ClassLoaderFactory.getBundleClassLoaderFor(bundleContext
+        .getBundle());
+    }
+    return classLoader;
+  }
+
+  @Override
+  public Resource getResource(String location) {
+    return (osgiPatternResolver != null ? osgiPatternResolver.getResource(location)
+      : null);
+  }
+
+  @Override
+  public Resource[] getResources(String locationPattern) throws IOException {
+    return (osgiPatternResolver != null ? osgiPatternResolver
+      .getResources(locationPattern) : null);
+  }
+
+  @Override
+  protected Resource getResourceByPath(String path) {
+    Assert.notNull(path, "Path is required");
+    return new OsgiBundleResource(bundleContext.getBundle(), path);
+  }
+
+  @Override
+  protected ResourcePatternResolver getResourcePatternResolver() {
+    return osgiPatternResolver;
+  }
+
+  protected ResourcePatternResolver createResourcePatternResolver() {
+    return new OsgiBundleResourcePatternResolver(bundleContext.getBundle());
+  }
 }

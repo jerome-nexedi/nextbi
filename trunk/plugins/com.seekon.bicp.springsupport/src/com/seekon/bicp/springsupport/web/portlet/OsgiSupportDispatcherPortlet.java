@@ -10,58 +10,58 @@ import com.seekon.bicp.springsupport.web.portlet.context.OsgiSupportXmlPortletAp
 
 public class OsgiSupportDispatcherPortlet extends DispatcherPortlet {
 
-	private String contextAttribute;
+  private String contextAttribute;
 
-	public String getContextAttribute() {
-		return contextAttribute;
-	}
+  public String getContextAttribute() {
+    return contextAttribute;
+  }
 
-	public void setContextAttribute(String contextAttribute) {
-		this.contextAttribute = contextAttribute;
-	}
+  public void setContextAttribute(String contextAttribute) {
+    this.contextAttribute = contextAttribute;
+  }
 
-	@Override
-	protected ApplicationContext createPortletApplicationContext(
-			ApplicationContext parent) {
-		if (parent == null && contextAttribute != null) {
-			parent = (ApplicationContext) getPortletContext().getAttribute(
-					contextAttribute);
-		}
-		this.setContextClass(OsgiSupportXmlPortletApplicationContext.class);
+  @Override
+  protected ApplicationContext createPortletApplicationContext(
+    ApplicationContext parent) {
+    if (parent == null && contextAttribute != null) {
+      parent = (ApplicationContext) getPortletContext().getAttribute(
+        contextAttribute);
+    }
+    this.setContextClass(OsgiSupportXmlPortletApplicationContext.class);
 
-		OsgiSupportXmlPortletApplicationContext pac = new OsgiSupportXmlPortletApplicationContext();
+    OsgiSupportXmlPortletApplicationContext pac = new OsgiSupportXmlPortletApplicationContext();
 
-		String osgiConextPath = getPortletContext().getInitParameter("Osgi-Context-Path");
-		if(osgiConextPath != null){
-			setViewRendererUrl(osgiConextPath + DEFAULT_VIEW_RENDERER_URL);
-		}
-		// Assign the best possible id value.
-		String portletContextName = getPortletContext().getPortletContextName();
-		if (portletContextName != null) {
-			pac
-					.setId(ConfigurablePortletApplicationContext.APPLICATION_CONTEXT_ID_PREFIX
-							+ portletContextName + "." + getPortletName());
-		} else {
-			pac
-					.setId(ConfigurablePortletApplicationContext.APPLICATION_CONTEXT_ID_PREFIX
-							+ getPortletName());
-		}
+    String osgiConextPath = getPortletContext()
+      .getInitParameter("Osgi-Context-Path");
+    if (osgiConextPath != null) {
+      setViewRendererUrl(osgiConextPath + DEFAULT_VIEW_RENDERER_URL);
+    }
+    // Assign the best possible id value.
+    String portletContextName = getPortletContext().getPortletContextName();
+    if (portletContextName != null) {
+      pac.setId(ConfigurablePortletApplicationContext.APPLICATION_CONTEXT_ID_PREFIX
+        + portletContextName + "." + getPortletName());
+    } else {
+      pac.setId(ConfigurablePortletApplicationContext.APPLICATION_CONTEXT_ID_PREFIX
+        + getPortletName());
+    }
 
-		if(parent != null && parent instanceof OsgiBundleXmlApplicationContext){
-			pac.setBundleContext(((OsgiBundleXmlApplicationContext)parent).getBundleContext());
-		}
-		
-		pac.setParent(parent);
-		pac.setPortletContext(getPortletContext());
-		pac.setPortletConfig(getPortletConfig());
-		pac.setNamespace(getNamespace());
-		pac.setConfigLocation(getContextConfigLocation());
-		pac.addApplicationListener(new SourceFilteringListener(pac, this));
+    if (parent != null && parent instanceof OsgiBundleXmlApplicationContext) {
+      pac.setBundleContext(((OsgiBundleXmlApplicationContext) parent)
+        .getBundleContext());
+    }
 
-		postProcessPortletApplicationContext(pac);
-		pac.refresh();
+    pac.setParent(parent);
+    pac.setPortletContext(getPortletContext());
+    pac.setPortletConfig(getPortletConfig());
+    pac.setNamespace(getNamespace());
+    pac.setConfigLocation(getContextConfigLocation());
+    pac.addApplicationListener(new SourceFilteringListener(pac, this));
 
-		return pac;
-	}
+    postProcessPortletApplicationContext(pac);
+    pac.refresh();
+
+    return pac;
+  }
 
 }
