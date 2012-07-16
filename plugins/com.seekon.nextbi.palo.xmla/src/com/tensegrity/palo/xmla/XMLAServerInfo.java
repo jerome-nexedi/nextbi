@@ -2,123 +2,107 @@ package com.tensegrity.palo.xmla;
 
 import com.tensegrity.palojava.ServerInfo;
 
-public class XMLAServerInfo
-  implements ServerInfo
-{
+public class XMLAServerInfo implements ServerInfo {
   private String id;
+
   private String name;
+
   private String description;
+
   private String url;
+
   private String authentication;
 
-  XMLAServerInfo(String paramString)
-  {
+  XMLAServerInfo(String paramString) {
     this.id = paramString;
     this.name = paramString;
   }
 
-  public int getBugfixVersion()
-  {
+  public int getBugfixVersion() {
     return 0;
   }
 
-  public int getBuildNumber()
-  {
+  public int getBuildNumber() {
     return 0;
   }
 
-  public int getMajor()
-  {
+  public int getMajor() {
     return 4;
   }
 
-  public int getMinor()
-  {
+  public int getMinor() {
     return 0;
   }
 
-  public boolean isLegacy()
-  {
+  public boolean isLegacy() {
     return false;
   }
 
-  public String getId()
-  {
+  public String getId() {
     return this.id;
   }
 
-  public String getName()
-  {
+  public String getName() {
     return this.name;
   }
 
-  public int getType()
-  {
+  public int getType() {
     return 3;
   }
 
-  public String getDescription()
-  {
+  public String getDescription() {
     return this.description;
   }
 
-  public void setDescription(String paramString)
-  {
+  public void setDescription(String paramString) {
     this.description = paramString;
   }
 
-  public void setAuthentication(String paramString)
-  {
+  public void setAuthentication(String paramString) {
     this.authentication = paramString;
   }
 
-  public String getUrl()
-  {
+  public String getUrl() {
     return this.url;
   }
 
-  public void setUrl(String paramString)
-  {
+  public void setUrl(String paramString) {
     this.url = paramString;
   }
 
-  public boolean canBeModified()
-  {
+  public boolean canBeModified() {
     return false;
   }
 
-  public boolean canCreateChildren()
-  {
+  public boolean canCreateChildren() {
     return false;
   }
 
-  public int getEncryption()
-  {
+  public int getEncryption() {
     return 0;
   }
 
-  public int getHttpsPort()
-  {
+  public int getHttpsPort() {
     return 0;
   }
 
-  public String getServerType()
-  {
+  public String getServerType() {
     return "XMLA";
   }
 
-  public String getVersion()
-  {
+  public String getVersion() {
     return "0";
   }
 
-  public String[] getProperties()
-  {
-    return new String[] { "SecurityInfoProperty", this.authentication, "DescriptionProperty", getDescription() };
+  public String[] getProperties() {
+    return new String[] { "SecurityInfoProperty", this.authentication,
+      "DescriptionProperty", getDescription() };
   }
 }
 
-/* Location:           D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
- * Qualified Name:     com.tensegrity.palo.xmla.XMLAServerInfo
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
+ * Qualified Name: com.tensegrity.palo.xmla.XMLAServerInfo JD-Core Version:
+ * 0.5.4
  */

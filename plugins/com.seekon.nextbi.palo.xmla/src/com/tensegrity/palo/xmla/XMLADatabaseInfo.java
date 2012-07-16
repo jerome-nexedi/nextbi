@@ -8,138 +8,126 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class XMLADatabaseInfo
-  implements DatabaseInfo, XMLAPaloInfo
-{
+public class XMLADatabaseInfo implements DatabaseInfo, XMLAPaloInfo {
   private String name;
+
   private String id;
+
   private int dimensionCount = 0;
+
   private int cubeCount;
+
   private final Map cubes;
+
   private boolean dimensionCountSet = false;
+
   private boolean cubeCountSet = false;
+
   private final XMLAConnection connection;
 
-  public XMLADatabaseInfo(XMLAConnection paramXMLAConnection, String paramString)
-  {
+  public XMLADatabaseInfo(XMLAConnection paramXMLAConnection, String paramString) {
     this.name = paramString;
     this.id = paramString;
     this.cubes = new LinkedHashMap();
     this.connection = paramXMLAConnection;
   }
 
-  public void setName(String paramString)
-  {
+  public void setName(String paramString) {
     this.name = paramString;
   }
 
-  public int getCubeCount()
-  {
-    if (!this.cubeCountSet)
-    {
+  public int getCubeCount() {
+    if (!this.cubeCountSet) {
       this.cubeCountSet = true;
-      XMLACubeRequestor localXMLACubeRequestor = new XMLACubeRequestor(this.connection, this);
+      XMLACubeRequestor localXMLACubeRequestor = new XMLACubeRequestor(
+        this.connection, this);
     }
     return this.cubeCount;
   }
 
-  public int getDimensionCount()
-  {
+  public int getDimensionCount() {
     return this.dimensionCount;
   }
 
-  public final void setCubeCount(int paramInt)
-  {
+  public final void setCubeCount(int paramInt) {
     this.cubeCount = paramInt;
   }
 
-  public final void setDimensionCount(int paramInt)
-  {
+  public final void setDimensionCount(int paramInt) {
     this.dimensionCount = paramInt;
   }
 
-  public String getName()
-  {
+  public String getName() {
     return this.name;
   }
 
-  public int getStatus()
-  {
+  public int getStatus() {
     return 1;
   }
 
-  public int getToken()
-  {
+  public int getToken() {
     return 0;
   }
 
-  public String getId()
-  {
+  public String getId() {
     return this.id;
   }
 
-  public int getType()
-  {
+  public int getType() {
     return 0;
   }
 
-  public String toString()
-  {
-    return "Database " + this.name + " [" + this.id + "]. Cubes: " + getCubeCount() + ", Dimensions: " + getDimensionCount() + ", Status: " + getStatus() + ", Token: " + getToken() + ", Type: " + getType();
+  public String toString() {
+    return "Database " + this.name + " [" + this.id + "]. Cubes: " + getCubeCount()
+      + ", Dimensions: " + getDimensionCount() + ", Status: " + getStatus()
+      + ", Token: " + getToken() + ", Type: " + getType();
   }
 
-  public void addCubeInternal(XMLACubeInfo paramXMLACubeInfo)
-  {
+  public void addCubeInternal(XMLACubeInfo paramXMLACubeInfo) {
     this.cubes.put(paramXMLACubeInfo.getId(), paramXMLACubeInfo);
   }
 
-  public XMLACubeInfo getCubeInternal(String paramString)
-  {
-    return (XMLACubeInfo)this.cubes.get(paramString);
+  public XMLACubeInfo getCubeInternal(String paramString) {
+    return (XMLACubeInfo) this.cubes.get(paramString);
   }
 
-  public int getCubeCountInternal()
-  {
+  public int getCubeCountInternal() {
     return this.cubes.size();
   }
 
-  public XMLACubeInfo[] getCubesInternal()
-  {
-    return (XMLACubeInfo[])(XMLACubeInfo[])this.cubes.values().toArray(new XMLACubeInfo[0]);
+  public XMLACubeInfo[] getCubesInternal() {
+    return (XMLACubeInfo[]) (XMLACubeInfo[]) this.cubes.values().toArray(
+      new XMLACubeInfo[0]);
   }
 
-  public boolean isSystem()
-  {
+  public boolean isSystem() {
     return false;
   }
 
-  public boolean isUserInfo()
-  {
+  public boolean isUserInfo() {
     return false;
   }
 
-  public String[] getAllKnownPropertyIds(DbConnection paramDbConnection)
-  {
+  public String[] getAllKnownPropertyIds(DbConnection paramDbConnection) {
     return new String[0];
   }
 
-  public PropertyInfo getProperty(DbConnection paramDbConnection, String paramString)
-  {
+  public PropertyInfo getProperty(DbConnection paramDbConnection, String paramString) {
     return null;
   }
 
-  public boolean canBeModified()
-  {
+  public boolean canBeModified() {
     return false;
   }
 
-  public boolean canCreateChildren()
-  {
+  public boolean canCreateChildren() {
     return false;
   }
 }
 
-/* Location:           D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
- * Qualified Name:     com.tensegrity.palo.xmla.XMLADatabaseInfo
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
+ * Qualified Name: com.tensegrity.palo.xmla.XMLADatabaseInfo JD-Core Version:
+ * 0.5.4
  */
