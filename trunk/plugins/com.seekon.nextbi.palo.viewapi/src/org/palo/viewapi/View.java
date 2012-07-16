@@ -2,8 +2,7 @@ package org.palo.viewapi;
 
 import org.palo.api.exceptions.PaloIOException;
 
-public abstract interface View extends ParameterizedGuardedObject
-{
+public abstract interface View extends ParameterizedGuardedObject {
   public abstract String getName();
 
   public abstract Account getAccount();
@@ -22,7 +21,8 @@ public abstract interface View extends ParameterizedGuardedObject
   public abstract void setCubeView(CubeView paramCubeView);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi.jar
- * Qualified Name:     org.palo.viewapi.View
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi
+ * .jar Qualified Name: org.palo.viewapi.View JD-Core Version: 0.5.4
  */

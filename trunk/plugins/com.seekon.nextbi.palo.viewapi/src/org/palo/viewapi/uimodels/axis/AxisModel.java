@@ -6,8 +6,7 @@ import org.palo.viewapi.Axis;
 import org.palo.viewapi.AxisHierarchy;
 import org.palo.viewapi.uimodels.axis.events.AxisModelListener;
 
-public abstract interface AxisModel
-{
+public abstract interface AxisModel {
   public abstract Axis getAxis();
 
   public abstract void addListener(AxisModelListener paramAxisModelListener);
@@ -28,7 +27,8 @@ public abstract interface AxisModel
 
   public abstract AxisHierarchy getAxisHierarchy(String paramString);
 
-  public abstract void swap(AxisHierarchy paramAxisHierarchy1, AxisHierarchy paramAxisHierarchy2);
+  public abstract void swap(AxisHierarchy paramAxisHierarchy1,
+    AxisHierarchy paramAxisHierarchy2);
 
   public abstract Hierarchy[] getHierarchies();
 
@@ -42,7 +42,8 @@ public abstract interface AxisModel
 
   public abstract AxisItem findItem(String paramString1, String paramString2);
 
-  public abstract AxisItem findItem(String paramString1, int paramInt, String paramString2);
+  public abstract AxisItem findItem(String paramString1, int paramInt,
+    String paramString2);
 
   public abstract int getMaximumLevel(Hierarchy paramHierarchy);
 
@@ -67,7 +68,9 @@ public abstract interface AxisModel
   public abstract void refresh();
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi.jar
- * Qualified Name:     org.palo.viewapi.uimodels.axis.AxisModel
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi
+ * .jar Qualified Name: org.palo.viewapi.uimodels.axis.AxisModel JD-Core
+ * Version: 0.5.4
  */

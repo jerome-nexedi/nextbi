@@ -11,15 +11,18 @@ import org.palo.viewapi.internal.ExplorerTreeNode;
 import org.palo.viewapi.internal.FolderElement;
 import org.palo.viewapi.internal.StaticFolder;
 
-public abstract interface FolderService extends Service
-{
-  public abstract DynamicFolder createDynamicFolder(String paramString, ExplorerTreeNode paramExplorerTreeNode, Hierarchy paramHierarchy, Subset2 paramSubset2, PaloConnection paramPaloConnection)
+public abstract interface FolderService extends Service {
+  public abstract DynamicFolder createDynamicFolder(String paramString,
+    ExplorerTreeNode paramExplorerTreeNode, Hierarchy paramHierarchy,
+    Subset2 paramSubset2, PaloConnection paramPaloConnection)
     throws OperationFailedException;
 
-  public abstract StaticFolder createStaticFolder(String paramString, ExplorerTreeNode paramExplorerTreeNode, PaloConnection paramPaloConnection)
+  public abstract StaticFolder createStaticFolder(String paramString,
+    ExplorerTreeNode paramExplorerTreeNode, PaloConnection paramPaloConnection)
     throws OperationFailedException;
 
-  public abstract FolderElement createFolderElement(String paramString, ExplorerTreeNode paramExplorerTreeNode, PaloConnection paramPaloConnection)
+  public abstract FolderElement createFolderElement(String paramString,
+    ExplorerTreeNode paramExplorerTreeNode, PaloConnection paramPaloConnection)
     throws OperationFailedException;
 
   public abstract boolean doesTreeNodeExist(ExplorerTreeNode paramExplorerTreeNode);
@@ -40,12 +43,16 @@ public abstract interface FolderService extends Service
   public abstract void remove(Role paramRole, ExplorerTreeNode paramExplorerTreeNode)
     throws OperationFailedException;
 
-  public abstract void setOwner(User paramUser, ExplorerTreeNode paramExplorerTreeNode);
+  public abstract void setOwner(User paramUser,
+    ExplorerTreeNode paramExplorerTreeNode);
 
-  public abstract void setName(String paramString, ExplorerTreeNode paramExplorerTreeNode);
+  public abstract void setName(String paramString,
+    ExplorerTreeNode paramExplorerTreeNode);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi.jar
- * Qualified Name:     org.palo.viewapi.services.FolderService
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi
+ * .jar Qualified Name: org.palo.viewapi.services.FolderService JD-Core Version:
+ * 0.5.4
  */

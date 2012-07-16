@@ -3,8 +3,7 @@ package org.palo.viewapi.internal;
 import org.palo.api.parameters.ParameterReceiver;
 import org.palo.viewapi.GuardedObject;
 
-public abstract interface ExplorerTreeNode extends ParameterReceiver, GuardedObject
-{
+public abstract interface ExplorerTreeNode extends ParameterReceiver, GuardedObject {
   public abstract String getId();
 
   public abstract String getName();
@@ -36,7 +35,9 @@ public abstract interface ExplorerTreeNode extends ParameterReceiver, GuardedObj
   public abstract int getType();
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi.jar
- * Qualified Name:     org.palo.viewapi.internal.ExplorerTreeNode
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi
+ * .jar Qualified Name: org.palo.viewapi.internal.ExplorerTreeNode JD-Core
+ * Version: 0.5.4
  */

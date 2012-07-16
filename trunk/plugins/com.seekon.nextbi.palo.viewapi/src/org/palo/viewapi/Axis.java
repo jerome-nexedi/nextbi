@@ -3,8 +3,7 @@ package org.palo.viewapi;
 import org.palo.api.Hierarchy;
 import org.palo.api.utils.ElementPath;
 
-public abstract interface Axis extends AxisProperties
-{
+public abstract interface Axis extends AxisProperties {
   public abstract String getId();
 
   public abstract void setName(String paramString);
@@ -54,7 +53,8 @@ public abstract interface Axis extends AxisProperties
   public abstract View getView();
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi.jar
- * Qualified Name:     org.palo.viewapi.Axis
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi
+ * .jar Qualified Name: org.palo.viewapi.Axis JD-Core Version: 0.5.4
  */

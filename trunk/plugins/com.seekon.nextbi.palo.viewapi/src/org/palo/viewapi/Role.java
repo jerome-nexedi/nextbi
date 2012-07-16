@@ -1,8 +1,8 @@
 package org.palo.viewapi;
 
-public abstract interface Role extends DomainObject
-{
+public abstract interface Role extends DomainObject {
   public static final String ADMIN = "ADMIN";
+
   public static final String OWNER = "OWNER";
 
   public abstract String getName();
@@ -16,7 +16,8 @@ public abstract interface Role extends DomainObject
   public abstract boolean hasPermission(Right paramRight);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi.jar
- * Qualified Name:     org.palo.viewapi.Role
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi
+ * .jar Qualified Name: org.palo.viewapi.Role JD-Core Version: 0.5.4
  */

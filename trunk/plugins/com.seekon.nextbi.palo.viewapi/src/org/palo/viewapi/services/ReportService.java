@@ -7,8 +7,7 @@ import org.palo.viewapi.User;
 import org.palo.viewapi.View;
 import org.palo.viewapi.exceptions.OperationFailedException;
 
-public abstract interface ReportService extends Service
-{
+public abstract interface ReportService extends Service {
   public abstract Report createReport(String paramString)
     throws OperationFailedException;
 
@@ -18,11 +17,9 @@ public abstract interface ReportService extends Service
 
   public abstract List<Report> getReports();
 
-  public abstract void save(Report paramReport)
-    throws OperationFailedException;
+  public abstract void save(Report paramReport) throws OperationFailedException;
 
-  public abstract void delete(Report paramReport)
-    throws OperationFailedException;
+  public abstract void delete(Report paramReport) throws OperationFailedException;
 
   public abstract void setName(String paramString, Report paramReport);
 
@@ -43,7 +40,9 @@ public abstract interface ReportService extends Service
     throws OperationFailedException;
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi.jar
- * Qualified Name:     org.palo.viewapi.services.ReportService
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi
+ * .jar Qualified Name: org.palo.viewapi.services.ReportService JD-Core Version:
+ * 0.5.4
  */

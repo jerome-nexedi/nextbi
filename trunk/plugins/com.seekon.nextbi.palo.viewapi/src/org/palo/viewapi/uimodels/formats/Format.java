@@ -3,8 +3,7 @@ package org.palo.viewapi.uimodels.formats;
 import org.palo.api.ext.ui.ColorDescriptor;
 import org.palo.api.ext.ui.FontDescriptor;
 
-public abstract interface Format
-{
+public abstract interface Format {
   public abstract String getId();
 
   public abstract String getNumberFormat();
@@ -33,7 +32,9 @@ public abstract interface Format
 
   public abstract void setTrafficLightData(TrafficLightData paramTrafficLightData);
 
-  public abstract void addTrafficLightData(double paramDouble1, double paramDouble2, ColorDescriptor paramColorDescriptor1, ColorDescriptor paramColorDescriptor2, FontDescriptor paramFontDescriptor);
+  public abstract void addTrafficLightData(double paramDouble1, double paramDouble2,
+    ColorDescriptor paramColorDescriptor1, ColorDescriptor paramColorDescriptor2,
+    FontDescriptor paramFontDescriptor);
 
   public abstract FormatRangeInfo[] getRanges();
 
@@ -50,7 +51,9 @@ public abstract interface Format
   public abstract Format copy();
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi.jar
- * Qualified Name:     org.palo.viewapi.uimodels.formats.Format
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloviewapi
+ * .jar Qualified Name: org.palo.viewapi.uimodels.formats.Format JD-Core
+ * Version: 0.5.4
  */
