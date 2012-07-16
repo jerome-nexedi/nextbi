@@ -26,41 +26,41 @@ import java.util.BitSet;
  *          .java#1 $
  */
 abstract class DenseNativeSegmentDataset extends DenseSegmentDataset {
-	protected final BitSet nullIndicators;
+  protected final BitSet nullIndicators;
 
-	/**
-	 * Creates a DenseNativeSegmentDataset.
-	 * 
-	 * @param segment
-	 *          Segment
-	 * @param size
-	 *          Number of coordinates
-	 */
-	DenseNativeSegmentDataset(Segment segment, int size) {
-		super(segment);
-		this.nullIndicators = new BitSet(size);
-		this.nullIndicators.set(0, size, false);
-	}
+  /**
+   * Creates a DenseNativeSegmentDataset.
+   * 
+   * @param segment
+   *          Segment
+   * @param size
+   *          Number of coordinates
+   */
+  DenseNativeSegmentDataset(Segment segment, int size) {
+    super(segment);
+    this.nullIndicators = new BitSet(size);
+    this.nullIndicators.set(0, size, false);
+  }
 
-	public boolean isNull(CellKey key) {
-		int offset = key.getOffset(axisMultipliers);
-		return isNull(offset);
-	}
+  public boolean isNull(CellKey key) {
+    int offset = key.getOffset(axisMultipliers);
+    return isNull(offset);
+  }
 
-	/**
-	 * Returns whether the value at the given offset is null.
-	 * 
-	 * <p>
-	 * The native value at this offset will also be 0. You only need to call this
-	 * method if the {@link #getInt getXxx} method has returned 0.
-	 * 
-	 * @param offset
-	 *          Cell offset
-	 * @return Whether the cell at this offset is null
-	 */
-	protected final boolean isNull(int offset) {
-		return !nullIndicators.get(offset);
-	}
+  /**
+   * Returns whether the value at the given offset is null.
+   * 
+   * <p>
+   * The native value at this offset will also be 0. You only need to call this
+   * method if the {@link #getInt getXxx} method has returned 0.
+   * 
+   * @param offset
+   *          Cell offset
+   * @return Whether the cell at this offset is null
+   */
+  protected final boolean isNull(int offset) {
+    return !nullIndicators.get(offset);
+  }
 }
 
 // End DenseNativeSegmentDataset.java

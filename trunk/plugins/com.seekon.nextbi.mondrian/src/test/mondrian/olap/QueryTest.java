@@ -9,7 +9,7 @@
 // You must accept the terms of that agreement to use this software.
 //
 // Shishir, 08 May, 2007
-*/
+ */
 package mondrian.olap;
 
 import mondrian.server.Statement;
@@ -18,51 +18,46 @@ import mondrian.test.TestContext;
 
 /**
  * Query test.
- *
+ * 
  * @version $Id: //open/mondrian/testsrc/main/mondrian/olap/QueryTest.java#8 $
  */
 public class QueryTest extends FoodMartTestCase {
-    private QueryPart[] cellProps = {
-        new CellProperty("[Value]"),
-        new CellProperty("[Formatted_Value]"),
-        new CellProperty("[Format_String]")
-    };
-    private QueryAxis[] axes = new QueryAxis[0];
-    private Formula[] formulas = new Formula[0];
-    private Query queryWithCellProps;
-    private Query queryWithoutCellProps;
+  private QueryPart[] cellProps = { new CellProperty("[Value]"),
+    new CellProperty("[Formatted_Value]"), new CellProperty("[Format_String]") };
 
-    protected void setUp() throws Exception {
-        super.setUp();
+  private QueryAxis[] axes = new QueryAxis[0];
 
-        TestContext testContext = getTestContext();
-        ConnectionBase connection =
-            (ConnectionBase) testContext.getConnection();
-        final Statement statement =
-            connection.createDummyStatement();
+  private Formula[] formulas = new Formula[0];
 
-        try {
-            queryWithCellProps =
-                new Query(
-                    statement, formulas, axes, "Sales",
-                    null, cellProps, false);
-            queryWithoutCellProps =
-                new Query(
-                    statement, formulas, axes, "Sales",
-                    null, new QueryPart[0], false);
-        } finally {
-            statement.close();
-        }
+  private Query queryWithCellProps;
+
+  private Query queryWithoutCellProps;
+
+  protected void setUp() throws Exception {
+    super.setUp();
+
+    TestContext testContext = getTestContext();
+    ConnectionBase connection = (ConnectionBase) testContext.getConnection();
+    final Statement statement = connection.createDummyStatement();
+
+    try {
+      queryWithCellProps = new Query(statement, formulas, axes, "Sales", null,
+        cellProps, false);
+      queryWithoutCellProps = new Query(statement, formulas, axes, "Sales", null,
+        new QueryPart[0], false);
+    } finally {
+      statement.close();
     }
+  }
 
-    public void testHasCellPropertyWhenQueryHasCellProperties() {
-        assertTrue(queryWithCellProps.hasCellProperty("Value"));
-        assertFalse(queryWithCellProps.hasCellProperty("Language"));
-    }
+  public void testHasCellPropertyWhenQueryHasCellProperties() {
+    assertTrue(queryWithCellProps.hasCellProperty("Value"));
+    assertFalse(queryWithCellProps.hasCellProperty("Language"));
+  }
 
-    public void testIsCellPropertyEmpty() {
-        assertTrue(queryWithoutCellProps.isCellPropertyEmpty());
-    }
+  public void testIsCellPropertyEmpty() {
+    assertTrue(queryWithoutCellProps.isCellPropertyEmpty());
+  }
 }
 
 // End QueryTest.java

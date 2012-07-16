@@ -17,19 +17,20 @@ package mondrian.olap;
  * Lexical analyzer whose input is a string.
  */
 public class StringScanner extends Scanner {
-	private final String s;
-	private int i;
+  private final String s;
 
-	public StringScanner(String s, boolean debug) {
-		super(debug);
-		this.s = s;
-		i = 0;
-	}
+  private int i;
 
-	// Override Scanner.getChar().
-	protected int getChar() {
-		return (i >= s.length()) ? -1 : s.charAt(i++);
-	}
+  public StringScanner(String s, boolean debug) {
+    super(debug);
+    this.s = s;
+    i = 0;
+  }
+
+  // Override Scanner.getChar().
+  protected int getChar() {
+    return (i >= s.length()) ? -1 : s.charAt(i++);
+  }
 }
 
 // End StringScanner.java

@@ -28,30 +28,30 @@ import java.io.PrintWriter;
  *          $
  */
 class ValueFunDef extends FunDefBase {
-	private final int[] argTypes;
+  private final int[] argTypes;
 
-	ValueFunDef(int[] argTypes) {
-		super("_Value()", "_Value([<Member>, ...])",
-				"Pseudo-function which evaluates a tuple.", Syntax.Parentheses,
-				Category.Numeric, argTypes);
-		this.argTypes = argTypes;
-	}
+  ValueFunDef(int[] argTypes) {
+    super("_Value()", "_Value([<Member>, ...])",
+      "Pseudo-function which evaluates a tuple.", Syntax.Parentheses,
+      Category.Numeric, argTypes);
+    this.argTypes = argTypes;
+  }
 
-	public int getReturnCategory() {
-		return Category.Tuple;
-	}
+  public int getReturnCategory() {
+    return Category.Tuple;
+  }
 
-	public int[] getParameterCategories() {
-		return argTypes;
-	}
+  public int[] getParameterCategories() {
+    return argTypes;
+  }
 
-	public void unparse(Exp[] args, PrintWriter pw) {
-		ExpBase.unparseList(pw, args, "(", ", ", ")");
-	}
+  public void unparse(Exp[] args, PrintWriter pw) {
+    ExpBase.unparseList(pw, args, "(", ", ", ")");
+  }
 
-	public Type getResultType(Validator validator, Exp[] args) {
-		return null;
-	}
+  public Type getResultType(Validator validator, Exp[] args) {
+    return null;
+  }
 
 }
 

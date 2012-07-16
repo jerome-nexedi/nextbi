@@ -34,23 +34,23 @@ import mondrian.util.*;
  */
 public class CurrentDateMemberExactUdf extends CurrentDateMemberUdf {
 
-	public String getDescription() {
-		return "Returns the exact member within the specified dimension "
-				+ "corresponding to the current date, in the format specified by "
-				+ "the format parameter. "
-				+ "If there is no such date, returns the NULL member. "
-				+ "Format strings are the same as used by the MDX Format function, "
-				+ "namely the Visual Basic format strings. "
-				+ "See http://www.apostate.com/programming/vb-format.html.";
-	}
+  public String getDescription() {
+    return "Returns the exact member within the specified dimension "
+      + "corresponding to the current date, in the format specified by "
+      + "the format parameter. "
+      + "If there is no such date, returns the NULL member. "
+      + "Format strings are the same as used by the MDX Format function, "
+      + "namely the Visual Basic format strings. "
+      + "See http://www.apostate.com/programming/vb-format.html.";
+  }
 
-	public Type[] getParameterTypes() {
-		return new Type[] { new HierarchyType(null, null), new StringType() };
-	}
+  public Type[] getParameterTypes() {
+    return new Type[] { new HierarchyType(null, null), new StringType() };
+  }
 
-	public String[] getReservedWords() {
-		return null;
-	}
+  public String[] getReservedWords() {
+    return null;
+  }
 }
 
 // End CurrentDateMemberExactUdf.java

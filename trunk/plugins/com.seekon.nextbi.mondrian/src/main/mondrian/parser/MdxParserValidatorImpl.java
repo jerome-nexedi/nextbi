@@ -21,23 +21,23 @@ import mondrian.server.Statement;
  * @author jhyde
  */
 public class MdxParserValidatorImpl implements MdxParserValidator {
-	/**
-	 * Creates a MdxParserValidatorImpl.
-	 */
-	public MdxParserValidatorImpl() {
-	}
+  /**
+   * Creates a MdxParserValidatorImpl.
+   */
+  public MdxParserValidatorImpl() {
+  }
 
-	public QueryPart parseInternal(Statement statement, String queryString,
-			boolean debug, FunTable funTable, boolean strictValidation) {
-		return new Parser().parseInternal(new Parser.FactoryImpl(), statement,
-				queryString, debug, funTable, strictValidation);
-	}
+  public QueryPart parseInternal(Statement statement, String queryString,
+    boolean debug, FunTable funTable, boolean strictValidation) {
+    return new Parser().parseInternal(new Parser.FactoryImpl(), statement,
+      queryString, debug, funTable, strictValidation);
+  }
 
-	public Exp parseExpression(Statement statement, String queryString,
-			boolean debug, FunTable funTable) {
-		return new Parser().parseExpression(new Parser.FactoryImpl(), statement,
-				queryString, debug, funTable);
-	}
+  public Exp parseExpression(Statement statement, String queryString, boolean debug,
+    FunTable funTable) {
+    return new Parser().parseExpression(new Parser.FactoryImpl(), statement,
+      queryString, debug, funTable);
+  }
 }
 
 // End MdxParserValidatorImpl.java

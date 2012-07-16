@@ -22,29 +22,29 @@ package mondrian.olap;
  * @see org.eigenbase.xom
  */
 public class MondrianException extends RuntimeException {
-	public MondrianException() {
-		super();
-	}
+  public MondrianException() {
+    super();
+  }
 
-	public MondrianException(Throwable cause) {
-		super(cause);
-	}
+  public MondrianException(Throwable cause) {
+    super(cause);
+  }
 
-	public MondrianException(String message) {
-		super(message);
-	}
+  public MondrianException(String message) {
+    super(message);
+  }
 
-	public MondrianException(String message, Throwable cause) {
-		super(message, cause);
-	}
+  public MondrianException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-	public String getLocalizedMessage() {
-		return getMessage();
-	}
+  public String getLocalizedMessage() {
+    return getMessage();
+  }
 
-	public String getMessage() {
-		return "Mondrian Error:" + super.getMessage();
-	}
+  public String getMessage() {
+    return "Mondrian Error:" + super.getMessage();
+  }
 }
 
 // End MondrianException.java

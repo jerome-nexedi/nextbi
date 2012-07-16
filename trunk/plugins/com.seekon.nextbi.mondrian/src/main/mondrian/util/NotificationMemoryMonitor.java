@@ -41,107 +41,107 @@ import org.apache.log4j.Logger;
  *          .java#10 $
  */
 public class NotificationMemoryMonitor extends AbstractMemoryMonitor {
-	private static final Logger LOGGER = Logger
-			.getLogger(NotificationMemoryMonitor.class);
+  private static final Logger LOGGER = Logger
+    .getLogger(NotificationMemoryMonitor.class);
 
-	protected static final MemoryPoolMXBean TENURED_POOL;
+  protected static final MemoryPoolMXBean TENURED_POOL;
 
-	static {
-		TENURED_POOL = findTenuredGenPool();
-	}
+  static {
+    TENURED_POOL = findTenuredGenPool();
+  }
 
-	private static MemoryPoolMXBean findTenuredGenPool() {
-		for (MemoryPoolMXBean pool : ManagementFactory.getMemoryPoolMXBeans()) {
-			// I don't know whether this approach is better, or whether
-			// we should rather check for the pool name "Tenured Gen"?
-			if (pool.getType() == MemoryType.HEAP && pool.isUsageThresholdSupported()) {
-				return pool;
-			}
-		}
-		throw new AssertionError("Could not find tenured space");
-	}
+  private static MemoryPoolMXBean findTenuredGenPool() {
+    for (MemoryPoolMXBean pool : ManagementFactory.getMemoryPoolMXBeans()) {
+      // I don't know whether this approach is better, or whether
+      // we should rather check for the pool name "Tenured Gen"?
+      if (pool.getType() == MemoryType.HEAP && pool.isUsageThresholdSupported()) {
+        return pool;
+      }
+    }
+    throw new AssertionError("Could not find tenured space");
+  }
 
-	/**
-	 * The <code>NotificationHandler</code> implements the Java memory
-	 * notification listener, <code>NotificationListener</code>, and is used to
-	 * take notifications from Java and pass them on to the
-	 * <code>NotificationMemoryMonitor</code>'s <code>Listerner</code>s.
-	 */
-	private class NotificationHandler implements NotificationListener {
+  /**
+   * The <code>NotificationHandler</code> implements the Java memory
+   * notification listener, <code>NotificationListener</code>, and is used to
+   * take notifications from Java and pass them on to the
+   * <code>NotificationMemoryMonitor</code>'s <code>Listerner</code>s.
+   */
+  private class NotificationHandler implements NotificationListener {
 
-		/**
-		 * This method is called by the Java5 code to notify clients registered with
-		 * the JVM that the JVM memory threshold has been exceeded.
-		 * 
-		 * @param notification
-		 * @param unused
-		 */
-		public void handleNotification(final Notification notification,
-				final Object unused) {
-			final String type = notification.getType();
+    /**
+     * This method is called by the Java5 code to notify clients registered with
+     * the JVM that the JVM memory threshold has been exceeded.
+     * 
+     * @param notification
+     * @param unused
+     */
+    public void handleNotification(final Notification notification,
+      final Object unused) {
+      final String type = notification.getType();
 
-			if (type.equals(MemoryNotificationInfo.MEMORY_THRESHOLD_EXCEEDED)) {
-				final MemoryUsage usage = TENURED_POOL.getUsage();
+      if (type.equals(MemoryNotificationInfo.MEMORY_THRESHOLD_EXCEEDED)) {
+        final MemoryUsage usage = TENURED_POOL.getUsage();
 
-				notifyListeners(usage.getUsed(), usage.getMax());
-			}
-		}
-	}
+        notifyListeners(usage.getUsed(), usage.getMax());
+      }
+    }
+  }
 
-	/**
-	 * Construct a <code>NotificationMemoryMonitor</code> instance and register it
-	 * with the Java5 memory management system.
-	 */
-	NotificationMemoryMonitor() {
-		super();
-		final MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
-		final NotificationEmitter emitter = (NotificationEmitter) mbean;
+  /**
+   * Construct a <code>NotificationMemoryMonitor</code> instance and register it
+   * with the Java5 memory management system.
+   */
+  NotificationMemoryMonitor() {
+    super();
+    final MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
+    final NotificationEmitter emitter = (NotificationEmitter) mbean;
 
-		// register with the Java5 memory management system.
-		emitter.addNotificationListener(new NotificationHandler(), null, null);
-	}
+    // register with the Java5 memory management system.
+    emitter.addNotificationListener(new NotificationHandler(), null, null);
+  }
 
-	/**
-	 * Get the <code>Logger</code>.
-	 * 
-	 * @return the <code>Logger</code>.
-	 */
-	protected Logger getLogger() {
-		return LOGGER;
-	}
+  /**
+   * Get the <code>Logger</code>.
+   * 
+   * @return the <code>Logger</code>.
+   */
+  protected Logger getLogger() {
+    return LOGGER;
+  }
 
-	/**
-	 * Notify the Java5 memory management system that there is a new low
-	 * threshold.
-	 * 
-	 * @param newLowThreshold
-	 *          the new threshold.
-	 */
-	protected void notifyNewLowThreshold(final long newLowThreshold) {
-		if (newLowThreshold == Long.MAX_VALUE) {
-			TENURED_POOL.setUsageThreshold(0);
-		} else {
-			TENURED_POOL.setUsageThreshold(newLowThreshold);
-		}
-	}
+  /**
+   * Notify the Java5 memory management system that there is a new low
+   * threshold.
+   * 
+   * @param newLowThreshold
+   *          the new threshold.
+   */
+  protected void notifyNewLowThreshold(final long newLowThreshold) {
+    if (newLowThreshold == Long.MAX_VALUE) {
+      TENURED_POOL.setUsageThreshold(0);
+    } else {
+      TENURED_POOL.setUsageThreshold(newLowThreshold);
+    }
+  }
 
-	/**
-	 * Get the maximum possible memory usage for this JVM instance.
-	 * 
-	 * @return maximum memory that can be used.
-	 */
-	public long getMaxMemory() {
-		return TENURED_POOL.getUsage().getMax();
-	}
+  /**
+   * Get the maximum possible memory usage for this JVM instance.
+   * 
+   * @return maximum memory that can be used.
+   */
+  public long getMaxMemory() {
+    return TENURED_POOL.getUsage().getMax();
+  }
 
-	/**
-	 * Get the current memory usage for this JVM instance.
-	 * 
-	 * @return current memory used.
-	 */
-	public long getUsedMemory() {
-		return TENURED_POOL.getUsage().getUsed();
-	}
+  /**
+   * Get the current memory usage for this JVM instance.
+   * 
+   * @return current memory used.
+   */
+  public long getUsedMemory() {
+    return TENURED_POOL.getUsage().getUsed();
+  }
 }
 
 // End NotificationMemoryMonitor.java

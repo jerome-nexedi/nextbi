@@ -100,94 +100,94 @@ import java.util.Set;
  *          Type of the values to store.
  */
 public interface SpatialValueTree<K extends Object, E extends Object, V extends Object> {
-	/**
-	 * Used as a token to represent all the values of an axis. Overrides
-	 * {@link Object#equals(Object)} and {@link Object#hashCode()} so that only
-	 * identity comparison are used.
-	 */
-	public static final Object AXIS_WILDCARD = new Object() {
-		public int hashCode() {
-			return 42;
-		}
-	};
+  /**
+   * Used as a token to represent all the values of an axis. Overrides
+   * {@link Object#equals(Object)} and {@link Object#hashCode()} so that only
+   * identity comparison are used.
+   */
+  public static final Object AXIS_WILDCARD = new Object() {
+    public int hashCode() {
+      return 42;
+    }
+  };
 
-	/**
-	 * Stores a string value at all points which intersect with the passed region
-	 * key.
-	 */
-	void add(SpatialRegion<K, E> regionkey, V value);
+  /**
+   * Stores a string value at all points which intersect with the passed region
+   * key.
+   */
+  void add(SpatialRegion<K, E> regionkey, V value);
 
-	/**
-	 * Clears all the values found at the provided region key.
-	 * 
-	 * @param regionKey
-	 *          The region key of the values to clear.
-	 */
-	void clear(SpatialRegion<K, E> regionKey);
+  /**
+   * Clears all the values found at the provided region key.
+   * 
+   * @param regionKey
+   *          The region key of the values to clear.
+   */
+  void clear(SpatialRegion<K, E> regionKey);
 
-	/**
-	 * Looks up all the values registered in nodes intersecting with the provided
-	 * region key.
-	 * 
-	 * @param regionKey
-	 *          The region key inside of which to search for value nodes.
-	 * @return An unordered set of all the unique values intersecting with the
-	 *         region.
-	 */
-	Set<V> get(SpatialRegion<K, E> regionKey);
+  /**
+   * Looks up all the values registered in nodes intersecting with the provided
+   * region key.
+   * 
+   * @param regionKey
+   *          The region key inside of which to search for value nodes.
+   * @return An unordered set of all the unique values intersecting with the
+   *         region.
+   */
+  Set<V> get(SpatialRegion<K, E> regionKey);
 
-	/**
-	 * Looks up all the values registered in nodes intersecting with the provided
-	 * region key. If a value is present in all of the nodes, a unique set of all
-	 * the values found will be returned. An empty set is returned if no complete
-	 * match could be found.
-	 * 
-	 * @param regionKey
-	 *          The region key inside of which to search for value nodes.
-	 * @return An unordered set of all the unique values intersecting with the
-	 *         region and covering it entirely, or an empty set otherwise.
-	 */
-	Set<V> match(SpatialRegion<K, E> regionKey);
+  /**
+   * Looks up all the values registered in nodes intersecting with the provided
+   * region key. If a value is present in all of the nodes, a unique set of all
+   * the values found will be returned. An empty set is returned if no complete
+   * match could be found.
+   * 
+   * @param regionKey
+   *          The region key inside of which to search for value nodes.
+   * @return An unordered set of all the unique values intersecting with the
+   *         region and covering it entirely, or an empty set otherwise.
+   */
+  Set<V> match(SpatialRegion<K, E> regionKey);
 
-	/**
-	 * Returns a list of all the dimensions present in this tree.
-	 * 
-	 * @return A list of dimension unique ids.
-	 */
-	List<K> getDimensions();
+  /**
+   * Returns a list of all the dimensions present in this tree.
+   * 
+   * @return A list of dimension unique ids.
+   */
+  List<K> getDimensions();
 
-	/**
-	 * Tells the number of dimensions in this tree.
-	 * 
-	 * @return The number of dimensions.
-	 */
-	int getDimensionality();
+  /**
+   * Tells the number of dimensions in this tree.
+   * 
+   * @return The number of dimensions.
+   */
+  int getDimensionality();
 
-	/**
-	 * Describes a spatial region within a {@link SpatialValueTree}.
-	 * 
-	 * @param <K>
-	 *          Type of the dimension key.
-	 * @param <E>
-	 *          Type of the values along the dimension's axis.
-	 */
-	public interface SpatialRegion<K extends Object, E extends Object> {
-		/**
-		 * Provides a list of the dimensions included in this region.
-		 * 
-		 * @return List of dimensions
-		 */
-		List<K> getDimensions();
+  /**
+   * Describes a spatial region within a {@link SpatialValueTree}.
+   * 
+   * @param <K>
+   *          Type of the dimension key.
+   * @param <E>
+   *          Type of the values along the dimension's axis.
+   */
+  public interface SpatialRegion<K extends Object, E extends Object> {
+    /**
+     * Provides a list of the dimensions included in this region.
+     * 
+     * @return List of dimensions
+     */
+    List<K> getDimensions();
 
-		/**
-		 * Provides an array of objects describing this region's bounds within the
-		 * specified dimension's axis.
-		 * 
-		 * @param dimension
-		 *          Dimension
-		 * @return An array of the bounds touched by this region.
-		 */
-		E[] getValues(K dimension);
-	}
+    /**
+     * Provides an array of objects describing this region's bounds within the
+     * specified dimension's axis.
+     * 
+     * @param dimension
+     *          Dimension
+     * @return An array of the bounds touched by this region.
+     */
+    E[] getValues(K dimension);
+  }
 }
 // End SpatialValueTree.java

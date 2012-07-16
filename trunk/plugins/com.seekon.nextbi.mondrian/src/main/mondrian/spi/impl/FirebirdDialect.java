@@ -21,28 +21,28 @@ import java.sql.SQLException;
  */
 public class FirebirdDialect extends JdbcDialectImpl {
 
-	public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
-			FirebirdDialect.class, DatabaseProduct.FIREBIRD);
+  public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
+    FirebirdDialect.class, DatabaseProduct.FIREBIRD);
 
-	/**
-	 * Creates a FirebirdDialect.
-	 * 
-	 * @param connection
-	 *          Connection
-	 */
-	public FirebirdDialect(Connection connection) throws SQLException {
-		super(connection);
-	}
+  /**
+   * Creates a FirebirdDialect.
+   * 
+   * @param connection
+   *          Connection
+   */
+  public FirebirdDialect(Connection connection) throws SQLException {
+    super(connection);
+  }
 
-	public boolean allowsAs() {
-		return false;
-	}
+  public boolean allowsAs() {
+    return false;
+  }
 
-	@Override
-	public String generateOrderByNulls(String expr, boolean ascending,
-			boolean collateNullsLast) {
-		return generateOrderByNullsAnsi(expr, ascending, collateNullsLast);
-	}
+  @Override
+  public String generateOrderByNulls(String expr, boolean ascending,
+    boolean collateNullsLast) {
+    return generateOrderByNullsAnsi(expr, ascending, collateNullsLast);
+  }
 }
 
 // End FirebirdDialect.java

@@ -25,38 +25,38 @@ package mondrian.olap;
  * @since Jan 6, 2006
  */
 public interface FunCall extends Exp {
-	/**
-	 * Returns the <code>index</code><sup>th</sup> argument to this function call.
-	 * 
-	 * @param index
-	 *          Ordinal of the argument
-	 * @return <code>index</code><sup>th</sup> argument to this function call
-	 */
-	Exp getArg(int index);
+  /**
+   * Returns the <code>index</code><sup>th</sup> argument to this function call.
+   * 
+   * @param index
+   *          Ordinal of the argument
+   * @return <code>index</code><sup>th</sup> argument to this function call
+   */
+  Exp getArg(int index);
 
-	/**
-	 * Returns the arguments to this function.
-	 * 
-	 * @return array of arguments
-	 */
-	Exp[] getArgs();
+  /**
+   * Returns the arguments to this function.
+   * 
+   * @return array of arguments
+   */
+  Exp[] getArgs();
 
-	/**
-	 * Returns the number of arguments to this function.
-	 * 
-	 * @return number of arguments
-	 */
-	int getArgCount();
+  /**
+   * Returns the number of arguments to this function.
+   * 
+   * @return number of arguments
+   */
+  int getArgCount();
 
-	/**
-	 * Returns the name of the function.
-	 */
-	String getFunName();
+  /**
+   * Returns the name of the function.
+   */
+  String getFunName();
 
-	/**
-	 * Returns the syntax of the call.
-	 */
-	Syntax getSyntax();
+  /**
+   * Returns the syntax of the call.
+   */
+  Syntax getSyntax();
 }
 
 // End FunCall.java

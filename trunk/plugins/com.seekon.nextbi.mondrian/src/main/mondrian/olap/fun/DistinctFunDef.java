@@ -31,37 +31,37 @@ import mondrian.olap.Member;
  * @since Jun 10, 2007
  */
 class DistinctFunDef extends FunDefBase {
-	public static final DistinctFunDef instance = new DistinctFunDef();
+  public static final DistinctFunDef instance = new DistinctFunDef();
 
-	private DistinctFunDef() {
-		super("Distinct", "Eliminates duplicate tuples from a set.", "fxx");
-	}
+  private DistinctFunDef() {
+    super("Distinct", "Eliminates duplicate tuples from a set.", "fxx");
+  }
 
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
-		final ListCalc listCalc = compiler.compileList(call.getArg(0));
-		return new CalcImpl(call, listCalc);
-	}
+  public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    final ListCalc listCalc = compiler.compileList(call.getArg(0));
+    return new CalcImpl(call, listCalc);
+  }
 
-	static class CalcImpl extends AbstractListCalc {
-		private final ListCalc listCalc;
+  static class CalcImpl extends AbstractListCalc {
+    private final ListCalc listCalc;
 
-		public CalcImpl(ResolvedFunCall call, ListCalc listCalc) {
-			super(call, new Calc[] { listCalc });
-			this.listCalc = listCalc;
-		}
+    public CalcImpl(ResolvedFunCall call, ListCalc listCalc) {
+      super(call, new Calc[] { listCalc });
+      this.listCalc = listCalc;
+    }
 
-		public TupleList evaluateList(Evaluator evaluator) {
-			TupleList list = listCalc.evaluateList(evaluator);
-			Set<List<Member>> set = new HashSet<List<Member>>(list.size());
-			TupleList result = list.cloneList(list.size());
-			for (List<Member> element : list) {
-				if (set.add(element)) {
-					result.add(element);
-				}
-			}
-			return result;
-		}
-	}
+    public TupleList evaluateList(Evaluator evaluator) {
+      TupleList list = listCalc.evaluateList(evaluator);
+      Set<List<Member>> set = new HashSet<List<Member>>(list.size());
+      TupleList result = list.cloneList(list.size());
+      for (List<Member> element : list) {
+        if (set.add(element)) {
+          result.add(element);
+        }
+      }
+      return result;
+    }
+  }
 }
 
 // End DistinctFunDef.java

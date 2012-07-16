@@ -25,45 +25,48 @@ import mondrian.olap.FunDef;
  *          $
  */
 abstract class ResolverBase extends FunUtil implements Resolver {
-	private final String name;
-	private final String signature;
-	private final String description;
-	private final Syntax syntax;
+  private final String name;
 
-	ResolverBase(String name, String signature, String description, Syntax syntax) {
-		this.name = name;
-		this.signature = signature;
-		this.description = description;
-		this.syntax = syntax;
-	}
+  private final String signature;
 
-	public String getName() {
-		return name;
-	}
+  private final String description;
 
-	public String getSignature() {
-		return signature;
-	}
+  private final Syntax syntax;
 
-	public FunDef getFunDef() {
-		return null;
-	}
+  ResolverBase(String name, String signature, String description, Syntax syntax) {
+    this.name = name;
+    this.signature = signature;
+    this.description = description;
+    this.syntax = syntax;
+  }
 
-	public String getDescription() {
-		return description;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public Syntax getSyntax() {
-		return syntax;
-	}
+  public String getSignature() {
+    return signature;
+  }
 
-	public boolean requiresExpression(int k) {
-		return false;
-	}
+  public FunDef getFunDef() {
+    return null;
+  }
 
-	public String[] getReservedWords() {
-		return emptyStringArray;
-	}
+  public String getDescription() {
+    return description;
+  }
+
+  public Syntax getSyntax() {
+    return syntax;
+  }
+
+  public boolean requiresExpression(int k) {
+    return false;
+  }
+
+  public String[] getReservedWords() {
+    return emptyStringArray;
+  }
 }
 
 // End ResolverBase.java

@@ -23,34 +23,34 @@ import mondrian.olap.*;
  * @since Oct 23, 2008
  */
 public class IterableListCalc extends AbstractListCalc {
-	private final IterCalc iterCalc;
+  private final IterCalc iterCalc;
 
-	/**
-	 * Creates an IterableListCalc.
-	 * 
-	 * @param iterCalc
-	 *          Calculation that returns an iterable.
-	 */
-	public IterableListCalc(IterCalc iterCalc) {
-		super(new DummyExp(iterCalc.getType()), new Calc[] { iterCalc });
-		this.iterCalc = iterCalc;
-	}
+  /**
+   * Creates an IterableListCalc.
+   * 
+   * @param iterCalc
+   *          Calculation that returns an iterable.
+   */
+  public IterableListCalc(IterCalc iterCalc) {
+    super(new DummyExp(iterCalc.getType()), new Calc[] { iterCalc });
+    this.iterCalc = iterCalc;
+  }
 
-	public TupleList evaluateList(Evaluator evaluator) {
-		// A TupleIterCalc is allowed to return a list. If so, save the copy.
-		final TupleIterable iterable = iterCalc.evaluateIterable(evaluator);
-		if (iterable instanceof TupleList) {
-			return (TupleList) iterable;
-		}
+  public TupleList evaluateList(Evaluator evaluator) {
+    // A TupleIterCalc is allowed to return a list. If so, save the copy.
+    final TupleIterable iterable = iterCalc.evaluateIterable(evaluator);
+    if (iterable instanceof TupleList) {
+      return (TupleList) iterable;
+    }
 
-		final TupleList list = TupleCollections.createList(iterable.getArity());
-		final TupleCursor tupleCursor = iterable.tupleCursor();
-		while (tupleCursor.forward()) {
-			// REVIEW: Worth creating TupleList.addAll(TupleCursor)?
-			list.addCurrent(tupleCursor);
-		}
-		return list;
-	}
+    final TupleList list = TupleCollections.createList(iterable.getArity());
+    final TupleCursor tupleCursor = iterable.tupleCursor();
+    while (tupleCursor.forward()) {
+      // REVIEW: Worth creating TupleList.addAll(TupleCursor)?
+      list.addCurrent(tupleCursor);
+    }
+    return list;
+  }
 }
 
 // End IterableListCalc.java

@@ -23,23 +23,23 @@ import mondrian.calc.Calc;
  * @since Sep 27, 2005
  */
 public class ValueCalc extends GenericCalc {
-	/**
-	 * Creates a ValueCalc.
-	 * 
-	 * @param exp
-	 *          Source expression
-	 */
-	public ValueCalc(Exp exp) {
-		super(exp, new Calc[0]);
-	}
+  /**
+   * Creates a ValueCalc.
+   * 
+   * @param exp
+   *          Source expression
+   */
+  public ValueCalc(Exp exp) {
+    super(exp, new Calc[0]);
+  }
 
-	public Object evaluate(Evaluator evaluator) {
-		return evaluator.evaluateCurrent();
-	}
+  public Object evaluate(Evaluator evaluator) {
+    return evaluator.evaluateCurrent();
+  }
 
-	public boolean dependsOn(Hierarchy hierarchy) {
-		return true;
-	}
+  public boolean dependsOn(Hierarchy hierarchy) {
+    return true;
+  }
 }
 
 // End ValueCalc.java

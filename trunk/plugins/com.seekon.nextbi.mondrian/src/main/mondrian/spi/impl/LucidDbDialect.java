@@ -21,37 +21,37 @@ import java.sql.SQLException;
  */
 public class LucidDbDialect extends JdbcDialectImpl {
 
-	public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
-			LucidDbDialect.class, DatabaseProduct.LUCIDDB);
+  public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
+    LucidDbDialect.class, DatabaseProduct.LUCIDDB);
 
-	/**
-	 * Creates a LucidDbDialect.
-	 * 
-	 * @param connection
-	 *          Connection
-	 * 
-	 * @throws java.sql.SQLException
-	 *           on error
-	 */
-	public LucidDbDialect(Connection connection) throws SQLException {
-		super(connection);
-	}
+  /**
+   * Creates a LucidDbDialect.
+   * 
+   * @param connection
+   *          Connection
+   * 
+   * @throws java.sql.SQLException
+   *           on error
+   */
+  public LucidDbDialect(Connection connection) throws SQLException {
+    super(connection);
+  }
 
-	public boolean allowsMultipleDistinctSqlMeasures() {
-		return false;
-	}
+  public boolean allowsMultipleDistinctSqlMeasures() {
+    return false;
+  }
 
-	public boolean needsExponent(Object value, String valueString) {
-		return value instanceof Double && !valueString.contains("E");
-	}
+  public boolean needsExponent(Object value, String valueString) {
+    return value instanceof Double && !valueString.contains("E");
+  }
 
-	public boolean supportsUnlimitedValueList() {
-		return true;
-	}
+  public boolean supportsUnlimitedValueList() {
+    return true;
+  }
 
-	public boolean supportsMultiValueInExpr() {
-		return true;
-	}
+  public boolean supportsMultiValueInExpr() {
+    return true;
+  }
 }
 
 // End LucidDbDialect.java

@@ -20,59 +20,60 @@ import java.io.PrintWriter;
  */
 public class MemberProperty extends QueryPart {
 
-	private final String name;
-	private Exp exp;
+  private final String name;
 
-	public MemberProperty(String name, Exp exp) {
-		this.name = name;
-		this.exp = exp;
-	}
+  private Exp exp;
 
-	protected Object clone() {
-		return new MemberProperty(name, (Exp) exp.clone());
-	}
+  public MemberProperty(String name, Exp exp) {
+    this.name = name;
+    this.exp = exp;
+  }
 
-	static MemberProperty[] cloneArray(MemberProperty[] x) {
-		MemberProperty[] x2 = new MemberProperty[x.length];
-		for (int i = 0; i < x.length; i++) {
-			x2[i] = (MemberProperty) x[i].clone();
-		}
-		return x2;
-	}
+  protected Object clone() {
+    return new MemberProperty(name, (Exp) exp.clone());
+  }
 
-	void resolve(Validator validator) {
-		exp = validator.validate(exp, false);
-	}
+  static MemberProperty[] cloneArray(MemberProperty[] x) {
+    MemberProperty[] x2 = new MemberProperty[x.length];
+    for (int i = 0; i < x.length; i++) {
+      x2[i] = (MemberProperty) x[i].clone();
+    }
+    return x2;
+  }
 
-	public Exp getExp() {
-		return exp;
-	}
+  void resolve(Validator validator) {
+    exp = validator.validate(exp, false);
+  }
 
-	public String getName() {
-		return name;
-	}
+  public Exp getExp() {
+    return exp;
+  }
 
-	public Object[] getChildren() {
-		return new Exp[] { exp };
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void unparse(PrintWriter pw) {
-		pw.print(name + " = ");
-		exp.unparse(pw);
-	}
+  public Object[] getChildren() {
+    return new Exp[] { exp };
+  }
 
-	/**
-	 * Retrieves a property by name from an array.
-	 */
-	static Exp get(MemberProperty[] a, String name) {
-		// TODO: Linear search may be a performance problem.
-		for (int i = 0; i < a.length; i++) {
-			if (Util.equalName(a[i].name, name)) {
-				return a[i].exp;
-			}
-		}
-		return null;
-	}
+  public void unparse(PrintWriter pw) {
+    pw.print(name + " = ");
+    exp.unparse(pw);
+  }
+
+  /**
+   * Retrieves a property by name from an array.
+   */
+  static Exp get(MemberProperty[] a, String name) {
+    // TODO: Linear search may be a performance problem.
+    for (int i = 0; i < a.length; i++) {
+      if (Util.equalName(a[i].name, name)) {
+        return a[i].exp;
+      }
+    }
+    return null;
+  }
 }
 
 // End MemberProperty.java

@@ -21,44 +21,42 @@ import mondrian.xmla.*;
  */
 public class DefaultXmlaResponse implements XmlaResponse {
 
-	// TODO: add a msg to MondrianResource for this.
-	private static final String MSG_ENCODING_ERROR = "Encoding unsupported: ";
+  // TODO: add a msg to MondrianResource for this.
+  private static final String MSG_ENCODING_ERROR = "Encoding unsupported: ";
 
-	private final SaxWriter writer;
+  private final SaxWriter writer;
 
-	public DefaultXmlaResponse(OutputStream outputStream, String encoding,
-			Enumeration.ResponseMimeType responseMimeType) {
-		try {
-			switch (responseMimeType) {
-			case JSON:
-				writer = new JsonSaxWriter(outputStream);
-				break;
-			case SOAP:
-			default:
-				writer = new DefaultSaxWriter(outputStream, encoding);
-				break;
-			}
-		} catch (UnsupportedEncodingException uee) {
-			throw Util.newError(uee, MSG_ENCODING_ERROR + encoding);
-		}
-	}
+  public DefaultXmlaResponse(OutputStream outputStream, String encoding,
+    Enumeration.ResponseMimeType responseMimeType) {
+    try {
+      switch (responseMimeType) {
+      case JSON:
+        writer = new JsonSaxWriter(outputStream);
+        break;
+      case SOAP:
+      default:
+        writer = new DefaultSaxWriter(outputStream, encoding);
+        break;
+      }
+    } catch (UnsupportedEncodingException uee) {
+      throw Util.newError(uee, MSG_ENCODING_ERROR + encoding);
+    }
+  }
 
-	public SaxWriter getWriter() {
-		return writer;
-	}
+  public SaxWriter getWriter() {
+    return writer;
+  }
 
-	public void error(Throwable t) {
-		writer.completeBeforeElement("root");
-		@SuppressWarnings({ "ThrowableResultOfMethodCallIgnored" })
-		Throwable throwable = XmlaUtil.rootThrowable(t);
-		writer.startElement("Messages");
-		writer
-				.startElement("Error", "ErrorCode", throwable.getClass().getName(),
-						"Description", throwable.getMessage(), "Source", "Mondrian",
-						"Help", "");
-		writer.endElement(); // </Messages>
-		writer.endElement(); // </Error>
-	}
+  public void error(Throwable t) {
+    writer.completeBeforeElement("root");
+    @SuppressWarnings( { "ThrowableResultOfMethodCallIgnored" })
+    Throwable throwable = XmlaUtil.rootThrowable(t);
+    writer.startElement("Messages");
+    writer.startElement("Error", "ErrorCode", throwable.getClass().getName(),
+      "Description", throwable.getMessage(), "Source", "Mondrian", "Help", "");
+    writer.endElement(); // </Messages>
+    writer.endElement(); // </Error>
+  }
 }
 
 // End DefaultXmlaResponse.java

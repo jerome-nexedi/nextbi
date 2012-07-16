@@ -24,6 +24,6 @@ import java.util.List;
  * @version $Id: //open/mondrian/src/main/mondrian/olap/Axis.java#7 $
  */
 public interface Axis {
-	List<Position> getPositions();
+  List<Position> getPositions();
 }
 // End Axis.java

@@ -22,45 +22,46 @@ import java.io.PrintStream;
  *          #7 $
  */
 public class PrintStreamRecorder extends AbstractRecorder {
-	private final PrintStream err;
-	private final PrintStream out;
+  private final PrintStream err;
 
-	public PrintStreamRecorder() {
-		this(System.out, System.err);
-	}
+  private final PrintStream out;
 
-	public PrintStreamRecorder(final PrintStream out, final PrintStream err) {
-		this.out = out;
-		this.err = err;
-	}
+  public PrintStreamRecorder() {
+    this(System.out, System.err);
+  }
 
-	protected void recordMessage(final String msg, final Object info,
-			final MsgType msgType) {
-		PrintStream ps;
-		String prefix;
-		switch (msgType) {
-		case INFO:
-			prefix = "INFO: ";
-			ps = out;
-			break;
-		case WARN:
-			prefix = "WARN: ";
-			ps = out;
-			break;
-		case ERROR:
-			prefix = "ERROR: ";
-			ps = err;
-			break;
-		default:
-			throw Util.unexpected(msgType);
-		}
-		String context = getContext();
+  public PrintStreamRecorder(final PrintStream out, final PrintStream err) {
+    this.out = out;
+    this.err = err;
+  }
 
-		ps.print(prefix);
-		ps.print(context);
-		ps.print(": ");
-		ps.println(msg);
-	}
+  protected void recordMessage(final String msg, final Object info,
+    final MsgType msgType) {
+    PrintStream ps;
+    String prefix;
+    switch (msgType) {
+    case INFO:
+      prefix = "INFO: ";
+      ps = out;
+      break;
+    case WARN:
+      prefix = "WARN: ";
+      ps = out;
+      break;
+    case ERROR:
+      prefix = "ERROR: ";
+      ps = err;
+      break;
+    default:
+      throw Util.unexpected(msgType);
+    }
+    String context = getContext();
+
+    ps.print(prefix);
+    ps.print(context);
+    ps.print(": ");
+    ps.println(msg);
+  }
 }
 
 // End PrintStreamRecorder.java

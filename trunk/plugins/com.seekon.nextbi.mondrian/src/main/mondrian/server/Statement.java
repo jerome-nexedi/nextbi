@@ -34,143 +34,143 @@ import java.sql.SQLException;
  * @author jhyde
  */
 public interface Statement {
-	/**
-	 * Closes this statement.
-	 */
-	void close();
+  /**
+   * Closes this statement.
+   */
+  void close();
 
-	/**
-	 * Returns this statement's schema reader.
-	 * 
-	 * @return Schema reader, not null
-	 */
-	SchemaReader getSchemaReader();
+  /**
+   * Returns this statement's schema reader.
+   * 
+   * @return Schema reader, not null
+   */
+  SchemaReader getSchemaReader();
 
-	/**
-	 * Returns this statement's schema.
-	 * 
-	 * @return Schema, not null
-	 */
-	RolapSchema getSchema();
+  /**
+   * Returns this statement's schema.
+   * 
+   * @return Schema, not null
+   */
+  RolapSchema getSchema();
 
-	/**
-	 * Returns this statement's connection.
-	 * 
-	 * @return connection
-	 */
-	RolapConnection getMondrianConnection();
+  /**
+   * Returns this statement's connection.
+   * 
+   * @return connection
+   */
+  RolapConnection getMondrianConnection();
 
-	Object getProperty(String name);
+  Object getProperty(String name);
 
-	Query getQuery();
+  Query getQuery();
 
-	void setQuery(Query query);
+  void setQuery(Query query);
 
-	/**
-	 * Enables profiling.
-	 * 
-	 * <p>
-	 * Profiling information will be sent to the given writer when
-	 * {@link mondrian.olap.Result#close()} is called.
-	 * 
-	 * <p>
-	 * If <tt>profileHandler</tt> is null, disables profiling.
-	 * 
-	 * @param profileHandler
-	 *          Writer to which to send profiling information
-	 */
-	void enableProfiling(ProfileHandler profileHandler);
+  /**
+   * Enables profiling.
+   * 
+   * <p>
+   * Profiling information will be sent to the given writer when
+   * {@link mondrian.olap.Result#close()} is called.
+   * 
+   * <p>
+   * If <tt>profileHandler</tt> is null, disables profiling.
+   * 
+   * @param profileHandler
+   *          Writer to which to send profiling information
+   */
+  void enableProfiling(ProfileHandler profileHandler);
 
-	ProfileHandler getProfileHandler();
+  ProfileHandler getProfileHandler();
 
-	/**
-	 * Sets the timeout of this statement, in milliseconds.
-	 * 
-	 * <p>
-	 * Zero means no timeout.
-	 * 
-	 * <p>
-	 * Contrast with JDBC's {@link java.sql.Statement#setQueryTimeout(int)}
-	 * method, which uses an {@code int} value and a granularity of seconds.
-	 * 
-	 * @param timeoutMillis
-	 *          Timeout in milliseconds
-	 */
-	void setQueryTimeoutMillis(long timeoutMillis);
+  /**
+   * Sets the timeout of this statement, in milliseconds.
+   * 
+   * <p>
+   * Zero means no timeout.
+   * 
+   * <p>
+   * Contrast with JDBC's {@link java.sql.Statement#setQueryTimeout(int)}
+   * method, which uses an {@code int} value and a granularity of seconds.
+   * 
+   * @param timeoutMillis
+   *          Timeout in milliseconds
+   */
+  void setQueryTimeoutMillis(long timeoutMillis);
 
-	/**
-	 * Returns the query timeout of this statement, in milliseconds.
-	 * 
-	 * <p>
-	 * Zero means no timeout.
-	 * </p>
-	 * 
-	 * <p>
-	 * Contrast with JDBC's {@link java.sql.Statement#getQueryTimeout()} method,
-	 * which uses an {@code int} value and a granularity of seconds.
-	 * 
-	 * @return Timeout in milliseconds
-	 */
-	long getQueryTimeoutMillis();
+  /**
+   * Returns the query timeout of this statement, in milliseconds.
+   * 
+   * <p>
+   * Zero means no timeout.
+   * </p>
+   * 
+   * <p>
+   * Contrast with JDBC's {@link java.sql.Statement#getQueryTimeout()} method,
+   * which uses an {@code int} value and a granularity of seconds.
+   * 
+   * @return Timeout in milliseconds
+   */
+  long getQueryTimeoutMillis();
 
-	/**
-	 * Checks if either a cancel request has been issued on the query or the
-	 * execution time has exceeded the timeout value (if one has been set).
-	 * Exceptions are raised if either of these two conditions are met. This
-	 * method should be called periodically during query execution to ensure
-	 * timely detection of these events, particularly before/after any potentially
-	 * long running operations.
-	 * 
-	 * TODO: move to execution?
-	 */
-	void checkCancelOrTimeout();
+  /**
+   * Checks if either a cancel request has been issued on the query or the
+   * execution time has exceeded the timeout value (if one has been set).
+   * Exceptions are raised if either of these two conditions are met. This
+   * method should be called periodically during query execution to ensure
+   * timely detection of these events, particularly before/after any potentially
+   * long running operations.
+   * 
+   * TODO: move to execution?
+   */
+  void checkCancelOrTimeout();
 
-	/**
-	 * Issues a cancel request on this statement.
-	 * 
-	 * <p>
-	 * Once the thread running the statement detects the cancel request, execution
-	 * will throw an exception. See <code>BasicQueryTest.testCancel</code> for an
-	 * example of usage of this method.
-	 * </p>
-	 * 
-	 * @throws java.sql.SQLException
-	 *           on error
-	 */
-	void cancel() throws SQLException;
+  /**
+   * Issues a cancel request on this statement.
+   * 
+   * <p>
+   * Once the thread running the statement detects the cancel request, execution
+   * will throw an exception. See <code>BasicQueryTest.testCancel</code> for an
+   * example of usage of this method.
+   * </p>
+   * 
+   * @throws java.sql.SQLException
+   *           on error
+   */
+  void cancel() throws SQLException;
 
-	/**
-	 * Returns execution context if currently executing, null otherwise.
-	 * 
-	 * @return Execution context
-	 */
-	Execution getCurrentExecution();
+  /**
+   * Returns execution context if currently executing, null otherwise.
+   * 
+   * @return Execution context
+   */
+  Execution getCurrentExecution();
 
-	/**
-	 * Ends the current execution.
-	 * 
-	 * @param execution
-	 *          Execution; must match the execution that was started
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if not started, or if execution does not match
-	 */
-	void end(Execution execution);
+  /**
+   * Ends the current execution.
+   * 
+   * @param execution
+   *          Execution; must match the execution that was started
+   * 
+   * @throws IllegalArgumentException
+   *           if not started, or if execution does not match
+   */
+  void end(Execution execution);
 
-	/**
-	 * Starts an execution.
-	 * 
-	 * @param execution
-	 *          Execution context
-	 */
-	void start(Execution execution);
+  /**
+   * Starts an execution.
+   * 
+   * @param execution
+   *          Execution context
+   */
+  void start(Execution execution);
 
-	/**
-	 * Returns the ID of this statement, unique within the JVM.
-	 * 
-	 * @return Unique ID of this statement
-	 */
-	long getId();
+  /**
+   * Returns the ID of this statement, unique within the JVM.
+   * 
+   * @return Unique ID of this statement
+   */
+  long getId();
 }
 
 // End Statement.java

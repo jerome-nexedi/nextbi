@@ -33,85 +33,87 @@ import mondrian.olap.type.Type;
  *          .java#1 $
  */
 public class MemberArrayValueCalc extends GenericCalc {
-	private final MemberCalc[] memberCalcs;
-	private final Member[] members;
-	private final boolean nullCheck;
+  private final MemberCalc[] memberCalcs;
 
-	/**
-	 * Creates a MemberArrayValueCalc.
-	 * 
-	 * <p>
-	 * Clients outside this package should use the
-	 * {@link MemberValueCalc#create(mondrian.olap.Exp, mondrian.calc.MemberCalc[], boolean)}
-	 * factory method.
-	 * 
-	 * @param exp
-	 *          Expression
-	 * @param memberCalcs
-	 *          Array of compiled expressions
-	 * @param nullCheck
-	 *          Whether to check for null values due to non-joining dimensions in
-	 *          a virtual cube
-	 */
-	MemberArrayValueCalc(Exp exp, MemberCalc[] memberCalcs, boolean nullCheck) {
-		super(exp);
-		this.nullCheck = nullCheck;
-		final Type type = exp.getType();
-		assert type instanceof ScalarType : exp;
-		this.memberCalcs = memberCalcs;
-		this.members = new Member[memberCalcs.length];
-	}
+  private final Member[] members;
 
-	public Object evaluate(Evaluator evaluator) {
-		final int savepoint = evaluator.savepoint();
-		for (int i = 0; i < memberCalcs.length; i++) {
-			MemberCalc memberCalc = memberCalcs[i];
-			final Member member = memberCalc.evaluateMember(evaluator);
-			if (member == null || member.isNull()) {
-				// This method needs to leave the evaluator in the same state
-				// it found it.
-				evaluator.restore(savepoint);
-				return null;
-			}
-			evaluator.setContext(member);
-			members[i] = member;
-		}
-		if (nullCheck && evaluator.needToReturnNullForUnrelatedDimension(members)) {
-			evaluator.restore(savepoint);
-			return null;
-		}
+  private final boolean nullCheck;
 
-		final Object result = evaluator.evaluateCurrent();
-		evaluator.restore(savepoint);
-		return result;
-	}
+  /**
+   * Creates a MemberArrayValueCalc.
+   * 
+   * <p>
+   * Clients outside this package should use the
+   * {@link MemberValueCalc#create(mondrian.olap.Exp, mondrian.calc.MemberCalc[], boolean)}
+   * factory method.
+   * 
+   * @param exp
+   *          Expression
+   * @param memberCalcs
+   *          Array of compiled expressions
+   * @param nullCheck
+   *          Whether to check for null values due to non-joining dimensions in
+   *          a virtual cube
+   */
+  MemberArrayValueCalc(Exp exp, MemberCalc[] memberCalcs, boolean nullCheck) {
+    super(exp);
+    this.nullCheck = nullCheck;
+    final Type type = exp.getType();
+    assert type instanceof ScalarType : exp;
+    this.memberCalcs = memberCalcs;
+    this.members = new Member[memberCalcs.length];
+  }
 
-	public Calc[] getCalcs() {
-		return memberCalcs;
-	}
+  public Object evaluate(Evaluator evaluator) {
+    final int savepoint = evaluator.savepoint();
+    for (int i = 0; i < memberCalcs.length; i++) {
+      MemberCalc memberCalc = memberCalcs[i];
+      final Member member = memberCalc.evaluateMember(evaluator);
+      if (member == null || member.isNull()) {
+        // This method needs to leave the evaluator in the same state
+        // it found it.
+        evaluator.restore(savepoint);
+        return null;
+      }
+      evaluator.setContext(member);
+      members[i] = member;
+    }
+    if (nullCheck && evaluator.needToReturnNullForUnrelatedDimension(members)) {
+      evaluator.restore(savepoint);
+      return null;
+    }
 
-	public boolean dependsOn(Hierarchy hierarchy) {
-		if (super.dependsOn(hierarchy)) {
-			return true;
-		}
-		for (MemberCalc memberCalc : memberCalcs) {
-			// If the expression definitely includes the dimension (in this
-			// case, that means it is a member of that dimension) then we
-			// do not depend on the dimension. For example, the scalar value of
-			// [Store].[USA]
-			// does not depend on [Store].
-			//
-			// If the dimensionality of the expression is unknown, then the
-			// expression MIGHT include the dimension, so to be safe we have to
-			// say that it depends on the given dimension. For example,
-			// Dimensions(3).CurrentMember.Parent
-			// may depend on [Store].
-			if (memberCalc.getType().usesHierarchy(hierarchy, true)) {
-				return false;
-			}
-		}
-		return true;
-	}
+    final Object result = evaluator.evaluateCurrent();
+    evaluator.restore(savepoint);
+    return result;
+  }
+
+  public Calc[] getCalcs() {
+    return memberCalcs;
+  }
+
+  public boolean dependsOn(Hierarchy hierarchy) {
+    if (super.dependsOn(hierarchy)) {
+      return true;
+    }
+    for (MemberCalc memberCalc : memberCalcs) {
+      // If the expression definitely includes the dimension (in this
+      // case, that means it is a member of that dimension) then we
+      // do not depend on the dimension. For example, the scalar value of
+      // [Store].[USA]
+      // does not depend on [Store].
+      //
+      // If the dimensionality of the expression is unknown, then the
+      // expression MIGHT include the dimension, so to be safe we have to
+      // say that it depends on the given dimension. For example,
+      // Dimensions(3).CurrentMember.Parent
+      // may depend on [Store].
+      if (memberCalc.getType().usesHierarchy(hierarchy, true)) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
 
 // End MemberArrayValueCalc.java

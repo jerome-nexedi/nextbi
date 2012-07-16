@@ -19,19 +19,19 @@ package mondrian.server;
  * @author Julian Hyde
  */
 public class StringRepositoryContentFinder implements RepositoryContentFinder {
-	private final String content;
+  private final String content;
 
-	public StringRepositoryContentFinder(String content) {
-		this.content = content;
-	}
+  public StringRepositoryContentFinder(String content) {
+    this.content = content;
+  }
 
-	public String getContent() {
-		return content;
-	}
+  public String getContent() {
+    return content;
+  }
 
-	public void shutdown() {
-		// nothing to do
-	}
+  public void shutdown() {
+    // nothing to do
+  }
 }
 
 // End StringRepositoryContentFinder.java

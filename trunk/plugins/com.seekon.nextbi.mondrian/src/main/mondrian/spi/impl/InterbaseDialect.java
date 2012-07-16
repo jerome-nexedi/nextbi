@@ -21,26 +21,26 @@ import java.sql.SQLException;
  */
 public class InterbaseDialect extends JdbcDialectImpl {
 
-	public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
-			InterbaseDialect.class, DatabaseProduct.INTERBASE);
+  public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
+    InterbaseDialect.class, DatabaseProduct.INTERBASE);
 
-	/**
-	 * Creates an InterbaseDialect.
-	 * 
-	 * @param connection
-	 *          Connection
-	 */
-	public InterbaseDialect(Connection connection) throws SQLException {
-		super(connection);
-	}
+  /**
+   * Creates an InterbaseDialect.
+   * 
+   * @param connection
+   *          Connection
+   */
+  public InterbaseDialect(Connection connection) throws SQLException {
+    super(connection);
+  }
 
-	public boolean allowsAs() {
-		return false;
-	}
+  public boolean allowsAs() {
+    return false;
+  }
 
-	public boolean allowsFromQuery() {
-		return false;
-	}
+  public boolean allowsFromQuery() {
+    return false;
+  }
 }
 
 // End InterbaseDialect.java

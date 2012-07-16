@@ -7,7 +7,7 @@
 // All Rights Reserved.
 // You must accept the terms of that agreement to use this software.
 //
-*/
+ */
 package mondrian.test.clearview;
 
 import junit.framework.*;
@@ -15,40 +15,39 @@ import junit.framework.*;
 import mondrian.test.*;
 
 /**
- * <code>OrderTest</code> tests the extended syntax of Order
- * function. See { @link
- * http://pub.eigenbase.org/wiki/MondrianOrderFunctionExtension } for
- * syntax rules.
- * MDX queries and their expected results are maintained separately in
- * OrderTest.ref.xml file.If you would prefer to see them as inlined
- * Java string literals, run ant target "generateDiffRepositoryJUnit" and
- * then use file OrderTestJUnit.java which will be generated in
- * this directory.
- *
+ * <code>OrderTest</code> tests the extended syntax of Order function. See { @link
+ * http://pub.eigenbase.org/wiki/MondrianOrderFunctionExtension } for syntax
+ * rules. MDX queries and their expected results are maintained separately in
+ * OrderTest.ref.xml file.If you would prefer to see them as inlined Java string
+ * literals, run ant target "generateDiffRepositoryJUnit" and then use file
+ * OrderTestJUnit.java which will be generated in this directory.
+ * 
  * @author Khanh Vu
- * @version $Id: //open/mondrian/testsrc/main/mondrian/test/clearview/OrderTest.java#2 $
+ * @version $Id:
+ *          //open/mondrian/testsrc/main/mondrian/test/clearview/OrderTest.java
+ *          #2 $
  */
 public class OrderTest extends ClearViewBase {
 
-    public OrderTest() {
-        super();
-    }
+  public OrderTest() {
+    super();
+  }
 
-    public OrderTest(String name) {
-        super(name);
-    }
+  public OrderTest(String name) {
+    super(name);
+  }
 
-    public DiffRepository getDiffRepos() {
-        return getDiffReposStatic();
-    }
+  public DiffRepository getDiffRepos() {
+    return getDiffReposStatic();
+  }
 
-    private static DiffRepository getDiffReposStatic() {
-        return DiffRepository.lookup(OrderTest.class);
-    }
+  private static DiffRepository getDiffReposStatic() {
+    return DiffRepository.lookup(OrderTest.class);
+  }
 
-    public static TestSuite suite() {
-        return constructSuite(getDiffReposStatic(), OrderTest.class);
-    }
+  public static TestSuite suite() {
+    return constructSuite(getDiffReposStatic(), OrderTest.class);
+  }
 
 }
 

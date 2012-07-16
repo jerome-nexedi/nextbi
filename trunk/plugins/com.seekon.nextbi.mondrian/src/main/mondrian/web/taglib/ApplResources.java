@@ -28,55 +28,56 @@ import java.util.HashMap;
 
 public class ApplResources implements Listener.ApplicationContext {
 
-	private static final String ATTRNAME = "mondrian.web.taglib.ApplResources";
-	private ServletContext context;
+  private static final String ATTRNAME = "mondrian.web.taglib.ApplResources";
 
-	/**
-	 * Creates a <code>ApplResources</code>. Only {@link Listener} calls this; you
-	 * should probably call {@link #getInstance}.
-	 */
-	public ApplResources() {
-	}
+  private ServletContext context;
 
-	/**
-	 * Retrieves the one and only instance of <code>ApplResources</code> in this
-	 * servlet's context.
-	 */
-	public static ApplResources getInstance(ServletContext context) {
-		return (ApplResources) context.getAttribute(ATTRNAME);
-	}
+  /**
+   * Creates a <code>ApplResources</code>. Only {@link Listener} calls this; you
+   * should probably call {@link #getInstance}.
+   */
+  public ApplResources() {
+  }
 
-	private HashMap templatesCache = new HashMap();
+  /**
+   * Retrieves the one and only instance of <code>ApplResources</code> in this
+   * servlet's context.
+   */
+  public static ApplResources getInstance(ServletContext context) {
+    return (ApplResources) context.getAttribute(ATTRNAME);
+  }
 
-	public Transformer getTransformer(String xsltURI, boolean useCache) {
-		try {
-			Templates templates = null;
-			if (useCache) {
-				templates = (Templates) templatesCache.get(xsltURI);
-			}
-			if (templates == null) {
-				TransformerFactory tf = TransformerFactory.newInstance();
-				InputStream input = context.getResourceAsStream(xsltURI);
-				templates = tf.newTemplates(new StreamSource(input));
-				if (useCache) {
-					templatesCache.put(xsltURI, templates);
-				}
-			}
-			return templates.newTransformer();
-		} catch (TransformerConfigurationException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e.toString());
-		}
-	}
+  private HashMap templatesCache = new HashMap();
 
-	// implement ApplicationContext
-	public void init(ServletContextEvent event) {
-		this.context = event.getServletContext();
-		context.setAttribute(ATTRNAME, this);
-	}
+  public Transformer getTransformer(String xsltURI, boolean useCache) {
+    try {
+      Templates templates = null;
+      if (useCache) {
+        templates = (Templates) templatesCache.get(xsltURI);
+      }
+      if (templates == null) {
+        TransformerFactory tf = TransformerFactory.newInstance();
+        InputStream input = context.getResourceAsStream(xsltURI);
+        templates = tf.newTemplates(new StreamSource(input));
+        if (useCache) {
+          templatesCache.put(xsltURI, templates);
+        }
+      }
+      return templates.newTransformer();
+    } catch (TransformerConfigurationException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e.toString());
+    }
+  }
 
-	public void destroy(ServletContextEvent ev) {
-	}
+  // implement ApplicationContext
+  public void init(ServletContextEvent event) {
+    this.context = event.getServletContext();
+    context.setAttribute(ATTRNAME, this);
+  }
+
+  public void destroy(ServletContextEvent ev) {
+  }
 
 }
 

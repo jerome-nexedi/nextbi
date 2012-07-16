@@ -22,38 +22,37 @@ import java.util.List;
  */
 public class VerticaDialect extends JdbcDialectImpl {
 
-	public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
-			VerticaDialect.class, DatabaseProduct.VERTICA);
+  public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
+    VerticaDialect.class, DatabaseProduct.VERTICA);
 
-	/**
-	 * Creates a VerticaDialect.
-	 * 
-	 * @param connection
-	 *          Connection
-	 */
-	public VerticaDialect(Connection connection) throws SQLException {
-		super(connection);
-	}
+  /**
+   * Creates a VerticaDialect.
+   * 
+   * @param connection
+   *          Connection
+   */
+  public VerticaDialect(Connection connection) throws SQLException {
+    super(connection);
+  }
 
-	public boolean requiresAliasForFromQuery() {
-		return true;
-	}
+  public boolean requiresAliasForFromQuery() {
+    return true;
+  }
 
-	@Override
-	public DatabaseProduct getDatabaseProduct() {
-		return DatabaseProduct.VERTICA;
-	}
+  @Override
+  public DatabaseProduct getDatabaseProduct() {
+    return DatabaseProduct.VERTICA;
+  }
 
-	@Override
-	public boolean supportsResultSetConcurrency(int type, int concurrency) {
-		return false;
-	}
+  @Override
+  public boolean supportsResultSetConcurrency(int type, int concurrency) {
+    return false;
+  }
 
-	public String generateInline(List<String> columnNames,
-			List<String> columnTypes, List<String[]> valueList) {
-		return generateInlineGeneric(columnNames, columnTypes, valueList, null,
-				false);
-	}
+  public String generateInline(List<String> columnNames, List<String> columnTypes,
+    List<String[]> valueList) {
+    return generateInlineGeneric(columnNames, columnTypes, valueList, null, false);
+  }
 }
 
 // End VerticaDialect.java

@@ -30,73 +30,75 @@ import javax.servlet.ServletContext;
  *          $
  */
 public class MockServletConfig implements ServletConfig {
-	private String servletName;
-	private Map<String, String> initParams;
-	private ServletContext servletContext;
+  private String servletName;
 
-	public MockServletConfig() {
-		this(null);
-	}
+  private Map<String, String> initParams;
 
-	public MockServletConfig(ServletContext servletContext) {
-		this.initParams = new HashMap<String, String>();
-		this.servletContext = servletContext;
-	}
+  private ServletContext servletContext;
 
-	/**
-	 * Returns the name of this servlet instance.
-	 * 
-	 */
-	public String getServletName() {
-		return servletName;
-	}
+  public MockServletConfig() {
+    this(null);
+  }
 
-	/**
-	 * Returns a reference to the ServletContext in which the servlet is
-	 * executing.
-	 * 
-	 */
-	public ServletContext getServletContext() {
-		return servletContext;
-	}
+  public MockServletConfig(ServletContext servletContext) {
+    this.initParams = new HashMap<String, String>();
+    this.servletContext = servletContext;
+  }
 
-	/**
-	 * Returns a String containing the value of the named initialization
-	 * parameter, or null if the parameter does not exist.
-	 * 
-	 */
-	public String getInitParameter(String key) {
-		return initParams.get(key);
-	}
+  /**
+   * Returns the name of this servlet instance.
+   * 
+   */
+  public String getServletName() {
+    return servletName;
+  }
 
-	/**
-	 * Returns the names of the servlet's initialization parameters as an
-	 * Enumeration of String objects, or an empty Enumeration if the servlet has
-	 * no initialization parameters.
-	 * 
-	 */
-	public Enumeration getInitParameterNames() {
-		return Collections.enumeration(initParams.keySet());
-	}
+  /**
+   * Returns a reference to the ServletContext in which the servlet is
+   * executing.
+   * 
+   */
+  public ServletContext getServletContext() {
+    return servletContext;
+  }
 
-	// ///////////////////////////////////////////////////////////////////////
-	//
-	// implementation access
-	//
-	// ///////////////////////////////////////////////////////////////////////
-	public void setServletName(String servletName) {
-		this.servletName = servletName;
-	}
+  /**
+   * Returns a String containing the value of the named initialization
+   * parameter, or null if the parameter does not exist.
+   * 
+   */
+  public String getInitParameter(String key) {
+    return initParams.get(key);
+  }
 
-	public void addInitParameter(String key, String value) {
-		if (value != null) {
-			this.initParams.put(key, value);
-		}
-	}
+  /**
+   * Returns the names of the servlet's initialization parameters as an
+   * Enumeration of String objects, or an empty Enumeration if the servlet has
+   * no initialization parameters.
+   * 
+   */
+  public Enumeration getInitParameterNames() {
+    return Collections.enumeration(initParams.keySet());
+  }
 
-	public void setServletContext(ServletContext servletContext) {
-		this.servletContext = servletContext;
-	}
+  // ///////////////////////////////////////////////////////////////////////
+  //
+  // implementation access
+  //
+  // ///////////////////////////////////////////////////////////////////////
+  public void setServletName(String servletName) {
+    this.servletName = servletName;
+  }
+
+  public void addInitParameter(String key, String value) {
+    if (value != null) {
+      this.initParams.put(key, value);
+    }
+  }
+
+  public void setServletContext(ServletContext servletContext) {
+    this.servletContext = servletContext;
+  }
 }
 
 // End MockServletConfig.java

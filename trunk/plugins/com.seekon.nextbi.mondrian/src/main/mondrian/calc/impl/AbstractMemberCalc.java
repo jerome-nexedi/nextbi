@@ -29,24 +29,23 @@ import mondrian.calc.Calc;
  *          #4 $
  * @since Sep 26, 2005
  */
-public abstract class AbstractMemberCalc extends AbstractCalc implements
-		MemberCalc {
-	/**
-	 * Creates an AbstractMemberCalc.
-	 * 
-	 * @param exp
-	 *          Source expression
-	 * @param calcs
-	 *          Child compiled expressions
-	 */
-	protected AbstractMemberCalc(Exp exp, Calc[] calcs) {
-		super(exp, calcs);
-		assert getType() instanceof MemberType;
-	}
+public abstract class AbstractMemberCalc extends AbstractCalc implements MemberCalc {
+  /**
+   * Creates an AbstractMemberCalc.
+   * 
+   * @param exp
+   *          Source expression
+   * @param calcs
+   *          Child compiled expressions
+   */
+  protected AbstractMemberCalc(Exp exp, Calc[] calcs) {
+    super(exp, calcs);
+    assert getType() instanceof MemberType;
+  }
 
-	public Object evaluate(Evaluator evaluator) {
-		return evaluateMember(evaluator);
-	}
+  public Object evaluate(Evaluator evaluator) {
+    return evaluateMember(evaluator);
+  }
 }
 
 // End AbstractMemberCalc.java

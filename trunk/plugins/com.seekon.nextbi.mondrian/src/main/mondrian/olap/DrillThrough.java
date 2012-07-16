@@ -19,66 +19,69 @@ import java.util.List;
  * @version $Id: //open/mondrian/src/main/mondrian/olap/DrillThrough.java#1 $
  */
 public class DrillThrough extends QueryPart {
-	private final Query query;
-	private final int maxRowCount;
-	private final int firstRowOrdinal;
-	private final List<Exp> returnList;
+  private final Query query;
 
-	/**
-	 * Creates a DrillThrough.
-	 * 
-	 * @param query
-	 *          Query
-	 * @param maxRowCount
-	 *          Maximum number of rows to return, or -1
-	 * @param firstRowOrdinal
-	 *          Ordinal of first row to return, or -1
-	 * @param returnList
-	 *          List of columns to return
-	 */
-	DrillThrough(Query query, int maxRowCount, int firstRowOrdinal,
-			List<Exp> returnList) {
-		this.query = query;
-		this.maxRowCount = maxRowCount;
-		this.firstRowOrdinal = firstRowOrdinal;
-		this.returnList = returnList;
-	}
+  private final int maxRowCount;
 
-	@Override
-	public void unparse(PrintWriter pw) {
-		pw.print("DRILLTHROUGH");
-		if (maxRowCount >= 0) {
-			pw.print(" MAXROWS ");
-			pw.print(maxRowCount);
-		}
-		if (firstRowOrdinal >= 0) {
-			pw.print(" FIRSTROWSET ");
-			pw.print(firstRowOrdinal);
-		}
-		pw.print(" ");
-		query.unparse(pw);
-		if (returnList != null) {
-			ExpBase.unparseList(pw, returnList.toArray(new Exp[returnList.size()]),
-					" RETURN ", ", ", "");
-		}
-	}
+  private final int firstRowOrdinal;
 
-	@Override
-	public Object[] getChildren() {
-		return new Object[] { maxRowCount, firstRowOrdinal, query, returnList };
-	}
+  private final List<Exp> returnList;
 
-	public Query getQuery() {
-		return query;
-	}
+  /**
+   * Creates a DrillThrough.
+   * 
+   * @param query
+   *          Query
+   * @param maxRowCount
+   *          Maximum number of rows to return, or -1
+   * @param firstRowOrdinal
+   *          Ordinal of first row to return, or -1
+   * @param returnList
+   *          List of columns to return
+   */
+  DrillThrough(Query query, int maxRowCount, int firstRowOrdinal,
+    List<Exp> returnList) {
+    this.query = query;
+    this.maxRowCount = maxRowCount;
+    this.firstRowOrdinal = firstRowOrdinal;
+    this.returnList = returnList;
+  }
 
-	public int getMaxRowCount() {
-		return maxRowCount;
-	}
+  @Override
+  public void unparse(PrintWriter pw) {
+    pw.print("DRILLTHROUGH");
+    if (maxRowCount >= 0) {
+      pw.print(" MAXROWS ");
+      pw.print(maxRowCount);
+    }
+    if (firstRowOrdinal >= 0) {
+      pw.print(" FIRSTROWSET ");
+      pw.print(firstRowOrdinal);
+    }
+    pw.print(" ");
+    query.unparse(pw);
+    if (returnList != null) {
+      ExpBase.unparseList(pw, returnList.toArray(new Exp[returnList.size()]),
+        " RETURN ", ", ", "");
+    }
+  }
 
-	public int getFirstRowOrdinal() {
-		return firstRowOrdinal;
-	}
+  @Override
+  public Object[] getChildren() {
+    return new Object[] { maxRowCount, firstRowOrdinal, query, returnList };
+  }
+
+  public Query getQuery() {
+    return query;
+  }
+
+  public int getMaxRowCount() {
+    return maxRowCount;
+  }
+
+  public int getFirstRowOrdinal() {
+    return firstRowOrdinal;
+  }
 }
 
 // End DrillThrough.java

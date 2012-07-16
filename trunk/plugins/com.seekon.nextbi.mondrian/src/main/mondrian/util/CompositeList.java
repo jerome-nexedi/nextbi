@@ -22,51 +22,51 @@ import java.util.List;
  * @author jhyde
  */
 public class CompositeList<T> extends AbstractList<T> {
-	private final List<? extends T>[] lists;
+  private final List<? extends T>[] lists;
 
-	/**
-	 * Creates a composite list.
-	 * 
-	 * @param lists
-	 *          Component lists
-	 */
-	public CompositeList(List<? extends T>... lists) {
-		this.lists = lists;
-	}
+  /**
+   * Creates a composite list.
+   * 
+   * @param lists
+   *          Component lists
+   */
+  public CompositeList(List<? extends T>... lists) {
+    this.lists = lists;
+  }
 
-	/**
-	 * Creates a composite list, inferring the element type from the arguments.
-	 * 
-	 * @param lists
-	 *          One or more lists
-	 * @param <T>
-	 *          element type
-	 * @return composite list
-	 */
-	public static <T> CompositeList<T> of(List<? extends T>... lists) {
-		return new CompositeList<T>(lists);
-	}
+  /**
+   * Creates a composite list, inferring the element type from the arguments.
+   * 
+   * @param lists
+   *          One or more lists
+   * @param <T>
+   *          element type
+   * @return composite list
+   */
+  public static <T> CompositeList<T> of(List<? extends T>... lists) {
+    return new CompositeList<T>(lists);
+  }
 
-	public T get(int index) {
-		int n = 0;
-		for (List<? extends T> list : lists) {
-			int next = n + list.size();
-			if (index < next) {
-				return list.get(index - n);
-			}
-			n = next;
-		}
-		throw new IndexOutOfBoundsException("index" + index
-				+ " out of bounds in list of size " + n);
-	}
+  public T get(int index) {
+    int n = 0;
+    for (List<? extends T> list : lists) {
+      int next = n + list.size();
+      if (index < next) {
+        return list.get(index - n);
+      }
+      n = next;
+    }
+    throw new IndexOutOfBoundsException("index" + index
+      + " out of bounds in list of size " + n);
+  }
 
-	public int size() {
-		int n = 0;
-		for (List<? extends T> array : lists) {
-			n += array.size();
-		}
-		return n;
-	}
+  public int size() {
+    int n = 0;
+    for (List<? extends T> array : lists) {
+      n += array.size();
+    }
+    return n;
+  }
 }
 
 // End CompositeList.java

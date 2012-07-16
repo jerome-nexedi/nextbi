@@ -32,86 +32,86 @@ import mondrian.rolap.SqlStatement;
  *          .java#4 $
  */
 class DenseIntSegmentDataset extends DenseNativeSegmentDataset {
-	final int[] values; // length == m[0] * ... * m[axes.length-1]
+  final int[] values; // length == m[0] * ... * m[axes.length-1]
 
-	/**
-	 * Creates a DenseIntSegmentDataset.
-	 * 
-	 * @param segment
-	 *          Segment
-	 * @param size
-	 *          Number of coordinates
-	 */
-	DenseIntSegmentDataset(Segment segment, int size) {
-		super(segment, size);
-		this.values = new int[size];
-	}
+  /**
+   * Creates a DenseIntSegmentDataset.
+   * 
+   * @param segment
+   *          Segment
+   * @param size
+   *          Number of coordinates
+   */
+  DenseIntSegmentDataset(Segment segment, int size) {
+    super(segment, size);
+    this.values = new int[size];
+  }
 
-	public int getInt(CellKey key) {
-		int offset = key.getOffset(axisMultipliers);
-		return values[offset];
-	}
+  public int getInt(CellKey key) {
+    int offset = key.getOffset(axisMultipliers);
+    return values[offset];
+  }
 
-	public Object getObject(CellKey pos) {
-		int offset = pos.getOffset(axisMultipliers);
-		return getObject(offset);
-	}
+  public Object getObject(CellKey pos) {
+    int offset = pos.getOffset(axisMultipliers);
+    return getObject(offset);
+  }
 
-	protected Integer getObject(int offset) {
-		final int value = values[offset];
-		if (value == 0 && isNull(offset)) {
-			return null;
-		}
-		return value;
-	}
+  protected Integer getObject(int offset) {
+    final int value = values[offset];
+    if (value == 0 && isNull(offset)) {
+      return null;
+    }
+    return value;
+  }
 
-	public boolean exists(CellKey pos) {
-		return true;
-	}
+  public boolean exists(CellKey pos) {
+    return true;
+  }
 
-	public void populateFrom(int[] pos, SegmentDataset data, CellKey key) {
-		final int offset = getOffset(pos);
-		final int value = values[offset] = data.getInt(key);
-		if (value == 0) {
-			nullIndicators.set(offset, !data.isNull(key));
-		}
-	}
+  public void populateFrom(int[] pos, SegmentDataset data, CellKey key) {
+    final int offset = getOffset(pos);
+    final int value = values[offset] = data.getInt(key);
+    if (value == 0) {
+      nullIndicators.set(offset, !data.isNull(key));
+    }
+  }
 
-	public void populateFrom(int[] pos, SegmentLoader.RowList rowList, int column) {
-		int offset = getOffset(pos);
-		final int value = values[offset] = rowList.getInt(column);
-		if (value == 0) {
-			nullIndicators.set(offset, !rowList.isNull(column));
-		}
-	}
+  public void populateFrom(int[] pos, SegmentLoader.RowList rowList, int column) {
+    int offset = getOffset(pos);
+    final int value = values[offset] = rowList.getInt(column);
+    if (value == 0) {
+      nullIndicators.set(offset, !rowList.isNull(column));
+    }
+  }
 
-	public SqlStatement.Type getType() {
-		return SqlStatement.Type.INT;
-	}
+  public SqlStatement.Type getType() {
+    return SqlStatement.Type.INT;
+  }
 
-	public void put(CellKey key, int value) {
-		int offset = key.getOffset(axisMultipliers);
-		values[offset] = value;
-	}
+  public void put(CellKey key, int value) {
+    int offset = key.getOffset(axisMultipliers);
+    values[offset] = value;
+  }
 
-	public void put(int[] ordinals, int value) {
-		int offset = getOffset(ordinals);
-		values[offset] = value;
-	}
+  public void put(int[] ordinals, int value) {
+    int offset = getOffset(ordinals);
+    values[offset] = value;
+  }
 
-	void set(int k, int o) {
-		values[k] = o;
-	}
+  void set(int k, int o) {
+    values[k] = o;
+  }
 
-	protected int getSize() {
-		return values.length;
-	}
+  protected int getSize() {
+    return values.length;
+  }
 
-	public SegmentBody createSegmentBody(
-			SortedSet<Comparable<?>>[] axisValueSets, boolean[] nullAxisFlags) {
-		return new DenseIntSegmentBody(nullIndicators, values, getSize(),
-				axisValueSets, nullAxisFlags);
-	}
+  public SegmentBody createSegmentBody(SortedSet<Comparable<?>>[] axisValueSets,
+    boolean[] nullAxisFlags) {
+    return new DenseIntSegmentBody(nullIndicators, values, getSize(), axisValueSets,
+      nullAxisFlags);
+  }
 }
 
 // End DenseIntSegmentDataset.java

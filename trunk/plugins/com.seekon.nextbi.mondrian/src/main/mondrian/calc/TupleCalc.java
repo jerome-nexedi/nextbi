@@ -28,20 +28,20 @@ import mondrian.olap.Evaluator;
  * @since Sep 27, 2005
  */
 public interface TupleCalc extends Calc {
-	/**
-	 * Evaluates this expression to yield a tuple.
-	 * 
-	 * <p>
-	 * A tuple cannot contain any null members. If any of the members is null,
-	 * this method must return a null.
-	 * 
-	 * @post result == null || !tupleContainsNullMember(result)
-	 * 
-	 * @param evaluator
-	 *          Evaluation context
-	 * @return an array of members, or null to represent the null tuple
-	 */
-	Member[] evaluateTuple(Evaluator evaluator);
+  /**
+   * Evaluates this expression to yield a tuple.
+   * 
+   * <p>
+   * A tuple cannot contain any null members. If any of the members is null,
+   * this method must return a null.
+   * 
+   * @post result == null || !tupleContainsNullMember(result)
+   * 
+   * @param evaluator
+   *          Evaluation context
+   * @return an array of members, or null to represent the null tuple
+   */
+  Member[] evaluateTuple(Evaluator evaluator);
 }
 
 // End TupleCalc.java

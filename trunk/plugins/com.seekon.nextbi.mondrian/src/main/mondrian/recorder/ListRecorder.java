@@ -20,120 +20,125 @@ import java.util.*;
  */
 public class ListRecorder extends AbstractRecorder {
 
-	private final List<Entry> errorList;
-	private final List<Entry> warnList;
-	private final List<Entry> infoList;
+  private final List<Entry> errorList;
 
-	public ListRecorder() {
-		errorList = new ArrayList<Entry>();
-		warnList = new ArrayList<Entry>();
-		infoList = new ArrayList<Entry>();
-	}
+  private final List<Entry> warnList;
 
-	public void clear() {
-		super.clear();
-		errorList.clear();
-		warnList.clear();
-		infoList.clear();
-	}
+  private final List<Entry> infoList;
 
-	public Iterator<Entry> getErrorEntries() {
-		return errorList.iterator();
-	}
+  public ListRecorder() {
+    errorList = new ArrayList<Entry>();
+    warnList = new ArrayList<Entry>();
+    infoList = new ArrayList<Entry>();
+  }
 
-	public Iterator<Entry> getWarnEntries() {
-		return warnList.iterator();
-	}
+  public void clear() {
+    super.clear();
+    errorList.clear();
+    warnList.clear();
+    infoList.clear();
+  }
 
-	public Iterator<Entry> getInfoEntries() {
-		return infoList.iterator();
-	}
+  public Iterator<Entry> getErrorEntries() {
+    return errorList.iterator();
+  }
 
-	protected void recordMessage(final String msg, final Object info,
-			final MsgType msgType) {
-		String context = getContext();
+  public Iterator<Entry> getWarnEntries() {
+    return warnList.iterator();
+  }
 
-		Entry e = new Entry(context, msg, msgType, info);
-		switch (msgType) {
-		case INFO:
-			infoList.add(e);
-			break;
-		case WARN:
-			warnList.add(e);
-			break;
-		case ERROR:
-			errorList.add(e);
-			break;
-		default:
-			e = new Entry(context, "Unknown message type enum \"" + msgType
-					+ "\" for message: " + msg, MsgType.WARN, info);
-			warnList.add(e);
-		}
-	}
+  public Iterator<Entry> getInfoEntries() {
+    return infoList.iterator();
+  }
 
-	public void logInfoMessage(final Logger logger) {
-		if (hasInformation()) {
-			logMessage(getInfoEntries(), logger);
-		}
-	}
+  protected void recordMessage(final String msg, final Object info,
+    final MsgType msgType) {
+    String context = getContext();
 
-	public void logWarningMessage(final Logger logger) {
-		if (hasWarnings()) {
-			logMessage(getWarnEntries(), logger);
-		}
-	}
+    Entry e = new Entry(context, msg, msgType, info);
+    switch (msgType) {
+    case INFO:
+      infoList.add(e);
+      break;
+    case WARN:
+      warnList.add(e);
+      break;
+    case ERROR:
+      errorList.add(e);
+      break;
+    default:
+      e = new Entry(context, "Unknown message type enum \"" + msgType
+        + "\" for message: " + msg, MsgType.WARN, info);
+      warnList.add(e);
+    }
+  }
 
-	public void logErrorMessage(final Logger logger) {
-		if (hasErrors()) {
-			logMessage(getErrorEntries(), logger);
-		}
-	}
+  public void logInfoMessage(final Logger logger) {
+    if (hasInformation()) {
+      logMessage(getInfoEntries(), logger);
+    }
+  }
 
-	static void logMessage(Iterator<Entry> it, Logger logger) {
-		while (it.hasNext()) {
-			Entry e = it.next();
-			logMessage(e, logger);
-		}
-	}
+  public void logWarningMessage(final Logger logger) {
+    if (hasWarnings()) {
+      logMessage(getWarnEntries(), logger);
+    }
+  }
 
-	static void logMessage(final Entry e, final Logger logger) {
-		logMessage(e.getContext(), e.getMessage(), e.getMsgType(), logger);
-	}
+  public void logErrorMessage(final Logger logger) {
+    if (hasErrors()) {
+      logMessage(getErrorEntries(), logger);
+    }
+  }
 
-	/**
-	 * Entry is a Info, Warning or Error message. This is the object stored in the
-	 * Lists MessageRecorder's info, warning and error message lists.
-	 */
-	public static class Entry {
-		private final String context;
-		private final String msg;
-		private final MsgType msgType;
-		private final Object info;
+  static void logMessage(Iterator<Entry> it, Logger logger) {
+    while (it.hasNext()) {
+      Entry e = it.next();
+      logMessage(e, logger);
+    }
+  }
 
-		private Entry(final String context, final String msg,
-				final MsgType msgType, final Object info) {
-			this.context = context;
-			this.msg = msg;
-			this.msgType = msgType;
-			this.info = info;
-		}
+  static void logMessage(final Entry e, final Logger logger) {
+    logMessage(e.getContext(), e.getMessage(), e.getMsgType(), logger);
+  }
 
-		public String getContext() {
-			return context;
-		}
+  /**
+   * Entry is a Info, Warning or Error message. This is the object stored in the
+   * Lists MessageRecorder's info, warning and error message lists.
+   */
+  public static class Entry {
+    private final String context;
 
-		public String getMessage() {
-			return msg;
-		}
+    private final String msg;
 
-		public MsgType getMsgType() {
-			return msgType;
-		}
+    private final MsgType msgType;
 
-		public Object getInfo() {
-			return info;
-		}
-	}
+    private final Object info;
+
+    private Entry(final String context, final String msg, final MsgType msgType,
+      final Object info) {
+      this.context = context;
+      this.msg = msg;
+      this.msgType = msgType;
+      this.info = info;
+    }
+
+    public String getContext() {
+      return context;
+    }
+
+    public String getMessage() {
+      return msg;
+    }
+
+    public MsgType getMsgType() {
+      return msgType;
+    }
+
+    public Object getInfo() {
+      return info;
+    }
+  }
 }
 
 // End ListRecorder.java

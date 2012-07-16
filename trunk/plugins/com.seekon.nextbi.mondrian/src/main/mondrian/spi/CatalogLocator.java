@@ -18,10 +18,10 @@ package mondrian.spi;
  */
 public interface CatalogLocator {
 
-	/**
-	 * @return URL complied string representation.
-	 */
-	String locate(String catalogPath);
+  /**
+   * @return URL complied string representation.
+   */
+  String locate(String catalogPath);
 
 }
 

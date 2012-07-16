@@ -34,227 +34,224 @@ import java.util.*;
  * @since May 24, 2007
  */
 class MondrianOlap4jCube implements Cube, Named {
-	final mondrian.olap.Cube cube;
-	final MondrianOlap4jSchema olap4jSchema;
+  final mondrian.olap.Cube cube;
 
-	MondrianOlap4jCube(mondrian.olap.Cube cube, MondrianOlap4jSchema olap4jSchema) {
-		this.cube = cube;
-		this.olap4jSchema = olap4jSchema;
-	}
+  final MondrianOlap4jSchema olap4jSchema;
 
-	public Schema getSchema() {
-		return olap4jSchema;
-	}
+  MondrianOlap4jCube(mondrian.olap.Cube cube, MondrianOlap4jSchema olap4jSchema) {
+    this.cube = cube;
+    this.olap4jSchema = olap4jSchema;
+  }
 
-	public int hashCode() {
-		return olap4jSchema.hashCode() ^ cube.hashCode();
-	}
+  public Schema getSchema() {
+    return olap4jSchema;
+  }
 
-	public boolean equals(Object obj) {
-		if (obj instanceof MondrianOlap4jCube) {
-			MondrianOlap4jCube that = (MondrianOlap4jCube) obj;
-			return this.olap4jSchema == that.olap4jSchema
-					&& this.cube.equals(that.cube);
-		}
-		return false;
-	}
+  public int hashCode() {
+    return olap4jSchema.hashCode() ^ cube.hashCode();
+  }
 
-	public NamedList<Dimension> getDimensions() {
-		NamedList<MondrianOlap4jDimension> list = new NamedListImpl<MondrianOlap4jDimension>();
-		final MondrianOlap4jConnection olap4jConnection = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
-		final mondrian.olap.SchemaReader schemaReader = olap4jConnection
-				.getMondrianConnection2().getSchemaReader().withLocus();
-		for (mondrian.olap.Dimension dimension : schemaReader
-				.getCubeDimensions(cube)) {
-			list.add(new MondrianOlap4jDimension(olap4jSchema, dimension));
-		}
-		return Olap4jUtil.cast(list);
-	}
+  public boolean equals(Object obj) {
+    if (obj instanceof MondrianOlap4jCube) {
+      MondrianOlap4jCube that = (MondrianOlap4jCube) obj;
+      return this.olap4jSchema == that.olap4jSchema && this.cube.equals(that.cube);
+    }
+    return false;
+  }
 
-	public NamedList<Hierarchy> getHierarchies() {
-		NamedList<MondrianOlap4jHierarchy> list = new NamedListImpl<MondrianOlap4jHierarchy>();
-		final MondrianOlap4jConnection olap4jConnection = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
-		final mondrian.olap.SchemaReader schemaReader = olap4jConnection
-				.getMondrianConnection2().getSchemaReader().withLocus();
-		for (mondrian.olap.Dimension dimension : schemaReader
-				.getCubeDimensions(cube)) {
-			for (mondrian.olap.Hierarchy hierarchy : schemaReader
-					.getDimensionHierarchies(dimension)) {
-				list.add(new MondrianOlap4jHierarchy(olap4jSchema, hierarchy));
-			}
-		}
-		return Olap4jUtil.cast(list);
-	}
+  public NamedList<Dimension> getDimensions() {
+    NamedList<MondrianOlap4jDimension> list = new NamedListImpl<MondrianOlap4jDimension>();
+    final MondrianOlap4jConnection olap4jConnection = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
+    final mondrian.olap.SchemaReader schemaReader = olap4jConnection
+      .getMondrianConnection2().getSchemaReader().withLocus();
+    for (mondrian.olap.Dimension dimension : schemaReader.getCubeDimensions(cube)) {
+      list.add(new MondrianOlap4jDimension(olap4jSchema, dimension));
+    }
+    return Olap4jUtil.cast(list);
+  }
 
-	public List<Measure> getMeasures() {
-		final Dimension dimension = (MondrianOlap4jDimension) getDimensions().get(
-				"Measures");
-		if (dimension == null) {
-			return Collections.emptyList();
-		}
-		final MondrianOlap4jConnection olap4jConnection = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
-		try {
-			final mondrian.olap.SchemaReader schemaReader = olap4jConnection
-					.getMondrianConnection().getSchemaReader().withLocus();
-			final MondrianOlap4jLevel measuresLevel = (MondrianOlap4jLevel) dimension
-					.getDefaultHierarchy().getLevels().get(0);
-			final List<Measure> measaures = new ArrayList<Measure>();
-			List<mondrian.olap.Member> levelMembers = schemaReader.getLevelMembers(
-					measuresLevel.level, true);
-			for (mondrian.olap.Member member : levelMembers) {
-				measaures.add((Measure) olap4jConnection.toOlap4j(member));
-			}
-			return measaures;
-		} catch (OlapException e) {
-			// OlapException not possible, since measures are stored in memory.
-			// Demote from checked to unchecked exception.
-			throw new RuntimeException(e);
-		}
-	}
+  public NamedList<Hierarchy> getHierarchies() {
+    NamedList<MondrianOlap4jHierarchy> list = new NamedListImpl<MondrianOlap4jHierarchy>();
+    final MondrianOlap4jConnection olap4jConnection = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
+    final mondrian.olap.SchemaReader schemaReader = olap4jConnection
+      .getMondrianConnection2().getSchemaReader().withLocus();
+    for (mondrian.olap.Dimension dimension : schemaReader.getCubeDimensions(cube)) {
+      for (mondrian.olap.Hierarchy hierarchy : schemaReader
+        .getDimensionHierarchies(dimension)) {
+        list.add(new MondrianOlap4jHierarchy(olap4jSchema, hierarchy));
+      }
+    }
+    return Olap4jUtil.cast(list);
+  }
 
-	public NamedList<NamedSet> getSets() {
-		final NamedListImpl<MondrianOlap4jNamedSet> list = new NamedListImpl<MondrianOlap4jNamedSet>();
-		final MondrianOlap4jConnection olap4jConnection = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
-		for (mondrian.olap.NamedSet namedSet : cube.getNamedSets()) {
-			list.add(olap4jConnection.toOlap4j(cube, namedSet));
-		}
-		return Olap4jUtil.cast(list);
-	}
+  public List<Measure> getMeasures() {
+    final Dimension dimension = (MondrianOlap4jDimension) getDimensions().get(
+      "Measures");
+    if (dimension == null) {
+      return Collections.emptyList();
+    }
+    final MondrianOlap4jConnection olap4jConnection = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
+    try {
+      final mondrian.olap.SchemaReader schemaReader = olap4jConnection
+        .getMondrianConnection().getSchemaReader().withLocus();
+      final MondrianOlap4jLevel measuresLevel = (MondrianOlap4jLevel) dimension
+        .getDefaultHierarchy().getLevels().get(0);
+      final List<Measure> measaures = new ArrayList<Measure>();
+      List<mondrian.olap.Member> levelMembers = schemaReader.getLevelMembers(
+        measuresLevel.level, true);
+      for (mondrian.olap.Member member : levelMembers) {
+        measaures.add((Measure) olap4jConnection.toOlap4j(member));
+      }
+      return measaures;
+    } catch (OlapException e) {
+      // OlapException not possible, since measures are stored in memory.
+      // Demote from checked to unchecked exception.
+      throw new RuntimeException(e);
+    }
+  }
 
-	public Collection<Locale> getSupportedLocales() {
-		throw new UnsupportedOperationException();
-	}
+  public NamedList<NamedSet> getSets() {
+    final NamedListImpl<MondrianOlap4jNamedSet> list = new NamedListImpl<MondrianOlap4jNamedSet>();
+    final MondrianOlap4jConnection olap4jConnection = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
+    for (mondrian.olap.NamedSet namedSet : cube.getNamedSets()) {
+      list.add(olap4jConnection.toOlap4j(cube, namedSet));
+    }
+    return Olap4jUtil.cast(list);
+  }
 
-	public String getName() {
-		return cube.getName();
-	}
+  public Collection<Locale> getSupportedLocales() {
+    throw new UnsupportedOperationException();
+  }
 
-	public String getUniqueName() {
-		return cube.getUniqueName();
-	}
+  public String getName() {
+    return cube.getName();
+  }
 
-	public String getCaption() {
-		return cube.getLocalized(OlapElement.LocalizedProperty.CAPTION,
-				olap4jSchema.getLocale());
-	}
+  public String getUniqueName() {
+    return cube.getUniqueName();
+  }
 
-	public String getDescription() {
-		return cube.getLocalized(OlapElement.LocalizedProperty.DESCRIPTION,
-				olap4jSchema.getLocale());
-	}
+  public String getCaption() {
+    return cube.getLocalized(OlapElement.LocalizedProperty.CAPTION, olap4jSchema
+      .getLocale());
+  }
 
-	public boolean isVisible() {
-		return cube.isVisible();
-	}
+  public String getDescription() {
+    return cube.getLocalized(OlapElement.LocalizedProperty.DESCRIPTION, olap4jSchema
+      .getLocale());
+  }
 
-	public MondrianOlap4jMember lookupMember(List<IdentifierSegment> nameParts)
-			throws OlapException {
-		final MondrianOlap4jConnection olap4jConnection = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
-		final Role role = olap4jConnection.getMondrianConnection().getRole();
-		final SchemaReader schemaReader = cube.getSchemaReader(role).withLocus();
-		return lookupMember(schemaReader, nameParts);
-	}
+  public boolean isVisible() {
+    return cube.isVisible();
+  }
 
-	private MondrianOlap4jMember lookupMember(SchemaReader schemaReader,
-			List<IdentifierSegment> nameParts) {
-		final List<mondrian.olap.Id.Segment> segmentList = new ArrayList<mondrian.olap.Id.Segment>();
-		for (IdentifierSegment namePart : nameParts) {
-			segmentList.add(Util.convert(namePart));
-		}
-		final mondrian.olap.Member member = schemaReader.getMemberByUniqueName(
-				segmentList, false);
-		if (member == null) {
-			return null;
-		}
+  public MondrianOlap4jMember lookupMember(List<IdentifierSegment> nameParts)
+    throws OlapException {
+    final MondrianOlap4jConnection olap4jConnection = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
+    final Role role = olap4jConnection.getMondrianConnection().getRole();
+    final SchemaReader schemaReader = cube.getSchemaReader(role).withLocus();
+    return lookupMember(schemaReader, nameParts);
+  }
 
-		return olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection
-				.toOlap4j(member);
-	}
+  private MondrianOlap4jMember lookupMember(SchemaReader schemaReader,
+    List<IdentifierSegment> nameParts) {
+    final List<mondrian.olap.Id.Segment> segmentList = new ArrayList<mondrian.olap.Id.Segment>();
+    for (IdentifierSegment namePart : nameParts) {
+      segmentList.add(Util.convert(namePart));
+    }
+    final mondrian.olap.Member member = schemaReader.getMemberByUniqueName(
+      segmentList, false);
+    if (member == null) {
+      return null;
+    }
 
-	public List<Member> lookupMembers(Set<Member.TreeOp> treeOps,
-			List<IdentifierSegment> nameParts) throws OlapException {
-		final MondrianOlap4jConnection olap4jConnection = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
-		final Role role = olap4jConnection.getMondrianConnection().getRole();
-		final SchemaReader schemaReader = cube.getSchemaReader(role).withLocus();
-		final MondrianOlap4jMember member = lookupMember(schemaReader, nameParts);
-		if (member == null) {
-			return Collections.emptyList();
-		}
+    return olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection
+      .toOlap4j(member);
+  }
 
-		// Add ancestors and/or the parent. Ancestors are prepended, to ensure
-		// hierarchical order.
-		final List<MondrianOlap4jMember> list = new ArrayList<MondrianOlap4jMember>();
-		if (treeOps.contains(Member.TreeOp.ANCESTORS)) {
-			for (MondrianOlap4jMember m = member.getParentMember(); m != null; m = m
-					.getParentMember()) {
-				list.add(0, m);
-			}
-		} else if (treeOps.contains(Member.TreeOp.PARENT)) {
-			final MondrianOlap4jMember parentMember = member.getParentMember();
-			if (parentMember != null) {
-				list.add(parentMember);
-			}
-		}
+  public List<Member> lookupMembers(Set<Member.TreeOp> treeOps,
+    List<IdentifierSegment> nameParts) throws OlapException {
+    final MondrianOlap4jConnection olap4jConnection = olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
+    final Role role = olap4jConnection.getMondrianConnection().getRole();
+    final SchemaReader schemaReader = cube.getSchemaReader(role).withLocus();
+    final MondrianOlap4jMember member = lookupMember(schemaReader, nameParts);
+    if (member == null) {
+      return Collections.emptyList();
+    }
 
-		// Add siblings. Siblings which occur after the member are deferred,
-		// because they occur after children and descendants in the
-		// hierarchical ordering.
-		List<MondrianOlap4jMember> remainingSiblingsList = null;
-		if (treeOps.contains(Member.TreeOp.SIBLINGS)) {
-			final MondrianOlap4jMember parentMember = member.getParentMember();
-			NamedList<MondrianOlap4jMember> siblingMembers;
-			if (parentMember != null) {
-				siblingMembers = olap4jConnection.toOlap4j(schemaReader
-						.getMemberChildren(parentMember.member));
-			} else {
-				siblingMembers = olap4jConnection.toOlap4j(schemaReader
-						.getHierarchyRootMembers(member.member.getHierarchy()));
-			}
-			List<MondrianOlap4jMember> targetList = list;
-			for (MondrianOlap4jMember siblingMember : siblingMembers) {
-				if (siblingMember.equals(member)) {
-					targetList = remainingSiblingsList = new ArrayList<MondrianOlap4jMember>();
-				} else {
-					targetList.add(siblingMember);
-				}
-			}
-		}
+    // Add ancestors and/or the parent. Ancestors are prepended, to ensure
+    // hierarchical order.
+    final List<MondrianOlap4jMember> list = new ArrayList<MondrianOlap4jMember>();
+    if (treeOps.contains(Member.TreeOp.ANCESTORS)) {
+      for (MondrianOlap4jMember m = member.getParentMember(); m != null; m = m
+        .getParentMember()) {
+        list.add(0, m);
+      }
+    } else if (treeOps.contains(Member.TreeOp.PARENT)) {
+      final MondrianOlap4jMember parentMember = member.getParentMember();
+      if (parentMember != null) {
+        list.add(parentMember);
+      }
+    }
 
-		// Add the member itself.
-		if (treeOps.contains(Member.TreeOp.SELF)) {
-			list.add(member);
-		}
+    // Add siblings. Siblings which occur after the member are deferred,
+    // because they occur after children and descendants in the
+    // hierarchical ordering.
+    List<MondrianOlap4jMember> remainingSiblingsList = null;
+    if (treeOps.contains(Member.TreeOp.SIBLINGS)) {
+      final MondrianOlap4jMember parentMember = member.getParentMember();
+      NamedList<MondrianOlap4jMember> siblingMembers;
+      if (parentMember != null) {
+        siblingMembers = olap4jConnection.toOlap4j(schemaReader
+          .getMemberChildren(parentMember.member));
+      } else {
+        siblingMembers = olap4jConnection.toOlap4j(schemaReader
+          .getHierarchyRootMembers(member.member.getHierarchy()));
+      }
+      List<MondrianOlap4jMember> targetList = list;
+      for (MondrianOlap4jMember siblingMember : siblingMembers) {
+        if (siblingMember.equals(member)) {
+          targetList = remainingSiblingsList = new ArrayList<MondrianOlap4jMember>();
+        } else {
+          targetList.add(siblingMember);
+        }
+      }
+    }
 
-		// Add descendants and/or children.
-		if (treeOps.contains(Member.TreeOp.DESCENDANTS)) {
-			addDescendants(list, schemaReader, olap4jConnection, member, true);
-		} else if (treeOps.contains(Member.TreeOp.CHILDREN)) {
-			addDescendants(list, schemaReader, olap4jConnection, member, false);
-		}
-		// Lastly, add siblings which occur after the member itself. They
-		// occur after all of the descendants in the hierarchical ordering.
-		if (remainingSiblingsList != null) {
-			list.addAll(remainingSiblingsList);
-		}
-		return Olap4jUtil.cast(list);
-	}
+    // Add the member itself.
+    if (treeOps.contains(Member.TreeOp.SELF)) {
+      list.add(member);
+    }
 
-	private void addDescendants(List<MondrianOlap4jMember> list,
-			SchemaReader schemaReader, MondrianOlap4jConnection olap4jConnection,
-			MondrianOlap4jMember member, boolean recurse) {
-		for (mondrian.olap.Member m : schemaReader.getMemberChildren(member.member)) {
-			MondrianOlap4jMember childMember = olap4jConnection.toOlap4j(m);
-			list.add(childMember);
-			if (recurse) {
-				addDescendants(list, schemaReader, olap4jConnection, childMember,
-						recurse);
-			}
-		}
-	}
+    // Add descendants and/or children.
+    if (treeOps.contains(Member.TreeOp.DESCENDANTS)) {
+      addDescendants(list, schemaReader, olap4jConnection, member, true);
+    } else if (treeOps.contains(Member.TreeOp.CHILDREN)) {
+      addDescendants(list, schemaReader, olap4jConnection, member, false);
+    }
+    // Lastly, add siblings which occur after the member itself. They
+    // occur after all of the descendants in the hierarchical ordering.
+    if (remainingSiblingsList != null) {
+      list.addAll(remainingSiblingsList);
+    }
+    return Olap4jUtil.cast(list);
+  }
 
-	public boolean isDrillThroughEnabled() {
-		return true;
-	}
+  private void addDescendants(List<MondrianOlap4jMember> list,
+    SchemaReader schemaReader, MondrianOlap4jConnection olap4jConnection,
+    MondrianOlap4jMember member, boolean recurse) {
+    for (mondrian.olap.Member m : schemaReader.getMemberChildren(member.member)) {
+      MondrianOlap4jMember childMember = olap4jConnection.toOlap4j(m);
+      list.add(childMember);
+      if (recurse) {
+        addDescendants(list, schemaReader, olap4jConnection, childMember, recurse);
+      }
+    }
+  }
+
+  public boolean isDrillThroughEnabled() {
+    return true;
+  }
 }
 
 // End MondrianOlap4jCube.java

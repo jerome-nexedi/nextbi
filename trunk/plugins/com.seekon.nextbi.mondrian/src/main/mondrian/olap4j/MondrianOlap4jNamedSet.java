@@ -26,45 +26,46 @@ import org.olap4j.impl.Named;
  * @since Nov 12, 2007
  */
 class MondrianOlap4jNamedSet implements NamedSet, Named {
-	private final MondrianOlap4jCube olap4jCube;
-	private mondrian.olap.NamedSet namedSet;
+  private final MondrianOlap4jCube olap4jCube;
 
-	MondrianOlap4jNamedSet(MondrianOlap4jCube olap4jCube,
-			mondrian.olap.NamedSet namedSet) {
-		this.olap4jCube = olap4jCube;
-		this.namedSet = namedSet;
-	}
+  private mondrian.olap.NamedSet namedSet;
 
-	public Cube getCube() {
-		return olap4jCube;
-	}
+  MondrianOlap4jNamedSet(MondrianOlap4jCube olap4jCube,
+    mondrian.olap.NamedSet namedSet) {
+    this.olap4jCube = olap4jCube;
+    this.namedSet = namedSet;
+  }
 
-	public ParseTreeNode getExpression() {
-		final MondrianOlap4jConnection olap4jConnection = olap4jCube.olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
-		return olap4jConnection.toOlap4j(namedSet.getExp());
-	}
+  public Cube getCube() {
+    return olap4jCube;
+  }
 
-	public String getName() {
-		return namedSet.getName();
-	}
+  public ParseTreeNode getExpression() {
+    final MondrianOlap4jConnection olap4jConnection = olap4jCube.olap4jSchema.olap4jCatalog.olap4jDatabaseMetaData.olap4jConnection;
+    return olap4jConnection.toOlap4j(namedSet.getExp());
+  }
 
-	public String getUniqueName() {
-		return namedSet.getUniqueName();
-	}
+  public String getName() {
+    return namedSet.getName();
+  }
 
-	public String getCaption() {
-		return namedSet.getLocalized(OlapElement.LocalizedProperty.CAPTION,
-				olap4jCube.olap4jSchema.getLocale());
-	}
+  public String getUniqueName() {
+    return namedSet.getUniqueName();
+  }
 
-	public String getDescription() {
-		return namedSet.getLocalized(OlapElement.LocalizedProperty.DESCRIPTION,
-				olap4jCube.olap4jSchema.getLocale());
-	}
+  public String getCaption() {
+    return namedSet.getLocalized(OlapElement.LocalizedProperty.CAPTION,
+      olap4jCube.olap4jSchema.getLocale());
+  }
 
-	public boolean isVisible() {
-		return namedSet.isVisible();
-	}
+  public String getDescription() {
+    return namedSet.getLocalized(OlapElement.LocalizedProperty.DESCRIPTION,
+      olap4jCube.olap4jSchema.getLocale());
+  }
+
+  public boolean isVisible() {
+    return namedSet.isVisible();
+  }
 }
 
 // End MondrianOlap4jNamedSet.java

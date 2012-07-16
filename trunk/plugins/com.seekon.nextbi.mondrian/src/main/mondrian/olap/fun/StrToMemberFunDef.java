@@ -27,25 +27,25 @@ import mondrian.resource.MondrianResource;
  *          $
  */
 class StrToMemberFunDef extends FunDefBase {
-	public static final FunDef INSTANCE = new StrToMemberFunDef();
+  public static final FunDef INSTANCE = new StrToMemberFunDef();
 
-	private StrToMemberFunDef() {
-		super("StrToMember",
-				"Returns a member from a unique name String in MDX format.", "fmS");
-	}
+  private StrToMemberFunDef() {
+    super("StrToMember",
+      "Returns a member from a unique name String in MDX format.", "fmS");
+  }
 
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
-		final StringCalc memberNameCalc = compiler.compileString(call.getArg(0));
-		return new AbstractMemberCalc(call, new Calc[] { memberNameCalc }) {
-			public Member evaluateMember(Evaluator evaluator) {
-				String memberName = memberNameCalc.evaluateString(evaluator);
-				if (memberName == null) {
-					throw newEvalException(MondrianResource.instance().NullValue.ex());
-				}
-				return parseMember(evaluator, memberName, null);
-			}
-		};
-	}
+  public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    final StringCalc memberNameCalc = compiler.compileString(call.getArg(0));
+    return new AbstractMemberCalc(call, new Calc[] { memberNameCalc }) {
+      public Member evaluateMember(Evaluator evaluator) {
+        String memberName = memberNameCalc.evaluateString(evaluator);
+        if (memberName == null) {
+          throw newEvalException(MondrianResource.instance().NullValue.ex());
+        }
+        return parseMember(evaluator, memberName, null);
+      }
+    };
+  }
 }
 
 // End StrToMemberFunDef.java

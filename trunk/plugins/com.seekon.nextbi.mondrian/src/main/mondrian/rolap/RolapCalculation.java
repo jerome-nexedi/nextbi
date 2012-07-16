@@ -31,55 +31,55 @@ import mondrian.calc.Calc;
  * @since May 15, 2009
  */
 interface RolapCalculation {
-	/**
-	 * Pushes this calculated member or tuple onto the stack of evaluation
-	 * contexts, and sets the context to the default member of the hierarchy.
-	 * 
-	 * @param evaluator
-	 *          Evaluator
-	 */
-	void setContextIn(RolapEvaluator evaluator);
+  /**
+   * Pushes this calculated member or tuple onto the stack of evaluation
+   * contexts, and sets the context to the default member of the hierarchy.
+   * 
+   * @param evaluator
+   *          Evaluator
+   */
+  void setContextIn(RolapEvaluator evaluator);
 
-	/**
-	 * Returns the solve order of this calculation. Identifies which order
-	 * calculations are expanded.
-	 * 
-	 * @return Solve order
-	 */
-	int getSolveOrder();
+  /**
+   * Returns the solve order of this calculation. Identifies which order
+   * calculations are expanded.
+   * 
+   * @return Solve order
+   */
+  int getSolveOrder();
 
-	/**
-	 * Returns the ordinal of this calculation; to resolve ties.
-	 * 
-	 * @return Ordinal or calculation
-	 */
-	int getHierarchyOrdinal();
+  /**
+   * Returns the ordinal of this calculation; to resolve ties.
+   * 
+   * @return Ordinal or calculation
+   */
+  int getHierarchyOrdinal();
 
-	/**
-	 * Returns whether this calculation is a member is computed from a
-	 * {@code WITH MEMBER} clause in an MDX query.
-	 * 
-	 * @return whether this calculation is computed in an MDX query
-	 */
-	boolean isCalculatedInQuery();
+  /**
+   * Returns whether this calculation is a member is computed from a {@code WITH
+   * MEMBER} clause in an MDX query.
+   * 
+   * @return whether this calculation is computed in an MDX query
+   */
+  boolean isCalculatedInQuery();
 
-	/**
-	 * Returns the compiled expression to evaluate the scalar value of the current
-	 * cell. This method will be called frequently, so the implementation should
-	 * probably compile once and cache the result.
-	 * 
-	 * @param root
-	 *          Root evaluation context
-	 * @return Compiled scalar expression
-	 */
-	Calc getCompiledExpression(RolapEvaluatorRoot root);
+  /**
+   * Returns the compiled expression to evaluate the scalar value of the current
+   * cell. This method will be called frequently, so the implementation should
+   * probably compile once and cache the result.
+   * 
+   * @param root
+   *          Root evaluation context
+   * @return Compiled scalar expression
+   */
+  Calc getCompiledExpression(RolapEvaluatorRoot root);
 
-	/**
-	 * Returns whether this calculation contains an aggregate function.
-	 * 
-	 * @return Whether this calculation contains an aggregate function.
-	 */
-	boolean containsAggregateFunction();
+  /**
+   * Returns whether this calculation contains an aggregate function.
+   * 
+   * @return Whether this calculation contains an aggregate function.
+   */
+  boolean containsAggregateFunction();
 }
 
 // End RolapCalculation.java

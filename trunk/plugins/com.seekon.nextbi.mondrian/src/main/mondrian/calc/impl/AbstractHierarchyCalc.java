@@ -30,23 +30,23 @@ import mondrian.calc.Calc;
  * @since Sep 26, 2005
  */
 public abstract class AbstractHierarchyCalc extends AbstractCalc implements
-		HierarchyCalc {
-	/**
-	 * Creates an AbstractHierarchyCalc.
-	 * 
-	 * @param exp
-	 *          Source expression
-	 * @param calcs
-	 *          Child compiled expressions
-	 */
-	protected AbstractHierarchyCalc(Exp exp, Calc[] calcs) {
-		super(exp, calcs);
-		assert getType() instanceof HierarchyType;
-	}
+  HierarchyCalc {
+  /**
+   * Creates an AbstractHierarchyCalc.
+   * 
+   * @param exp
+   *          Source expression
+   * @param calcs
+   *          Child compiled expressions
+   */
+  protected AbstractHierarchyCalc(Exp exp, Calc[] calcs) {
+    super(exp, calcs);
+    assert getType() instanceof HierarchyType;
+  }
 
-	public Object evaluate(Evaluator evaluator) {
-		return evaluateHierarchy(evaluator);
-	}
+  public Object evaluate(Evaluator evaluator) {
+    return evaluateHierarchy(evaluator);
+  }
 }
 
 // End AbstractHierarchyCalc.java

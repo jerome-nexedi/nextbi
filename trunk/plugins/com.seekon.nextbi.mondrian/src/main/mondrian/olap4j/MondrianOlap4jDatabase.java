@@ -30,89 +30,96 @@ import org.olap4j.metadata.NamedList;
  * @author LBoudreau
  */
 class MondrianOlap4jDatabase implements Database, Named {
-	private final NamedList<MondrianOlap4jCatalog> catalogs;
-	private final MondrianOlap4jConnection olap4jConnection;
-	private final String name;
-	private final String description;
-	private final String providerName;
-	private final String url;
-	private final String dataSourceInfo;
-	private final List<ProviderType> providerType;
-	private final List<AuthenticationMode> authenticationMode;
+  private final NamedList<MondrianOlap4jCatalog> catalogs;
 
-	/**
-	 * Creates a MondrianOlap4jDatabase.
-	 * 
-	 * @param olap4jConnection
-	 *          Connection
-	 * @param catalogs
-	 *          List of catalogs
-	 * @param name
-	 *          Name of database
-	 * @param description
-	 *          Description of database
-	 * @param providerName
-	 *          Provider name
-	 * @param url
-	 *          URL of provider
-	 * @param dataSourceInfo
-	 *          Data source info
-	 * @param providerType
-	 *          List of provider types supported by this database
-	 * @param authenticationMode
-	 *          Authentication modes
-	 */
-	MondrianOlap4jDatabase(MondrianOlap4jConnection olap4jConnection,
-			NamedList<MondrianOlap4jCatalog> catalogs, String name,
-			String description, String providerName, String url,
-			String dataSourceInfo, List<ProviderType> providerType,
-			List<AuthenticationMode> authenticationMode) {
-		this.olap4jConnection = olap4jConnection;
-		this.name = name;
-		this.description = description;
-		this.providerName = providerName;
-		this.url = url;
-		this.dataSourceInfo = dataSourceInfo;
-		this.providerType = Collections.unmodifiableList(providerType);
-		this.authenticationMode = Collections.unmodifiableList(authenticationMode);
-		this.catalogs = MondrianOlap4jConnection.unmodifiableNamedList(catalogs);
-	}
+  private final MondrianOlap4jConnection olap4jConnection;
 
-	public List<AuthenticationMode> getAuthenticationModes() throws OlapException {
-		return authenticationMode;
-	}
+  private final String name;
 
-	public NamedList<Catalog> getCatalogs() throws OlapException {
-		return Olap4jUtil.cast(catalogs);
-	}
+  private final String description;
 
-	public String getDescription() throws OlapException {
-		return this.description;
-	}
+  private final String providerName;
 
-	public String getName() {
-		return this.name;
-	}
+  private final String url;
 
-	public OlapConnection getOlapConnection() {
-		return this.olap4jConnection;
-	}
+  private final String dataSourceInfo;
 
-	public String getProviderName() throws OlapException {
-		return this.providerName;
-	}
+  private final List<ProviderType> providerType;
 
-	public List<ProviderType> getProviderTypes() throws OlapException {
-		return this.providerType;
-	}
+  private final List<AuthenticationMode> authenticationMode;
 
-	public String getURL() throws OlapException {
-		return this.url;
-	}
+  /**
+   * Creates a MondrianOlap4jDatabase.
+   * 
+   * @param olap4jConnection
+   *          Connection
+   * @param catalogs
+   *          List of catalogs
+   * @param name
+   *          Name of database
+   * @param description
+   *          Description of database
+   * @param providerName
+   *          Provider name
+   * @param url
+   *          URL of provider
+   * @param dataSourceInfo
+   *          Data source info
+   * @param providerType
+   *          List of provider types supported by this database
+   * @param authenticationMode
+   *          Authentication modes
+   */
+  MondrianOlap4jDatabase(MondrianOlap4jConnection olap4jConnection,
+    NamedList<MondrianOlap4jCatalog> catalogs, String name, String description,
+    String providerName, String url, String dataSourceInfo,
+    List<ProviderType> providerType, List<AuthenticationMode> authenticationMode) {
+    this.olap4jConnection = olap4jConnection;
+    this.name = name;
+    this.description = description;
+    this.providerName = providerName;
+    this.url = url;
+    this.dataSourceInfo = dataSourceInfo;
+    this.providerType = Collections.unmodifiableList(providerType);
+    this.authenticationMode = Collections.unmodifiableList(authenticationMode);
+    this.catalogs = MondrianOlap4jConnection.unmodifiableNamedList(catalogs);
+  }
 
-	public String getDataSourceInfo() throws OlapException {
-		return this.dataSourceInfo;
-	}
+  public List<AuthenticationMode> getAuthenticationModes() throws OlapException {
+    return authenticationMode;
+  }
+
+  public NamedList<Catalog> getCatalogs() throws OlapException {
+    return Olap4jUtil.cast(catalogs);
+  }
+
+  public String getDescription() throws OlapException {
+    return this.description;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public OlapConnection getOlapConnection() {
+    return this.olap4jConnection;
+  }
+
+  public String getProviderName() throws OlapException {
+    return this.providerName;
+  }
+
+  public List<ProviderType> getProviderTypes() throws OlapException {
+    return this.providerType;
+  }
+
+  public String getURL() throws OlapException {
+    return this.url;
+  }
+
+  public String getDataSourceInfo() throws OlapException {
+    return this.dataSourceInfo;
+  }
 }
 
 // End MondrianOlap4jDatabase.java

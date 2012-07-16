@@ -17,20 +17,20 @@ package mondrian.olap.type;
  * @since Jan 2, 2008
  */
 public class DateTimeType extends ScalarType {
-	/**
-	 * Creates a DateTime type.
-	 */
-	public DateTimeType() {
-		super("DATETIME");
-	}
+  /**
+   * Creates a DateTime type.
+   */
+  public DateTimeType() {
+    super("DATETIME");
+  }
 
-	public boolean equals(Object obj) {
-		return obj instanceof DateTimeType;
-	}
+  public boolean equals(Object obj) {
+    return obj instanceof DateTimeType;
+  }
 
-	public boolean isInstance(Object value) {
-		return value instanceof java.util.Date;
-	}
+  public boolean isInstance(Object value) {
+    return value instanceof java.util.Date;
+  }
 }
 
 // End DateTimeType.java

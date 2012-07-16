@@ -24,17 +24,17 @@ import mondrian.olap.Evaluator;
  * @since Sep 26, 2005
  */
 public interface DimensionCalc extends Calc {
-	/**
-	 * Evaluates this expression to yield a dimension.
-	 * 
-	 * <p>
-	 * Never returns null.
-	 * 
-	 * @param evaluator
-	 *          Evaluation context
-	 * @return a dimension
-	 */
-	Dimension evaluateDimension(Evaluator evaluator);
+  /**
+   * Evaluates this expression to yield a dimension.
+   * 
+   * <p>
+   * Never returns null.
+   * 
+   * @param evaluator
+   *          Evaluation context
+   * @return a dimension
+   */
+  Dimension evaluateDimension(Evaluator evaluator);
 }
 
 // End DimensionCalc.java

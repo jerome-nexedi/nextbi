@@ -25,89 +25,91 @@ import mondrian.mdx.ResolvedFunCall;
  * @since May 15, 2009
  */
 class RolapMemberCalculation implements RolapCalculation {
-	private final RolapMember member;
-	private final int solveOrder;
-	private Boolean containsAggregateFunction;
+  private final RolapMember member;
 
-	/**
-	 * Creates a RolapMemberCalculation.
-	 * 
-	 * @param member
-	 *          Calculated member
-	 */
-	public RolapMemberCalculation(RolapMember member) {
-		this.member = member;
-		// compute and solve order: it is used frequently
-		solveOrder = this.member.getSolveOrder();
-		assert member.isEvaluated();
-	}
+  private final int solveOrder;
 
-	public int hashCode() {
-		return member.hashCode();
-	}
+  private Boolean containsAggregateFunction;
 
-	public boolean equals(Object obj) {
-		return obj instanceof RolapMemberCalculation
-				&& member == ((RolapMemberCalculation) obj).member;
-	}
+  /**
+   * Creates a RolapMemberCalculation.
+   * 
+   * @param member
+   *          Calculated member
+   */
+  public RolapMemberCalculation(RolapMember member) {
+    this.member = member;
+    // compute and solve order: it is used frequently
+    solveOrder = this.member.getSolveOrder();
+    assert member.isEvaluated();
+  }
 
-	public void setContextIn(RolapEvaluator evaluator) {
-		final RolapMember defaultMember = evaluator.root.defaultMembers[getHierarchyOrdinal()];
+  public int hashCode() {
+    return member.hashCode();
+  }
 
-		// This method does not need to call RolapEvaluator.removeCalcMember.
-		// That happens implicitly in setContext.
-		evaluator.setContext(defaultMember);
-		evaluator.setExpanding(member);
-	}
+  public boolean equals(Object obj) {
+    return obj instanceof RolapMemberCalculation
+      && member == ((RolapMemberCalculation) obj).member;
+  }
 
-	public int getSolveOrder() {
-		return solveOrder;
-	}
+  public void setContextIn(RolapEvaluator evaluator) {
+    final RolapMember defaultMember = evaluator.root.defaultMembers[getHierarchyOrdinal()];
 
-	public int getHierarchyOrdinal() {
-		return member.getHierarchy().getOrdinalInCube();
-	}
+    // This method does not need to call RolapEvaluator.removeCalcMember.
+    // That happens implicitly in setContext.
+    evaluator.setContext(defaultMember);
+    evaluator.setExpanding(member);
+  }
 
-	public Calc getCompiledExpression(RolapEvaluatorRoot root) {
-		final Exp exp = member.getExpression();
-		return root.getCompiled(exp, true, null);
-	}
+  public int getSolveOrder() {
+    return solveOrder;
+  }
 
-	public boolean isCalculatedInQuery() {
-		return member.isCalculatedInQuery();
-	}
+  public int getHierarchyOrdinal() {
+    return member.getHierarchy().getOrdinalInCube();
+  }
 
-	public boolean containsAggregateFunction() {
-		// searching for agg functions is expensive, so cache result
-		if (containsAggregateFunction == null) {
-			containsAggregateFunction = foundAggregateFunction(member.getExpression());
-		}
-		return containsAggregateFunction;
-	}
+  public Calc getCompiledExpression(RolapEvaluatorRoot root) {
+    final Exp exp = member.getExpression();
+    return root.getCompiled(exp, true, null);
+  }
 
-	/**
-	 * Returns whether an expression contains a call to an aggregate function such
-	 * as "Aggregate" or "Sum".
-	 * 
-	 * @param exp
-	 *          Expression
-	 * @return Whether expression contains a call to an aggregate function.
-	 */
-	private static boolean foundAggregateFunction(Exp exp) {
-		if (exp instanceof ResolvedFunCall) {
-			ResolvedFunCall resolvedFunCall = (ResolvedFunCall) exp;
-			if (resolvedFunCall.getFunDef() instanceof AggregateFunDef) {
-				return true;
-			} else {
-				for (Exp argExp : resolvedFunCall.getArgs()) {
-					if (foundAggregateFunction(argExp)) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
+  public boolean isCalculatedInQuery() {
+    return member.isCalculatedInQuery();
+  }
+
+  public boolean containsAggregateFunction() {
+    // searching for agg functions is expensive, so cache result
+    if (containsAggregateFunction == null) {
+      containsAggregateFunction = foundAggregateFunction(member.getExpression());
+    }
+    return containsAggregateFunction;
+  }
+
+  /**
+   * Returns whether an expression contains a call to an aggregate function such
+   * as "Aggregate" or "Sum".
+   * 
+   * @param exp
+   *          Expression
+   * @return Whether expression contains a call to an aggregate function.
+   */
+  private static boolean foundAggregateFunction(Exp exp) {
+    if (exp instanceof ResolvedFunCall) {
+      ResolvedFunCall resolvedFunCall = (ResolvedFunCall) exp;
+      if (resolvedFunCall.getFunDef() instanceof AggregateFunDef) {
+        return true;
+      } else {
+        for (Exp argExp : resolvedFunCall.getArgs()) {
+          if (foundAggregateFunction(argExp)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
 }
 
 // End RolapMemberCalculation.java

@@ -19,15 +19,15 @@ package mondrian.olap;
  */
 public abstract class ResultLimitExceededException extends MondrianException {
 
-	/**
-	 * Creates a ResultLimitExceededException.
-	 * 
-	 * @param message
-	 *          Localized message
-	 */
-	public ResultLimitExceededException(String message) {
-		super(message);
-	}
+  /**
+   * Creates a ResultLimitExceededException.
+   * 
+   * @param message
+   *          Localized message
+   */
+  public ResultLimitExceededException(String message) {
+    super(message);
+  }
 }
 
 // End ResultLimitExceededException.java

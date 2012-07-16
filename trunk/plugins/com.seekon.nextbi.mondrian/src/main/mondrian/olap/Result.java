@@ -23,25 +23,25 @@ import java.io.PrintWriter;
  * @version $Id: //open/mondrian/src/main/mondrian/olap/Result.java#9 $
  */
 public interface Result {
-	/** Returns the query which generated this result. */
-	Query getQuery();
+  /** Returns the query which generated this result. */
+  Query getQuery();
 
-	/** Returns the non-slicer axes. */
-	Axis[] getAxes();
+  /** Returns the non-slicer axes. */
+  Axis[] getAxes();
 
-	/** Returns the slicer axis. */
-	Axis getSlicerAxis();
+  /** Returns the slicer axis. */
+  Axis getSlicerAxis();
 
-	/**
-	 * Returns the cell at a given set of coordinates. For example, in a result
-	 * with 4 columns and 6 rows, the top-left cell has coordinates [0, 0], and
-	 * the bottom-right cell has coordinates [3, 5].
-	 */
-	Cell getCell(int[] pos);
+  /**
+   * Returns the cell at a given set of coordinates. For example, in a result
+   * with 4 columns and 6 rows, the top-left cell has coordinates [0, 0], and
+   * the bottom-right cell has coordinates [3, 5].
+   */
+  Cell getCell(int[] pos);
 
-	void print(PrintWriter pw);
+  void print(PrintWriter pw);
 
-	void close();
+  void close();
 }
 
 // End Result.java

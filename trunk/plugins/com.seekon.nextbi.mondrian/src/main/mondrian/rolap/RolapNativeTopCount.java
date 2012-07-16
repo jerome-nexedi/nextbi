@@ -33,173 +33,172 @@ import mondrian.mdx.MemberExpr;
  */
 public class RolapNativeTopCount extends RolapNativeSet {
 
-	public RolapNativeTopCount() {
-		super.setEnabled(MondrianProperties.instance().EnableNativeTopCount.get());
-	}
+  public RolapNativeTopCount() {
+    super.setEnabled(MondrianProperties.instance().EnableNativeTopCount.get());
+  }
 
-	static class TopCountConstraint extends SetConstraint {
-		Exp orderByExpr;
-		boolean ascending;
-		Integer topCount;
+  static class TopCountConstraint extends SetConstraint {
+    Exp orderByExpr;
 
-		public TopCountConstraint(int count, CrossJoinArg[] args,
-				RolapEvaluator evaluator, Exp orderByExpr, boolean ascending) {
-			super(args, evaluator, true);
-			this.orderByExpr = orderByExpr;
-			this.ascending = ascending;
-			this.topCount = new Integer(count);
-		}
+    boolean ascending;
 
-		/**
-		 * {@inheritDoc}
-		 * 
-		 * <p>
-		 * TopCount always needs to join the fact table because we want to evaluate
-		 * the top count expression which involves a fact.
-		 */
-		protected boolean isJoinRequired() {
-			return true;
-		}
+    Integer topCount;
 
-		public void addConstraint(SqlQuery sqlQuery, RolapCube baseCube,
-				AggStar aggStar) {
-			if (orderByExpr != null) {
-				RolapNativeSql sql = new RolapNativeSql(sqlQuery, aggStar,
-						getEvaluator(), null);
-				String orderBySql = sql.generateTopCountOrderBy(orderByExpr);
-				Dialect dialect = sqlQuery.getDialect();
-				boolean nullable = deduceNullability(orderByExpr);
-				if (dialect.requiresOrderByAlias()) {
-					String alias = sqlQuery.nextColumnAlias();
-					alias = dialect.quoteIdentifier(alias);
-					sqlQuery.addSelect(orderBySql, null, alias);
-					sqlQuery.addOrderBy(alias, ascending, true, nullable);
-				} else {
-					sqlQuery.addOrderBy(orderBySql, ascending, true, nullable);
-				}
-			}
-			super.addConstraint(sqlQuery, baseCube, aggStar);
-		}
+    public TopCountConstraint(int count, CrossJoinArg[] args,
+      RolapEvaluator evaluator, Exp orderByExpr, boolean ascending) {
+      super(args, evaluator, true);
+      this.orderByExpr = orderByExpr;
+      this.ascending = ascending;
+      this.topCount = new Integer(count);
+    }
 
-		private boolean deduceNullability(Exp expr) {
-			if (!(expr instanceof MemberExpr)) {
-				return true;
-			}
-			final MemberExpr memberExpr = (MemberExpr) expr;
-			if (!(memberExpr.getMember() instanceof RolapStoredMeasure)) {
-				return true;
-			}
-			final RolapStoredMeasure measure = (RolapStoredMeasure) memberExpr
-					.getMember();
-			return measure.getAggregator() != RolapAggregator.DistinctCount;
-		}
+    /**
+     * {@inheritDoc}
+     * 
+     * <p>
+     * TopCount always needs to join the fact table because we want to evaluate
+     * the top count expression which involves a fact.
+     */
+    protected boolean isJoinRequired() {
+      return true;
+    }
 
-		public Object getCacheKey() {
-			List<Object> key = new ArrayList<Object>();
-			key.add(super.getCacheKey());
-			// Note: need to use string in order for caching to work
-			if (orderByExpr != null) {
-				key.add(orderByExpr.toString());
-			}
-			key.add(ascending);
-			key.add(topCount);
-			return key;
-		}
-	}
+    public void addConstraint(SqlQuery sqlQuery, RolapCube baseCube, AggStar aggStar) {
+      if (orderByExpr != null) {
+        RolapNativeSql sql = new RolapNativeSql(sqlQuery, aggStar, getEvaluator(),
+          null);
+        String orderBySql = sql.generateTopCountOrderBy(orderByExpr);
+        Dialect dialect = sqlQuery.getDialect();
+        boolean nullable = deduceNullability(orderByExpr);
+        if (dialect.requiresOrderByAlias()) {
+          String alias = sqlQuery.nextColumnAlias();
+          alias = dialect.quoteIdentifier(alias);
+          sqlQuery.addSelect(orderBySql, null, alias);
+          sqlQuery.addOrderBy(alias, ascending, true, nullable);
+        } else {
+          sqlQuery.addOrderBy(orderBySql, ascending, true, nullable);
+        }
+      }
+      super.addConstraint(sqlQuery, baseCube, aggStar);
+    }
 
-	protected boolean restrictMemberTypes() {
-		return true;
-	}
+    private boolean deduceNullability(Exp expr) {
+      if (!(expr instanceof MemberExpr)) {
+        return true;
+      }
+      final MemberExpr memberExpr = (MemberExpr) expr;
+      if (!(memberExpr.getMember() instanceof RolapStoredMeasure)) {
+        return true;
+      }
+      final RolapStoredMeasure measure = (RolapStoredMeasure) memberExpr.getMember();
+      return measure.getAggregator() != RolapAggregator.DistinctCount;
+    }
 
-	NativeEvaluator createEvaluator(RolapEvaluator evaluator, FunDef fun,
-			Exp[] args) {
-		boolean ascending;
+    public Object getCacheKey() {
+      List<Object> key = new ArrayList<Object>();
+      key.add(super.getCacheKey());
+      // Note: need to use string in order for caching to work
+      if (orderByExpr != null) {
+        key.add(orderByExpr.toString());
+      }
+      key.add(ascending);
+      key.add(topCount);
+      return key;
+    }
+  }
 
-		if (!isEnabled()) {
-			return null;
-		}
-		if (!TopCountConstraint.isValidContext(evaluator, restrictMemberTypes())) {
-			return null;
-		}
+  protected boolean restrictMemberTypes() {
+    return true;
+  }
 
-		// is this "TopCount(<set>, <count>, [<numeric expr>])"
-		String funName = fun.getName();
-		if ("TopCount".equalsIgnoreCase(funName)) {
-			ascending = false;
-		} else if ("BottomCount".equalsIgnoreCase(funName)) {
-			ascending = true;
-		} else {
-			return null;
-		}
-		if (args.length < 2 || args.length > 3) {
-			return null;
-		}
+  NativeEvaluator createEvaluator(RolapEvaluator evaluator, FunDef fun, Exp[] args) {
+    boolean ascending;
 
-		// extract the set expression
-		List<CrossJoinArg[]> allArgs = crossJoinArgFactory().checkCrossJoinArg(
-				evaluator, args[0]);
+    if (!isEnabled()) {
+      return null;
+    }
+    if (!TopCountConstraint.isValidContext(evaluator, restrictMemberTypes())) {
+      return null;
+    }
 
-		// checkCrossJoinArg returns a list of CrossJoinArg arrays. The first
-		// array is the CrossJoin dimensions. The second array, if any,
-		// contains additional constraints on the dimensions. If either the list
-		// or the first array is null, then native cross join is not feasible.
-		if (allArgs == null || allArgs.isEmpty() || allArgs.get(0) == null) {
-			return null;
-		}
+    // is this "TopCount(<set>, <count>, [<numeric expr>])"
+    String funName = fun.getName();
+    if ("TopCount".equalsIgnoreCase(funName)) {
+      ascending = false;
+    } else if ("BottomCount".equalsIgnoreCase(funName)) {
+      ascending = true;
+    } else {
+      return null;
+    }
+    if (args.length < 2 || args.length > 3) {
+      return null;
+    }
 
-		CrossJoinArg[] cjArgs = allArgs.get(0);
-		if (isPreferInterpreter(cjArgs, false)) {
-			return null;
-		}
+    // extract the set expression
+    List<CrossJoinArg[]> allArgs = crossJoinArgFactory().checkCrossJoinArg(
+      evaluator, args[0]);
 
-		// extract count
-		if (!(args[1] instanceof Literal)) {
-			return null;
-		}
-		int count = ((Literal) args[1]).getIntValue();
+    // checkCrossJoinArg returns a list of CrossJoinArg arrays. The first
+    // array is the CrossJoin dimensions. The second array, if any,
+    // contains additional constraints on the dimensions. If either the list
+    // or the first array is null, then native cross join is not feasible.
+    if (allArgs == null || allArgs.isEmpty() || allArgs.get(0) == null) {
+      return null;
+    }
 
-		// extract "order by" expression
-		SchemaReader schemaReader = evaluator.getSchemaReader();
-		DataSource ds = schemaReader.getDataSource();
+    CrossJoinArg[] cjArgs = allArgs.get(0);
+    if (isPreferInterpreter(cjArgs, false)) {
+      return null;
+    }
 
-		// generate the ORDER BY Clause
-		// Need to generate top count order by to determine whether
-		// or not it can be created. The top count
-		// could change to use an aggregate table later in evaulation
-		SqlQuery sqlQuery = SqlQuery.newQuery(ds, "NativeTopCount");
-		RolapNativeSql sql = new RolapNativeSql(sqlQuery, null, evaluator, null);
-		Exp orderByExpr = null;
-		if (args.length == 3) {
-			orderByExpr = args[2];
-			String orderBySQL = sql.generateTopCountOrderBy(args[2]);
-			if (orderBySQL == null) {
-				return null;
-			}
-		}
-		LOGGER.debug("using native topcount");
-		final int savepoint = evaluator.savepoint();
-		overrideContext(evaluator, cjArgs, sql.getStoredMeasure());
+    // extract count
+    if (!(args[1] instanceof Literal)) {
+      return null;
+    }
+    int count = ((Literal) args[1]).getIntValue();
 
-		CrossJoinArg[] predicateArgs = null;
-		if (allArgs.size() == 2) {
-			predicateArgs = allArgs.get(1);
-		}
+    // extract "order by" expression
+    SchemaReader schemaReader = evaluator.getSchemaReader();
+    DataSource ds = schemaReader.getDataSource();
 
-		CrossJoinArg[] combinedArgs;
-		if (predicateArgs != null) {
-			// Combined the CJ and the additional predicate args to form the
-			// TupleConstraint.
-			combinedArgs = Util.appendArrays(cjArgs, predicateArgs);
-		} else {
-			combinedArgs = cjArgs;
-		}
-		TupleConstraint constraint = new TopCountConstraint(count, combinedArgs,
-				evaluator, orderByExpr, ascending);
-		evaluator.restore(savepoint);
-		SetEvaluator sev = new SetEvaluator(cjArgs, schemaReader, constraint);
-		sev.setMaxRows(count);
-		return sev;
-	}
+    // generate the ORDER BY Clause
+    // Need to generate top count order by to determine whether
+    // or not it can be created. The top count
+    // could change to use an aggregate table later in evaulation
+    SqlQuery sqlQuery = SqlQuery.newQuery(ds, "NativeTopCount");
+    RolapNativeSql sql = new RolapNativeSql(sqlQuery, null, evaluator, null);
+    Exp orderByExpr = null;
+    if (args.length == 3) {
+      orderByExpr = args[2];
+      String orderBySQL = sql.generateTopCountOrderBy(args[2]);
+      if (orderBySQL == null) {
+        return null;
+      }
+    }
+    LOGGER.debug("using native topcount");
+    final int savepoint = evaluator.savepoint();
+    overrideContext(evaluator, cjArgs, sql.getStoredMeasure());
+
+    CrossJoinArg[] predicateArgs = null;
+    if (allArgs.size() == 2) {
+      predicateArgs = allArgs.get(1);
+    }
+
+    CrossJoinArg[] combinedArgs;
+    if (predicateArgs != null) {
+      // Combined the CJ and the additional predicate args to form the
+      // TupleConstraint.
+      combinedArgs = Util.appendArrays(cjArgs, predicateArgs);
+    } else {
+      combinedArgs = cjArgs;
+    }
+    TupleConstraint constraint = new TopCountConstraint(count, combinedArgs,
+      evaluator, orderByExpr, ascending);
+    evaluator.restore(savepoint);
+    SetEvaluator sev = new SetEvaluator(cjArgs, schemaReader, constraint);
+    sev.setMaxRows(count);
+    return sev;
+  }
 }
 
 // End RolapNativeTopCount.java

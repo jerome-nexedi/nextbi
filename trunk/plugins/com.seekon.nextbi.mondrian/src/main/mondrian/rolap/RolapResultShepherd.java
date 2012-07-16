@@ -42,114 +42,114 @@ import mondrian.util.Pair;
  */
 class RolapResultShepherd {
 
-	/**
-	 * An executor service used for both the shepherd thread and the Execution
-	 * objects.
-	 */
-	private static final ExecutorService executor = Util
-			.getExecutorService("mondrian.rolap.RolapResultShepherd$executor");
+  /**
+   * An executor service used for both the shepherd thread and the Execution
+   * objects.
+   */
+  private static final ExecutorService executor = Util
+    .getExecutorService("mondrian.rolap.RolapResultShepherd$executor");
 
-	/**
-	 * List of tasks that should be monitored by the shepherd thread.
-	 */
-	private static final List<Pair<FutureTask<Result>, Execution>> tasks = new CopyOnWriteArrayList<Pair<FutureTask<Result>, Execution>>();
+  /**
+   * List of tasks that should be monitored by the shepherd thread.
+   */
+  private static final List<Pair<FutureTask<Result>, Execution>> tasks = new CopyOnWriteArrayList<Pair<FutureTask<Result>, Execution>>();
 
-	/*
-	 * Fire up the shepherd thread.
-	 */
-	static {
-		executor.execute(new Runnable() {
-			private final int delay = MondrianProperties.instance().RolapConnectionShepherdThreadPollingInterval
-					.get();
+  /*
+   * Fire up the shepherd thread.
+   */
+  static {
+    executor.execute(new Runnable() {
+      private final int delay = MondrianProperties.instance().RolapConnectionShepherdThreadPollingInterval
+        .get();
 
-			public void run() {
-				while (true) {
-					for (Pair<FutureTask<Result>, Execution> task : tasks) {
-						if (task.left.isDone()) {
-							continue;
-						}
-						if (task.right.isCancelOrTimeout()) {
-							// First, free the user thread.
-							task.left.cancel(true);
-							// Now try a graceful shutdown of the Execution
-							// instance
-							task.right.cleanStatements();
-						}
-					}
-					try {
-						Thread.sleep(delay);
-					} catch (InterruptedException e) {
-						Thread.currentThread().interrupt();
-						return;
-					}
-				}
-			}
-		});
-	}
+      public void run() {
+        while (true) {
+          for (Pair<FutureTask<Result>, Execution> task : tasks) {
+            if (task.left.isDone()) {
+              continue;
+            }
+            if (task.right.isCancelOrTimeout()) {
+              // First, free the user thread.
+              task.left.cancel(true);
+              // Now try a graceful shutdown of the Execution
+              // instance
+              task.right.cleanStatements();
+            }
+          }
+          try {
+            Thread.sleep(delay);
+          } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return;
+          }
+        }
+      }
+    });
+  }
 
-	/**
-	 * Executes and shepherds the execution of an Execution instance. The shepherd
-	 * will wrap the Execution instance into a Future object which can be
-	 * monitored for exceptions. If any are encountered, two things will happen.
-	 * First, the user thread will be returned and the resulting exception will
-	 * bubble up. Second, the execution thread will attempt to do a graceful stop
-	 * of all running SQL statements and release all other resources gracefully in
-	 * the background.
-	 * 
-	 * @param execution
-	 *          An Execution instance.
-	 * @param callable
-	 *          A callable to monitor returning a Result instance.
-	 * @throws ResourceLimitExceededException
-	 *           if some resource limit specified in the property file was
-	 *           exceeded
-	 * @throws QueryCanceledException
-	 *           if query was canceled during execution
-	 * @throws QueryTimeoutException
-	 *           if query exceeded timeout specified in the property file
-	 * @return A Result object, as supplied by the Callable passed as a parameter.
-	 */
-	static Result shepherdExecution(Execution execution, Callable<Result> callable) {
-		// We must wrap this execution into a task that so that we are able
-		// to monitor, cancel and detach from it.
-		FutureTask<Result> task = new FutureTask<Result>(callable);
-		// Register this task with the shepherd thread
-		final Pair<FutureTask<Result>, Execution> pair = new Pair<FutureTask<Result>, Execution>(
-				task, execution);
-		tasks.add(pair);
-		try {
-			// Now run it.
-			executor.execute(task);
-			return task.get();
-		} catch (Exception e) {
-			if (e instanceof InterruptedException) {
-				Thread.currentThread().interrupt();
-			}
-			// Let the Execution throw whatever it wants to, this way the
-			// API contract is respected. The program should in most cases
-			// stop here as most exceptions will originate from the Execution
-			// instance.
-			execution.checkCancelOrTimeout();
-			// We must also check for ResourceLimitExceededExceptions,
-			// which might be wrapped by an ExecutionException. In order to
-			// respect the API contract, we must throw the cause, not the
-			// wrapper.
-			if (e instanceof ResourceLimitExceededException) {
-				throw (ResourceLimitExceededException) e;
-			}
-			Throwable node = e;
-			while (node.getCause() != null && node != node.getCause()) {
-				node = node.getCause();
-				if (node instanceof ResourceLimitExceededException) {
-					throw (ResourceLimitExceededException) node;
-				}
-			}
-			// Since we got here, this means that the exception was
-			// something else. Just wrap/throw.
-			throw new MondrianException(e);
-		} finally {
-			tasks.remove(pair);
-		}
-	}
+  /**
+   * Executes and shepherds the execution of an Execution instance. The shepherd
+   * will wrap the Execution instance into a Future object which can be
+   * monitored for exceptions. If any are encountered, two things will happen.
+   * First, the user thread will be returned and the resulting exception will
+   * bubble up. Second, the execution thread will attempt to do a graceful stop
+   * of all running SQL statements and release all other resources gracefully in
+   * the background.
+   * 
+   * @param execution
+   *          An Execution instance.
+   * @param callable
+   *          A callable to monitor returning a Result instance.
+   * @throws ResourceLimitExceededException
+   *           if some resource limit specified in the property file was
+   *           exceeded
+   * @throws QueryCanceledException
+   *           if query was canceled during execution
+   * @throws QueryTimeoutException
+   *           if query exceeded timeout specified in the property file
+   * @return A Result object, as supplied by the Callable passed as a parameter.
+   */
+  static Result shepherdExecution(Execution execution, Callable<Result> callable) {
+    // We must wrap this execution into a task that so that we are able
+    // to monitor, cancel and detach from it.
+    FutureTask<Result> task = new FutureTask<Result>(callable);
+    // Register this task with the shepherd thread
+    final Pair<FutureTask<Result>, Execution> pair = new Pair<FutureTask<Result>, Execution>(
+      task, execution);
+    tasks.add(pair);
+    try {
+      // Now run it.
+      executor.execute(task);
+      return task.get();
+    } catch (Exception e) {
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
+      // Let the Execution throw whatever it wants to, this way the
+      // API contract is respected. The program should in most cases
+      // stop here as most exceptions will originate from the Execution
+      // instance.
+      execution.checkCancelOrTimeout();
+      // We must also check for ResourceLimitExceededExceptions,
+      // which might be wrapped by an ExecutionException. In order to
+      // respect the API contract, we must throw the cause, not the
+      // wrapper.
+      if (e instanceof ResourceLimitExceededException) {
+        throw (ResourceLimitExceededException) e;
+      }
+      Throwable node = e;
+      while (node.getCause() != null && node != node.getCause()) {
+        node = node.getCause();
+        if (node instanceof ResourceLimitExceededException) {
+          throw (ResourceLimitExceededException) node;
+        }
+      }
+      // Since we got here, this means that the exception was
+      // something else. Just wrap/throw.
+      throw new MondrianException(e);
+    } finally {
+      tasks.remove(pair);
+    }
+  }
 }
 // End RolapResultShepherd.java

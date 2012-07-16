@@ -26,27 +26,27 @@ import java.util.List;
  *          //open/mondrian/src/main/mondrian/calc/impl/AbstractTupleIterator
  *          .java#1 $
  */
-public abstract class AbstractTupleIterator extends AbstractTupleCursor
-		implements TupleIterator {
-	protected boolean hasNext;
+public abstract class AbstractTupleIterator extends AbstractTupleCursor implements
+  TupleIterator {
+  protected boolean hasNext;
 
-	public AbstractTupleIterator(int arity) {
-		super(arity);
-	}
+  public AbstractTupleIterator(int arity) {
+    super(arity);
+  }
 
-	public boolean hasNext() {
-		return hasNext;
-	}
+  public boolean hasNext() {
+    return hasNext;
+  }
 
-	public List<Member> next() {
-		List<Member> o = current();
-		hasNext = forward();
-		return o;
-	}
+  public List<Member> next() {
+    List<Member> o = current();
+    hasNext = forward();
+    return o;
+  }
 
-	public void remove() {
-		throw new UnsupportedOperationException("remove");
-	}
+  public void remove() {
+    throw new UnsupportedOperationException("remove");
+  }
 
 }
 

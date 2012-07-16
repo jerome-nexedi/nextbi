@@ -29,104 +29,101 @@ import java.util.Set;
  */
 public class SqlConstraintFactory {
 
-	static boolean enabled;
+  static boolean enabled;
 
-	private static final SqlConstraintFactory instance = new SqlConstraintFactory();
+  private static final SqlConstraintFactory instance = new SqlConstraintFactory();
 
-	/**
-	 * singleton
-	 */
-	private SqlConstraintFactory() {
-	}
+  /**
+   * singleton
+   */
+  private SqlConstraintFactory() {
+  }
 
-	private boolean enabled(final Evaluator context) {
-		if (context != null) {
-			return enabled && context.nativeEnabled();
-		}
-		return enabled;
-	}
+  private boolean enabled(final Evaluator context) {
+    if (context != null) {
+      return enabled && context.nativeEnabled();
+    }
+    return enabled;
+  }
 
-	public static SqlConstraintFactory instance() {
-		setNativeNonEmptyValue();
-		return instance;
-	}
+  public static SqlConstraintFactory instance() {
+    setNativeNonEmptyValue();
+    return instance;
+  }
 
-	public static void setNativeNonEmptyValue() {
-		enabled = MondrianProperties.instance().EnableNativeNonEmpty.get();
-	}
+  public static void setNativeNonEmptyValue() {
+    enabled = MondrianProperties.instance().EnableNativeNonEmpty.get();
+  }
 
-	public MemberChildrenConstraint getMemberChildrenConstraint(Evaluator context) {
-		if (!enabled(context)
-				|| !SqlContextConstraint.isValidContext(context, false)) {
-			return DefaultMemberChildrenConstraint.instance();
-		}
-		return new SqlContextConstraint((RolapEvaluator) context, false);
-	}
+  public MemberChildrenConstraint getMemberChildrenConstraint(Evaluator context) {
+    if (!enabled(context) || !SqlContextConstraint.isValidContext(context, false)) {
+      return DefaultMemberChildrenConstraint.instance();
+    }
+    return new SqlContextConstraint((RolapEvaluator) context, false);
+  }
 
-	public TupleConstraint getLevelMembersConstraint(Evaluator context) {
-		return getLevelMembersConstraint(context, null);
-	}
+  public TupleConstraint getLevelMembersConstraint(Evaluator context) {
+    return getLevelMembersConstraint(context, null);
+  }
 
-	/**
-	 * Returns a constraint that restricts the members of a level to those that
-	 * are non-empty in the given context. If the constraint cannot be implemented
-	 * (say if native constraints are disabled) returns null.
-	 * 
-	 * @param context
-	 *          Context within which members must be non-empty
-	 * @param levels
-	 *          levels being referenced in the current context
-	 * @return Constraint
-	 */
-	public TupleConstraint getLevelMembersConstraint(Evaluator context,
-			Level[] levels) {
-		if (context == null) {
-			return DefaultTupleConstraint.instance();
-		}
-		if (!enabled(context)) {
-			return DefaultTupleConstraint.instance();
-		}
-		if (!SqlContextConstraint.isValidContext(context, false, levels, false)) {
-			return DefaultTupleConstraint.instance();
-		}
-		if (context.isNonEmpty()) {
-			Set<CrossJoinArg> joinArgs = new CrossJoinArgFactory(false)
-					.buildConstraintFromAllAxes((RolapEvaluator) context);
-			if (joinArgs.size() > 0) {
-				return new RolapNativeCrossJoin.NonEmptyCrossJoinConstraint(
-						joinArgs.toArray(new CrossJoinArg[joinArgs.size()]),
-						(RolapEvaluator) context);
-			}
-		}
-		return new SqlContextConstraint((RolapEvaluator) context, false);
-	}
+  /**
+   * Returns a constraint that restricts the members of a level to those that
+   * are non-empty in the given context. If the constraint cannot be implemented
+   * (say if native constraints are disabled) returns null.
+   * 
+   * @param context
+   *          Context within which members must be non-empty
+   * @param levels
+   *          levels being referenced in the current context
+   * @return Constraint
+   */
+  public TupleConstraint getLevelMembersConstraint(Evaluator context, Level[] levels) {
+    if (context == null) {
+      return DefaultTupleConstraint.instance();
+    }
+    if (!enabled(context)) {
+      return DefaultTupleConstraint.instance();
+    }
+    if (!SqlContextConstraint.isValidContext(context, false, levels, false)) {
+      return DefaultTupleConstraint.instance();
+    }
+    if (context.isNonEmpty()) {
+      Set<CrossJoinArg> joinArgs = new CrossJoinArgFactory(false)
+        .buildConstraintFromAllAxes((RolapEvaluator) context);
+      if (joinArgs.size() > 0) {
+        return new RolapNativeCrossJoin.NonEmptyCrossJoinConstraint(joinArgs
+          .toArray(new CrossJoinArg[joinArgs.size()]), (RolapEvaluator) context);
+      }
+    }
+    return new SqlContextConstraint((RolapEvaluator) context, false);
+  }
 
-	public MemberChildrenConstraint getChildByNameConstraint(RolapMember parent,
-			Id.Segment childName) {
-		// Ragged hierarchies span multiple levels, so SQL WHERE does not work
-		// there
-		if (!enabled || parent.getHierarchy().isRagged()) {
-			return DefaultMemberChildrenConstraint.instance();
-		}
-		return new ChildByNameConstraint(childName);
-	}
+  public MemberChildrenConstraint getChildByNameConstraint(RolapMember parent,
+    Id.Segment childName) {
+    // Ragged hierarchies span multiple levels, so SQL WHERE does not work
+    // there
+    if (!enabled || parent.getHierarchy().isRagged()) {
+      return DefaultMemberChildrenConstraint.instance();
+    }
+    return new ChildByNameConstraint(childName);
+  }
 
-	/**
-	 * Returns a constraint that allows to read all children of multiple parents
-	 * at once using a LevelMember query style. This does not work for
-	 * parent/child hierarchies.
-	 * 
-	 * @param parentMembers
-	 *          List of parents (all must belong to same level)
-	 * @param mcc
-	 *          The constraint that would return the children for each single
-	 *          parent
-	 * @return constraint
-	 */
-	public TupleConstraint getDescendantsConstraint(
-			List<RolapMember> parentMembers, MemberChildrenConstraint mcc) {
-		return new DescendantsConstraint(parentMembers, mcc);
-	}
+  /**
+   * Returns a constraint that allows to read all children of multiple parents
+   * at once using a LevelMember query style. This does not work for
+   * parent/child hierarchies.
+   * 
+   * @param parentMembers
+   *          List of parents (all must belong to same level)
+   * @param mcc
+   *          The constraint that would return the children for each single
+   *          parent
+   * @return constraint
+   */
+  public TupleConstraint getDescendantsConstraint(List<RolapMember> parentMembers,
+    MemberChildrenConstraint mcc) {
+    return new DescendantsConstraint(parentMembers, mcc);
+  }
 }
 
 // End SqlConstraintFactory.java

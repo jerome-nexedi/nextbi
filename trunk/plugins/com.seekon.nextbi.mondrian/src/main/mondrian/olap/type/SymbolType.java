@@ -18,12 +18,12 @@ package mondrian.olap.type;
  */
 public class SymbolType extends ScalarType {
 
-	/**
-	 * Creates a symbol type.
-	 */
-	public SymbolType() {
-		super("SYMBOL");
-	}
+  /**
+   * Creates a symbol type.
+   */
+  public SymbolType() {
+    super("SYMBOL");
+  }
 }
 
 // End SymbolType.java

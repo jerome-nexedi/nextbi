@@ -23,7 +23,7 @@ import mondrian.olap.Evaluator;
  * @since Sep 29, 2005
  */
 public interface VoidCalc extends Calc {
-	void evaluateVoid(Evaluator evaluator);
+  void evaluateVoid(Evaluator evaluator);
 }
 
 // End VoidCalc.java

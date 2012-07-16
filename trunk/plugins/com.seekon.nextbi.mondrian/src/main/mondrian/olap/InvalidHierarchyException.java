@@ -17,15 +17,15 @@ package mondrian.olap;
  *          .java#3 $
  */
 public class InvalidHierarchyException extends MondrianException {
-	/**
-	 * Creates a InvalidHierarchyException.
-	 * 
-	 * @param message
-	 *          Localized error message
-	 */
-	public InvalidHierarchyException(String message) {
-		super(message);
-	}
+  /**
+   * Creates a InvalidHierarchyException.
+   * 
+   * @param message
+   *          Localized error message
+   */
+  public InvalidHierarchyException(String message) {
+    super(message);
+  }
 }
 
 // End InvalidHierarchyException.java

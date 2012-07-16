@@ -25,55 +25,56 @@ import java.util.Map;
  * @since Aug 18, 2006
  */
 public class RolapVirtualCubeMeasure extends RolapMemberBase implements
-		RolapStoredMeasure {
-	/**
-	 * The measure in the underlying cube.
-	 */
-	private final RolapStoredMeasure cubeMeasure;
-	private final Map<String, Annotation> annotationMap;
+  RolapStoredMeasure {
+  /**
+   * The measure in the underlying cube.
+   */
+  private final RolapStoredMeasure cubeMeasure;
 
-	public RolapVirtualCubeMeasure(RolapMember parentMember, RolapLevel level,
-			RolapStoredMeasure cubeMeasure, Map<String, Annotation> annotationMap) {
-		super(parentMember, level, cubeMeasure.getName());
-		this.cubeMeasure = cubeMeasure;
-		this.annotationMap = annotationMap;
-	}
+  private final Map<String, Annotation> annotationMap;
 
-	public Object getPropertyValue(String propertyName, boolean matchCase) {
-		// Look first in this member (against the virtual cube), then
-		// fallback on the base measure.
-		// This allows, for instance, a measure to be invisible in a virtual
-		// cube but visible in its base cube.
-		Object value = super.getPropertyValue(propertyName, matchCase);
-		if (value == null) {
-			value = cubeMeasure.getPropertyValue(propertyName, matchCase);
-		}
-		return value;
-	}
+  public RolapVirtualCubeMeasure(RolapMember parentMember, RolapLevel level,
+    RolapStoredMeasure cubeMeasure, Map<String, Annotation> annotationMap) {
+    super(parentMember, level, cubeMeasure.getName());
+    this.cubeMeasure = cubeMeasure;
+    this.annotationMap = annotationMap;
+  }
 
-	public RolapCube getCube() {
-		return cubeMeasure.getCube();
-	}
+  public Object getPropertyValue(String propertyName, boolean matchCase) {
+    // Look first in this member (against the virtual cube), then
+    // fallback on the base measure.
+    // This allows, for instance, a measure to be invisible in a virtual
+    // cube but visible in its base cube.
+    Object value = super.getPropertyValue(propertyName, matchCase);
+    if (value == null) {
+      value = cubeMeasure.getPropertyValue(propertyName, matchCase);
+    }
+    return value;
+  }
 
-	public Object getStarMeasure() {
-		return cubeMeasure.getStarMeasure();
-	}
+  public RolapCube getCube() {
+    return cubeMeasure.getCube();
+  }
 
-	public MondrianDef.Expression getMondrianDefExpression() {
-		return cubeMeasure.getMondrianDefExpression();
-	}
+  public Object getStarMeasure() {
+    return cubeMeasure.getStarMeasure();
+  }
 
-	public RolapAggregator getAggregator() {
-		return cubeMeasure.getAggregator();
-	}
+  public MondrianDef.Expression getMondrianDefExpression() {
+    return cubeMeasure.getMondrianDefExpression();
+  }
 
-	public RolapResult.ValueFormatter getFormatter() {
-		return cubeMeasure.getFormatter();
-	}
+  public RolapAggregator getAggregator() {
+    return cubeMeasure.getAggregator();
+  }
 
-	public Map<String, Annotation> getAnnotationMap() {
-		return annotationMap;
-	}
+  public RolapResult.ValueFormatter getFormatter() {
+    return cubeMeasure.getFormatter();
+  }
+
+  public Map<String, Annotation> getAnnotationMap() {
+    return annotationMap;
+  }
 }
 
 // End RolapVirtualCubeMeasure.java

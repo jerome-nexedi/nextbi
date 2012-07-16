@@ -22,15 +22,15 @@ package mondrian.olap;
  *          $
  */
 public class QueryCanceledException extends ResultLimitExceededException {
-	/**
-	 * Creates a QueryCanceledException.
-	 * 
-	 * @param message
-	 *          Localized error message
-	 */
-	public QueryCanceledException(String message) {
-		super(message);
-	}
+  /**
+   * Creates a QueryCanceledException.
+   * 
+   * @param message
+   *          Localized error message
+   */
+  public QueryCanceledException(String message) {
+    super(message);
+  }
 }
 
 // End QueryCanceledException.java

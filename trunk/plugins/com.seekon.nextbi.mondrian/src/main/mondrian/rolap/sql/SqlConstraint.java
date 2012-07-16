@@ -19,14 +19,14 @@ package mondrian.rolap.sql;
  */
 public interface SqlConstraint {
 
-	/**
-	 * Returns a key that becomes part of the key for caching the result of the
-	 * SQL query. So SqlConstraint instances that produce the same SQL resultset
-	 * must return equal keys in terms of equal() and hashCode().
-	 * 
-	 * @return valid key or null to prevent the result from being cached
-	 */
-	Object getCacheKey();
+  /**
+   * Returns a key that becomes part of the key for caching the result of the
+   * SQL query. So SqlConstraint instances that produce the same SQL resultset
+   * must return equal keys in terms of equal() and hashCode().
+   * 
+   * @return valid key or null to prevent the result from being cached
+   */
+  Object getCacheKey();
 }
 
 // End SqlConstraint.java

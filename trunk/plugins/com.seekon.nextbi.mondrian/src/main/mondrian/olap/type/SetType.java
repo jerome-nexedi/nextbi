@@ -22,105 +22,105 @@ import java.util.List;
  */
 public class SetType implements Type {
 
-	private final Type elementType;
-	private final String digest;
+  private final Type elementType;
 
-	/**
-	 * Creates a type representing a set of elements of a given type.
-	 * 
-	 * @param elementType
-	 *          The type of the elements in the set, or null if not known
-	 */
-	public SetType(Type elementType) {
-		if (elementType != null) {
-			assert elementType instanceof MemberType
-					|| elementType instanceof TupleType;
-		}
-		this.elementType = elementType;
-		this.digest = "SetType<" + elementType + ">";
-	}
+  private final String digest;
 
-	public int hashCode() {
-		return digest.hashCode();
-	}
+  /**
+   * Creates a type representing a set of elements of a given type.
+   * 
+   * @param elementType
+   *          The type of the elements in the set, or null if not known
+   */
+  public SetType(Type elementType) {
+    if (elementType != null) {
+      assert elementType instanceof MemberType || elementType instanceof TupleType;
+    }
+    this.elementType = elementType;
+    this.digest = "SetType<" + elementType + ">";
+  }
 
-	public boolean equals(Object obj) {
-		if (obj instanceof SetType) {
-			SetType that = (SetType) obj;
-			return Util.equals(this.elementType, that.elementType);
-		} else {
-			return false;
-		}
-	}
+  public int hashCode() {
+    return digest.hashCode();
+  }
 
-	public String toString() {
-		return digest;
-	}
+  public boolean equals(Object obj) {
+    if (obj instanceof SetType) {
+      SetType that = (SetType) obj;
+      return Util.equals(this.elementType, that.elementType);
+    } else {
+      return false;
+    }
+  }
 
-	/**
-	 * Returns the type of the elements of this set.
-	 * 
-	 * @return the type of the elements in this set
-	 */
-	public Type getElementType() {
-		return elementType;
-	}
+  public String toString() {
+    return digest;
+  }
 
-	public boolean usesDimension(Dimension dimension, boolean definitely) {
-		if (elementType == null) {
-			return definitely;
-		}
-		return elementType.usesDimension(dimension, definitely);
-	}
+  /**
+   * Returns the type of the elements of this set.
+   * 
+   * @return the type of the elements in this set
+   */
+  public Type getElementType() {
+    return elementType;
+  }
 
-	public boolean usesHierarchy(Hierarchy hierarchy, boolean definitely) {
-		if (elementType == null) {
-			return definitely;
-		}
-		return elementType.usesHierarchy(hierarchy, definitely);
-	}
+  public boolean usesDimension(Dimension dimension, boolean definitely) {
+    if (elementType == null) {
+      return definitely;
+    }
+    return elementType.usesDimension(dimension, definitely);
+  }
 
-	public Dimension getDimension() {
-		return elementType == null ? null : elementType.getDimension();
-	}
+  public boolean usesHierarchy(Hierarchy hierarchy, boolean definitely) {
+    if (elementType == null) {
+      return definitely;
+    }
+    return elementType.usesHierarchy(hierarchy, definitely);
+  }
 
-	public Hierarchy getHierarchy() {
-		return elementType == null ? null : elementType.getHierarchy();
-	}
+  public Dimension getDimension() {
+    return elementType == null ? null : elementType.getDimension();
+  }
 
-	public Level getLevel() {
-		return elementType == null ? null : elementType.getLevel();
-	}
+  public Hierarchy getHierarchy() {
+    return elementType == null ? null : elementType.getHierarchy();
+  }
 
-	public int getArity() {
-		return elementType.getArity();
-	}
+  public Level getLevel() {
+    return elementType == null ? null : elementType.getLevel();
+  }
 
-	public Type computeCommonType(Type type, int[] conversionCount) {
-		if (!(type instanceof SetType)) {
-			return null;
-		}
-		SetType that = (SetType) type;
-		final Type mostGeneralElementType = this.getElementType()
-				.computeCommonType(that.getElementType(), conversionCount);
-		if (mostGeneralElementType == null) {
-			return null;
-		}
-		return new SetType(mostGeneralElementType);
-	}
+  public int getArity() {
+    return elementType.getArity();
+  }
 
-	public boolean isInstance(Object value) {
-		if (!(value instanceof List)) {
-			return false;
-		}
-		List list = (List) value;
-		for (Object o : list) {
-			if (!elementType.isInstance(o)) {
-				return false;
-			}
-		}
-		return true;
-	}
+  public Type computeCommonType(Type type, int[] conversionCount) {
+    if (!(type instanceof SetType)) {
+      return null;
+    }
+    SetType that = (SetType) type;
+    final Type mostGeneralElementType = this.getElementType().computeCommonType(
+      that.getElementType(), conversionCount);
+    if (mostGeneralElementType == null) {
+      return null;
+    }
+    return new SetType(mostGeneralElementType);
+  }
+
+  public boolean isInstance(Object value) {
+    if (!(value instanceof List)) {
+      return false;
+    }
+    List list = (List) value;
+    for (Object o : list) {
+      if (!elementType.isInstance(o)) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
 
 // End SetType.java

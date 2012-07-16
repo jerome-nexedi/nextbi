@@ -29,30 +29,30 @@ import java.io.IOException;
  * @author Julian Hyde
  */
 public class UrlRepositoryContentFinder implements RepositoryContentFinder {
-	protected final String url;
+  protected final String url;
 
-	/**
-	 * Creates a UrlRepositoryContentFinder.
-	 * 
-	 * @param url
-	 *          URL of repository
-	 */
-	public UrlRepositoryContentFinder(String url) {
-		assert url != null;
-		this.url = url;
-	}
+  /**
+   * Creates a UrlRepositoryContentFinder.
+   * 
+   * @param url
+   *          URL of repository
+   */
+  public UrlRepositoryContentFinder(String url) {
+    assert url != null;
+    this.url = url;
+  }
 
-	public String getContent() {
-		try {
-			return Util.readURL(url, Util.toMap(System.getProperties()));
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+  public String getContent() {
+    try {
+      return Util.readURL(url, Util.toMap(System.getProperties()));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	public void shutdown() {
-		// nothing to do
-	}
+  public void shutdown() {
+    // nothing to do
+  }
 }
 
 // End UrlRepositoryContentFinder.java

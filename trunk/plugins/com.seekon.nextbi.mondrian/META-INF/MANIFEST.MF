@@ -8,6 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: com.mysql.jdbc,
  java_cup.runtime,
  javax.servlet,
+ javax.servlet.descriptor;resolution:=optional,
  javax.servlet.http,
  javax.servlet.jsp,
  javax.servlet.jsp.tagext,

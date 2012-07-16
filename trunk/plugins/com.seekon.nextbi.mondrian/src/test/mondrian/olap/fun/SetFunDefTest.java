@@ -8,7 +8,7 @@
 // You must accept the terms of that agreement to use this software.
 //
 // ajogleka, 19 December, 2007
-*/
+ */
 package mondrian.olap.fun;
 
 import mondrian.test.FoodMartTestCase;
@@ -16,33 +16,31 @@ import mondrian.test.FoodMartTestCase;
 /**
  * Unit test for the set constructor function <code>{ ... }</code>,
  * {@link SetFunDef}.
- *
+ * 
  * @author ajogleka
- * @version $Id: //open/mondrian/testsrc/main/mondrian/olap/fun/SetFunDefTest.java#6 $
+ * @version $Id:
+ *          //open/mondrian/testsrc/main/mondrian/olap/fun/SetFunDefTest.java#6
+ *          $
  * @since 19 December, 2007
  */
 public class SetFunDefTest extends FoodMartTestCase {
 
-    public void testSetWithMembersFromDifferentHierarchies() {
-        assertQueryFailsInSetValidation(
-            "with member store.x as "
-            + "'{[Gender].[M],[Store].[USA].[CA]}' "
-            + " SELECT store.x on 0, [measures].[customer count] on 1 from sales");
-    }
+  public void testSetWithMembersFromDifferentHierarchies() {
+    assertQueryFailsInSetValidation("with member store.x as "
+      + "'{[Gender].[M],[Store].[USA].[CA]}' "
+      + " SELECT store.x on 0, [measures].[customer count] on 1 from sales");
+  }
 
-    public void testSetWith2TuplesWithDifferentHierarchies() {
-        assertQueryFailsInSetValidation(
-            "with member store.x as '{([Gender].[M],[Store].[All Stores].[USA].[CA]),"
-            + "([Store].[USA].[OR],[Gender].[F])}'\n"
-            + " SELECT store.x on 0, [measures].[customer count] on 1 from sales");
-    }
+  public void testSetWith2TuplesWithDifferentHierarchies() {
+    assertQueryFailsInSetValidation("with member store.x as '{([Gender].[M],[Store].[All Stores].[USA].[CA]),"
+      + "([Store].[USA].[OR],[Gender].[F])}'\n"
+      + " SELECT store.x on 0, [measures].[customer count] on 1 from sales");
+  }
 
-    private void assertQueryFailsInSetValidation(String query) {
-        assertQueryThrows(
-            query,
-            "Mondrian Error:All arguments to function '{}' "
-            + "must have same hierarchy");
-    }
+  private void assertQueryFailsInSetValidation(String query) {
+    assertQueryThrows(query, "Mondrian Error:All arguments to function '{}' "
+      + "must have same hierarchy");
+  }
 }
 
 // End SetFunDefTest.java

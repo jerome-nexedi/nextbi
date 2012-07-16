@@ -41,34 +41,34 @@ import java.util.List;
  * @version $Id: //open/mondrian/src/main/mondrian/rolap/CellReader.java#15 $
  */
 interface CellReader {
-	/**
-	 * Returns the value of the cell which has the context described by the
-	 * evaluator. A cell could have optional compound member coordinates usually
-	 * specified using the Aggregate function. These compound members are
-	 * contained in the evaluator.
-	 * 
-	 * <p>
-	 * If no aggregation contains the required cell, returns null.
-	 * 
-	 * <p>
-	 * If the value is null, returns {@link Util#nullValue}.
-	 * 
-	 * @return Cell value, or null if not found, or {@link Util#nullValue} if the
-	 *         value is null
-	 */
-	Object get(RolapEvaluator evaluator);
+  /**
+   * Returns the value of the cell which has the context described by the
+   * evaluator. A cell could have optional compound member coordinates usually
+   * specified using the Aggregate function. These compound members are
+   * contained in the evaluator.
+   * 
+   * <p>
+   * If no aggregation contains the required cell, returns null.
+   * 
+   * <p>
+   * If the value is null, returns {@link Util#nullValue}.
+   * 
+   * @return Cell value, or null if not found, or {@link Util#nullValue} if the
+   *         value is null
+   */
+  Object get(RolapEvaluator evaluator);
 
-	/**
-	 * Returns the number of times this cell reader has told a lie (since
-	 * creation), because the required cell value is not in the cache.
-	 */
-	int getMissCount();
+  /**
+   * Returns the number of times this cell reader has told a lie (since
+   * creation), because the required cell value is not in the cache.
+   */
+  int getMissCount();
 
-	/**
-	 * @return whether thus cell reader has any pending cell requests that are not
-	 *         loaded yet.
-	 */
-	boolean isDirty();
+  /**
+   * @return whether thus cell reader has any pending cell requests that are not
+   *         loaded yet.
+   */
+  boolean isDirty();
 }
 
 // End CellReader.java

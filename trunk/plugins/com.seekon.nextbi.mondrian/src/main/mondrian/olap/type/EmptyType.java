@@ -23,16 +23,16 @@ package mondrian.olap.type;
  * @since Jan 26, 2009
  */
 public class EmptyType extends ScalarType {
-	/**
-	 * Creates an empty type.
-	 */
-	public EmptyType() {
-		super("<EMPTY>");
-	}
+  /**
+   * Creates an empty type.
+   */
+  public EmptyType() {
+    super("<EMPTY>");
+  }
 
-	public boolean equals(Object obj) {
-		return obj instanceof EmptyType;
-	}
+  public boolean equals(Object obj) {
+    return obj instanceof EmptyType;
+  }
 }
 
 // End EmptyType.java

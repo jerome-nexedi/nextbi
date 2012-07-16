@@ -51,153 +51,157 @@ import java.util.*;
  * @since 2010/11/18
  */
 public class LockBox {
-	/**
-	 * Mapping from monikers to entries.
-	 * 
-	 * <p>
-	 * Per WeakHashMap: "An entry in a WeakHashMap will automatically be removed
-	 * when its key is no longer in ordinary use. More precisely, the presence of
-	 * a mapping for a given key will not prevent the key from being discarded by
-	 * the garbage collector, that is, made finalizable, finalized, and then
-	 * reclaimed. When a key has been discarded its entry is effectively removed
-	 * from the map..."
-	 * 
-	 * <p>
-	 * LockBoxEntryImpl meets those constraints precisely. An entry will disappear
-	 * when the caller forgets the key, or calls deregister. If the caller (or
-	 * someone) still has the moniker, it is not sufficient to prevent the entry
-	 * from being garbage collected.
-	 */
-	private final Map<String, LockBoxEntryImpl> map = new WeakHashMap<String, LockBoxEntryImpl>();
-	private final Random random = new Random();
-	private final byte[] bytes = new byte[16]; // 128 bit... secure enough
-	private long ordinal;
+  /**
+   * Mapping from monikers to entries.
+   * 
+   * <p>
+   * Per WeakHashMap: "An entry in a WeakHashMap will automatically be removed
+   * when its key is no longer in ordinary use. More precisely, the presence of
+   * a mapping for a given key will not prevent the key from being discarded by
+   * the garbage collector, that is, made finalizable, finalized, and then
+   * reclaimed. When a key has been discarded its entry is effectively removed
+   * from the map..."
+   * 
+   * <p>
+   * LockBoxEntryImpl meets those constraints precisely. An entry will disappear
+   * when the caller forgets the key, or calls deregister. If the caller (or
+   * someone) still has the moniker, it is not sufficient to prevent the entry
+   * from being garbage collected.
+   */
+  private final Map<String, LockBoxEntryImpl> map = new WeakHashMap<String, LockBoxEntryImpl>();
 
-	/**
-	 * Adds an object to the lock box, and returns a key for it.
-	 * 
-	 * <p>
-	 * The object may be null. The same object may be registered multiple times;
-	 * each time it is registered, a new entry with a new string moniker is
-	 * generated.
-	 * 
-	 * @param o
-	 *          Object to register. May be null.
-	 * @return Entry containing the object's string key and the object itself
-	 */
-	public synchronized Entry register(Object o) {
-		String moniker = generateMoniker();
-		final LockBoxEntryImpl entry = new LockBoxEntryImpl(o, moniker);
-		map.put(moniker, entry);
-		return entry;
-	}
+  private final Random random = new Random();
 
-	/**
-	 * Generates a non-repeating, random string.
-	 * 
-	 * <p>
-	 * Must be called from synchronized context.
-	 * 
-	 * @return Non-repeating random string
-	 */
-	private String generateMoniker() {
-		// The prefixed ordinal ensures that the string never repeats. Of
-		// course, there will be a pattern to the first few chars of the
-		// returned string, but that doesn't matter for these purposes.
-		random.nextBytes(bytes);
+  private final byte[] bytes = new byte[16]; // 128 bit... secure enough
 
-		// Remove trailing '='. It is padding required by base64 spec but does
-		// not help us.
-		String base64 = Base64.encodeBytes(bytes);
-		while (base64.endsWith("=")) {
-			base64 = base64.substring(0, base64.length() - 1);
-		}
-		// Convert '/' to '$' and '+' to '_'. The resulting moniker starts with
-		// a '$', and contains only A-Z, a-z, 0-9, _ and $; it is a valid
-		// identifier, and does not need to be quoted in XML or an HTTP URL.
-		base64 = base64.replace('/', '$');
-		base64 = base64.replace('+', '_');
-		return "$" + Long.toHexString(++ordinal) + base64;
-	}
+  private long ordinal;
 
-	/**
-	 * Removes an entry from the lock box.
-	 * 
-	 * <p>
-	 * It is safe to call this method multiple times.
-	 * 
-	 * @param entry
-	 *          Entry to deregister
-	 * @return Whether the object as removed
-	 */
-	public synchronized boolean deregister(Entry entry) {
-		final LockBoxEntryImpl previousEntry = map.remove(entry.getMoniker());
-		return previousEntry != null;
-	}
+  /**
+   * Adds an object to the lock box, and returns a key for it.
+   * 
+   * <p>
+   * The object may be null. The same object may be registered multiple times;
+   * each time it is registered, a new entry with a new string moniker is
+   * generated.
+   * 
+   * @param o
+   *          Object to register. May be null.
+   * @return Entry containing the object's string key and the object itself
+   */
+  public synchronized Entry register(Object o) {
+    String moniker = generateMoniker();
+    final LockBoxEntryImpl entry = new LockBoxEntryImpl(o, moniker);
+    map.put(moniker, entry);
+    return entry;
+  }
 
-	/**
-	 * Retrieves an entry using its string moniker. Returns null if there is no
-	 * entry with that moniker.
-	 * 
-	 * @param moniker
-	 *          Moniker of the lock box entry
-	 * @return Entry, or null if there is no entry with this moniker
-	 */
-	public synchronized Entry get(String moniker) {
-		return map.get(moniker);
-	}
+  /**
+   * Generates a non-repeating, random string.
+   * 
+   * <p>
+   * Must be called from synchronized context.
+   * 
+   * @return Non-repeating random string
+   */
+  private String generateMoniker() {
+    // The prefixed ordinal ensures that the string never repeats. Of
+    // course, there will be a pattern to the first few chars of the
+    // returned string, but that doesn't matter for these purposes.
+    random.nextBytes(bytes);
 
-	/**
-	 * Entry in a {@link LockBox}.
-	 * 
-	 * <p>
-	 * Entries are created using {@link LockBox#register(Object)}.
-	 * 
-	 * <p>
-	 * The object can be retrieved using {@link #getValue()} if you have the
-	 * entry, or {@link LockBox#get(String)} if you only have the string key.
-	 */
-	public interface Entry {
-		/**
-		 * Returns the value in this lock box entry.
-		 * 
-		 * @return Value in this lock box entry.
-		 */
-		Object getValue();
+    // Remove trailing '='. It is padding required by base64 spec but does
+    // not help us.
+    String base64 = Base64.encodeBytes(bytes);
+    while (base64.endsWith("=")) {
+      base64 = base64.substring(0, base64.length() - 1);
+    }
+    // Convert '/' to '$' and '+' to '_'. The resulting moniker starts with
+    // a '$', and contains only A-Z, a-z, 0-9, _ and $; it is a valid
+    // identifier, and does not need to be quoted in XML or an HTTP URL.
+    base64 = base64.replace('/', '$');
+    base64 = base64.replace('+', '_');
+    return "$" + Long.toHexString(++ordinal) + base64;
+  }
 
-		/**
-		 * String key by which to identify this object. Not null, not easily forged,
-		 * and unique within the lock box.
-		 * 
-		 * @return String key
-		 */
-		String getMoniker();
-	}
+  /**
+   * Removes an entry from the lock box.
+   * 
+   * <p>
+   * It is safe to call this method multiple times.
+   * 
+   * @param entry
+   *          Entry to deregister
+   * @return Whether the object as removed
+   */
+  public synchronized boolean deregister(Entry entry) {
+    final LockBoxEntryImpl previousEntry = map.remove(entry.getMoniker());
+    return previousEntry != null;
+  }
 
-	/**
-	 * Implementation of {@link Entry}.
-	 * 
-	 * <p>
-	 * It is important that entries cannot be forged. Therefore this class, and
-	 * its constructor, are private.
-	 */
-	private static class LockBoxEntryImpl implements Entry {
-		private final Object value;
-		private final String moniker;
+  /**
+   * Retrieves an entry using its string moniker. Returns null if there is no
+   * entry with that moniker.
+   * 
+   * @param moniker
+   *          Moniker of the lock box entry
+   * @return Entry, or null if there is no entry with this moniker
+   */
+  public synchronized Entry get(String moniker) {
+    return map.get(moniker);
+  }
 
-		private LockBoxEntryImpl(Object value, String moniker) {
-			this.value = value;
-			this.moniker = moniker;
-		}
+  /**
+   * Entry in a {@link LockBox}.
+   * 
+   * <p>
+   * Entries are created using {@link LockBox#register(Object)}.
+   * 
+   * <p>
+   * The object can be retrieved using {@link #getValue()} if you have the
+   * entry, or {@link LockBox#get(String)} if you only have the string key.
+   */
+  public interface Entry {
+    /**
+     * Returns the value in this lock box entry.
+     * 
+     * @return Value in this lock box entry.
+     */
+    Object getValue();
 
-		public Object getValue() {
-			return value;
-		}
+    /**
+     * String key by which to identify this object. Not null, not easily forged,
+     * and unique within the lock box.
+     * 
+     * @return String key
+     */
+    String getMoniker();
+  }
 
-		public String getMoniker() {
-			return moniker;
-		}
-	}
+  /**
+   * Implementation of {@link Entry}.
+   * 
+   * <p>
+   * It is important that entries cannot be forged. Therefore this class, and
+   * its constructor, are private.
+   */
+  private static class LockBoxEntryImpl implements Entry {
+    private final Object value;
+
+    private final String moniker;
+
+    private LockBoxEntryImpl(Object value, String moniker) {
+      this.value = value;
+      this.moniker = moniker;
+    }
+
+    public Object getValue() {
+      return value;
+    }
+
+    public String getMoniker() {
+      return moniker;
+    }
+  }
 }
 
 // End LockBox.java

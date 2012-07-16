@@ -19,36 +19,36 @@ package mondrian.util;
  *          $
  */
 public class FauxMemoryMonitor implements MemoryMonitor {
-	FauxMemoryMonitor() {
-	}
+  FauxMemoryMonitor() {
+  }
 
-	public boolean addListener(Listener listener, int thresholdPercentage) {
-		return true;
-	}
+  public boolean addListener(Listener listener, int thresholdPercentage) {
+    return true;
+  }
 
-	public boolean addListener(final Listener listener) {
-		return true;
-	}
+  public boolean addListener(final Listener listener) {
+    return true;
+  }
 
-	public void updateListenerThreshold(Listener listener, int percentage) {
-		// empty
-	}
+  public void updateListenerThreshold(Listener listener, int percentage) {
+    // empty
+  }
 
-	public boolean removeListener(Listener listener) {
-		return true;
-	}
+  public boolean removeListener(Listener listener) {
+    return true;
+  }
 
-	public void removeAllListener() {
-		// empty
-	}
+  public void removeAllListener() {
+    // empty
+  }
 
-	public long getMaxMemory() {
-		return Runtime.getRuntime().maxMemory();
-	}
+  public long getMaxMemory() {
+    return Runtime.getRuntime().maxMemory();
+  }
 
-	public long getUsedMemory() {
-		return Runtime.getRuntime().freeMemory();
-	}
+  public long getUsedMemory() {
+    return Runtime.getRuntime().freeMemory();
+  }
 }
 
 // End FauxMemoryMonitor.java

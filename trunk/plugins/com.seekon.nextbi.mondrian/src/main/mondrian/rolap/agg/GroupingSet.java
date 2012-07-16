@@ -28,51 +28,56 @@ import java.util.List;
  */
 
 public class GroupingSet {
-	private final List<Segment> segments;
-	final Segment segment0;
-	private final BitKey levelBitKey;
-	private final BitKey measureBitKey;
-	private final Aggregation.Axis[] axes;
-	private final RolapStar.Column[] columns;
+  private final List<Segment> segments;
 
-	public GroupingSet(List<Segment> segments, BitKey levelBitKey,
-			BitKey measureBitKey, Aggregation.Axis[] axes, RolapStar.Column[] columns) {
-		this.segments = segments;
-		this.segment0 = segments.get(0);
-		this.levelBitKey = levelBitKey;
-		this.measureBitKey = measureBitKey;
-		this.axes = axes;
-		this.columns = columns;
-	}
+  final Segment segment0;
 
-	public List<Segment> getSegments() {
-		return segments;
-	}
+  private final BitKey levelBitKey;
 
-	public BitKey getLevelBitKey() {
-		return levelBitKey;
-	}
+  private final BitKey measureBitKey;
 
-	public BitKey getMeasureBitKey() {
-		return measureBitKey;
-	}
+  private final Aggregation.Axis[] axes;
 
-	public Aggregation.Axis[] getAxes() {
-		return axes;
-	}
+  private final RolapStar.Column[] columns;
 
-	public RolapStar.Column[] getColumns() {
-		return columns;
-	}
+  public GroupingSet(List<Segment> segments, BitKey levelBitKey,
+    BitKey measureBitKey, Aggregation.Axis[] axes, RolapStar.Column[] columns) {
+    this.segments = segments;
+    this.segment0 = segments.get(0);
+    this.levelBitKey = levelBitKey;
+    this.measureBitKey = measureBitKey;
+    this.axes = axes;
+    this.columns = columns;
+  }
 
-	/**
-	 * Sets all the segments which are in loading state as failed
-	 */
-	public void setSegmentsFailed() {
-		for (Segment segment : segments) {
-			segment.setFailIfStillLoading();
-		}
-	}
+  public List<Segment> getSegments() {
+    return segments;
+  }
+
+  public BitKey getLevelBitKey() {
+    return levelBitKey;
+  }
+
+  public BitKey getMeasureBitKey() {
+    return measureBitKey;
+  }
+
+  public Aggregation.Axis[] getAxes() {
+    return axes;
+  }
+
+  public RolapStar.Column[] getColumns() {
+    return columns;
+  }
+
+  /**
+   * Sets all the segments which are in loading state as failed
+   */
+  public void setSegmentsFailed() {
+    for (Segment segment : segments) {
+      segment.setFailIfStillLoading();
+    }
+  }
 }
 
 // End GroupingSet.java

@@ -28,126 +28,131 @@ import java.util.Map;
  */
 public class SetBase extends OlapElementBase implements NamedSet {
 
-	private static final Logger LOGGER = Logger.getLogger(SetBase.class);
+  private static final Logger LOGGER = Logger.getLogger(SetBase.class);
 
-	private String name;
-	private Map<String, Annotation> annotationMap;
-	private String description;
-	private final String uniqueName;
-	private Exp exp;
-	private boolean validated;
+  private String name;
 
-	/**
-	 * Creates a SetBase.
-	 * 
-	 * @param name
-	 *          Name
-	 * @param caption
-	 *          Caption
-	 * @param description
-	 *          Description
-	 * @param exp
-	 *          Expression
-	 * @param validated
-	 *          Whether has been validated
-	 * @param annotationMap
-	 *          Annotations
-	 */
-	SetBase(String name, String caption, String description, Exp exp,
-			boolean validated, Map<String, Annotation> annotationMap) {
-		this.name = name;
-		this.annotationMap = annotationMap;
-		this.caption = caption;
-		this.description = description;
-		this.exp = exp;
-		this.validated = validated;
-		this.uniqueName = "[" + name + "]";
-	}
+  private Map<String, Annotation> annotationMap;
 
-	public Map<String, Annotation> getAnnotationMap() {
-		return annotationMap;
-	}
+  private String description;
 
-	public String getNameUniqueWithinQuery() {
-		return System.identityHashCode(this) + "";
-	}
+  private final String uniqueName;
 
-	public boolean isDynamic() {
-		return false;
-	}
+  private Exp exp;
 
-	public Object clone() {
-		return new SetBase(name, caption, description, exp.clone(), validated,
-				annotationMap);
-	}
+  private boolean validated;
 
-	protected Logger getLogger() {
-		return LOGGER;
-	}
+  /**
+   * Creates a SetBase.
+   * 
+   * @param name
+   *          Name
+   * @param caption
+   *          Caption
+   * @param description
+   *          Description
+   * @param exp
+   *          Expression
+   * @param validated
+   *          Whether has been validated
+   * @param annotationMap
+   *          Annotations
+   */
+  SetBase(String name, String caption, String description, Exp exp,
+    boolean validated, Map<String, Annotation> annotationMap) {
+    this.name = name;
+    this.annotationMap = annotationMap;
+    this.caption = caption;
+    this.description = description;
+    this.exp = exp;
+    this.validated = validated;
+    this.uniqueName = "[" + name + "]";
+  }
 
-	public String getUniqueName() {
-		return uniqueName;
-	}
+  public Map<String, Annotation> getAnnotationMap() {
+    return annotationMap;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public String getNameUniqueWithinQuery() {
+    return System.identityHashCode(this) + "";
+  }
 
-	public String getQualifiedName() {
-		return null;
-	}
+  public boolean isDynamic() {
+    return false;
+  }
 
-	public String getDescription() {
-		return description;
-	}
+  public Object clone() {
+    return new SetBase(name, caption, description, exp.clone(), validated,
+      annotationMap);
+  }
 
-	public Hierarchy getHierarchy() {
-		return exp.getType().getHierarchy();
-	}
+  protected Logger getLogger() {
+    return LOGGER;
+  }
 
-	public Dimension getDimension() {
-		return getHierarchy().getDimension();
-	}
+  public String getUniqueName() {
+    return uniqueName;
+  }
 
-	public OlapElement lookupChild(SchemaReader schemaReader, Id.Segment s,
-			MatchType matchType) {
-		return null;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public String getQualifiedName() {
+    return null;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public void setAnnotationMap(Map<String, Annotation> annotationMap) {
-		this.annotationMap = annotationMap;
-	}
+  public Hierarchy getHierarchy() {
+    return exp.getType().getHierarchy();
+  }
 
-	public Exp getExp() {
-		return exp;
-	}
+  public Dimension getDimension() {
+    return getHierarchy().getDimension();
+  }
 
-	public NamedSet validate(Validator validator) {
-		if (!validated) {
-			exp = validator.validate(exp, false);
-			validated = true;
-		}
-		return this;
-	}
+  public OlapElement lookupChild(SchemaReader schemaReader, Id.Segment s,
+    MatchType matchType) {
+    return null;
+  }
 
-	public Type getType() {
-		Type type = exp.getType();
-		if (type instanceof MemberType || type instanceof TupleType) {
-			// You can use a member or tuple as the expression for a set. It is
-			// implicitly converted to a set. The expression may not have been
-			// converted yet, so we wrap the type here.
-			type = new SetType(type);
-		}
-		return type;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public void setAnnotationMap(Map<String, Annotation> annotationMap) {
+    this.annotationMap = annotationMap;
+  }
+
+  public Exp getExp() {
+    return exp;
+  }
+
+  public NamedSet validate(Validator validator) {
+    if (!validated) {
+      exp = validator.validate(exp, false);
+      validated = true;
+    }
+    return this;
+  }
+
+  public Type getType() {
+    Type type = exp.getType();
+    if (type instanceof MemberType || type instanceof TupleType) {
+      // You can use a member or tuple as the expression for a set. It is
+      // implicitly converted to a set. The expression may not have been
+      // converted yet, so we wrap the type here.
+      type = new SetType(type);
+    }
+    return type;
+  }
 }
 
 // End SetBase.java

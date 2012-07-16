@@ -35,112 +35,113 @@ import java.util.*;
  */
 abstract class AbstractEndToEndTupleList extends AbstractTupleList {
 
-	AbstractEndToEndTupleList(int arity) {
-		super(arity);
-	}
+  AbstractEndToEndTupleList(int arity) {
+    super(arity);
+  }
 
-	public TupleList project(final int[] destIndices) {
-		final List<Member> backingList = backingList();
-		final int originalArity = getArity();
-		return new DelegatingTupleList(destIndices.length,
-				new AbstractList<List<Member>>() {
-					public List<Member> get(int index) {
-						final int n = index * originalArity;
-						return new AbstractList<Member>() {
-							public Member get(int index) {
-								return backingList.get(n + destIndices[index]);
-							}
+  public TupleList project(final int[] destIndices) {
+    final List<Member> backingList = backingList();
+    final int originalArity = getArity();
+    return new DelegatingTupleList(destIndices.length,
+      new AbstractList<List<Member>>() {
+        public List<Member> get(int index) {
+          final int n = index * originalArity;
+          return new AbstractList<Member>() {
+            public Member get(int index) {
+              return backingList.get(n + destIndices[index]);
+            }
 
-							public int size() {
-								return destIndices.length;
-							}
-						};
-					}
+            public int size() {
+              return destIndices.length;
+            }
+          };
+        }
 
-					public int size() {
-						return backingList.size() / originalArity;
-					}
-				});
-	}
+        public int size() {
+          return backingList.size() / originalArity;
+        }
+      });
+  }
 
-	protected abstract List<Member> backingList();
+  protected abstract List<Member> backingList();
 
-	@Override
-	public List<Member> set(int index, List<Member> element) {
-		assert mutable;
-		final List<Member> list = backingList();
-		for (int i = 0, startIndex = index * arity; i < arity; i++) {
-			list.set(startIndex + i, element.get(i));
-		}
-		return null; // not compliant with List contract
-	}
+  @Override
+  public List<Member> set(int index, List<Member> element) {
+    assert mutable;
+    final List<Member> list = backingList();
+    for (int i = 0, startIndex = index * arity; i < arity; i++) {
+      list.set(startIndex + i, element.get(i));
+    }
+    return null; // not compliant with List contract
+  }
 
-	@Override
-	public boolean addAll(Collection<? extends List<Member>> c) {
-		return addAll(size(), c);
-	}
+  @Override
+  public boolean addAll(Collection<? extends List<Member>> c) {
+    return addAll(size(), c);
+  }
 
-	@Override
-	public boolean addAll(int i, Collection<? extends List<Member>> c) {
-		assert mutable;
-		if (c instanceof AbstractEndToEndTupleList) {
-			return backingList().addAll(i * arity,
-					((AbstractEndToEndTupleList) c).backingList());
-		}
-		return super.addAll(i, c);
-	}
+  @Override
+  public boolean addAll(int i, Collection<? extends List<Member>> c) {
+    assert mutable;
+    if (c instanceof AbstractEndToEndTupleList) {
+      return backingList().addAll(i * arity,
+        ((AbstractEndToEndTupleList) c).backingList());
+    }
+    return super.addAll(i, c);
+  }
 
-	@Override
-	public TupleList subList(int fromIndex, int toIndex) {
-		return new ListTupleList(arity, backingList().subList(fromIndex * arity,
-				toIndex * arity));
-	}
+  @Override
+  public TupleList subList(int fromIndex, int toIndex) {
+    return new ListTupleList(arity, backingList().subList(fromIndex * arity,
+      toIndex * arity));
+  }
 
-	public TupleList withPositionCallback(final PositionCallback positionCallback) {
-		assert !(backingList() instanceof PositionSensingList);
-		return new ListTupleList(arity, new PositionSensingList(positionCallback));
-	}
+  public TupleList withPositionCallback(final PositionCallback positionCallback) {
+    assert !(backingList() instanceof PositionSensingList);
+    return new ListTupleList(arity, new PositionSensingList(positionCallback));
+  }
 
-	private class PositionSensingList extends AbstractList<Member> {
-		private final PositionCallback positionCallback;
-		private final List<Member> backingList = backingList();
+  private class PositionSensingList extends AbstractList<Member> {
+    private final PositionCallback positionCallback;
 
-		public PositionSensingList(PositionCallback positionCallback) {
-			this.positionCallback = positionCallback;
-		}
+    private final List<Member> backingList = backingList();
 
-		@Override
-		public Member get(int index) {
-			positionCallback.onPosition(index / arity);
-			return backingList.get(index);
-		}
+    public PositionSensingList(PositionCallback positionCallback) {
+      this.positionCallback = positionCallback;
+    }
 
-		@Override
-		public int size() {
-			return backingList.size();
-		}
+    @Override
+    public Member get(int index) {
+      positionCallback.onPosition(index / arity);
+      return backingList.get(index);
+    }
 
-		@Override
-		public Member set(int index, Member element) {
-			assert mutable;
-			positionCallback.onPosition(index / arity);
-			return backingList.set(index, element);
-		}
+    @Override
+    public int size() {
+      return backingList.size();
+    }
 
-		@Override
-		public void add(int index, Member element) {
-			assert mutable;
-			positionCallback.onPosition(index);
-			backingList.add(index, element);
-		}
+    @Override
+    public Member set(int index, Member element) {
+      assert mutable;
+      positionCallback.onPosition(index / arity);
+      return backingList.set(index, element);
+    }
 
-		@Override
-		public Member remove(int index) {
-			assert mutable;
-			positionCallback.onPosition(index);
-			return backingList.remove(index);
-		}
-	}
+    @Override
+    public void add(int index, Member element) {
+      assert mutable;
+      positionCallback.onPosition(index);
+      backingList.add(index, element);
+    }
+
+    @Override
+    public Member remove(int index) {
+      assert mutable;
+      positionCallback.onPosition(index);
+      return backingList.remove(index);
+    }
+  }
 }
 
 // End AbstractEndToEndTupleList.java

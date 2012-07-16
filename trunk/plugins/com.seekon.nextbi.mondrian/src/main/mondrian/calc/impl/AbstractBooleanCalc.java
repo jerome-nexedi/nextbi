@@ -29,25 +29,25 @@ import mondrian.calc.*;
  * @since Sep 26, 2005
  */
 public abstract class AbstractBooleanCalc extends AbstractCalc implements
-		BooleanCalc {
-	/**
-	 * Creates an AbstractBooleanCalc.
-	 * 
-	 * @param exp
-	 *          Source expression
-	 * @param calcs
-	 *          Child compiled expressions
-	 */
-	public AbstractBooleanCalc(Exp exp, Calc[] calcs) {
-		super(exp, calcs);
-		// now supports int and double conversion (see
-		// AbstractExpCompiler.compileBoolean():
-		// assert getType() instanceof BooleanType;
-	}
+  BooleanCalc {
+  /**
+   * Creates an AbstractBooleanCalc.
+   * 
+   * @param exp
+   *          Source expression
+   * @param calcs
+   *          Child compiled expressions
+   */
+  public AbstractBooleanCalc(Exp exp, Calc[] calcs) {
+    super(exp, calcs);
+    // now supports int and double conversion (see
+    // AbstractExpCompiler.compileBoolean():
+    // assert getType() instanceof BooleanType;
+  }
 
-	public Object evaluate(Evaluator evaluator) {
-		return Boolean.valueOf(evaluateBoolean(evaluator));
-	}
+  public Object evaluate(Evaluator evaluator) {
+    return Boolean.valueOf(evaluateBoolean(evaluator));
+  }
 }
 
 // End AbstractBooleanCalc.java

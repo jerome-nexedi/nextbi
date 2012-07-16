@@ -23,16 +23,16 @@ import mondrian.olap.Evaluator;
  * @since Sep 27, 2005
  */
 public interface DoubleCalc extends Calc {
-	/**
-	 * Evaluates this expression to yield a <code>double</code> value. If the
-	 * result is null, returns the special
-	 * {@link mondrian.olap.fun.FunUtil#DoubleNull} value.
-	 * 
-	 * @param evaluator
-	 *          Evaluation context
-	 * @return evaluation result
-	 */
-	double evaluateDouble(Evaluator evaluator);
+  /**
+   * Evaluates this expression to yield a <code>double</code> value. If the
+   * result is null, returns the special
+   * {@link mondrian.olap.fun.FunUtil#DoubleNull} value.
+   * 
+   * @param evaluator
+   *          Evaluation context
+   * @return evaluation result
+   */
+  double evaluateDouble(Evaluator evaluator);
 }
 
 // End DoubleCalc.java

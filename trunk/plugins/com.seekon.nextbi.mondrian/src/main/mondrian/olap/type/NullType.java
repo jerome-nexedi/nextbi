@@ -17,16 +17,16 @@ package mondrian.olap.type;
  * @since Aug 21, 2006
  */
 public class NullType extends ScalarType {
-	/**
-	 * Creates a null type.
-	 */
-	public NullType() {
-		super("<NULLTYPE>");
-	}
+  /**
+   * Creates a null type.
+   */
+  public NullType() {
+    super("<NULLTYPE>");
+  }
 
-	public boolean equals(Object obj) {
-		return obj instanceof NullType;
-	}
+  public boolean equals(Object obj) {
+    return obj instanceof NullType;
+  }
 }
 
 // End NullType.java

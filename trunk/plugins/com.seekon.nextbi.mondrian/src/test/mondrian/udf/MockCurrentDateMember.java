@@ -6,7 +6,7 @@
 // Copyright (C) 2010 Julian Hyde
 // All Rights Reserved.
 // You must accept the terms of that agreement to use this software.
-*/
+ */
 
 package mondrian.udf;
 
@@ -16,18 +16,20 @@ import java.util.Date;
 import mondrian.olap.Evaluator;
 
 public class MockCurrentDateMember extends CurrentDateMemberExactUdf {
-    public MockCurrentDateMember() {
-        super();
-    }
-    @Override
-    Date getDate(Evaluator evaluator, Argument[] arguments) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(1997, 1, 1);
-        return new Date(cal.getTimeInMillis());
-    }
-    @Override
-    public String getName() {
-        return "MockCurrentDateMember";
-    }
+  public MockCurrentDateMember() {
+    super();
+  }
+
+  @Override
+  Date getDate(Evaluator evaluator, Argument[] arguments) {
+    Calendar cal = Calendar.getInstance();
+    cal.set(1997, 1, 1);
+    return new Date(cal.getTimeInMillis());
+  }
+
+  @Override
+  public String getName() {
+    return "MockCurrentDateMember";
+  }
 }
 // End MockCurrentDateMember.java

@@ -24,22 +24,22 @@ import mondrian.olap.*;
  * @since Jul 20, 2009
  */
 class LevelDimensionFunDef extends FunDefBase {
-	public static final FunDefBase INSTANCE = new LevelDimensionFunDef();
+  public static final FunDefBase INSTANCE = new LevelDimensionFunDef();
 
-	public LevelDimensionFunDef() {
-		super("Dimension",
-				"Returns the dimension that contains a specified level.", "pdl");
-	}
+  public LevelDimensionFunDef() {
+    super("Dimension", "Returns the dimension that contains a specified level.",
+      "pdl");
+  }
 
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
-		final LevelCalc levelCalc = compiler.compileLevel(call.getArg(0));
-		return new AbstractDimensionCalc(call, new Calc[] { levelCalc }) {
-			public Dimension evaluateDimension(Evaluator evaluator) {
-				Level level = levelCalc.evaluateLevel(evaluator);
-				return level.getDimension();
-			}
-		};
-	}
+  public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    final LevelCalc levelCalc = compiler.compileLevel(call.getArg(0));
+    return new AbstractDimensionCalc(call, new Calc[] { levelCalc }) {
+      public Dimension evaluateDimension(Evaluator evaluator) {
+        Level level = levelCalc.evaluateLevel(evaluator);
+        return level.getDimension();
+      }
+    };
+  }
 }
 
 // End LevelDimensionFunDef.java

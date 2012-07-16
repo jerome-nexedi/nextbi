@@ -18,16 +18,16 @@ import mondrian.rolap.RolapSchema;
  */
 public class CachePool {
 
-	/** The singleton. */
-	private static CachePool instance = new CachePool();
+  /** The singleton. */
+  private static CachePool instance = new CachePool();
 
-	/** Returns the singleton. */
-	public static CachePool instance() {
-		return instance;
-	}
+  /** Returns the singleton. */
+  public static CachePool instance() {
+    return instance;
+  }
 
-	private CachePool() {
-	}
+  private CachePool() {
+  }
 }
 
 // End CachePool.java

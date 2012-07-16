@@ -27,45 +27,46 @@ import mondrian.rolap.aggmatcher.AggStar;
  *          #21 $
  */
 class ChildByNameConstraint extends DefaultMemberChildrenConstraint {
-	private final String childName;
-	private final Object cacheKey;
+  private final String childName;
 
-	/**
-	 * Creates a <code>ChildByNameConstraint</code>.
-	 * 
-	 * @param childName
-	 *          Name of child
-	 */
-	public ChildByNameConstraint(Id.Segment childName) {
-		this.childName = childName.name;
-		this.cacheKey = Arrays.asList(ChildByNameConstraint.class, childName);
-	}
+  private final Object cacheKey;
 
-	@Override
-	public int hashCode() {
-		return getCacheKey().hashCode();
-	}
+  /**
+   * Creates a <code>ChildByNameConstraint</code>.
+   * 
+   * @param childName
+   *          Name of child
+   */
+  public ChildByNameConstraint(Id.Segment childName) {
+    this.childName = childName.name;
+    this.cacheKey = Arrays.asList(ChildByNameConstraint.class, childName);
+  }
 
-	@Override
-	public boolean equals(Object obj) {
-		return obj instanceof ChildByNameConstraint
-				&& getCacheKey().equals(((ChildByNameConstraint) obj).getCacheKey());
-	}
+  @Override
+  public int hashCode() {
+    return getCacheKey().hashCode();
+  }
 
-	public void addLevelConstraint(SqlQuery query, RolapCube baseCube,
-			AggStar aggStar, RolapLevel level) {
-		super.addLevelConstraint(query, baseCube, aggStar, level);
-		query.addWhere(SqlConstraintUtils.constrainLevel(level, query, baseCube,
-				aggStar, childName, true));
-	}
+  @Override
+  public boolean equals(Object obj) {
+    return obj instanceof ChildByNameConstraint
+      && getCacheKey().equals(((ChildByNameConstraint) obj).getCacheKey());
+  }
 
-	public String toString() {
-		return "ChildByNameConstraint(" + childName + ")";
-	}
+  public void addLevelConstraint(SqlQuery query, RolapCube baseCube,
+    AggStar aggStar, RolapLevel level) {
+    super.addLevelConstraint(query, baseCube, aggStar, level);
+    query.addWhere(SqlConstraintUtils.constrainLevel(level, query, baseCube,
+      aggStar, childName, true));
+  }
 
-	public Object getCacheKey() {
-		return cacheKey;
-	}
+  public String toString() {
+    return "ChildByNameConstraint(" + childName + ")";
+  }
+
+  public Object getCacheKey() {
+    return cacheKey;
+  }
 
 }
 

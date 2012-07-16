@@ -22,69 +22,69 @@ import mondrian.olap.Level;
  * @version $Id: //open/mondrian/src/main/mondrian/olap/type/CubeType.java#12 $
  */
 public class CubeType implements Type {
-	private final Cube cube;
+  private final Cube cube;
 
-	/**
-	 * Creates a type representing a cube.
-	 */
-	public CubeType(Cube cube) {
-		this.cube = cube;
-	}
+  /**
+   * Creates a type representing a cube.
+   */
+  public CubeType(Cube cube) {
+    this.cube = cube;
+  }
 
-	/**
-	 * Returns the cube.
-	 * 
-	 * @return Cube
-	 */
-	public Cube getCube() {
-		return cube;
-	}
+  /**
+   * Returns the cube.
+   * 
+   * @return Cube
+   */
+  public Cube getCube() {
+    return cube;
+  }
 
-	public boolean usesDimension(Dimension dimension, boolean definitely) {
-		return false;
-	}
+  public boolean usesDimension(Dimension dimension, boolean definitely) {
+    return false;
+  }
 
-	public boolean usesHierarchy(Hierarchy hierarchy, boolean definitely) {
-		return false;
-	}
+  public boolean usesHierarchy(Hierarchy hierarchy, boolean definitely) {
+    return false;
+  }
 
-	public Dimension getDimension() {
-		return null;
-	}
+  public Dimension getDimension() {
+    return null;
+  }
 
-	public Hierarchy getHierarchy() {
-		return null;
-	}
+  public Hierarchy getHierarchy() {
+    return null;
+  }
 
-	public Level getLevel() {
-		return null;
-	}
+  public Level getLevel() {
+    return null;
+  }
 
-	public int hashCode() {
-		return cube.hashCode();
-	}
+  public int hashCode() {
+    return cube.hashCode();
+  }
 
-	public boolean equals(Object obj) {
-		if (obj instanceof CubeType) {
-			CubeType that = (CubeType) obj;
-			return this.cube.equals(that.cube);
-		} else {
-			return false;
-		}
-	}
+  public boolean equals(Object obj) {
+    if (obj instanceof CubeType) {
+      CubeType that = (CubeType) obj;
+      return this.cube.equals(that.cube);
+    } else {
+      return false;
+    }
+  }
 
-	public Type computeCommonType(Type type, int[] conversionCount) {
-		return this.equals(type) ? this : null;
-	}
+  public Type computeCommonType(Type type, int[] conversionCount) {
+    return this.equals(type) ? this : null;
+  }
 
-	public boolean isInstance(Object value) {
-		return value instanceof Cube;
-	}
+  public boolean isInstance(Object value) {
+    return value instanceof Cube;
+  }
 
-	public int getArity() {
-		// not meaningful; cube cannot be used in an expression
-		throw new UnsupportedOperationException();
-	}
+  public int getArity() {
+    // not meaningful; cube cannot be used in an expression
+    throw new UnsupportedOperationException();
+  }
 }
 
 // End CubeType.java

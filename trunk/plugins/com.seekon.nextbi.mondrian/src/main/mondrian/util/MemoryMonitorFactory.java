@@ -42,132 +42,132 @@ import mondrian.olap.Util;
  *          $
  */
 public final class MemoryMonitorFactory extends
-		ObjectFactory.Singleton<MemoryMonitor> {
+  ObjectFactory.Singleton<MemoryMonitor> {
 
-	/**
-	 * Single instance of the <code>MemoryMonitorFactory</code>.
-	 */
-	private static final MemoryMonitorFactory factory;
-	static {
-		factory = new MemoryMonitorFactory();
-	}
+  /**
+   * Single instance of the <code>MemoryMonitorFactory</code>.
+   */
+  private static final MemoryMonitorFactory factory;
+  static {
+    factory = new MemoryMonitorFactory();
+  }
 
-	/**
-	 * Access the <code>MemoryMonitorFactory</code> instance.
-	 * 
-	 * @return the <code>MemoryMonitor</code>.
-	 */
-	public static MemoryMonitor getMemoryMonitor() {
-		return factory.getObject();
-	}
+  /**
+   * Access the <code>MemoryMonitorFactory</code> instance.
+   * 
+   * @return the <code>MemoryMonitor</code>.
+   */
+  public static MemoryMonitor getMemoryMonitor() {
+    return factory.getObject();
+  }
 
-	/**
-	 * ThreadLocal used to hold the class name of an <code>MemoryMonitor</code>
-	 * implementation. Generally, this should only be used for testing.
-	 */
-	private static final ThreadLocal<String> ClassName = new ThreadLocal<String>();
+  /**
+   * ThreadLocal used to hold the class name of an <code>MemoryMonitor</code>
+   * implementation. Generally, this should only be used for testing.
+   */
+  private static final ThreadLocal<String> ClassName = new ThreadLocal<String>();
 
-	/**
-	 * Get the class name of a <code>MemoryMonitor</code> implementation or null.
-	 * 
-	 * @return the class name or null.
-	 */
-	private static String getThreadLocalClassName() {
-		return ClassName.get();
-	}
+  /**
+   * Get the class name of a <code>MemoryMonitor</code> implementation or null.
+   * 
+   * @return the class name or null.
+   */
+  private static String getThreadLocalClassName() {
+    return ClassName.get();
+  }
 
-	/**
-	 * Sets the class name of a <code>MemoryMonitor</code> implementation. This
-	 * should be called (obviously) before calling the
-	 * <code>MemoryMonitorFactory</code> <code>getMemoryMonitor</code> method to
-	 * get the <code>MemoryMonitor</code> implementation. Generally, this is only
-	 * used for testing.
-	 * 
-	 * @param className
-	 *          Class name
-	 */
-	public static void setThreadLocalClassName(String className) {
-		ClassName.set(className);
-	}
+  /**
+   * Sets the class name of a <code>MemoryMonitor</code> implementation. This
+   * should be called (obviously) before calling the
+   * <code>MemoryMonitorFactory</code> <code>getMemoryMonitor</code> method to
+   * get the <code>MemoryMonitor</code> implementation. Generally, this is only
+   * used for testing.
+   * 
+   * @param className
+   *          Class name
+   */
+  public static void setThreadLocalClassName(String className) {
+    ClassName.set(className);
+  }
 
-	/**
-	 * Clears the class name (regardless of whether a class name was set). When a
-	 * class name is set using <code>setThreadLocalClassName</code>, the setting
-	 * whould be done in a try-block and a call to this clear method should be in
-	 * the finally-clause of that try-block.
-	 */
-	public static void clearThreadLocalClassName() {
-		ClassName.set(null);
-		if (factory.testSingleInstance != null) {
-			factory.testSingleInstance.removeAllListener();
-			factory.testSingleInstance = null;
-		}
-		if (factory.singleInstance instanceof MemoryMonitor.Test) {
-			((MemoryMonitor.Test) factory.singleInstance).resetFromTest();
-		}
-	}
+  /**
+   * Clears the class name (regardless of whether a class name was set). When a
+   * class name is set using <code>setThreadLocalClassName</code>, the setting
+   * whould be done in a try-block and a call to this clear method should be in
+   * the finally-clause of that try-block.
+   */
+  public static void clearThreadLocalClassName() {
+    ClassName.set(null);
+    if (factory.testSingleInstance != null) {
+      factory.testSingleInstance.removeAllListener();
+      factory.testSingleInstance = null;
+    }
+    if (factory.singleInstance instanceof MemoryMonitor.Test) {
+      ((MemoryMonitor.Test) factory.singleInstance).resetFromTest();
+    }
+  }
 
-	/**
-	 * The constructor for the <code>MemoryMonitorFactory</code>. This passes the
-	 * <code>MemoryMonitor</code> class to the <code>ObjectFactory</code> base
-	 * class.
-	 */
-	private MemoryMonitorFactory() {
-		super(MemoryMonitor.class);
-	}
+  /**
+   * The constructor for the <code>MemoryMonitorFactory</code>. This passes the
+   * <code>MemoryMonitor</code> class to the <code>ObjectFactory</code> base
+   * class.
+   */
+  private MemoryMonitorFactory() {
+    super(MemoryMonitor.class);
+  }
 
-	/**
-	 * Returns whether the use of a <code>MemoryMonitor</code> is enabled.
-	 * 
-	 * @return <code>true</code> if enabled and <code>false</code> otherwise.
-	 */
-	protected boolean enabled() {
-		return MondrianProperties.instance().MemoryMonitor.get();
-	}
+  /**
+   * Returns whether the use of a <code>MemoryMonitor</code> is enabled.
+   * 
+   * @return <code>true</code> if enabled and <code>false</code> otherwise.
+   */
+  protected boolean enabled() {
+    return MondrianProperties.instance().MemoryMonitor.get();
+  }
 
-	/**
-	 * Get the class name set in the <code>ThreadLocal</code> or null.
-	 * 
-	 * @return class name or null.
-	 */
-	protected String getClassName() {
-		return getThreadLocalClassName();
-	}
+  /**
+   * Get the class name set in the <code>ThreadLocal</code> or null.
+   * 
+   * @return class name or null.
+   */
+  protected String getClassName() {
+    return getThreadLocalClassName();
+  }
 
-	/**
-	 * Return the <code>MemoryMonitorFactory</code property name.
-	 * 
-	 * @return <code>MemoryMonitorFactory</code> property name
-	 */
-	protected StringProperty getStringProperty() {
-		return MondrianProperties.instance().MemoryMonitorClass;
-	}
+  /**
+   * Return the <code>MemoryMonitorFactory</code property name.
+   * 
+   * @return <code>MemoryMonitorFactory</code> property name
+   */
+  protected StringProperty getStringProperty() {
+    return MondrianProperties.instance().MemoryMonitorClass;
+  }
 
-	/**
-	 * The <code>MemoryMonitorFactory</code>'s implementation of the
-	 * <code>ObjectFactory</code>'s abstract method which returns the default
-	 * <code>MemoryMonitor</code> instance. For Java4 or if the
-	 * <code>MemoryMonitorFactory</code> is not enabled then this method returns
-	 * the "faux" <code>MemoryMonitor</code> implementation, it does nothing. When
-	 * enabled and for Java5 and above JVMs, and instance of the
-	 * <code>NotificationMemoryMonitor</code> is returned.
-	 * 
-	 * @param parameterTypes
-	 *          not used
-	 * @param parameterValues
-	 *          not used
-	 * @return <code>MemoryMonitor</code> instance
-	 * @throws CreationException
-	 *           if the <code>MemoryMonitor</code> can not be created.
-	 */
-	protected MemoryMonitor getDefault(Class[] parameterTypes,
-			Object[] parameterValues) throws CreationException {
-		return (!enabled() || Util.PreJdk15)
-		// not enabled or Java4 or below
-		? new FauxMemoryMonitor()
-				// enabled and Java5 or above
-				: new NotificationMemoryMonitor();
-	}
+  /**
+   * The <code>MemoryMonitorFactory</code>'s implementation of the
+   * <code>ObjectFactory</code>'s abstract method which returns the default
+   * <code>MemoryMonitor</code> instance. For Java4 or if the
+   * <code>MemoryMonitorFactory</code> is not enabled then this method returns
+   * the "faux" <code>MemoryMonitor</code> implementation, it does nothing. When
+   * enabled and for Java5 and above JVMs, and instance of the
+   * <code>NotificationMemoryMonitor</code> is returned.
+   * 
+   * @param parameterTypes
+   *          not used
+   * @param parameterValues
+   *          not used
+   * @return <code>MemoryMonitor</code> instance
+   * @throws CreationException
+   *           if the <code>MemoryMonitor</code> can not be created.
+   */
+  protected MemoryMonitor getDefault(Class[] parameterTypes, Object[] parameterValues)
+    throws CreationException {
+    return (!enabled() || Util.PreJdk15)
+    // not enabled or Java4 or below
+    ? new FauxMemoryMonitor()
+      // enabled and Java5 or above
+      : new NotificationMemoryMonitor();
+  }
 
 }
 

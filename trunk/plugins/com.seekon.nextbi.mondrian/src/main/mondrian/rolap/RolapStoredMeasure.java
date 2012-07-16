@@ -29,28 +29,28 @@ import mondrian.olap.MondrianDef;
  *          //open/mondrian/src/main/mondrian/rolap/RolapStoredMeasure.java#18 $
  */
 public interface RolapStoredMeasure extends RolapMeasure {
-	/**
-	 * Returns the cube this measure belongs to.
-	 */
-	RolapCube getCube();
+  /**
+   * Returns the cube this measure belongs to.
+   */
+  RolapCube getCube();
 
-	/**
-	 * Returns the column which holds the value of the measure.
-	 */
-	MondrianDef.Expression getMondrianDefExpression();
+  /**
+   * Returns the column which holds the value of the measure.
+   */
+  MondrianDef.Expression getMondrianDefExpression();
 
-	/**
-	 * Returns the aggregation function which rolls up this measure: "SUM",
-	 * "COUNT", etc.
-	 */
-	RolapAggregator getAggregator();
+  /**
+   * Returns the aggregation function which rolls up this measure: "SUM",
+   * "COUNT", etc.
+   */
+  RolapAggregator getAggregator();
 
-	/**
-	 * Returns the {@link mondrian.rolap.RolapStar.Measure} from which this member
-	 * is computed. Untyped, because another implementation might store it
-	 * somewhere else.
-	 */
-	Object getStarMeasure();
+  /**
+   * Returns the {@link mondrian.rolap.RolapStar.Measure} from which this member
+   * is computed. Untyped, because another implementation might store it
+   * somewhere else.
+   */
+  Object getStarMeasure();
 }
 
 // End RolapStoredMeasure.java

@@ -24,17 +24,17 @@ import mondrian.olap.Level;
  * @since Sep 26, 2005
  */
 public interface LevelCalc extends Calc {
-	/**
-	 * Evaluates this expression to yield a level.
-	 * 
-	 * <p>
-	 * Never returns null.
-	 * 
-	 * @param evaluator
-	 *          Evaluation context
-	 * @return a level
-	 */
-	Level evaluateLevel(Evaluator evaluator);
+  /**
+   * Evaluates this expression to yield a level.
+   * 
+   * <p>
+   * Never returns null.
+   * 
+   * @param evaluator
+   *          Evaluation context
+   * @return a level
+   */
+  Level evaluateLevel(Evaluator evaluator);
 }
 
 // End LevelCalc.java

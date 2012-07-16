@@ -21,20 +21,20 @@ import mondrian.olap.Hierarchy;
  */
 public class StringType extends ScalarType {
 
-	/**
-	 * Creates a string type.
-	 */
-	public StringType() {
-		super("STRING");
-	}
+  /**
+   * Creates a string type.
+   */
+  public StringType() {
+    super("STRING");
+  }
 
-	public boolean equals(Object obj) {
-		return obj instanceof StringType;
-	}
+  public boolean equals(Object obj) {
+    return obj instanceof StringType;
+  }
 
-	public boolean isInstance(Object value) {
-		return value instanceof String;
-	}
+  public boolean isInstance(Object value) {
+    return value instanceof String;
+  }
 }
 
 // End StringType.java

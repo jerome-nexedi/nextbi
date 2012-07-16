@@ -41,106 +41,106 @@ import java.util.*;
  * @author jhyde
  */
 public class ListTupleList extends AbstractEndToEndTupleList {
-	private final List<Member> list;
+  private final List<Member> list;
 
-	/**
-	 * Creates a ListTupleList.
-	 * 
-	 * @param arity
-	 *          Arity
-	 * @param list
-	 *          Backing list
-	 */
-	public ListTupleList(int arity, List<Member> list) {
-		super(arity);
-		this.list = list;
-	}
+  /**
+   * Creates a ListTupleList.
+   * 
+   * @param arity
+   *          Arity
+   * @param list
+   *          Backing list
+   */
+  public ListTupleList(int arity, List<Member> list) {
+    super(arity);
+    this.list = list;
+  }
 
-	protected List<Member> backingList() {
-		return list;
-	}
+  protected List<Member> backingList() {
+    return list;
+  }
 
-	public Member get(int slice, int index) {
-		return list.get(index * arity + slice);
-	}
+  public Member get(int slice, int index) {
+    return list.get(index * arity + slice);
+  }
 
-	public List<Member> get(int index) {
-		final int startIndex = index * arity;
-		final List<Member> list1 = new AbstractList<Member>() {
-			public Member get(int index) {
-				return list.get(startIndex + index);
-			}
+  public List<Member> get(int index) {
+    final int startIndex = index * arity;
+    final List<Member> list1 = new AbstractList<Member>() {
+      public Member get(int index) {
+        return list.get(startIndex + index);
+      }
 
-			public int size() {
-				return arity;
-			}
-		};
-		if (mutable) {
-			return Util.flatList(list1);
-		}
-		return list1;
-	}
+      public int size() {
+        return arity;
+      }
+    };
+    if (mutable) {
+      return Util.flatList(list1);
+    }
+    return list1;
+  }
 
-	public void add(int index, List<Member> element) {
-		assert mutable;
-		list.addAll(index * arity, element);
-	}
+  public void add(int index, List<Member> element) {
+    assert mutable;
+    list.addAll(index * arity, element);
+  }
 
-	public void addTuple(Member... members) {
-		assert mutable;
-		list.addAll(Arrays.asList(members));
-	}
+  public void addTuple(Member... members) {
+    assert mutable;
+    list.addAll(Arrays.asList(members));
+  }
 
-	@Override
-	public void clear() {
-		assert mutable;
-		list.clear();
-	}
+  @Override
+  public void clear() {
+    assert mutable;
+    list.clear();
+  }
 
-	@Override
-	public List<Member> remove(int index) {
-		assert mutable;
-		for (int i = 0, n = index * arity; i < arity; i++) {
-			list.remove(n);
-		}
-		return null; // breach of List contract
-	}
+  @Override
+  public List<Member> remove(int index) {
+    assert mutable;
+    for (int i = 0, n = index * arity; i < arity; i++) {
+      list.remove(n);
+    }
+    return null; // breach of List contract
+  }
 
-	@Override
-	protected void removeRange(int fromIndex, int toIndex) {
-		assert mutable;
-		list.subList(fromIndex * arity, toIndex * arity).clear();
-	}
+  @Override
+  protected void removeRange(int fromIndex, int toIndex) {
+    assert mutable;
+    list.subList(fromIndex * arity, toIndex * arity).clear();
+  }
 
-	public int size() {
-		return list.size() / arity;
-	}
+  public int size() {
+    return list.size() / arity;
+  }
 
-	public List<Member> slice(final int column) {
-		if (column < 0 || column >= arity) {
-			throw new IllegalArgumentException();
-		}
-		return new AbstractList<Member>() {
-			@Override
-			public Member get(int index) {
-				return ListTupleList.this.get(column, index);
-			}
+  public List<Member> slice(final int column) {
+    if (column < 0 || column >= arity) {
+      throw new IllegalArgumentException();
+    }
+    return new AbstractList<Member>() {
+      @Override
+      public Member get(int index) {
+        return ListTupleList.this.get(column, index);
+      }
 
-			@Override
-			public int size() {
-				return ListTupleList.this.size();
-			}
-		};
-	}
+      @Override
+      public int size() {
+        return ListTupleList.this.size();
+      }
+    };
+  }
 
-	public TupleList cloneList(int capacity) {
-		return new ListTupleList(arity, capacity < 0 ? new ArrayList<Member>(list)
-				: new ArrayList<Member>(capacity * arity));
-	}
+  public TupleList cloneList(int capacity) {
+    return new ListTupleList(arity, capacity < 0 ? new ArrayList<Member>(list)
+      : new ArrayList<Member>(capacity * arity));
+  }
 
-	public TupleIterator tupleIteratorInternal() {
-		return new AbstractTupleListIterator();
-	}
+  public TupleIterator tupleIteratorInternal() {
+    return new AbstractTupleListIterator();
+  }
 }
 
 // End ListTupleList.java

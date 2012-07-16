@@ -36,83 +36,83 @@ import java.util.*;
  *          //open/mondrian/src/main/mondrian/udf/CurrentDateMemberUdf.java#18 $
  */
 public class CurrentDateMemberUdf implements UserDefinedFunction {
-	private Object resultDateMember = null;
+  private Object resultDateMember = null;
 
-	public Object execute(Evaluator evaluator, Argument[] arguments) {
-		if (resultDateMember != null) {
-			return resultDateMember;
-		}
+  public Object execute(Evaluator evaluator, Argument[] arguments) {
+    if (resultDateMember != null) {
+      return resultDateMember;
+    }
 
-		// determine the current date
-		Object formatArg = arguments[1].evaluateScalar(evaluator);
+    // determine the current date
+    Object formatArg = arguments[1].evaluateScalar(evaluator);
 
-		final Locale locale = Locale.getDefault();
-		final Format format = new Format((String) formatArg, locale);
-		String currDateStr = format.format(getDate(evaluator, arguments));
+    final Locale locale = Locale.getDefault();
+    final Format format = new Format((String) formatArg, locale);
+    String currDateStr = format.format(getDate(evaluator, arguments));
 
-		// determine the match type
-		MatchType matchType;
-		if (arguments.length == 3) {
-			String matchStr = arguments[2].evaluateScalar(evaluator).toString();
-			matchType = Enum.valueOf(MatchType.class, matchStr);
-		} else {
-			matchType = MatchType.EXACT;
-		}
+    // determine the match type
+    MatchType matchType;
+    if (arguments.length == 3) {
+      String matchStr = arguments[2].evaluateScalar(evaluator).toString();
+      matchType = Enum.valueOf(MatchType.class, matchStr);
+    } else {
+      matchType = MatchType.EXACT;
+    }
 
-		List<Id.Segment> uniqueNames = Util.parseIdentifier(currDateStr);
-		resultDateMember = evaluator.getSchemaReader().getMemberByUniqueName(
-				uniqueNames, false, matchType);
-		if (resultDateMember != null) {
-			return resultDateMember;
-		}
+    List<Id.Segment> uniqueNames = Util.parseIdentifier(currDateStr);
+    resultDateMember = evaluator.getSchemaReader().getMemberByUniqueName(
+      uniqueNames, false, matchType);
+    if (resultDateMember != null) {
+      return resultDateMember;
+    }
 
-		// if there is no matching member, return the null member for
-		// the specified dimension/hierarchy
-		Object arg0 = arguments[0].evaluate(evaluator);
-		if (arg0 instanceof Hierarchy) {
-			resultDateMember = ((Hierarchy) arg0).getNullMember();
-		} else {
-			resultDateMember = ((Dimension) arg0).getHierarchy().getNullMember();
-		}
-		return resultDateMember;
-	}
+    // if there is no matching member, return the null member for
+    // the specified dimension/hierarchy
+    Object arg0 = arguments[0].evaluate(evaluator);
+    if (arg0 instanceof Hierarchy) {
+      resultDateMember = ((Hierarchy) arg0).getNullMember();
+    } else {
+      resultDateMember = ((Dimension) arg0).getHierarchy().getNullMember();
+    }
+    return resultDateMember;
+  }
 
-	/*
-	 * Package private function created for proper testing.
-	 */
-	Date getDate(Evaluator evaluator, Argument[] arguments) {
-		return evaluator.getQueryStartTime();
-	}
+  /*
+   * Package private function created for proper testing.
+   */
+  Date getDate(Evaluator evaluator, Argument[] arguments) {
+    return evaluator.getQueryStartTime();
+  }
 
-	public String getDescription() {
-		return "Returns the closest or exact member within the specified "
-				+ "dimension corresponding to the current date, in the format "
-				+ "specified by the format parameter. "
-				+ "Format strings are the same as used by the MDX Format function, "
-				+ "namely the Visual Basic format strings. "
-				+ "See http://www.apostate.com/programming/vb-format.html.";
-	}
+  public String getDescription() {
+    return "Returns the closest or exact member within the specified "
+      + "dimension corresponding to the current date, in the format "
+      + "specified by the format parameter. "
+      + "Format strings are the same as used by the MDX Format function, "
+      + "namely the Visual Basic format strings. "
+      + "See http://www.apostate.com/programming/vb-format.html.";
+  }
 
-	public String getName() {
-		return "CurrentDateMember";
-	}
+  public String getName() {
+    return "CurrentDateMember";
+  }
 
-	public Type[] getParameterTypes() {
-		return new Type[] { new HierarchyType(null, null), new StringType(),
-				new SymbolType() };
-	}
+  public Type[] getParameterTypes() {
+    return new Type[] { new HierarchyType(null, null), new StringType(),
+      new SymbolType() };
+  }
 
-	public String[] getReservedWords() {
-		return new String[] { "EXACT", "BEFORE", "AFTER" };
-	}
+  public String[] getReservedWords() {
+    return new String[] { "EXACT", "BEFORE", "AFTER" };
+  }
 
-	public Type getReturnType(Type[] parameterTypes) {
-		return MemberType.Unknown;
-	}
+  public Type getReturnType(Type[] parameterTypes) {
+    return MemberType.Unknown;
+  }
 
-	public Syntax getSyntax() {
-		return Syntax.Function;
-	}
+  public Syntax getSyntax() {
+    return Syntax.Function;
+  }
 }
 
 // End CurrentDateMemberUdf.java

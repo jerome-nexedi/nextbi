@@ -42,63 +42,63 @@ import java.util.SortedSet;
  *          .java#13 $
  */
 class SparseSegmentDataset implements SegmentDataset {
-	final Map<CellKey, Object> values = new HashMap<CellKey, Object>();
+  final Map<CellKey, Object> values = new HashMap<CellKey, Object>();
 
-	SparseSegmentDataset(Segment segment) {
-		Util.discard(segment);
-	}
+  SparseSegmentDataset(Segment segment) {
+    Util.discard(segment);
+  }
 
-	public Object getObject(CellKey pos) {
-		return values.get(pos);
-	}
+  public Object getObject(CellKey pos) {
+    return values.get(pos);
+  }
 
-	public boolean isNull(CellKey pos) {
-		// cf exists -- calls values.containsKey
-		return values.get(pos) == null;
-	}
+  public boolean isNull(CellKey pos) {
+    // cf exists -- calls values.containsKey
+    return values.get(pos) == null;
+  }
 
-	public int getInt(CellKey pos) {
-		throw new UnsupportedOperationException();
-	}
+  public int getInt(CellKey pos) {
+    throw new UnsupportedOperationException();
+  }
 
-	public double getDouble(CellKey pos) {
-		throw new UnsupportedOperationException();
-	}
+  public double getDouble(CellKey pos) {
+    throw new UnsupportedOperationException();
+  }
 
-	public boolean exists(CellKey pos) {
-		return values.containsKey(pos);
-	}
+  public boolean exists(CellKey pos) {
+    return values.containsKey(pos);
+  }
 
-	public void put(CellKey key, Object value) {
-		values.put(key, value);
-	}
+  public void put(CellKey key, Object value) {
+    values.put(key, value);
+  }
 
-	public Iterator<Map.Entry<CellKey, Object>> iterator() {
-		return values.entrySet().iterator();
-	}
+  public Iterator<Map.Entry<CellKey, Object>> iterator() {
+    return values.entrySet().iterator();
+  }
 
-	public double getBytes() {
-		// assume a slot, key, and value are each 4 bytes
-		return values.size() * 12;
-	}
+  public double getBytes() {
+    // assume a slot, key, and value are each 4 bytes
+    return values.size() * 12;
+  }
 
-	public void populateFrom(int[] pos, SegmentDataset data, CellKey key) {
-		values.put(CellKey.Generator.newCellKey(pos), data.getObject(key));
-	}
+  public void populateFrom(int[] pos, SegmentDataset data, CellKey key) {
+    values.put(CellKey.Generator.newCellKey(pos), data.getObject(key));
+  }
 
-	public void populateFrom(int[] pos, SegmentLoader.RowList rowList, int column) {
-		final Object o = rowList.getObject(column);
-		put(CellKey.Generator.newCellKey(pos), o);
-	}
+  public void populateFrom(int[] pos, SegmentLoader.RowList rowList, int column) {
+    final Object o = rowList.getObject(column);
+    put(CellKey.Generator.newCellKey(pos), o);
+  }
 
-	public SqlStatement.Type getType() {
-		return SqlStatement.Type.OBJECT;
-	}
+  public SqlStatement.Type getType() {
+    return SqlStatement.Type.OBJECT;
+  }
 
-	public SegmentBody createSegmentBody(
-			SortedSet<Comparable<?>>[] axisValueSets, boolean[] nullAxisFlags) {
-		return new SparseSegmentBody(values, axisValueSets, nullAxisFlags);
-	}
+  public SegmentBody createSegmentBody(SortedSet<Comparable<?>>[] axisValueSets,
+    boolean[] nullAxisFlags) {
+    return new SparseSegmentBody(values, axisValueSets, nullAxisFlags);
+  }
 }
 
 // End SparseSegmentDataset.java

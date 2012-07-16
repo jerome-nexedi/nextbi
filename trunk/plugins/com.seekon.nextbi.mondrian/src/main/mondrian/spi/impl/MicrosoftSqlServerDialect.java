@@ -24,24 +24,23 @@ import java.sql.SQLException;
  */
 public class MicrosoftSqlServerDialect extends JdbcDialectImpl {
 
-	public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
-			MicrosoftSqlServerDialect.class, DatabaseProduct.MSSQL);
+  public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
+    MicrosoftSqlServerDialect.class, DatabaseProduct.MSSQL);
 
-	/**
-	 * Creates a MicrosoftSqlServerDialect.
-	 * 
-	 * @param connection
-	 *          Connection
-	 */
-	public MicrosoftSqlServerDialect(Connection connection) throws SQLException {
-		super(connection);
-	}
+  /**
+   * Creates a MicrosoftSqlServerDialect.
+   * 
+   * @param connection
+   *          Connection
+   */
+  public MicrosoftSqlServerDialect(Connection connection) throws SQLException {
+    super(connection);
+  }
 
-	public String generateInline(List<String> columnNames,
-			List<String> columnTypes, List<String[]> valueList) {
-		return generateInlineGeneric(columnNames, columnTypes, valueList, null,
-				false);
-	}
+  public String generateInline(List<String> columnNames, List<String> columnTypes,
+    List<String[]> valueList) {
+    return generateInlineGeneric(columnNames, columnTypes, valueList, null, false);
+  }
 }
 
 // End MicrosoftSqlServerDialect.java

@@ -18,20 +18,20 @@ package mondrian.olap.type;
  *          $
  */
 public class BooleanType extends ScalarType {
-	/**
-	 * Creates a BooleanType.
-	 */
-	public BooleanType() {
-		super("BOOLEAN");
-	}
+  /**
+   * Creates a BooleanType.
+   */
+  public BooleanType() {
+    super("BOOLEAN");
+  }
 
-	public boolean equals(Object obj) {
-		return obj instanceof BooleanType;
-	}
+  public boolean equals(Object obj) {
+    return obj instanceof BooleanType;
+  }
 
-	public boolean isInstance(Object value) {
-		return value instanceof Boolean;
-	}
+  public boolean isInstance(Object value) {
+    return value instanceof Boolean;
+  }
 }
 
 // End BooleanType.java

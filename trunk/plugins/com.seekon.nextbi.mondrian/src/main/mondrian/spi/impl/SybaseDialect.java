@@ -21,26 +21,26 @@ import java.sql.SQLException;
  */
 public class SybaseDialect extends JdbcDialectImpl {
 
-	public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
-			SybaseDialect.class, DatabaseProduct.SYBASE);
+  public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
+    SybaseDialect.class, DatabaseProduct.SYBASE);
 
-	/**
-	 * Creates a SybaseDialect.
-	 * 
-	 * @param connection
-	 *          Connection
-	 */
-	public SybaseDialect(Connection connection) throws SQLException {
-		super(connection);
-	}
+  /**
+   * Creates a SybaseDialect.
+   * 
+   * @param connection
+   *          Connection
+   */
+  public SybaseDialect(Connection connection) throws SQLException {
+    super(connection);
+  }
 
-	public boolean allowsAs() {
-		return false;
-	}
+  public boolean allowsAs() {
+    return false;
+  }
 
-	public boolean allowsFromQuery() {
-		return false;
-	}
+  public boolean allowsFromQuery() {
+    return false;
+  }
 }
 
 // End SybaseDialect.java

@@ -51,10 +51,10 @@ import mondrian.olap.Member;
  * @version $Id: //open/mondrian/src/main/mondrian/spi/MemberFormatter.java#1 $
  */
 public interface MemberFormatter {
-	/**
-	 * Returns the string to be displayed as a caption for a given member.
-	 */
-	String formatMember(Member member);
+  /**
+   * Returns the string to be displayed as a caption for a given member.
+   */
+  String formatMember(Member member);
 }
 
 // End MemberFormatter.java

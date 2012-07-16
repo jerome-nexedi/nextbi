@@ -24,39 +24,38 @@ import mondrian.mdx.ResolvedFunCall;
  * @since Mar 23, 2006
  */
 class VarFunDef extends AbstractAggregateFunDef {
-	static final Resolver VarResolver = new ReflectiveMultiResolver(
-			"Var",
-			"Var(<Set>[, <Numeric Expression>])",
-			"Returns the variance of a numeric expression evaluated over a set (unbiased).",
-			new String[] { "fnx", "fnxn" }, VarFunDef.class);
+  static final Resolver VarResolver = new ReflectiveMultiResolver("Var",
+    "Var(<Set>[, <Numeric Expression>])",
+    "Returns the variance of a numeric expression evaluated over a set (unbiased).",
+    new String[] { "fnx", "fnxn" }, VarFunDef.class);
 
-	static final Resolver VarianceResolver = new ReflectiveMultiResolver(
-			"Variance", "Variance(<Set>[, <Numeric Expression>])", "Alias for Var.",
-			new String[] { "fnx", "fnxn" }, VarFunDef.class);
+  static final Resolver VarianceResolver = new ReflectiveMultiResolver("Variance",
+    "Variance(<Set>[, <Numeric Expression>])", "Alias for Var.", new String[] {
+      "fnx", "fnxn" }, VarFunDef.class);
 
-	public VarFunDef(FunDef dummyFunDef) {
-		super(dummyFunDef);
-	}
+  public VarFunDef(FunDef dummyFunDef) {
+    super(dummyFunDef);
+  }
 
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
-		final ListCalc listCalc = compiler.compileList(call.getArg(0));
-		final Calc calc = call.getArgCount() > 1 ? compiler.compileScalar(
-				call.getArg(1), true) : new ValueCalc(call);
-		return new AbstractDoubleCalc(call, new Calc[] { listCalc, calc }) {
-			public double evaluateDouble(Evaluator evaluator) {
-				final int savepoint = evaluator.savepoint();
-				evaluator.setNonEmpty(false);
-				TupleList list = evaluateCurrentList(listCalc, evaluator);
-				final double var = (Double) var(evaluator, list, calc, false);
-				evaluator.restore(savepoint);
-				return var;
-			}
+  public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    final ListCalc listCalc = compiler.compileList(call.getArg(0));
+    final Calc calc = call.getArgCount() > 1 ? compiler.compileScalar(
+      call.getArg(1), true) : new ValueCalc(call);
+    return new AbstractDoubleCalc(call, new Calc[] { listCalc, calc }) {
+      public double evaluateDouble(Evaluator evaluator) {
+        final int savepoint = evaluator.savepoint();
+        evaluator.setNonEmpty(false);
+        TupleList list = evaluateCurrentList(listCalc, evaluator);
+        final double var = (Double) var(evaluator, list, calc, false);
+        evaluator.restore(savepoint);
+        return var;
+      }
 
-			public boolean dependsOn(Hierarchy hierarchy) {
-				return anyDependsButFirst(getCalcs(), hierarchy);
-			}
-		};
-	}
+      public boolean dependsOn(Hierarchy hierarchy) {
+        return anyDependsButFirst(getCalcs(), hierarchy);
+      }
+    };
+  }
 }
 
 // End VarFunDef.java

@@ -26,91 +26,92 @@ import mondrian.rolap.RolapAggregationManager.PinSet;
  *          .java#4 $
  */
 public class CountingAggregationManager extends AggregationManager {
-	private SynchronizedCounter requestCount;
-	private SynchronizedCounter missCount;
+  private SynchronizedCounter requestCount;
 
-	CountingAggregationManager() {
-		super();
-		requestCount = new SynchronizedCounter();
-		missCount = new SynchronizedCounter();
-	}
+  private SynchronizedCounter missCount;
 
-	/**
-	 * Calls super method and sets counters.
-	 */
-	public Object getCellFromCache(CellRequest request) {
-		requestCount.increment();
-		Object obj = super.getCellFromCache(request);
-		if (obj == null) {
-			missCount.increment();
-		}
-		return obj;
-	}
+  CountingAggregationManager() {
+    super();
+    requestCount = new SynchronizedCounter();
+    missCount = new SynchronizedCounter();
+  }
 
-	/**
-	 * Calls super method and sets counters.
-	 */
-	public Object getCellFromCache(CellRequest request, PinSet pinSet) {
-		requestCount.increment();
-		Object obj = super.getCellFromCache(request, pinSet);
-		if (obj == null) {
-			missCount.increment();
-		}
-		return obj;
-	}
+  /**
+   * Calls super method and sets counters.
+   */
+  public Object getCellFromCache(CellRequest request) {
+    requestCount.increment();
+    Object obj = super.getCellFromCache(request);
+    if (obj == null) {
+      missCount.increment();
+    }
+    return obj;
+  }
 
-	/**
-	 * Returns total number of cache requests.
-	 * 
-	 * @return an integer represents value of request counter
-	 */
-	public int getRequestCount() {
-		return requestCount.value();
-	}
+  /**
+   * Calls super method and sets counters.
+   */
+  public Object getCellFromCache(CellRequest request, PinSet pinSet) {
+    requestCount.increment();
+    Object obj = super.getCellFromCache(request, pinSet);
+    if (obj == null) {
+      missCount.increment();
+    }
+    return obj;
+  }
 
-	/**
-	 * Returns number of cache misses.
-	 * 
-	 * @return an integer represents value of cache miss counter
-	 */
-	public int getMissCount() {
-		return missCount.value();
-	}
+  /**
+   * Returns total number of cache requests.
+   * 
+   * @return an integer represents value of request counter
+   */
+  public int getRequestCount() {
+    return requestCount.value();
+  }
 
-	/**
-	 * Returns the cache hit ratio.
-	 * 
-	 * @return a double value represent hit ratio
-	 */
-	public double getHitRatio() {
-		return ((double) requestCount.value() - missCount.value())
-				/ requestCount.value();
-	}
+  /**
+   * Returns number of cache misses.
+   * 
+   * @return an integer represents value of cache miss counter
+   */
+  public int getMissCount() {
+    return missCount.value();
+  }
 
-	/**
-	 * Resets both counters to zero
-	 * 
-	 */
-	public void resetCounters() {
-		requestCount.reset();
-		missCount.reset();
-	}
+  /**
+   * Returns the cache hit ratio.
+   * 
+   * @return a double value represent hit ratio
+   */
+  public double getHitRatio() {
+    return ((double) requestCount.value() - missCount.value())
+      / requestCount.value();
+  }
 
-	private class SynchronizedCounter {
-		private int c = 0;
+  /**
+   * Resets both counters to zero
+   * 
+   */
+  public void resetCounters() {
+    requestCount.reset();
+    missCount.reset();
+  }
 
-		public synchronized void increment() {
-			c++;
-		}
+  private class SynchronizedCounter {
+    private int c = 0;
 
-		public synchronized void reset() {
-			c = 0;
-		}
+    public synchronized void increment() {
+      c++;
+    }
 
-		public synchronized int value() {
-			return c;
-		}
-	}
+    public synchronized void reset() {
+      c = 0;
+    }
+
+    public synchronized int value() {
+      return c;
+    }
+  }
 }
 
 // End CountingAggregationManager.java

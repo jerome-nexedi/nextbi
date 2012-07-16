@@ -28,27 +28,27 @@ import java.util.List;
  */
 public class GroupingSetsCollector {
 
-	private final boolean useGroupingSets;
+  private final boolean useGroupingSets;
 
-	private ArrayList<GroupingSet> groupingSets = new ArrayList<GroupingSet>();
+  private ArrayList<GroupingSet> groupingSets = new ArrayList<GroupingSet>();
 
-	public GroupingSetsCollector(boolean useGroupingSets) {
-		this.useGroupingSets = useGroupingSets;
-	}
+  public GroupingSetsCollector(boolean useGroupingSets) {
+    this.useGroupingSets = useGroupingSets;
+  }
 
-	public boolean useGroupingSets() {
-		return useGroupingSets;
-	}
+  public boolean useGroupingSets() {
+    return useGroupingSets;
+  }
 
-	public void add(GroupingSet aggInfo) {
-		assert groupingSets.isEmpty()
-				|| groupingSets.get(0).getColumns().length >= aggInfo.getColumns().length;
-		groupingSets.add(aggInfo);
-	}
+  public void add(GroupingSet aggInfo) {
+    assert groupingSets.isEmpty()
+      || groupingSets.get(0).getColumns().length >= aggInfo.getColumns().length;
+    groupingSets.add(aggInfo);
+  }
 
-	public List<GroupingSet> getGroupingSets() {
-		return groupingSets;
-	}
+  public List<GroupingSet> getGroupingSets() {
+    return groupingSets;
+  }
 }
 
 // End GroupingSetsCollector.java

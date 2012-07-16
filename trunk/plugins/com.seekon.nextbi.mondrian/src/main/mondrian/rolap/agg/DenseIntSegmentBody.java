@@ -22,27 +22,30 @@ import java.util.SortedSet;
  *          java#2 $
  */
 class DenseIntSegmentBody extends AbstractSegmentBody {
-	private static final long serialVersionUID = 5391233622968115488L;
-	final int[] data;
-	private final int size;
-	private final BitSet nullIndicators;
+  private static final long serialVersionUID = 5391233622968115488L;
 
-	DenseIntSegmentBody(BitSet nullIndicators, int[] dataToSave, int size,
-			SortedSet<Comparable<?>>[] axisValueSets, boolean[] nullAxisFlags) {
-		super(axisValueSets, nullAxisFlags);
-		this.size = size;
-		this.data = new int[size];
-		System.arraycopy(dataToSave, 0, data, 0, size);
-		this.nullIndicators = new BitSet(nullIndicators.length());
-		this.nullIndicators.or(nullIndicators);
-	}
+  final int[] data;
 
-	public SegmentDataset createSegmentDataset(Segment segment) {
-		DenseIntSegmentDataset ds = new DenseIntSegmentDataset(segment, this.size);
-		System.arraycopy(data, 0, ds.values, 0, this.size);
-		ds.nullIndicators.clear();
-		ds.nullIndicators.or(nullIndicators);
-		return ds;
-	}
+  private final int size;
+
+  private final BitSet nullIndicators;
+
+  DenseIntSegmentBody(BitSet nullIndicators, int[] dataToSave, int size,
+    SortedSet<Comparable<?>>[] axisValueSets, boolean[] nullAxisFlags) {
+    super(axisValueSets, nullAxisFlags);
+    this.size = size;
+    this.data = new int[size];
+    System.arraycopy(dataToSave, 0, data, 0, size);
+    this.nullIndicators = new BitSet(nullIndicators.length());
+    this.nullIndicators.or(nullIndicators);
+  }
+
+  public SegmentDataset createSegmentDataset(Segment segment) {
+    DenseIntSegmentDataset ds = new DenseIntSegmentDataset(segment, this.size);
+    System.arraycopy(data, 0, ds.values, 0, this.size);
+    ds.nullIndicators.clear();
+    ds.nullIndicators.or(nullIndicators);
+    return ds;
+  }
 }
 // End DenseIntSegmentBody.java

@@ -28,17 +28,17 @@ import mondrian.olap.type.DimensionType;
  * @since Jul 20, 2009
  */
 class DimensionDimensionFunDef extends FunDefBase {
-	public static final FunDefBase INSTANCE = new DimensionDimensionFunDef();
+  public static final FunDefBase INSTANCE = new DimensionDimensionFunDef();
 
-	private DimensionDimensionFunDef() {
-		super("Dimension",
-				"Returns the dimension that contains a specified hierarchy.", "pdd");
-	}
+  private DimensionDimensionFunDef() {
+    super("Dimension", "Returns the dimension that contains a specified hierarchy.",
+      "pdd");
+  }
 
-	public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
-		Dimension dimension = ((DimensionExpr) call.getArg(0)).getDimension();
-		return new ConstantCalc(DimensionType.forDimension(dimension), dimension);
-	}
+  public Calc compileCall(ResolvedFunCall call, ExpCompiler compiler) {
+    Dimension dimension = ((DimensionExpr) call.getArg(0)).getDimension();
+    return new ConstantCalc(DimensionType.forDimension(dimension), dimension);
+  }
 }
 
 // End DimensionDimensionFunDef.java

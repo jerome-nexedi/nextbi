@@ -27,281 +27,282 @@ import org.apache.log4j.Logger;
  * @author Gang Chen
  */
 public class DefaultXmlaRequest implements XmlaRequest, XmlaConstants {
-	private static final Logger LOGGER = Logger
-			.getLogger(DefaultXmlaRequest.class);
+  private static final Logger LOGGER = Logger.getLogger(DefaultXmlaRequest.class);
 
-	private static final String MSG_INVALID_XMLA = "Invalid XML/A message";
+  private static final String MSG_INVALID_XMLA = "Invalid XML/A message";
 
-	/* common content */
-	private Method method;
-	private Map<String, String> properties;
-	private final String roleName;
+  /* common content */
+  private Method method;
 
-	/* EXECUTE content */
-	private String statement;
-	private boolean drillthrough;
+  private Map<String, String> properties;
 
-	/* DISCOVER contnet */
-	private String requestType;
-	private Map<String, Object> restrictions;
+  private final String roleName;
 
-	private final String username;
-	private final String password;
-	private final String sessionId;
+  /* EXECUTE content */
+  private String statement;
 
-	public DefaultXmlaRequest(final Element xmlaRoot, final String roleName,
-			final String username, final String password, final String sessionId)
-			throws XmlaException {
-		init(xmlaRoot);
-		this.roleName = roleName;
-		this.username = username;
-		this.password = password;
-		this.sessionId = sessionId;
-	}
+  private boolean drillthrough;
 
-	public String getSessionId() {
-		return sessionId;
-	}
+  /* DISCOVER contnet */
+  private String requestType;
 
-	public String getUsername() {
-		return username;
-	}
+  private Map<String, Object> restrictions;
 
-	public String getPassword() {
-		return password;
-	}
+  private final String username;
 
-	public Method getMethod() {
-		return method;
-	}
+  private final String password;
 
-	public Map<String, String> getProperties() {
-		return properties;
-	}
+  private final String sessionId;
 
-	public Map<String, Object> getRestrictions() {
-		if (method != Method.DISCOVER) {
-			throw new IllegalStateException("Only METHOD_DISCOVER has restrictions");
-		}
-		return restrictions;
-	}
+  public DefaultXmlaRequest(final Element xmlaRoot, final String roleName,
+    final String username, final String password, final String sessionId)
+    throws XmlaException {
+    init(xmlaRoot);
+    this.roleName = roleName;
+    this.username = username;
+    this.password = password;
+    this.sessionId = sessionId;
+  }
 
-	public String getStatement() {
-		if (method != Method.EXECUTE) {
-			throw new IllegalStateException("Only METHOD_EXECUTE has statement");
-		}
-		return statement;
-	}
+  public String getSessionId() {
+    return sessionId;
+  }
 
-	public String getRoleName() {
-		return roleName;
-	}
+  public String getUsername() {
+    return username;
+  }
 
-	public String getRequestType() {
-		if (method != Method.DISCOVER) {
-			throw new IllegalStateException("Only METHOD_DISCOVER has requestType");
-		}
-		return requestType;
-	}
+  public String getPassword() {
+    return password;
+  }
 
-	public boolean isDrillThrough() {
-		if (method != Method.EXECUTE) {
-			throw new IllegalStateException(
-					"Only METHOD_EXECUTE determines drillthrough");
-		}
-		return drillthrough;
-	}
+  public Method getMethod() {
+    return method;
+  }
 
-	protected final void init(Element xmlaRoot) throws XmlaException {
-		if (NS_XMLA.equals(xmlaRoot.getNamespaceURI())) {
-			String lname = xmlaRoot.getLocalName();
-			if ("Discover".equals(lname)) {
-				method = Method.DISCOVER;
-				initDiscover(xmlaRoot);
-			} else if ("Execute".equals(lname)) {
-				method = Method.EXECUTE;
-				initExecute(xmlaRoot);
-			} else {
-				// Note that is code will never be reached because
-				// the error will be caught in
-				// DefaultXmlaServlet.handleSoapBody first
-				StringBuilder buf = new StringBuilder(100);
-				buf.append(MSG_INVALID_XMLA);
-				buf.append(": Bad method name \"");
-				buf.append(lname);
-				buf.append("\"");
-				throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_METHOD_CODE,
-						HSB_BAD_METHOD_FAULT_FS, Util.newError(buf.toString()));
-			}
-		} else {
-			// Note that is code will never be reached because
-			// the error will be caught in
-			// DefaultXmlaServlet.handleSoapBody first
-			StringBuilder buf = new StringBuilder(100);
-			buf.append(MSG_INVALID_XMLA);
-			buf.append(": Bad namespace url \"");
-			buf.append(xmlaRoot.getNamespaceURI());
-			buf.append("\"");
-			throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_METHOD_NS_CODE,
-					HSB_BAD_METHOD_NS_FAULT_FS, Util.newError(buf.toString()));
-		}
-	}
+  public Map<String, String> getProperties() {
+    return properties;
+  }
 
-	private void initDiscover(Element discoverRoot) throws XmlaException {
-		Element[] childElems = XmlaUtil.filterChildElements(discoverRoot, NS_XMLA,
-				"RequestType");
-		if (childElems.length != 1) {
-			StringBuilder buf = new StringBuilder(100);
-			buf.append(MSG_INVALID_XMLA);
-			buf.append(": Wrong number of RequestType elements: ");
-			buf.append(childElems.length);
-			throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_REQUEST_TYPE_CODE,
-					HSB_BAD_REQUEST_TYPE_FAULT_FS, Util.newError(buf.toString()));
-		}
-		requestType = XmlaUtil.textInElement(childElems[0]); // <RequestType>
+  public Map<String, Object> getRestrictions() {
+    if (method != Method.DISCOVER) {
+      throw new IllegalStateException("Only METHOD_DISCOVER has restrictions");
+    }
+    return restrictions;
+  }
 
-		childElems = XmlaUtil.filterChildElements(discoverRoot, NS_XMLA,
-				"Restrictions");
-		if (childElems.length != 1) {
-			StringBuilder buf = new StringBuilder(100);
-			buf.append(MSG_INVALID_XMLA);
-			buf.append(": Wrong number of Restrictions elements: ");
-			buf.append(childElems.length);
-			throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_RESTRICTIONS_CODE,
-					HSB_BAD_RESTRICTIONS_FAULT_FS, Util.newError(buf.toString()));
-		}
-		initRestrictions(childElems[0]); // <Restriciotns><RestrictionList>
+  public String getStatement() {
+    if (method != Method.EXECUTE) {
+      throw new IllegalStateException("Only METHOD_EXECUTE has statement");
+    }
+    return statement;
+  }
 
-		childElems = XmlaUtil.filterChildElements(discoverRoot, NS_XMLA,
-				"Properties");
-		if (childElems.length != 1) {
-			StringBuilder buf = new StringBuilder(100);
-			buf.append(MSG_INVALID_XMLA);
-			buf.append(": Wrong number of Properties elements: ");
-			buf.append(childElems.length);
-			throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_PROPERTIES_CODE,
-					HSB_BAD_PROPERTIES_FAULT_FS, Util.newError(buf.toString()));
-		}
-		initProperties(childElems[0]); // <Properties><PropertyList>
-	}
+  public String getRoleName() {
+    return roleName;
+  }
 
-	private void initExecute(Element executeRoot) throws XmlaException {
-		Element[] childElems = XmlaUtil.filterChildElements(executeRoot, NS_XMLA,
-				"Command");
-		if (childElems.length != 1) {
-			StringBuilder buf = new StringBuilder(100);
-			buf.append(MSG_INVALID_XMLA);
-			buf.append(": Wrong number of Command elements: ");
-			buf.append(childElems.length);
-			throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_COMMAND_CODE,
-					HSB_BAD_COMMAND_FAULT_FS, Util.newError(buf.toString()));
-		}
-		initCommand(childElems[0]); // <Command><Statement>
+  public String getRequestType() {
+    if (method != Method.DISCOVER) {
+      throw new IllegalStateException("Only METHOD_DISCOVER has requestType");
+    }
+    return requestType;
+  }
 
-		childElems = XmlaUtil.filterChildElements(executeRoot, NS_XMLA,
-				"Properties");
-		if (childElems.length != 1) {
-			StringBuilder buf = new StringBuilder(100);
-			buf.append(MSG_INVALID_XMLA);
-			buf.append(": Wrong number of Properties elements: ");
-			buf.append(childElems.length);
-			throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_PROPERTIES_CODE,
-					HSB_BAD_PROPERTIES_FAULT_FS, Util.newError(buf.toString()));
-		}
-		initProperties(childElems[0]); // <Properties><PropertyList>
-	}
+  public boolean isDrillThrough() {
+    if (method != Method.EXECUTE) {
+      throw new IllegalStateException("Only METHOD_EXECUTE determines drillthrough");
+    }
+    return drillthrough;
+  }
 
-	private void initRestrictions(Element restrictionsRoot) throws XmlaException {
-		Map<String, List<String>> restrictions = new HashMap<String, List<String>>();
-		Element[] childElems = XmlaUtil.filterChildElements(restrictionsRoot,
-				NS_XMLA, "RestrictionList");
-		if (childElems.length == 1) {
-			NodeList nlst = childElems[0].getChildNodes();
-			for (int i = 0, nlen = nlst.getLength(); i < nlen; i++) {
-				Node n = nlst.item(i);
-				if (n instanceof Element) {
-					Element e = (Element) n;
-					if (NS_XMLA.equals(e.getNamespaceURI())) {
-						String key = e.getLocalName();
-						String value = XmlaUtil.textInElement(e);
+  protected final void init(Element xmlaRoot) throws XmlaException {
+    if (NS_XMLA.equals(xmlaRoot.getNamespaceURI())) {
+      String lname = xmlaRoot.getLocalName();
+      if ("Discover".equals(lname)) {
+        method = Method.DISCOVER;
+        initDiscover(xmlaRoot);
+      } else if ("Execute".equals(lname)) {
+        method = Method.EXECUTE;
+        initExecute(xmlaRoot);
+      } else {
+        // Note that is code will never be reached because
+        // the error will be caught in
+        // DefaultXmlaServlet.handleSoapBody first
+        StringBuilder buf = new StringBuilder(100);
+        buf.append(MSG_INVALID_XMLA);
+        buf.append(": Bad method name \"");
+        buf.append(lname);
+        buf.append("\"");
+        throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_METHOD_CODE,
+          HSB_BAD_METHOD_FAULT_FS, Util.newError(buf.toString()));
+      }
+    } else {
+      // Note that is code will never be reached because
+      // the error will be caught in
+      // DefaultXmlaServlet.handleSoapBody first
+      StringBuilder buf = new StringBuilder(100);
+      buf.append(MSG_INVALID_XMLA);
+      buf.append(": Bad namespace url \"");
+      buf.append(xmlaRoot.getNamespaceURI());
+      buf.append("\"");
+      throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_METHOD_NS_CODE,
+        HSB_BAD_METHOD_NS_FAULT_FS, Util.newError(buf.toString()));
+    }
+  }
 
-						List<String> values;
-						if (restrictions.containsKey(key)) {
-							values = restrictions.get(key);
-						} else {
-							values = new ArrayList<String>();
-							restrictions.put(key, values);
-						}
+  private void initDiscover(Element discoverRoot) throws XmlaException {
+    Element[] childElems = XmlaUtil.filterChildElements(discoverRoot, NS_XMLA,
+      "RequestType");
+    if (childElems.length != 1) {
+      StringBuilder buf = new StringBuilder(100);
+      buf.append(MSG_INVALID_XMLA);
+      buf.append(": Wrong number of RequestType elements: ");
+      buf.append(childElems.length);
+      throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_REQUEST_TYPE_CODE,
+        HSB_BAD_REQUEST_TYPE_FAULT_FS, Util.newError(buf.toString()));
+    }
+    requestType = XmlaUtil.textInElement(childElems[0]); // <RequestType>
 
-						if (LOGGER.isDebugEnabled()) {
-							LOGGER.debug("DefaultXmlaRequest.initRestrictions: " + " key=\""
-									+ key + "\", value=\"" + value + "\"");
-						}
+    childElems = XmlaUtil.filterChildElements(discoverRoot, NS_XMLA, "Restrictions");
+    if (childElems.length != 1) {
+      StringBuilder buf = new StringBuilder(100);
+      buf.append(MSG_INVALID_XMLA);
+      buf.append(": Wrong number of Restrictions elements: ");
+      buf.append(childElems.length);
+      throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_RESTRICTIONS_CODE,
+        HSB_BAD_RESTRICTIONS_FAULT_FS, Util.newError(buf.toString()));
+    }
+    initRestrictions(childElems[0]); // <Restriciotns><RestrictionList>
 
-						values.add(value);
-					}
-				}
-			}
-		} else if (childElems.length > 1) {
-			StringBuilder buf = new StringBuilder(100);
-			buf.append(MSG_INVALID_XMLA);
-			buf.append(": Wrong number of RestrictionList elements: ");
-			buf.append(childElems.length);
-			throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_RESTRICTION_LIST_CODE,
-					HSB_BAD_RESTRICTION_LIST_FAULT_FS, Util.newError(buf.toString()));
-		}
-		this.restrictions = (Map) Collections.unmodifiableMap(restrictions);
-	}
+    childElems = XmlaUtil.filterChildElements(discoverRoot, NS_XMLA, "Properties");
+    if (childElems.length != 1) {
+      StringBuilder buf = new StringBuilder(100);
+      buf.append(MSG_INVALID_XMLA);
+      buf.append(": Wrong number of Properties elements: ");
+      buf.append(childElems.length);
+      throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_PROPERTIES_CODE,
+        HSB_BAD_PROPERTIES_FAULT_FS, Util.newError(buf.toString()));
+    }
+    initProperties(childElems[0]); // <Properties><PropertyList>
+  }
 
-	private void initProperties(Element propertiesRoot) throws XmlaException {
-		Map<String, String> properties = new HashMap<String, String>();
-		Element[] childElems = XmlaUtil.filterChildElements(propertiesRoot,
-				NS_XMLA, "PropertyList");
-		if (childElems.length == 1) {
-			NodeList nlst = childElems[0].getChildNodes();
-			for (int i = 0, nlen = nlst.getLength(); i < nlen; i++) {
-				Node n = nlst.item(i);
-				if (n instanceof Element) {
-					Element e = (Element) n;
-					if (NS_XMLA.equals(e.getNamespaceURI())) {
-						String key = e.getLocalName();
-						String value = XmlaUtil.textInElement(e);
+  private void initExecute(Element executeRoot) throws XmlaException {
+    Element[] childElems = XmlaUtil.filterChildElements(executeRoot, NS_XMLA,
+      "Command");
+    if (childElems.length != 1) {
+      StringBuilder buf = new StringBuilder(100);
+      buf.append(MSG_INVALID_XMLA);
+      buf.append(": Wrong number of Command elements: ");
+      buf.append(childElems.length);
+      throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_COMMAND_CODE,
+        HSB_BAD_COMMAND_FAULT_FS, Util.newError(buf.toString()));
+    }
+    initCommand(childElems[0]); // <Command><Statement>
 
-						if (LOGGER.isDebugEnabled()) {
-							LOGGER.debug("DefaultXmlaRequest.initProperties: " + " key=\""
-									+ key + "\", value=\"" + value + "\"");
-						}
+    childElems = XmlaUtil.filterChildElements(executeRoot, NS_XMLA, "Properties");
+    if (childElems.length != 1) {
+      StringBuilder buf = new StringBuilder(100);
+      buf.append(MSG_INVALID_XMLA);
+      buf.append(": Wrong number of Properties elements: ");
+      buf.append(childElems.length);
+      throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_PROPERTIES_CODE,
+        HSB_BAD_PROPERTIES_FAULT_FS, Util.newError(buf.toString()));
+    }
+    initProperties(childElems[0]); // <Properties><PropertyList>
+  }
 
-						properties.put(key, value);
-					}
-				}
-			}
-		} else if (childElems.length > 1) {
-			StringBuilder buf = new StringBuilder(100);
-			buf.append(MSG_INVALID_XMLA);
-			buf.append(": Wrong number of PropertyList elements: ");
-			buf.append(childElems.length);
-			throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_PROPERTIES_LIST_CODE,
-					HSB_BAD_PROPERTIES_LIST_FAULT_FS, Util.newError(buf.toString()));
-		} else {
-		}
-		this.properties = Collections.unmodifiableMap(properties);
-	}
+  private void initRestrictions(Element restrictionsRoot) throws XmlaException {
+    Map<String, List<String>> restrictions = new HashMap<String, List<String>>();
+    Element[] childElems = XmlaUtil.filterChildElements(restrictionsRoot, NS_XMLA,
+      "RestrictionList");
+    if (childElems.length == 1) {
+      NodeList nlst = childElems[0].getChildNodes();
+      for (int i = 0, nlen = nlst.getLength(); i < nlen; i++) {
+        Node n = nlst.item(i);
+        if (n instanceof Element) {
+          Element e = (Element) n;
+          if (NS_XMLA.equals(e.getNamespaceURI())) {
+            String key = e.getLocalName();
+            String value = XmlaUtil.textInElement(e);
 
-	private void initCommand(Element commandRoot) throws XmlaException {
-		Element[] childElems = XmlaUtil.filterChildElements(commandRoot, NS_XMLA,
-				"Statement");
-		if (childElems.length != 1) {
-			StringBuilder buf = new StringBuilder(100);
-			buf.append(MSG_INVALID_XMLA);
-			buf.append(": Wrong number of Statement elements: ");
-			buf.append(childElems.length);
-			throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_STATEMENT_CODE,
-					HSB_BAD_STATEMENT_FAULT_FS, Util.newError(buf.toString()));
-		}
-		statement = XmlaUtil.textInElement(childElems[0]).replaceAll("\\r", "");
-		drillthrough = statement.toUpperCase().indexOf("DRILLTHROUGH") != -1;
-	}
+            List<String> values;
+            if (restrictions.containsKey(key)) {
+              values = restrictions.get(key);
+            } else {
+              values = new ArrayList<String>();
+              restrictions.put(key, values);
+            }
+
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.debug("DefaultXmlaRequest.initRestrictions: " + " key=\"" + key
+                + "\", value=\"" + value + "\"");
+            }
+
+            values.add(value);
+          }
+        }
+      }
+    } else if (childElems.length > 1) {
+      StringBuilder buf = new StringBuilder(100);
+      buf.append(MSG_INVALID_XMLA);
+      buf.append(": Wrong number of RestrictionList elements: ");
+      buf.append(childElems.length);
+      throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_RESTRICTION_LIST_CODE,
+        HSB_BAD_RESTRICTION_LIST_FAULT_FS, Util.newError(buf.toString()));
+    }
+    this.restrictions = (Map) Collections.unmodifiableMap(restrictions);
+  }
+
+  private void initProperties(Element propertiesRoot) throws XmlaException {
+    Map<String, String> properties = new HashMap<String, String>();
+    Element[] childElems = XmlaUtil.filterChildElements(propertiesRoot, NS_XMLA,
+      "PropertyList");
+    if (childElems.length == 1) {
+      NodeList nlst = childElems[0].getChildNodes();
+      for (int i = 0, nlen = nlst.getLength(); i < nlen; i++) {
+        Node n = nlst.item(i);
+        if (n instanceof Element) {
+          Element e = (Element) n;
+          if (NS_XMLA.equals(e.getNamespaceURI())) {
+            String key = e.getLocalName();
+            String value = XmlaUtil.textInElement(e);
+
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.debug("DefaultXmlaRequest.initProperties: " + " key=\"" + key
+                + "\", value=\"" + value + "\"");
+            }
+
+            properties.put(key, value);
+          }
+        }
+      }
+    } else if (childElems.length > 1) {
+      StringBuilder buf = new StringBuilder(100);
+      buf.append(MSG_INVALID_XMLA);
+      buf.append(": Wrong number of PropertyList elements: ");
+      buf.append(childElems.length);
+      throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_PROPERTIES_LIST_CODE,
+        HSB_BAD_PROPERTIES_LIST_FAULT_FS, Util.newError(buf.toString()));
+    } else {
+    }
+    this.properties = Collections.unmodifiableMap(properties);
+  }
+
+  private void initCommand(Element commandRoot) throws XmlaException {
+    Element[] childElems = XmlaUtil.filterChildElements(commandRoot, NS_XMLA,
+      "Statement");
+    if (childElems.length != 1) {
+      StringBuilder buf = new StringBuilder(100);
+      buf.append(MSG_INVALID_XMLA);
+      buf.append(": Wrong number of Statement elements: ");
+      buf.append(childElems.length);
+      throw new XmlaException(CLIENT_FAULT_FC, HSB_BAD_STATEMENT_CODE,
+        HSB_BAD_STATEMENT_FAULT_FS, Util.newError(buf.toString()));
+    }
+    statement = XmlaUtil.textInElement(childElems[0]).replaceAll("\\r", "");
+    drillthrough = statement.toUpperCase().indexOf("DRILLTHROUGH") != -1;
+  }
 }
 
 // End DefaultXmlaRequest.java

@@ -17,15 +17,15 @@ import mondrian.olap.QueryTiming;
  * @version $Id: //open/mondrian/src/main/mondrian/spi/ProfileHandler.java#1 $
  */
 public interface ProfileHandler {
-	/**
-	 * Called when a statement has finished executing.
-	 * 
-	 * @param plan
-	 *          Annotated plan
-	 * @param timing
-	 *          Query timings
-	 */
-	public void explain(String plan, QueryTiming timing);
+  /**
+   * Called when a statement has finished executing.
+   * 
+   * @param plan
+   *          Annotated plan
+   * @param timing
+   *          Query timings
+   */
+  public void explain(String plan, QueryTiming timing);
 }
 
 // End ProfileHandler.java

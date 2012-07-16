@@ -18,15 +18,15 @@ package mondrian.olap;
  *          java#2 $
  */
 public class InvalidArgumentException extends MondrianException {
-	/**
-	 * Creates a InvalidArgumentException.
-	 * 
-	 * @param message
-	 *          Localized error message
-	 */
-	public InvalidArgumentException(String message) {
-		super(message);
-	}
+  /**
+   * Creates a InvalidArgumentException.
+   * 
+   * @param message
+   *          Localized error message
+   */
+  public InvalidArgumentException(String message) {
+    super(message);
+  }
 }
 
 // End InvalidArgumentException.java

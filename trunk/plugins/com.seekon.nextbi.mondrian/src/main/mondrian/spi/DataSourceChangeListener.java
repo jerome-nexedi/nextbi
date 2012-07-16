@@ -43,29 +43,29 @@ import mondrian.rolap.agg.Aggregation;
 
 public interface DataSourceChangeListener {
 
-	/**
-	 * Checks if the given hierarchy has changed since the previous time this
-	 * function was called.
-	 * 
-	 * The first time, this function will be called when the cache is still empty.
-	 * This is because the plugin is able to register the first timestamp the
-	 * function was accessed.
-	 * 
-	 * It is highly recommended to optimize the plugin and minimize the time
-	 * needed to evaluate this function, because this plugin is called many times
-	 * for each mondrian query.
-	 */
-	public boolean isHierarchyChanged(RolapHierarchy hierarchy);
+  /**
+   * Checks if the given hierarchy has changed since the previous time this
+   * function was called.
+   * 
+   * The first time, this function will be called when the cache is still empty.
+   * This is because the plugin is able to register the first timestamp the
+   * function was accessed.
+   * 
+   * It is highly recommended to optimize the plugin and minimize the time
+   * needed to evaluate this function, because this plugin is called many times
+   * for each mondrian query.
+   */
+  public boolean isHierarchyChanged(RolapHierarchy hierarchy);
 
-	/**
-	 * Checks if the given aggregation has changed since the previous time this
-	 * function was called.
-	 * 
-	 * The first time, this function will be called when the cache is still empty.
-	 * This is because the plugin is able to register the first timestamp the
-	 * function was accessed.
-	 */
-	public boolean isAggregationChanged(Aggregation aggregation);
+  /**
+   * Checks if the given aggregation has changed since the previous time this
+   * function was called.
+   * 
+   * The first time, this function will be called when the cache is still empty.
+   * This is because the plugin is able to register the first timestamp the
+   * function was accessed.
+   */
+  public boolean isAggregationChanged(Aggregation aggregation);
 }
 
 // End DataSourceChangeListener.java

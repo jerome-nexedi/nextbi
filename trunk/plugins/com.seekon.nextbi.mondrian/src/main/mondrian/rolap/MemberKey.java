@@ -22,37 +22,38 @@ import mondrian.olap.Util;
  * @version $Id: //open/mondrian/src/main/mondrian/rolap/MemberKey.java#9 $
  */
 class MemberKey {
-	private final RolapMember parent;
-	private final Object value;
+  private final RolapMember parent;
 
-	MemberKey(RolapMember parent, Object value) {
-		this.parent = parent;
-		this.value = value;
-	}
+  private final Object value;
 
-	// override Object
-	public boolean equals(Object o) {
-		if (!(o instanceof MemberKey)) {
-			return false;
-		}
-		MemberKey other = (MemberKey) o;
-		return Util.equals(this.parent, other.parent)
-				&& Util.equals(this.value, other.value);
-	}
+  MemberKey(RolapMember parent, Object value) {
+    this.parent = parent;
+    this.value = value;
+  }
 
-	// override Object
-	public int hashCode() {
-		if (parent == null && value == null) {
-			return 0;
-		}
-		if (parent == null && value != null) {
-			return (value.hashCode() << 16);
-		}
-		if (parent != null && value == null) {
-			return (parent.hashCode() << 16);
-		}
-		return (parent.hashCode() << 16) ^ value.hashCode();
-	}
+  // override Object
+  public boolean equals(Object o) {
+    if (!(o instanceof MemberKey)) {
+      return false;
+    }
+    MemberKey other = (MemberKey) o;
+    return Util.equals(this.parent, other.parent)
+      && Util.equals(this.value, other.value);
+  }
+
+  // override Object
+  public int hashCode() {
+    if (parent == null && value == null) {
+      return 0;
+    }
+    if (parent == null && value != null) {
+      return (value.hashCode() << 16);
+    }
+    if (parent != null && value == null) {
+      return (parent.hashCode() << 16);
+    }
+    return (parent.hashCode() << 16) ^ value.hashCode();
+  }
 }
 
 // End MemberKey.java

@@ -25,22 +25,22 @@ import java.util.Map;
  *          $
  */
 public interface SmartCache<K, V> extends Iterable<Map.Entry<K, V>> {
-	/**
-	 * Places a key/value pair into the queue.
-	 * 
-	 * @param key
-	 *          Key
-	 * @param value
-	 *          Value
-	 * @return the previous value of <code>key</code> or null
-	 */
-	V put(K key, V value);
+  /**
+   * Places a key/value pair into the queue.
+   * 
+   * @param key
+   *          Key
+   * @param value
+   *          Value
+   * @return the previous value of <code>key</code> or null
+   */
+  V put(K key, V value);
 
-	V get(K key);
+  V get(K key);
 
-	void clear();
+  void clear();
 
-	int size();
+  int size();
 }
 
 // End SmartCache.java

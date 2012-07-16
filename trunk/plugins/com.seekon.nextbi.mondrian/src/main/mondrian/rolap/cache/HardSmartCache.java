@@ -20,27 +20,27 @@ import java.util.*;
  *          $
  */
 public class HardSmartCache<K, V> implements SmartCache<K, V> {
-	Map<K, V> cache = new HashMap<K, V>();
+  Map<K, V> cache = new HashMap<K, V>();
 
-	public V put(K key, V value) {
-		return cache.put(key, value);
-	}
+  public V put(K key, V value) {
+    return cache.put(key, value);
+  }
 
-	public V get(K key) {
-		return cache.get(key);
-	}
+  public V get(K key) {
+    return cache.get(key);
+  }
 
-	public void clear() {
-		cache.clear();
-	}
+  public void clear() {
+    cache.clear();
+  }
 
-	public int size() {
-		return cache.size();
-	}
+  public int size() {
+    return cache.size();
+  }
 
-	public Iterator<Map.Entry<K, V>> iterator() {
-		return cache.entrySet().iterator();
-	}
+  public Iterator<Map.Entry<K, V>> iterator() {
+    return cache.entrySet().iterator();
+  }
 }
 
 // End HardSmartCache.java

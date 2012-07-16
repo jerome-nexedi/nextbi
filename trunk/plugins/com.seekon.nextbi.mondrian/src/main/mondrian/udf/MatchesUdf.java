@@ -25,37 +25,37 @@ import java.util.regex.*;
  */
 public class MatchesUdf implements UserDefinedFunction {
 
-	public Object execute(Evaluator evaluator, Argument[] arguments) {
-		Object arg0 = arguments[0].evaluateScalar(evaluator);
-		Object arg1 = arguments[1].evaluateScalar(evaluator);
+  public Object execute(Evaluator evaluator, Argument[] arguments) {
+    Object arg0 = arguments[0].evaluateScalar(evaluator);
+    Object arg1 = arguments[1].evaluateScalar(evaluator);
 
-		return Boolean.valueOf(Pattern.matches((String) arg1, (String) arg0));
-	}
+    return Boolean.valueOf(Pattern.matches((String) arg1, (String) arg0));
+  }
 
-	public String getDescription() {
-		return "Returns true if the string matches the regular expression.";
-	}
+  public String getDescription() {
+    return "Returns true if the string matches the regular expression.";
+  }
 
-	public String getName() {
-		return "MATCHES";
-	}
+  public String getName() {
+    return "MATCHES";
+  }
 
-	public Type[] getParameterTypes() {
-		return new Type[] { new StringType(), new StringType() };
-	}
+  public Type[] getParameterTypes() {
+    return new Type[] { new StringType(), new StringType() };
+  }
 
-	public String[] getReservedWords() {
-		// This function does not require any reserved words.
-		return null;
-	}
+  public String[] getReservedWords() {
+    // This function does not require any reserved words.
+    return null;
+  }
 
-	public Type getReturnType(Type[] parameterTypes) {
-		return new BooleanType();
-	}
+  public Type getReturnType(Type[] parameterTypes) {
+    return new BooleanType();
+  }
 
-	public Syntax getSyntax() {
-		return Syntax.Infix;
-	}
+  public Syntax getSyntax() {
+    return Syntax.Infix;
+  }
 
 }
 

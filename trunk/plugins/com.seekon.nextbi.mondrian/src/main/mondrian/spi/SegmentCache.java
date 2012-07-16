@@ -52,68 +52,68 @@ import mondrian.rolap.agg.SegmentHeader.ConstrainedColumn;
  * @version $Id: //open/mondrian/src/main/mondrian/spi/SegmentCache.java#3 $
  */
 public interface SegmentCache {
-	/**
-	 * Returns a future SegmentBody object once the cache has returned any
-	 * results, or null of no segment corresponding to the header could be found.
-	 * 
-	 * @param header
-	 *          The header of the segment to find. Consider this as a key.
-	 * @return A Future SegmentBody or a Future <code>null</code> if no
-	 *         corresponding segment could be found in cache.
-	 */
-	Future<SegmentBody> get(SegmentHeader header);
+  /**
+   * Returns a future SegmentBody object once the cache has returned any
+   * results, or null of no segment corresponding to the header could be found.
+   * 
+   * @param header
+   *          The header of the segment to find. Consider this as a key.
+   * @return A Future SegmentBody or a Future <code>null</code> if no
+   *         corresponding segment could be found in cache.
+   */
+  Future<SegmentBody> get(SegmentHeader header);
 
-	/**
-	 * Checks if the cache contains a {@link SegmentBody} corresponding to the
-	 * supplied {@link SegmentHeader}.
-	 * 
-	 * @param header
-	 *          A header to lookup in the cache.
-	 * @return A Future true or a Future false if no corresponding segment could
-	 *         be found in cache.
-	 */
-	Future<Boolean> contains(SegmentHeader header);
+  /**
+   * Checks if the cache contains a {@link SegmentBody} corresponding to the
+   * supplied {@link SegmentHeader}.
+   * 
+   * @param header
+   *          A header to lookup in the cache.
+   * @return A Future true or a Future false if no corresponding segment could
+   *         be found in cache.
+   */
+  Future<Boolean> contains(SegmentHeader header);
 
-	/**
-	 * Returns a list of all segments present in the cache.
-	 * 
-	 * @return A List of segment headers describing the contents of the cache.
-	 */
-	Future<List<SegmentHeader>> getSegmentHeaders();
+  /**
+   * Returns a list of all segments present in the cache.
+   * 
+   * @return A List of segment headers describing the contents of the cache.
+   */
+  Future<List<SegmentHeader>> getSegmentHeaders();
 
-	/**
-	 * Stores a segment data in the cache.
-	 * 
-	 * @return A Future object which returns true or false depending on the
-	 *         success of the caching operation.
-	 * @param header
-	 *          The header of the segment.
-	 * @param body
-	 *          The segment body to cache.
-	 */
-	Future<Boolean> put(SegmentHeader header, SegmentBody body);
+  /**
+   * Stores a segment data in the cache.
+   * 
+   * @return A Future object which returns true or false depending on the
+   *         success of the caching operation.
+   * @param header
+   *          The header of the segment.
+   * @param body
+   *          The segment body to cache.
+   */
+  Future<Boolean> put(SegmentHeader header, SegmentBody body);
 
-	/**
-	 * Removes a segment from the cache.
-	 * 
-	 * @param header
-	 *          The header of the segment we want to remove.
-	 * @return True if the segment was found and removed, false otherwise.
-	 */
-	Future<Boolean> remove(SegmentHeader header);
+  /**
+   * Removes a segment from the cache.
+   * 
+   * @param header
+   *          The header of the segment we want to remove.
+   * @return True if the segment was found and removed, false otherwise.
+   */
+  Future<Boolean> remove(SegmentHeader header);
 
-	/**
-	 * Flushes a dimensionality region from the cache.
-	 * 
-	 * @param region
-	 *          The region to flush.
-	 * @return True if the operation succeeded, false otherwise.
-	 */
-	Future<Boolean> flush(ConstrainedColumn[] region);
+  /**
+   * Flushes a dimensionality region from the cache.
+   * 
+   * @param region
+   *          The region to flush.
+   * @return True if the operation succeeded, false otherwise.
+   */
+  Future<Boolean> flush(ConstrainedColumn[] region);
 
-	/**
-	 * Tear down and clean up the cache.
-	 */
-	void tearDown();
+  /**
+   * Tear down and clean up the cache.
+   */
+  void tearDown();
 }
 // End SegmentCache.java

@@ -24,29 +24,31 @@ import mondrian.rolap.CellKey;
  *          $
  */
 class SparseSegmentBody extends AbstractSegmentBody {
-	private static final long serialVersionUID = -6684830985364895836L;
-	final CellKey[] keys;
-	final Object[] data;
+  private static final long serialVersionUID = -6684830985364895836L;
 
-	SparseSegmentBody(Map<CellKey, Object> dataToSave,
-			SortedSet<Comparable<?>>[] axisValueSets, boolean[] nullAxisFlags) {
-		super(axisValueSets, nullAxisFlags);
+  final CellKey[] keys;
 
-		this.keys = new CellKey[dataToSave.size()];
-		System.arraycopy(dataToSave.keySet().toArray(), 0, this.keys, 0,
-				dataToSave.size());
+  final Object[] data;
 
-		this.data = new Object[dataToSave.size()];
-		System.arraycopy(dataToSave.values().toArray(), 0, this.data, 0,
-				dataToSave.size());
-	}
+  SparseSegmentBody(Map<CellKey, Object> dataToSave,
+    SortedSet<Comparable<?>>[] axisValueSets, boolean[] nullAxisFlags) {
+    super(axisValueSets, nullAxisFlags);
 
-	public SegmentDataset createSegmentDataset(Segment segment) {
-		SparseSegmentDataset ds = new SparseSegmentDataset(segment);
-		for (int i = 0; i < keys.length; i++) {
-			ds.put(this.keys[i], this.data[i]);
-		}
-		return ds;
-	}
+    this.keys = new CellKey[dataToSave.size()];
+    System.arraycopy(dataToSave.keySet().toArray(), 0, this.keys, 0, dataToSave
+      .size());
+
+    this.data = new Object[dataToSave.size()];
+    System.arraycopy(dataToSave.values().toArray(), 0, this.data, 0, dataToSave
+      .size());
+  }
+
+  public SegmentDataset createSegmentDataset(Segment segment) {
+    SparseSegmentDataset ds = new SparseSegmentDataset(segment);
+    for (int i = 0; i < keys.length; i++) {
+      ds.put(this.keys[i], this.data[i]);
+    }
+    return ds;
+  }
 }
 // End SparseSegmentBody.java

@@ -19,7 +19,7 @@ import mondrian.olap.Member;
  *          $
  */
 public interface PropertyFormatter {
-	String formatProperty(Member member, String propertyName, Object propertyValue);
+  String formatProperty(Member member, String propertyName, Object propertyValue);
 }
 
 // End PropertyFormatter.java

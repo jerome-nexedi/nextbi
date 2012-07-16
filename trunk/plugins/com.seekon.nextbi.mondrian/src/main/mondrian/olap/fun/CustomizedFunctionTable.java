@@ -24,40 +24,41 @@ import mondrian.olap.*;
  */
 public class CustomizedFunctionTable extends FunTableImpl {
 
-	Set<String> supportedBuiltinFunctions;
-	Set<FunDef> specialFunctions;
+  Set<String> supportedBuiltinFunctions;
 
-	public CustomizedFunctionTable(Set<String> builtinFunctions) {
-		supportedBuiltinFunctions = builtinFunctions;
-		this.specialFunctions = new HashSet<FunDef>();
-	}
+  Set<FunDef> specialFunctions;
 
-	public CustomizedFunctionTable(Set<String> builtinFunctions,
-			Set<FunDef> specialFunctions) {
-		this.supportedBuiltinFunctions = builtinFunctions;
-		this.specialFunctions = specialFunctions;
-	}
+  public CustomizedFunctionTable(Set<String> builtinFunctions) {
+    supportedBuiltinFunctions = builtinFunctions;
+    this.specialFunctions = new HashSet<FunDef>();
+  }
 
-	public void defineFunctions(Builder builder) {
-		final FunTable builtinFunTable = BuiltinFunTable.instance();
+  public CustomizedFunctionTable(Set<String> builtinFunctions,
+    Set<FunDef> specialFunctions) {
+    this.supportedBuiltinFunctions = builtinFunctions;
+    this.specialFunctions = specialFunctions;
+  }
 
-		// Includes all the keywords form builtin function table
-		for (String reservedWord : builtinFunTable.getReservedWords()) {
-			builder.defineReserved(reservedWord);
-		}
+  public void defineFunctions(Builder builder) {
+    final FunTable builtinFunTable = BuiltinFunTable.instance();
 
-		// Add supported builtin functions
-		for (Resolver resolver : builtinFunTable.getResolvers()) {
-			if (supportedBuiltinFunctions.contains(resolver.getName())) {
-				builder.define(resolver);
-			}
-		}
+    // Includes all the keywords form builtin function table
+    for (String reservedWord : builtinFunTable.getReservedWords()) {
+      builder.defineReserved(reservedWord);
+    }
 
-		// Add special function definitions
-		for (FunDef funDef : specialFunctions) {
-			builder.define(funDef);
-		}
-	}
+    // Add supported builtin functions
+    for (Resolver resolver : builtinFunTable.getResolvers()) {
+      if (supportedBuiltinFunctions.contains(resolver.getName())) {
+        builder.define(resolver);
+      }
+    }
+
+    // Add special function definitions
+    for (FunDef funDef : specialFunctions) {
+      builder.define(funDef);
+    }
+  }
 }
 
 // End CustomizedFunctionTable.java

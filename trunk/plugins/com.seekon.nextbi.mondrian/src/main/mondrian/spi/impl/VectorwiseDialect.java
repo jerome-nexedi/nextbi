@@ -22,38 +22,38 @@ import java.sql.SQLException;
  */
 public class VectorwiseDialect extends IngresDialect {
 
-	public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
-			VectorwiseDialect.class, DatabaseProduct.VECTORWISE);
+  public static final JdbcDialectFactory FACTORY = new JdbcDialectFactory(
+    VectorwiseDialect.class, DatabaseProduct.VECTORWISE);
 
-	/**
-	 * Creates a VectorwiseDialect.
-	 * 
-	 * @param connection
-	 *          Connection
-	 */
-	public VectorwiseDialect(Connection connection) throws SQLException {
-		super(connection);
-	}
+  /**
+   * Creates a VectorwiseDialect.
+   * 
+   * @param connection
+   *          Connection
+   */
+  public VectorwiseDialect(Connection connection) throws SQLException {
+    super(connection);
+  }
 
-	@Override
-	public DatabaseProduct getDatabaseProduct() {
-		return DatabaseProduct.VECTORWISE;
-	}
+  @Override
+  public DatabaseProduct getDatabaseProduct() {
+    return DatabaseProduct.VECTORWISE;
+  }
 
-	@Override
-	public boolean supportsResultSetConcurrency(int type, int concurrency) {
-		return false;
-	}
+  @Override
+  public boolean supportsResultSetConcurrency(int type, int concurrency) {
+    return false;
+  }
 
-	@Override
-	public boolean requiresHavingAlias() {
-		return true;
-	}
+  @Override
+  public boolean requiresHavingAlias() {
+    return true;
+  }
 
-	@Override
-	public boolean requiresAliasForFromQuery() {
-		return true;
-	}
+  @Override
+  public boolean requiresAliasForFromQuery() {
+    return true;
+  }
 }
 
 // End VectorwiseDialect.java

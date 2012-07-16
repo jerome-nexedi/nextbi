@@ -33,98 +33,98 @@ import java.util.List;
  * @since Jan 15, 2007
  */
 public interface StarPredicate {
-	/**
-	 * Returns a list of constrained columns.
-	 * 
-	 * @return List of constrained columns
-	 */
-	public List<RolapStar.Column> getConstrainedColumnList();
+  /**
+   * Returns a list of constrained columns.
+   * 
+   * @return List of constrained columns
+   */
+  public List<RolapStar.Column> getConstrainedColumnList();
 
-	/**
-	 * Returns a bitmap of constrained columns to speed up comparison
-	 * 
-	 * @return bitmap representing all constraining columns.
-	 */
-	public BitKey getConstrainedColumnBitKey();
+  /**
+   * Returns a bitmap of constrained columns to speed up comparison
+   * 
+   * @return bitmap representing all constraining columns.
+   */
+  public BitKey getConstrainedColumnBitKey();
 
-	/**
-	 * Appends a description of this predicate to a <code>StringBuilder</code>.
-	 * For example:
-	 * <ul>
-	 * <li>=any</li>
-	 * <li>=5</li>
-	 * <li>in (2, 4, 6)</li>
-	 * </ul>
-	 * 
-	 * @param buf
-	 *          Builder to append to
-	 */
-	public abstract void describe(StringBuilder buf);
+  /**
+   * Appends a description of this predicate to a <code>StringBuilder</code>.
+   * For example:
+   * <ul>
+   * <li>=any</li>
+   * <li>=5</li>
+   * <li>in (2, 4, 6)</li>
+   * </ul>
+   * 
+   * @param buf
+   *          Builder to append to
+   */
+  public abstract void describe(StringBuilder buf);
 
-	/**
-	 * Evaluates a constraint against a list of values.
-	 * 
-	 * <p>
-	 * If one of the values is {@link #WILDCARD}, returns true if constraint is
-	 * true for all possible values of that column.
-	 * 
-	 * @param valueList
-	 *          List of values, one for each constrained column
-	 * @return Whether constraint holds for given set of values
-	 */
-	public boolean evaluate(List<Object> valueList);
+  /**
+   * Evaluates a constraint against a list of values.
+   * 
+   * <p>
+   * If one of the values is {@link #WILDCARD}, returns true if constraint is
+   * true for all possible values of that column.
+   * 
+   * @param valueList
+   *          List of values, one for each constrained column
+   * @return Whether constraint holds for given set of values
+   */
+  public boolean evaluate(List<Object> valueList);
 
-	/**
-	 * Returns whether this Predicate has the same constraining effect as the
-	 * other constraint. This is weaker than {@link Object#equals(Object)}: it is
-	 * possible for two different members to constrain the same column in the same
-	 * way.
-	 * 
-	 * @param that
-	 *          Other predicate
-	 * @return whether the other predicate is equivalent
-	 */
-	boolean equalConstraint(StarPredicate that);
+  /**
+   * Returns whether this Predicate has the same constraining effect as the
+   * other constraint. This is weaker than {@link Object#equals(Object)}: it is
+   * possible for two different members to constrain the same column in the same
+   * way.
+   * 
+   * @param that
+   *          Other predicate
+   * @return whether the other predicate is equivalent
+   */
+  boolean equalConstraint(StarPredicate that);
 
-	/**
-	 * Returns the logical inverse of this Predicate. The result is a Predicate
-	 * which holds whenever this predicate holds but the other does not.
-	 * 
-	 * @pre predicate != null
-	 * @param predicate
-	 *          Predicate
-	 * @return Combined predicate
-	 */
-	StarPredicate minus(StarPredicate predicate);
+  /**
+   * Returns the logical inverse of this Predicate. The result is a Predicate
+   * which holds whenever this predicate holds but the other does not.
+   * 
+   * @pre predicate != null
+   * @param predicate
+   *          Predicate
+   * @return Combined predicate
+   */
+  StarPredicate minus(StarPredicate predicate);
 
-	/**
-	 * Returns this union of this Predicate with another. The result is a
-	 * Predicate which holds whenever either predicate holds.
-	 * 
-	 * @pre predicate != null
-	 * @param predicate
-	 *          Predicate
-	 * @return Combined predicate
-	 */
-	StarPredicate or(StarPredicate predicate);
+  /**
+   * Returns this union of this Predicate with another. The result is a
+   * Predicate which holds whenever either predicate holds.
+   * 
+   * @pre predicate != null
+   * @param predicate
+   *          Predicate
+   * @return Combined predicate
+   */
+  StarPredicate or(StarPredicate predicate);
 
-	/**
-	 * Returns this intersection of this Predicate with another. The result is a
-	 * Predicate which holds whenever both predicates hold.
-	 * 
-	 * @pre predicate != null
-	 * @param predicate
-	 *          Predicate
-	 * @return Combined predicate
-	 */
-	StarPredicate and(StarPredicate predicate);
+  /**
+   * Returns this intersection of this Predicate with another. The result is a
+   * Predicate which holds whenever both predicates hold.
+   * 
+   * @pre predicate != null
+   * @param predicate
+   *          Predicate
+   * @return Combined predicate
+   */
+  StarPredicate and(StarPredicate predicate);
 
-	/**
-	 * Wildcard value for {@link #evaluate(java.util.List)}.
-	 */
-	Object WILDCARD = new Object();
+  /**
+   * Wildcard value for {@link #evaluate(java.util.List)}.
+   */
+  Object WILDCARD = new Object();
 
-	void toSql(SqlQuery sqlQuery, StringBuilder buf);
+  void toSql(SqlQuery sqlQuery, StringBuilder buf);
 }
 
 // End StarPredicate.java

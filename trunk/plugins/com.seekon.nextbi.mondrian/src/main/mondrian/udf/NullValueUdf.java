@@ -23,34 +23,34 @@ import mondrian.spi.UserDefinedFunction;
  */
 public class NullValueUdf implements UserDefinedFunction {
 
-	public String getName() {
-		return "NullValue";
-	}
+  public String getName() {
+    return "NullValue";
+  }
 
-	public String getDescription() {
-		return "Returns the null value";
-	}
+  public String getDescription() {
+    return "Returns the null value";
+  }
 
-	public Syntax getSyntax() {
-		return Syntax.Function;
-	}
+  public Syntax getSyntax() {
+    return Syntax.Function;
+  }
 
-	public Type getReturnType(Type[] parameterTypes) {
-		return new NumericType();
-	}
+  public Type getReturnType(Type[] parameterTypes) {
+    return new NumericType();
+  }
 
-	public Type[] getParameterTypes() {
-		return new Type[0];
-	}
+  public Type[] getParameterTypes() {
+    return new Type[0];
+  }
 
-	public Object execute(Evaluator evaluator, Argument[] arguments) {
-		return Util.nullValue;
-	}
+  public Object execute(Evaluator evaluator, Argument[] arguments) {
+    return Util.nullValue;
+  }
 
-	public String[] getReservedWords() {
-		// This function does not require any reserved words.
-		return null;
-	}
+  public String[] getReservedWords() {
+    // This function does not require any reserved words.
+    return null;
+  }
 }
 
 // End NullValueUdf.java

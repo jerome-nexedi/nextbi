@@ -23,49 +23,51 @@ import mondrian.olap.Util;
  * @version $Id: //open/mondrian/src/main/mondrian/rolap/StringList.java#5 $
  */
 class StringList {
-	private final StringBuilder buf;
-	private final String first, mid, last;
-	private int count;
+  private final StringBuilder buf;
 
-	StringList(String first, String mid) {
-		this.buf = new StringBuilder(first);
-		this.count = 0;
-		this.first = first;
-		this.mid = mid;
-		this.last = "";
-	}
+  private final String first, mid, last;
 
-	StringList(String first) {
-		this(first, ", ");
-	}
+  private int count;
 
-	int getCount() {
-		return count;
-	}
+  StringList(String first, String mid) {
+    this.buf = new StringBuilder(first);
+    this.count = 0;
+    this.first = first;
+    this.mid = mid;
+    this.last = "";
+  }
 
-	boolean isEmpty() {
-		return count == 0;
-	}
+  StringList(String first) {
+    this(first, ", ");
+  }
 
-	/** Creates a new item. */
-	void newItem(String s) {
-		if (count++ > 0) {
-			buf.append(mid);
-		}
-		buf.append(s);
-	}
+  int getCount() {
+    return count;
+  }
 
-	/** Appends to an existing item. */
-	void append(String s) {
-		Util.assertTrue(count > 0);
-		buf.append(s);
-	}
+  boolean isEmpty() {
+    return count == 0;
+  }
 
-	// override Object
-	public String toString() {
-		buf.append(last);
-		return buf.toString();
-	}
+  /** Creates a new item. */
+  void newItem(String s) {
+    if (count++ > 0) {
+      buf.append(mid);
+    }
+    buf.append(s);
+  }
+
+  /** Appends to an existing item. */
+  void append(String s) {
+    Util.assertTrue(count > 0);
+    buf.append(s);
+  }
+
+  // override Object
+  public String toString() {
+    buf.append(last);
+    return buf.toString();
+  }
 };
 
 // End StringList.java
