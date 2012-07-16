@@ -15,62 +15,62 @@ import com.seekon.osgi.context.event.WebSupportOsgiBundleApplicationContextListe
 
 public class Activator implements BundleActivator, BundleListener {
 
-	static Activator instance = null;
+  static Activator instance = null;
 
-	BundleContext bundleContext = null;
+  BundleContext bundleContext = null;
 
-	private ServiceReference serviceReference = null;
+  private ServiceReference serviceReference = null;
 
-	private HttpServiceTracker httpServiceTracker = null;
+  private HttpServiceTracker httpServiceTracker = null;
 
-	@Override
-	public void start(BundleContext context) throws Exception {
-		instance = this;
-		instance.bundleContext = context;
+  @Override
+  public void start(BundleContext context) throws Exception {
+    instance = this;
+    instance.bundleContext = context;
 
-		ServiceRegistration sr = context.registerService(
-				OsgiBundleApplicationContextListener.class.getName(),
-				new WebSupportOsgiBundleApplicationContextListener(), null);
-		serviceReference = sr.getReference();
+    ServiceRegistration sr = context.registerService(
+      OsgiBundleApplicationContextListener.class.getName(),
+      new WebSupportOsgiBundleApplicationContextListener(), null);
+    serviceReference = sr.getReference();
 
-		context.addBundleListener(this);
+    context.addBundleListener(this);
 
-		httpServiceTracker = new HttpServiceTracker(context);
-		httpServiceTracker.open();
-	}
+    httpServiceTracker = new HttpServiceTracker(context);
+    httpServiceTracker.open();
+  }
 
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		httpServiceTracker.close();
-		context.removeBundleListener(this);
-		context.ungetService(serviceReference);
-		serviceReference = null;
-	}
+  @Override
+  public void stop(BundleContext context) throws Exception {
+    httpServiceTracker.close();
+    context.removeBundleListener(this);
+    context.ungetService(serviceReference);
+    serviceReference = null;
+  }
 
-	@Override
-	public void bundleChanged(BundleEvent event) {	
-		HttpService httpService = httpServiceTracker.getHttpService();
-		if(httpService == null){
-			return;
-		}
-		
-		Bundle bundle = event.getBundle();
-		switch (event.getType()) {
-		case BundleEvent.RESOLVED: {
-			if (bundle.getHeaders().get("Context-Path") != null) {
-				try {
-					bundle.start();
-				} catch (BundleException e) {
-					e.printStackTrace();
-				}
-			}
-			break;
-		}
-		case BundleEvent.UNRESOLVED: {// TODO: do nothing
-			break;
-		}
-		default:
-			break;
-		}
-	}
+  @Override
+  public void bundleChanged(BundleEvent event) {
+    HttpService httpService = httpServiceTracker.getHttpService();
+    if (httpService == null) {
+      return;
+    }
+
+    Bundle bundle = event.getBundle();
+    switch (event.getType()) {
+    case BundleEvent.RESOLVED: {
+      if (bundle.getHeaders().get("Context-Path") != null) {
+        try {
+          bundle.start();
+        } catch (BundleException e) {
+          e.printStackTrace();
+        }
+      }
+      break;
+    }
+    case BundleEvent.UNRESOLVED: {// TODO: do nothing
+      break;
+    }
+    default:
+      break;
+    }
+  }
 }

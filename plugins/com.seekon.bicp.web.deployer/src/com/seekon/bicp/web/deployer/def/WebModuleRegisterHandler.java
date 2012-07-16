@@ -7,6 +7,7 @@ public interface WebModuleRegisterHandler {
 
   /**
    * 将要执行注册时调用
+   * 
    * @param bundle
    * @param httpService
    * @param contextPath
@@ -16,6 +17,7 @@ public interface WebModuleRegisterHandler {
 
   /**
    * 一个Web App注册后调用该方法
+   * 
    * @param bundle
    * @param httpService
    * @param contextPath
