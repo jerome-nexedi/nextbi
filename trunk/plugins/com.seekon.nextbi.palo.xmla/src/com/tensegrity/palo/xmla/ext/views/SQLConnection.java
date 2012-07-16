@@ -7,46 +7,69 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class SQLConnection
-{
+public class SQLConnection {
   private static final String FAV_VTABLE_NAME = "XMLAFavorites";
+
   private static final String FAV_VTABLE_COL_HOST_NAME = "host";
+
   private static final String FAV_VTABLE_COL_SERVICE_NAME = "service";
+
   private static final String FAV_VTABLE_COL_USER_NAME = "user";
+
   private static final String FAV_VTABLE_COL_VIEW_DESC_NAME = "favoriteViews";
+
   private static final int FAV_VTABLE_COL_VIEW_DESC_IDX = 4;
+
   private static final String VTABLE_NAME = "XMLAViews";
+
   private static final String VTABLE_COL_HOST_NAME = "host";
+
   private static final String VTABLE_COL_SERVICE_NAME = "service";
+
   private static final String VTABLE_COL_USER_NAME = "user";
+
   private static final String VTABLE_COL_DATABASE_ID_NAME = "databaseId";
+
   private static final String VTABLE_COL_VIEW_ID_NAME = "viewId";
+
   private static final String VTABLE_COL_VIEW_DESC_NAME = "viewDesc";
+
   private static final int VTABLE_COL_HOST_IDX = 1;
+
   private static final int VTABLE_COL_SERVICE_IDX = 2;
+
   private static final int VTABLE_COL_USER_IDX = 3;
+
   private static final int VTABLE_COL_DATABASE_ID_IDX = 4;
+
   private static final int VTABLE_COL_VIEW_ID_IDX = 5;
+
   private static final int VTABLE_COL_VIEW_DESC_IDX = 6;
+
   private Connection sqlConnection;
+
   private boolean viewTableExists;
+
   private boolean favoriteViewTableExists;
+
   private static String jdbcDriverName = null;
+
   private static String jdbcConnectString = null;
+
   private static String hostName = null;
+
   private static String userName = null;
+
   private static String userPassword = null;
 
-  private final String trimHost(String paramString)
-  {
+  private final String trimHost(String paramString) {
     paramString = paramString.trim();
     if ((paramString.startsWith("http://")) && (paramString.length() > 7))
       paramString = paramString.trim().substring(7);
     return paramString;
   }
 
-  public SQLConnection()
-  {
+  public SQLConnection() {
     if (jdbcDriverName != null)
       initialize(jdbcDriverName);
     if ((jdbcConnectString == null) || (hostName == null) || (userName == null))
@@ -54,58 +77,47 @@ public class SQLConnection
     connect(jdbcConnectString, hostName, userName, userPassword);
   }
 
-  private void shutdown()
-    throws SQLException
-  {
+  private void shutdown() throws SQLException {
     if (this.sqlConnection == null)
       return;
-    try
-    {
+    try {
       Statement localStatement = this.sqlConnection.createStatement();
       localStatement.execute("SHUTDOWN");
-    }
-    catch (Exception localException)
-    {
+    } catch (Exception localException) {
     }
     this.sqlConnection.close();
   }
 
-  public final boolean connect(String paramString1, String paramString2, String paramString3, String paramString4)
-  {
-    try
-    {
-      this.sqlConnection = doConnect(paramString1, paramString2, paramString3, paramString4);
-      if (this.sqlConnection != null)
-      {
+  public final boolean connect(String paramString1, String paramString2,
+    String paramString3, String paramString4) {
+    try {
+      this.sqlConnection = doConnect(paramString1, paramString2, paramString3,
+        paramString4);
+      if (this.sqlConnection != null) {
         this.viewTableExists = viewTableExists(this.sqlConnection);
         this.favoriteViewTableExists = favoriteViewTableExists(this.sqlConnection);
       }
-    }
-    catch (SQLException localSQLException)
-    {
+    } catch (SQLException localSQLException) {
       return false;
     }
     return this.sqlConnection != null;
   }
 
-  public final boolean close()
-  {
+  public final boolean close() {
     if (this.sqlConnection == null)
       return true;
-    try
-    {
+    try {
       shutdown();
       this.sqlConnection = null;
-    }
-    catch (SQLException localSQLException)
-    {
+    } catch (SQLException localSQLException) {
       return false;
     }
     return true;
   }
 
-  public final boolean writeView(String paramString1, String paramString2, String paramString3, String paramString4, String paramString5, String paramString6)
-  {
+  public final boolean writeView(String paramString1, String paramString2,
+    String paramString3, String paramString4, String paramString5,
+    String paramString6) {
     if (this.sqlConnection == null)
       return false;
     if (!this.viewTableExists)
@@ -113,11 +125,12 @@ public class SQLConnection
     if (!this.viewTableExists)
       return false;
     paramString1 = trimHost(paramString1);
-    return createOrUpdateView(this.sqlConnection, paramString1, paramString2, paramString3, paramString4, paramString5, paramString6);
+    return createOrUpdateView(this.sqlConnection, paramString1, paramString2,
+      paramString3, paramString4, paramString5, paramString6);
   }
 
-  public final boolean writeFavoriteViews(String paramString1, String paramString2, String paramString3, String paramString4)
-  {
+  public final boolean writeFavoriteViews(String paramString1, String paramString2,
+    String paramString3, String paramString4) {
     if (this.sqlConnection == null)
       return false;
     if (!this.favoriteViewTableExists)
@@ -125,130 +138,114 @@ public class SQLConnection
     if (!this.favoriteViewTableExists)
       return false;
     paramString1 = trimHost(paramString1);
-    return createOrUpdateFavoriteView(this.sqlConnection, paramString1, paramString2, paramString3, paramString4);
+    return createOrUpdateFavoriteView(this.sqlConnection, paramString1,
+      paramString2, paramString3, paramString4);
   }
 
-  public final boolean deleteView(String paramString1, String paramString2, String paramString3, String paramString4, String paramString5)
-  {
+  public final boolean deleteView(String paramString1, String paramString2,
+    String paramString3, String paramString4, String paramString5) {
     paramString1 = trimHost(paramString1);
-    return executeQuery("DELETE FROM XMLAViews WHERE host='" + paramString1 + "' AND " + "service" + "='" + paramString2 + "' AND " + "databaseId" + "='" + paramString4 + "' AND " + "viewId" + "='" + paramString5 + "'");
+    return executeQuery("DELETE FROM XMLAViews WHERE host='" + paramString1
+      + "' AND " + "service" + "='" + paramString2 + "' AND " + "databaseId" + "='"
+      + paramString4 + "' AND " + "viewId" + "='" + paramString5 + "'");
   }
 
-  public final boolean deleteViewTable()
-  {
+  public final boolean deleteViewTable() {
     boolean bool = executeQuery("DROP TABLE XMLAViews");
     if (bool)
       this.viewTableExists = false;
     return bool;
   }
 
-  public final String loadView(String paramString1, String paramString2, String paramString3, String paramString4, String paramString5)
-  {
+  public final String loadView(String paramString1, String paramString2,
+    String paramString3, String paramString4, String paramString5) {
     if (this.sqlConnection == null)
       return "";
     paramString1 = trimHost(paramString1);
     Statement localStatement = null;
     ResultSet localResultSet = null;
     String str2;
-    try
-    {
+    try {
       localStatement = this.sqlConnection.createStatement();
-      String str1 = "SELECT * FROM XMLAViews WHERE host='" + paramString1 + "' AND " + "service" + "='" + paramString2 + "' AND " + "databaseId" + "='" + paramString4 + "' AND " + "viewId" + "='" + paramString5 + "'";
+      String str1 = "SELECT * FROM XMLAViews WHERE host='" + paramString1 + "' AND "
+        + "service" + "='" + paramString2 + "' AND " + "databaseId" + "='"
+        + paramString4 + "' AND " + "viewId" + "='" + paramString5 + "'";
       localResultSet = localStatement.executeQuery(str1);
-      if (localResultSet.next())
-      {
+      if (localResultSet.next()) {
         str2 = localResultSet.getString(6);
         return str2;
       }
-    }
-    catch (SQLException localSQLException3)
-    {
+    } catch (SQLException localSQLException3) {
       str2 = "";
       return str2;
-    }
-    finally
-    {
+    } finally {
       if (localStatement != null)
-        try
-        {
+        try {
           localStatement.close();
-        }
-        catch (SQLException localSQLException8)
-        {
+        } catch (SQLException localSQLException8) {
         }
       if (localResultSet != null)
-        try
-        {
+        try {
           localResultSet.close();
-        }
-        catch (SQLException localSQLException9)
-        {
+        } catch (SQLException localSQLException9) {
         }
     }
     return "";
   }
 
-  public final String loadFavoriteView(String paramString1, String paramString2, String paramString3)
-  {
+  public final String loadFavoriteView(String paramString1, String paramString2,
+    String paramString3) {
     if (this.sqlConnection == null)
       return "";
     paramString1 = trimHost(paramString1);
     Statement localStatement = null;
     ResultSet localResultSet = null;
     String str2;
-    try
-    {
+    try {
       localStatement = this.sqlConnection.createStatement();
-      String str1 = "SELECT * FROM XMLAFavorites WHERE host='" + paramString1 + "' AND " + "service" + "='" + paramString2 + "'";
+      String str1 = "SELECT * FROM XMLAFavorites WHERE host='" + paramString1
+        + "' AND " + "service" + "='" + paramString2 + "'";
       localResultSet = localStatement.executeQuery(str1);
-      if (localResultSet.next())
-      {
+      if (localResultSet.next()) {
         str2 = localResultSet.getString(4);
         return str2;
       }
-    }
-    catch (SQLException localSQLException3)
-    {
+    } catch (SQLException localSQLException3) {
       str2 = "";
       return str2;
-    }
-    finally
-    {
+    } finally {
       if (localStatement != null)
-        try
-        {
+        try {
           localStatement.close();
-        }
-        catch (SQLException localSQLException8)
-        {
+        } catch (SQLException localSQLException8) {
         }
       if (localResultSet != null)
-        try
-        {
+        try {
           localResultSet.close();
-        }
-        catch (SQLException localSQLException9)
-        {
+        } catch (SQLException localSQLException9) {
         }
     }
     return "";
   }
 
-  public final String[] getAllViewIds(String paramString1, String paramString2, String paramString3)
-  {
+  public final String[] getAllViewIds(String paramString1, String paramString2,
+    String paramString3) {
     paramString1 = trimHost(paramString1);
-    return getSQLResponseFor("SELECT * FROM XMLAViews WHERE host='" + paramString1 + "' AND " + "service" + "='" + paramString2 + "'", 5);
+    return getSQLResponseFor("SELECT * FROM XMLAViews WHERE host='" + paramString1
+      + "' AND " + "service" + "='" + paramString2 + "'", 5);
   }
 
-  public final String[] getAllViewIds(String paramString1, String paramString2, String paramString3, String paramString4)
-  {
+  public final String[] getAllViewIds(String paramString1, String paramString2,
+    String paramString3, String paramString4) {
     paramString1 = trimHost(paramString1);
-    String[] arrayOfString = getSQLResponseFor("SELECT * FROM XMLAViews WHERE host='" + paramString1 + "' AND " + "service" + "='" + paramString2 + "' AND " + "databaseId" + "='" + paramString4 + "'", 5);
+    String[] arrayOfString = getSQLResponseFor(
+      "SELECT * FROM XMLAViews WHERE host='" + paramString1 + "' AND " + "service"
+        + "='" + paramString2 + "' AND " + "databaseId" + "='" + paramString4 + "'",
+      5);
     return arrayOfString;
   }
 
-  private final String getCubeIdFromId(String paramString)
-  {
+  private final String getCubeIdFromId(String paramString) {
     if ((paramString == null) || (paramString.length() == 0))
       return "";
     String[] arrayOfString = paramString.split("_@_");
@@ -257,211 +254,185 @@ public class SQLConnection
     return arrayOfString[3];
   }
 
-  public final String[] getAllViewIds(String paramString1, String paramString2, String paramString3, String paramString4, String paramString5)
-  {
+  public final String[] getAllViewIds(String paramString1, String paramString2,
+    String paramString3, String paramString4, String paramString5) {
     paramString2 = trimHost(paramString2);
-    String[] arrayOfString1 = getSQLResponseFor("SELECT * FROM XMLAViews WHERE host='" + paramString2 + "' AND " + "service" + "='" + paramString3 + "' AND " + "databaseId" + "='" + paramString5 + "'", 5);
+    String[] arrayOfString1 = getSQLResponseFor(
+      "SELECT * FROM XMLAViews WHERE host='" + paramString2 + "' AND " + "service"
+        + "='" + paramString3 + "' AND " + "databaseId" + "='" + paramString5 + "'",
+      5);
     ArrayList localArrayList = new ArrayList();
-    for (String str : arrayOfString1)
-    {
+    for (String str : arrayOfString1) {
       if (!getCubeIdFromId(str).equals(paramString1))
         continue;
       localArrayList.add(str);
     }
-    return (String[])localArrayList.toArray(new String[0]);
+    return (String[]) localArrayList.toArray(new String[0]);
   }
 
-  public final String[] getAllDatabaseIds(String paramString1, String paramString2, String paramString3)
-  {
+  public final String[] getAllDatabaseIds(String paramString1, String paramString2,
+    String paramString3) {
     paramString1 = trimHost(paramString1);
-    return getSQLResponseFor("SELECT databaseId FROM XMLAViews WHERE host='" + paramString1 + "' AND " + "service" + "='" + paramString2 + "'", 4);
+    return getSQLResponseFor("SELECT databaseId FROM XMLAViews WHERE host='"
+      + paramString1 + "' AND " + "service" + "='" + paramString2 + "'", 4);
   }
 
-  private final boolean initialize(String paramString)
-  {
-    try
-    {
+  private final boolean initialize(String paramString) {
+    try {
       Class.forName(paramString);
-    }
-    catch (ClassNotFoundException localClassNotFoundException)
-    {
+    } catch (ClassNotFoundException localClassNotFoundException) {
       return false;
     }
     return true;
   }
 
-  private final Connection doConnect(String paramString1, String paramString2, String paramString3, String paramString4)
-    throws SQLException
-  {
-    return DriverManager.getConnection(paramString1 + ":" + paramString2, paramString3, paramString4);
+  private final Connection doConnect(String paramString1, String paramString2,
+    String paramString3, String paramString4) throws SQLException {
+    return DriverManager.getConnection(paramString1 + ":" + paramString2,
+      paramString3, paramString4);
   }
 
-  private final boolean viewTableExists(Connection paramConnection)
-  {
+  private final boolean viewTableExists(Connection paramConnection) {
     return executeQuery("SELECT * FROM XMLAViews");
   }
 
-  private final boolean favoriteViewTableExists(Connection paramConnection)
-  {
+  private final boolean favoriteViewTableExists(Connection paramConnection) {
     return executeQuery("SELECT * FROM XMLAFavorites");
   }
 
-  private final boolean createViewTable(Connection paramConnection)
-  {
+  private final boolean createViewTable(Connection paramConnection) {
     return executeQuery("CREATE TABLE XMLAViews(host VARCHAR, service VARCHAR, user VARCHAR, databaseId VARCHAR, viewId VARCHAR(25) PRIMARY KEY, viewDesc VARCHAR)");
   }
 
-  private final boolean createFavoriteViewsTable(Connection paramConnection)
-  {
+  private final boolean createFavoriteViewsTable(Connection paramConnection) {
     return executeQuery("CREATE TABLE XMLAFavorites(host VARCHAR, service VARCHAR, user VARCHAR, favoriteViews VARCHAR, PRIMARY KEY (host, service, user))");
   }
 
-  private final boolean createOrUpdateView(Connection paramConnection, String paramString1, String paramString2, String paramString3, String paramString4, String paramString5, String paramString6)
-  {
+  private final boolean createOrUpdateView(Connection paramConnection,
+    String paramString1, String paramString2, String paramString3,
+    String paramString4, String paramString5, String paramString6) {
     Statement localStatement = null;
     paramString1 = trimHost(paramString1);
-    try
-    {
+    try {
       localStatement = paramConnection.createStatement();
-      String str = "UPDATE XMLAViews SET viewDesc='" + paramString6 + "' WHERE " + "host" + "='" + paramString1 + "' AND " + "service" + "='" + paramString2 + "' AND " + "user" + "='" + paramString3 + "' AND " + "databaseId" + "='" + paramString4 + "' AND " + "viewId" + "='" + paramString5 + "'";
+      String str = "UPDATE XMLAViews SET viewDesc='" + paramString6 + "' WHERE "
+        + "host" + "='" + paramString1 + "' AND " + "service" + "='" + paramString2
+        + "' AND " + "user" + "='" + paramString3 + "' AND " + "databaseId" + "='"
+        + paramString4 + "' AND " + "viewId" + "='" + paramString5 + "'";
       int i = localStatement.executeUpdate(str);
       int j;
-      if (i == 0)
-      {
-        str = "INSERT INTO XMLAViews(host, service, user, databaseId, viewId, viewDesc) VALUES ('" + paramString1 + "', '" + paramString2 + "', '" + paramString3 + "', '" + paramString4 + "', '" + paramString5 + "', '" + paramString6 + "')";
+      if (i == 0) {
+        str = "INSERT INTO XMLAViews(host, service, user, databaseId, viewId, viewDesc) VALUES ('"
+          + paramString1
+          + "', '"
+          + paramString2
+          + "', '"
+          + paramString3
+          + "', '"
+          + paramString4 + "', '" + paramString5 + "', '" + paramString6 + "')";
         i = localStatement.executeUpdate(str);
       }
-      if (i == 1)
-      {
+      if (i == 1) {
         return true;
       }
-    }
-    catch (SQLException localSQLException3)
-    {
-    }
-    finally
-    {
+    } catch (SQLException localSQLException3) {
+    } finally {
       if (localStatement != null)
-        try
-        {
+        try {
           localStatement.close();
-        }
-        catch (SQLException localSQLException6)
-        {
+        } catch (SQLException localSQLException6) {
         }
     }
     return false;
   }
 
-  private final boolean createOrUpdateFavoriteView(Connection paramConnection, String paramString1, String paramString2, String paramString3, String paramString4)
-  {
+  private final boolean createOrUpdateFavoriteView(Connection paramConnection,
+    String paramString1, String paramString2, String paramString3,
+    String paramString4) {
     Statement localStatement = null;
     paramString1 = trimHost(paramString1);
-    try
-    {
+    try {
       localStatement = paramConnection.createStatement();
-      String str = "UPDATE XMLAFavorites SET favoriteViews='" + paramString4 + "' WHERE " + "host" + "='" + paramString1 + "' AND " + "service" + "='" + paramString2 + "' AND " + "user" + "='" + paramString3 + "'";
+      String str = "UPDATE XMLAFavorites SET favoriteViews='" + paramString4
+        + "' WHERE " + "host" + "='" + paramString1 + "' AND " + "service" + "='"
+        + paramString2 + "' AND " + "user" + "='" + paramString3 + "'";
       int i = localStatement.executeUpdate(str);
-      if (i == 0)
-      {
-        str = "INSERT INTO XMLAFavorites(host, service, user, favoriteViews) VALUES ('" + paramString1 + "', '" + paramString2 + "', '" + paramString3 + "', '" + paramString4 + "')";
+      if (i == 0) {
+        str = "INSERT INTO XMLAFavorites(host, service, user, favoriteViews) VALUES ('"
+          + paramString1
+          + "', '"
+          + paramString2
+          + "', '"
+          + paramString3
+          + "', '"
+          + paramString4 + "')";
         i = localStatement.executeUpdate(str);
       }
-      if (i == 1)
-      {
+      if (i == 1) {
         return true;
       }
-    }
-    catch (SQLException localSQLException3)
-    {
-    }
-    finally
-    {
+    } catch (SQLException localSQLException3) {
+    } finally {
       if (localStatement != null)
-        try
-        {
+        try {
           localStatement.close();
-        }
-        catch (SQLException localSQLException6)
-        {
+        } catch (SQLException localSQLException6) {
         }
     }
     return false;
   }
 
-  private final boolean executeQuery(String paramString)
-  {
+  private final boolean executeQuery(String paramString) {
     if (this.sqlConnection == null)
       return false;
     Statement localStatement = null;
-    try
-    {
+    try {
       localStatement = this.sqlConnection.createStatement();
       localStatement.executeQuery(paramString);
-    }
-    catch (SQLException localSQLException2)
-    {
+    } catch (SQLException localSQLException2) {
       return false;
-    }
-    finally
-    {
+    } finally {
       if (localStatement != null)
-        try
-        {
+        try {
           localStatement.close();
-        }
-        catch (SQLException localSQLException4)
-        {
+        } catch (SQLException localSQLException4) {
         }
     }
     return true;
   }
 
-  private final String[] getSQLResponseFor(String paramString, int paramInt)
-  {
+  private final String[] getSQLResponseFor(String paramString, int paramInt) {
     if (this.sqlConnection == null)
       return new String[0];
     Statement localStatement = null;
     ResultSet localResultSet = null;
     String[] arrayOfString;
-    try
-    {
+    try {
       localStatement = this.sqlConnection.createStatement();
       localResultSet = localStatement.executeQuery(paramString);
       ArrayList localArrayList = new ArrayList();
       while (localResultSet.next())
         localArrayList.add(localResultSet.getString(paramInt));
-      arrayOfString = (String[])localArrayList.toArray(new String[0]);
+      arrayOfString = (String[]) localArrayList.toArray(new String[0]);
       return arrayOfString;
-    }
-    catch (SQLException localSQLException1)
-    {
+    } catch (SQLException localSQLException1) {
       arrayOfString = new String[0];
       return arrayOfString;
-    }
-    finally
-    {
+    } finally {
       if (localStatement != null)
-        try
-        {
+        try {
           localStatement.close();
-        }
-        catch (SQLException localSQLException6)
-        {
+        } catch (SQLException localSQLException6) {
         }
       if (localResultSet != null)
-        try
-        {
+        try {
           localResultSet.close();
-        }
-        catch (SQLException localSQLException7)
-        {
+        } catch (SQLException localSQLException7) {
         }
     }
   }
 
-  static
-  {
+  static {
     jdbcDriverName = System.getProperty("jdbcDriverName");
     jdbcConnectString = System.getProperty("jdbcConnectString");
     hostName = System.getProperty("metaDataSqlHost");
@@ -470,7 +441,9 @@ public class SQLConnection
   }
 }
 
-/* Location:           D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
- * Qualified Name:     com.tensegrity.palo.xmla.ext.views.SQLConnection
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
+ * Qualified Name: com.tensegrity.palo.xmla.ext.views.SQLConnection JD-Core
+ * Version: 0.5.4
  */

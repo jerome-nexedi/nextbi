@@ -13,36 +13,58 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class XMLADimensionInfo
-  implements DimensionInfo, XMLAPaloInfo
-{
+public class XMLADimensionInfo implements DimensionInfo, XMLAPaloInfo {
   public static final int XMLA_TYPE_NORMAL = 0;
+
   public static final int XMLA_TYPE_MEASURES = 1;
+
   private String name;
+
   private XMLADatabaseInfo database;
+
   private int elementCount = 0;
+
   private int maxDepth = 0;
+
   private int maxLevel = 0;
+
   private String id;
+
   private String hierarchyUniqueName;
+
   private String dimensionUniqueName;
+
   private String dimensionCaption;
+
   private String hierarchyCaption;
+
   private String cubeId;
+
   private final Map elements;
+
   private final Map elementIds;
+
   private int xmlaType;
+
   private final List<XMLAHierarchyInfo> hierarchies;
+
   private int internalType = 0;
+
   private String defaultElementName;
+
   private XMLAHierarchyInfo activeHierarchy = null;
+
   private XMLAHierarchyInfo defaultHierarchy = null;
+
   private int hierarchyCount = 0;
+
   private final XMLAClient xmlaClient;
+
   private final XMLAConnection connection;
 
-  public XMLADimensionInfo(XMLAClient paramXMLAClient, String paramString1, String paramString2, XMLADatabaseInfo paramXMLADatabaseInfo, String paramString3, XMLAConnection paramXMLAConnection)
-  {
+  public XMLADimensionInfo(XMLAClient paramXMLAClient, String paramString1,
+    String paramString2, XMLADatabaseInfo paramXMLADatabaseInfo,
+    String paramString3, XMLAConnection paramXMLAConnection) {
     this.name = paramString1;
     this.connection = paramXMLAConnection;
     this.database = paramXMLADatabaseInfo;
@@ -58,183 +80,150 @@ public class XMLADimensionInfo
     this.xmlaClient = paramXMLAClient;
   }
 
-  public String getAttributeCube()
-  {
+  public String getAttributeCube() {
     return "";
   }
 
-  public String getAttributeDimension()
-  {
+  public String getAttributeDimension() {
     return "";
   }
 
-  public String getDefaultElementName()
-  {
+  public String getDefaultElementName() {
     return this.defaultElementName;
   }
 
-  public void setDefaultElementName(String paramString)
-  {
+  public void setDefaultElementName(String paramString) {
     this.defaultElementName = paramString;
   }
 
-  public DatabaseInfo getDatabase()
-  {
+  public DatabaseInfo getDatabase() {
     return this.database;
   }
 
-  public int getElementCount()
-  {
+  public int getElementCount() {
     return getDefaultHierarchy().getElementCount();
   }
 
-  public void setElementCount(int paramInt)
-  {
+  public void setElementCount(int paramInt) {
     this.elementCount = paramInt;
   }
 
-  public int getMaxDepth()
-  {
+  public int getMaxDepth() {
     return this.maxDepth;
   }
 
-  public int getMaxIndent()
-  {
+  public int getMaxIndent() {
     return 0;
   }
 
-  public int getMaxLevel()
-  {
+  public int getMaxLevel() {
     return this.maxLevel;
   }
 
-  public void setMaxLevel(int paramInt)
-  {
+  public void setMaxLevel(int paramInt) {
     this.maxLevel = paramInt;
   }
 
-  public void setMaxDepth(int paramInt)
-  {
+  public void setMaxDepth(int paramInt) {
     this.maxDepth = paramInt;
   }
 
-  public String getName()
-  {
+  public String getName() {
     return this.name;
   }
 
-  public String getRightsCube()
-  {
+  public String getRightsCube() {
     return "";
   }
 
-  public int getToken()
-  {
+  public int getToken() {
     return 0;
   }
 
-  public void setName(String paramString)
-  {
+  public void setName(String paramString) {
     this.name = paramString;
   }
 
-  public String getId()
-  {
+  public String getId() {
     return this.id;
   }
 
-  public void setId(String paramString)
-  {
+  public void setId(String paramString) {
     if (this.cubeId != null)
       this.id = getIDString(paramString, this.cubeId);
     else
       this.id = getIDString(paramString, "");
   }
 
-  public int getType()
-  {
+  public int getType() {
     return 0;
   }
 
-  public String getHierarchyUniqueName()
-  {
+  public String getHierarchyUniqueName() {
     return this.hierarchyUniqueName;
   }
 
-  public String getDimensionUniqueName()
-  {
+  public String getDimensionUniqueName() {
     return this.dimensionUniqueName;
   }
 
-  public void setHierarchyUniqueName(String paramString)
-  {
+  public void setHierarchyUniqueName(String paramString) {
     this.hierarchyUniqueName = paramString;
   }
 
-  public void setDimensionUniqueName(String paramString)
-  {
+  public void setDimensionUniqueName(String paramString) {
     this.dimensionUniqueName = paramString;
   }
 
-  public void setCubeId(String paramString)
-  {
+  public void setCubeId(String paramString) {
     this.cubeId = paramString;
   }
 
-  public String getCubeId()
-  {
+  public String getCubeId() {
     return this.cubeId;
   }
 
-  public String toString()
-  {
-    return "Dimension " + getName() + " [" + getId() + "]: " + getElementCount() + " elements.";
+  public String toString() {
+    return "Dimension " + getName() + " [" + getId() + "]: " + getElementCount()
+      + " elements.";
   }
 
-  public void clearMembersInternal()
-  {
+  public void clearMembersInternal() {
     this.elements.clear();
     this.elementIds.clear();
   }
 
-  public void addMemberInternal(XMLAElementInfo paramXMLAElementInfo)
-  {
+  public void addMemberInternal(XMLAElementInfo paramXMLAElementInfo) {
     this.elements.put(paramXMLAElementInfo.getUniqueName(), paramXMLAElementInfo);
     this.elementIds.put(paramXMLAElementInfo.getId(), paramXMLAElementInfo);
   }
 
-  public int getMemberCountInternal()
-  {
+  public int getMemberCountInternal() {
     return this.elements.size();
   }
 
-  public XMLAElementInfo getMemberInternal(String paramString)
-  {
-    if (this.elements.get(paramString) == null)
-    {
+  public XMLAElementInfo getMemberInternal(String paramString) {
+    if (this.elements.get(paramString) == null) {
       String str = transformId(paramString);
-      return (XMLAElementInfo)this.elements.get(str);
+      return (XMLAElementInfo) this.elements.get(str);
     }
-    return (XMLAElementInfo)this.elements.get(paramString);
+    return (XMLAElementInfo) this.elements.get(paramString);
   }
 
-  public XMLAElementInfo getMemberByIdInternal(String paramString)
-  {
-    if (this.elementIds.get(paramString) == null)
-    {
+  public XMLAElementInfo getMemberByIdInternal(String paramString) {
+    if (this.elementIds.get(paramString) == null) {
       String str = transformId(paramString);
-      return (XMLAElementInfo)this.elementIds.get(str);
+      return (XMLAElementInfo) this.elementIds.get(str);
     }
-    return (XMLAElementInfo)this.elementIds.get(paramString);
+    return (XMLAElementInfo) this.elementIds.get(paramString);
   }
 
-  public XMLAElementInfo[] getMembersInternal()
-  {
-    return (XMLAElementInfo[])(XMLAElementInfo[])this.elements.values().toArray(new XMLAElementInfo[0]);
+  public XMLAElementInfo[] getMembersInternal() {
+    return (XMLAElementInfo[]) (XMLAElementInfo[]) this.elements.values().toArray(
+      new XMLAElementInfo[0]);
   }
 
-  public static String getIDString(String paramString1, String paramString2)
-  {
+  public static String getIDString(String paramString1, String paramString2) {
     String str1 = paramString2.replaceAll("\\[", "((");
     str1 = str1.replaceAll("\\]", "))");
     str1 = str1.replaceAll(":", "**");
@@ -245,8 +234,7 @@ public class XMLADimensionInfo
     return str1 + "|.#.|" + str2;
   }
 
-  public static String getCubeNameFromId(String paramString)
-  {
+  public static String getCubeNameFromId(String paramString) {
     int i = paramString.indexOf("|.#.|");
     if (i == -1)
       return paramString;
@@ -257,8 +245,7 @@ public class XMLADimensionInfo
     return str;
   }
 
-  public static String getDimIdFromId(String paramString)
-  {
+  public static String getDimIdFromId(String paramString) {
     int i = paramString.indexOf("|.#.|");
     if (i == -1)
       return paramString;
@@ -270,8 +257,7 @@ public class XMLADimensionInfo
     return str;
   }
 
-  public static String transformId(String paramString)
-  {
+  public static String transformId(String paramString) {
     String str = paramString.replaceAll("\\(\\(", "[");
     str = str.replaceAll("\\)\\)", "]");
     str = str.replaceAll("\\*\\*", ":");
@@ -279,119 +265,103 @@ public class XMLADimensionInfo
     return str;
   }
 
-  public void setXmlaType(int paramInt)
-  {
+  public void setXmlaType(int paramInt) {
     this.xmlaType = paramInt;
     setId(getHierarchyUniqueName());
   }
 
-  public int getXmlaType()
-  {
+  public int getXmlaType() {
     return this.xmlaType;
   }
 
-  public void setHierarchyCaption(String paramString)
-  {
+  public void setHierarchyCaption(String paramString) {
     this.hierarchyCaption = paramString;
   }
 
-  public String getHierarchyCaption()
-  {
+  public String getHierarchyCaption() {
     return this.hierarchyCaption;
   }
 
-  public void setDimensionCaption(String paramString)
-  {
+  public void setDimensionCaption(String paramString) {
     this.dimensionCaption = paramString;
   }
 
-  public String getDimensionCaption()
-  {
+  public String getDimensionCaption() {
     return this.dimensionCaption;
   }
 
-  public void addHierarchy(XMLAHierarchyInfo paramXMLAHierarchyInfo)
-  {
+  public void addHierarchy(XMLAHierarchyInfo paramXMLAHierarchyInfo) {
     this.hierarchies.add(paramXMLAHierarchyInfo);
   }
 
-  public XMLAHierarchyInfo[] getHierarchies()
-  {
-    if (this.hierarchies.size() == 0)
-    {
-      XMLAHierarchyRequestor localXMLAHierarchyRequestor = new XMLAHierarchyRequestor(this, (XMLADatabaseInfo)getDatabase(), this.connection);
+  public XMLAHierarchyInfo[] getHierarchies() {
+    if (this.hierarchies.size() == 0) {
+      XMLAHierarchyRequestor localXMLAHierarchyRequestor = new XMLAHierarchyRequestor(
+        this, (XMLADatabaseInfo) getDatabase(), this.connection);
       localXMLAHierarchyRequestor.setCubeNameRestriction(getCubeId());
       localXMLAHierarchyRequestor.setCatalogNameRestriction(getDatabase().getId());
-      localXMLAHierarchyRequestor.setDimensionUniqueNameRestriction(getDimensionUniqueName());
-      this.hierarchies.addAll(Arrays.asList(localXMLAHierarchyRequestor.requestHierarchies(this.xmlaClient)));
+      localXMLAHierarchyRequestor
+        .setDimensionUniqueNameRestriction(getDimensionUniqueName());
+      this.hierarchies.addAll(Arrays.asList(localXMLAHierarchyRequestor
+        .requestHierarchies(this.xmlaClient)));
     }
-    return (XMLAHierarchyInfo[])this.hierarchies.toArray(new XMLAHierarchyInfo[0]);
+    return (XMLAHierarchyInfo[]) this.hierarchies.toArray(new XMLAHierarchyInfo[0]);
   }
 
-  public String[] getAllKnownPropertyIds(DbConnection paramDbConnection)
-  {
+  public String[] getAllKnownPropertyIds(DbConnection paramDbConnection) {
     return new String[0];
   }
 
-  public PropertyInfo getProperty(DbConnection paramDbConnection, String paramString)
-  {
+  public PropertyInfo getProperty(DbConnection paramDbConnection, String paramString) {
     return null;
   }
 
-  public int getInternalXmlaType()
-  {
+  public int getInternalXmlaType() {
     return this.internalType;
   }
 
-  public void setInternalXmlaType(int paramInt)
-  {
+  public void setInternalXmlaType(int paramInt) {
     this.internalType = paramInt;
   }
 
-  public boolean canBeModified()
-  {
+  public boolean canBeModified() {
     return false;
   }
 
-  public boolean canCreateChildren()
-  {
+  public boolean canCreateChildren() {
     return false;
   }
 
-  public void setDefaultHierarchy(XMLAHierarchyInfo paramXMLAHierarchyInfo)
-  {
+  public void setDefaultHierarchy(XMLAHierarchyInfo paramXMLAHierarchyInfo) {
     this.defaultHierarchy = paramXMLAHierarchyInfo;
   }
 
-  public XMLAHierarchyInfo getDefaultHierarchy()
-  {
+  public XMLAHierarchyInfo getDefaultHierarchy() {
     return this.defaultHierarchy;
   }
 
-  public HierarchyInfo getActiveHierarchy()
-  {
+  public HierarchyInfo getActiveHierarchy() {
     if (this.activeHierarchy == null)
       this.activeHierarchy = this.defaultHierarchy;
     return this.activeHierarchy;
   }
 
-  public void setActiveHierarchy(HierarchyInfo paramHierarchyInfo)
-  {
-    this.activeHierarchy = ((XMLAHierarchyInfo)paramHierarchyInfo);
+  public void setActiveHierarchy(HierarchyInfo paramHierarchyInfo) {
+    this.activeHierarchy = ((XMLAHierarchyInfo) paramHierarchyInfo);
   }
 
-  public int getHierarchyCount()
-  {
+  public int getHierarchyCount() {
     return this.hierarchyCount;
   }
 
-  public void setHierarchyCount(int paramInt)
-  {
+  public void setHierarchyCount(int paramInt) {
     this.hierarchyCount = paramInt;
   }
 }
 
-/* Location:           D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
- * Qualified Name:     com.tensegrity.palo.xmla.XMLADimensionInfo
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
+ * Qualified Name: com.tensegrity.palo.xmla.XMLADimensionInfo JD-Core Version:
+ * 0.5.4
  */
