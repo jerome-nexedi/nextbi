@@ -25,77 +25,78 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletConfig;
 
 public final class DispatcherTracker extends ServiceTracker {
-	final static String DEFAULT_FILTER = "(http.felix.dispatcher=*)";
+  final static String DEFAULT_FILTER = "(http.felix.dispatcher=*)";
 
-	private final ServletConfig config;
-	private HttpServlet dispatcher;
+  private final ServletConfig config;
 
-	public DispatcherTracker(BundleContext context, String filter,
-			ServletConfig config) throws Exception {
-		super(context, createFilter(context, filter), null);
-		this.config = config;
-	}
+  private HttpServlet dispatcher;
 
-	public HttpServlet getDispatcher() {
-		return this.dispatcher;
-	}
+  public DispatcherTracker(BundleContext context, String filter, ServletConfig config)
+    throws Exception {
+    super(context, createFilter(context, filter), null);
+    this.config = config;
+  }
 
-	@Override
-	public Object addingService(ServiceReference ref) {
-		Object service = super.addingService(ref);
-		if (service instanceof HttpServlet) {
-			setDispatcher((HttpServlet) service);
-		}
+  public HttpServlet getDispatcher() {
+    return this.dispatcher;
+  }
 
-		return service;
-	}
+  @Override
+  public Object addingService(ServiceReference ref) {
+    Object service = super.addingService(ref);
+    if (service instanceof HttpServlet) {
+      setDispatcher((HttpServlet) service);
+    }
 
-	@Override
-	public void removedService(ServiceReference ref, Object service) {
-		if (service instanceof HttpServlet) {
-			setDispatcher(null);
-		}
+    return service;
+  }
 
-		super.removedService(ref, service);
-	}
+  @Override
+  public void removedService(ServiceReference ref, Object service) {
+    if (service instanceof HttpServlet) {
+      setDispatcher(null);
+    }
 
-	private void log(String message, Throwable cause) {
-		this.config.getServletContext().log(message, cause);
-	}
+    super.removedService(ref, service);
+  }
 
-	private void setDispatcher(HttpServlet dispatcher) {
-		destroyDispatcher();
-		this.dispatcher = dispatcher;
-		initDispatcher();
-	}
+  private void log(String message, Throwable cause) {
+    this.config.getServletContext().log(message, cause);
+  }
 
-	private void destroyDispatcher() {
-		if (this.dispatcher == null) {
-			return;
-		}
+  private void setDispatcher(HttpServlet dispatcher) {
+    destroyDispatcher();
+    this.dispatcher = dispatcher;
+    initDispatcher();
+  }
 
-		this.dispatcher.destroy();
-		this.dispatcher = null;
-	}
+  private void destroyDispatcher() {
+    if (this.dispatcher == null) {
+      return;
+    }
 
-	private void initDispatcher() {
-		if (this.dispatcher == null) {
-			return;
-		}
+    this.dispatcher.destroy();
+    this.dispatcher = null;
+  }
 
-		try {
-			this.dispatcher.init(this.config);
-		} catch (Exception e) {
-			log("Failed to initialize dispatcher", e);
-		}
-	}
+  private void initDispatcher() {
+    if (this.dispatcher == null) {
+      return;
+    }
 
-	private static Filter createFilter(BundleContext context, String filter)
-			throws Exception {
-		StringBuffer str = new StringBuffer();
-		str.append("(&(").append(Constants.OBJECTCLASS).append("=");
-		str.append(HttpServlet.class.getName()).append(")");
-		str.append(filter != null ? filter : DEFAULT_FILTER).append(")");
-		return context.createFilter(str.toString());
-	}
+    try {
+      this.dispatcher.init(this.config);
+    } catch (Exception e) {
+      log("Failed to initialize dispatcher", e);
+    }
+  }
+
+  private static Filter createFilter(BundleContext context, String filter)
+    throws Exception {
+    StringBuffer str = new StringBuffer();
+    str.append("(&(").append(Constants.OBJECTCLASS).append("=");
+    str.append(HttpServlet.class.getName()).append(")");
+    str.append(filter != null ? filter : DEFAULT_FILTER).append(")");
+    return context.createFilter(str.toString());
+  }
 }
