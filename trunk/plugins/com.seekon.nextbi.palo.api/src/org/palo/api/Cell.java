@@ -1,8 +1,8 @@
 package org.palo.api;
 
-public abstract interface Cell
-{
+public abstract interface Cell {
   public static final int NUMERIC = 1;
+
   public static final int STRING = 2;
 
   public abstract Cube getCube();
@@ -24,7 +24,8 @@ public abstract interface Cell
   public abstract boolean isEmpty();
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.Cell
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.Cell JD-Core Version: 0.5.4
  */

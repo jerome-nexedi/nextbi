@@ -1,8 +1,7 @@
 package org.palo.api;
 
 /** @deprecated */
-public abstract interface SubsetState
-{
+public abstract interface SubsetState {
   public abstract String getId();
 
   public abstract String getName();
@@ -40,7 +39,8 @@ public abstract interface SubsetState
   public abstract boolean isVisible(Element paramElement);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.SubsetState
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.SubsetState JD-Core Version: 0.5.4
  */

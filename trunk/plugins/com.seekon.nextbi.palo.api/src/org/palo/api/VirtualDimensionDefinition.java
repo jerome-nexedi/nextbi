@@ -1,8 +1,7 @@
 package org.palo.api;
 
 /** @deprecated */
-public abstract interface VirtualDimensionDefinition
-{
+public abstract interface VirtualDimensionDefinition {
   public abstract Dimension getSourceDimension();
 
   public abstract DimensionFilter getFilter();
@@ -20,7 +19,9 @@ public abstract interface VirtualDimensionDefinition
   public abstract void setActiveHierarchy(Hierarchy paramHierarchy);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.VirtualDimensionDefinition
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.VirtualDimensionDefinition JD-Core Version:
+ * 0.5.4
  */

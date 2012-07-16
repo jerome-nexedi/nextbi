@@ -3,12 +3,15 @@ package org.palo.api;
 import com.tensegrity.palojava.ServerInfo;
 import org.palo.api.ext.favoriteviews.FavoriteViewTreeNode;
 
-public abstract interface Connection extends Writable
-{
+public abstract interface Connection extends Writable {
   public static final int TYPE_LEGACY = 1;
+
   public static final int TYPE_HTTP = 2;
+
   public static final int TYPE_XMLA = 3;
+
   public static final int TYPE_WSS = 4;
+
   public static final int DEFAULT_TIMEOUT = 30000;
 
   public abstract String getServer();
@@ -49,9 +52,11 @@ public abstract interface Connection extends Writable
 
   public abstract boolean save();
 
-  public abstract void addConnectionListener(ConnectionListener paramConnectionListener);
+  public abstract void addConnectionListener(
+    ConnectionListener paramConnectionListener);
 
-  public abstract void removeConnectionListener(ConnectionListener paramConnectionListener);
+  public abstract void removeConnectionListener(
+    ConnectionListener paramConnectionListener);
 
   public abstract boolean isLegacy();
 
@@ -63,7 +68,8 @@ public abstract interface Connection extends Writable
 
   public abstract FavoriteViewTreeNode loadFavoriteViews();
 
-  public abstract void storeFavoriteViews(FavoriteViewTreeNode paramFavoriteViewTreeNode);
+  public abstract void storeFavoriteViews(
+    FavoriteViewTreeNode paramFavoriteViewTreeNode);
 
   public abstract String[] getAllPropertyIds();
 
@@ -82,7 +88,8 @@ public abstract interface Connection extends Writable
   public abstract void clearCache();
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.Connection
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.Connection JD-Core Version: 0.5.4
  */

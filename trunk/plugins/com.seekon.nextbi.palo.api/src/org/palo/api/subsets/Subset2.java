@@ -6,9 +6,9 @@ import org.palo.api.ElementNode;
 import org.palo.api.Hierarchy;
 import org.palo.api.PaloObject;
 
-public abstract interface Subset2 extends PaloObject
-{
+public abstract interface Subset2 extends PaloObject {
   public static final int TYPE_LOCAL = 0;
+
   public static final int TYPE_GLOBAL = 1;
 
   /** @deprecated */
@@ -62,7 +62,8 @@ public abstract interface Subset2 extends PaloObject
   public abstract boolean validate();
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.subsets.Subset2
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.subsets.Subset2 JD-Core Version: 0.5.4
  */

@@ -6,14 +6,19 @@ import java.text.NumberFormat;
 import org.palo.api.exceptions.PaloIOException;
 import org.palo.api.persistence.PersistenceObserver;
 
-public abstract interface Cube extends PaloObject
-{
+public abstract interface Cube extends PaloObject {
   public static final int SPLASHMODE_DISABLED = 0;
+
   public static final int SPLASHMODE_DEFAULT = 1;
+
   public static final int SPLASHMODE_BASE_ADD = 2;
+
   public static final int SPLASHMODE_BASE_SET = 3;
+
   public static final int SPLASHMODE_UNKNOWN = 4;
+
   public static final int CUBEEXTENDEDTYPE_REGULAR = 0;
+
   public static final int CUBEEXTENDEDTYPE_VIRTUAL = 1;
 
   public abstract int getExtendedType();
@@ -48,19 +53,25 @@ public abstract interface Cube extends PaloObject
 
   public abstract void setData(Element[] paramArrayOfElement, Object paramObject);
 
-  public abstract void setDataSplashed(Element[] paramArrayOfElement, Object paramObject);
+  public abstract void setDataSplashed(Element[] paramArrayOfElement,
+    Object paramObject);
 
   /** @deprecated */
-  public abstract void setDataSplashed(Element[] paramArrayOfElement, Object paramObject, NumberFormat paramNumberFormat);
+  public abstract void setDataSplashed(Element[] paramArrayOfElement,
+    Object paramObject, NumberFormat paramNumberFormat);
 
   /** @deprecated */
-  public abstract void setData(Element[] paramArrayOfElement, Object paramObject, NumberFormat paramNumberFormat);
+  public abstract void setData(Element[] paramArrayOfElement, Object paramObject,
+    NumberFormat paramNumberFormat);
 
-  public abstract void setDataSplashed(String[] paramArrayOfString, Object paramObject, int paramInt);
+  public abstract void setDataSplashed(String[] paramArrayOfString,
+    Object paramObject, int paramInt);
 
-  public abstract void setDataSplashed(Element[] paramArrayOfElement, Object paramObject, int paramInt);
+  public abstract void setDataSplashed(Element[] paramArrayOfElement,
+    Object paramObject, int paramInt);
 
-  public abstract void setDataArray(Element[][] paramArrayOfElement, Object[] paramArrayOfObject, int paramInt);
+  public abstract void setDataArray(Element[][] paramArrayOfElement,
+    Object[] paramArrayOfObject, int paramInt);
 
   public abstract boolean isAttributeCube();
 
@@ -69,14 +80,15 @@ public abstract interface Cube extends PaloObject
   public abstract boolean isViewCube();
 
   /** @deprecated */
-  public abstract CubeView addCubeView(String paramString1, String paramString2, Property[] paramArrayOfProperty);
+  public abstract CubeView addCubeView(String paramString1, String paramString2,
+    Property[] paramArrayOfProperty);
 
-  public abstract CubeView addCubeView(String paramString, Property[] paramArrayOfProperty);
+  public abstract CubeView addCubeView(String paramString,
+    Property[] paramArrayOfProperty);
 
   public abstract void removeCubeView(CubeView paramCubeView);
 
-  public abstract CubeView getCubeView(String paramString)
-    throws PaloIOException;
+  public abstract CubeView getCubeView(String paramString) throws PaloIOException;
 
   public abstract String[] getCubeViewIds();
 
@@ -95,17 +107,22 @@ public abstract interface Cube extends PaloObject
 
   public abstract ExportDataset getDataExport(ExportContext paramExportContext);
 
-  public abstract void addDataArray(Element[][] paramArrayOfElement, Object[] paramArrayOfObject, int paramInt);
+  public abstract void addDataArray(Element[][] paramArrayOfElement,
+    Object[] paramArrayOfObject, int paramInt);
 
-  public abstract void setDataArray(Element[][] paramArrayOfElement, Object[] paramArrayOfObject, boolean paramBoolean1, int paramInt, boolean paramBoolean2);
+  public abstract void setDataArray(Element[][] paramArrayOfElement,
+    Object[] paramArrayOfObject, boolean paramBoolean1, int paramInt,
+    boolean paramBoolean2);
 
   public abstract Rule[] getRules();
 
   public abstract Rule addRule(String paramString);
 
-  public abstract Rule addRule(String paramString1, String paramString2, boolean paramBoolean, String paramString3);
+  public abstract Rule addRule(String paramString1, String paramString2,
+    boolean paramBoolean, String paramString3);
 
-  public abstract Rule addRule(String paramString1, String paramString2, boolean paramBoolean1, String paramString3, boolean paramBoolean2);
+  public abstract Rule addRule(String paramString1, String paramString2,
+    boolean paramBoolean1, String paramString3, boolean paramBoolean2);
 
   public abstract boolean removeRule(Rule paramRule);
 
@@ -120,10 +137,12 @@ public abstract interface Cube extends PaloObject
   public abstract int getType();
 
   /** @deprecated */
-  public abstract void registerViewObserver(PersistenceObserver paramPersistenceObserver);
+  public abstract void registerViewObserver(
+    PersistenceObserver paramPersistenceObserver);
 
   /** @deprecated */
-  public abstract void unregisterViewObserver(PersistenceObserver paramPersistenceObserver);
+  public abstract void unregisterViewObserver(
+    PersistenceObserver paramPersistenceObserver);
 
   public abstract void rename(String paramString);
 
@@ -145,7 +164,8 @@ public abstract interface Cube extends PaloObject
 
   public abstract Cell[] getCells(Element[][] paramArrayOfElement);
 
-  public abstract Cell[] getCells(Element[][] paramArrayOfElement, boolean paramBoolean);
+  public abstract Cell[] getCells(Element[][] paramArrayOfElement,
+    boolean paramBoolean);
 
   public abstract Cell[] getCellArea(Element[][] paramArrayOfElement);
 
@@ -156,7 +176,8 @@ public abstract interface Cube extends PaloObject
   public abstract BigInteger getFilledCellCount();
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.Cube
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.Cube JD-Core Version: 0.5.4
  */

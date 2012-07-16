@@ -1,9 +1,10 @@
 package org.palo.api;
 
-public abstract interface Property2 extends PaloObject
-{
+public abstract interface Property2 extends PaloObject {
   public static final int TYPE_NUMERIC = 1;
+
   public static final int TYPE_STRING = 2;
+
   public static final int TYPE_BOOLEAN = 3;
 
   public abstract String getValue();
@@ -31,7 +32,8 @@ public abstract interface Property2 extends PaloObject
   public abstract int getType();
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.Property2
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.Property2 JD-Core Version: 0.5.4
  */

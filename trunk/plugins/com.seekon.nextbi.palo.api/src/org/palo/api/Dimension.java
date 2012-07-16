@@ -3,9 +3,9 @@ package org.palo.api;
 import com.tensegrity.palojava.DimensionInfo;
 import org.palo.api.subsets.SubsetHandler;
 
-public abstract interface Dimension extends PaloObject
-{
+public abstract interface Dimension extends PaloObject {
   public static final int DIMENSIONEXTENDEDTYPE_REGULAR = 0;
+
   public static final int DIMENSIONEXTENDEDTYPE_VIRTUAL = 1;
 
   public abstract int getExtendedType();
@@ -39,9 +39,12 @@ public abstract interface Dimension extends PaloObject
   /** @deprecated */
   public abstract void addElements(String[] paramArrayOfString, int[] paramArrayOfInt);
 
-  public abstract void addElements(String[] paramArrayOfString, int paramInt, Element[][] paramArrayOfElement, double[][] paramArrayOfDouble);
+  public abstract void addElements(String[] paramArrayOfString, int paramInt,
+    Element[][] paramArrayOfElement, double[][] paramArrayOfDouble);
 
-  public abstract void addElements(String[] paramArrayOfString, int[] paramArrayOfInt, Element[][] paramArrayOfElement, double[][] paramArrayOfDouble);
+  public abstract void addElements(String[] paramArrayOfString,
+    int[] paramArrayOfInt, Element[][] paramArrayOfElement,
+    double[][] paramArrayOfDouble);
 
   public abstract void updateConsolidations(Consolidation[] paramArrayOfConsolidation);
 
@@ -78,7 +81,8 @@ public abstract interface Dimension extends PaloObject
   public abstract void renameElement(Element paramElement, String paramString);
 
   /** @deprecated */
-  public abstract Consolidation newConsolidation(Element paramElement1, Element paramElement2, double paramDouble);
+  public abstract Consolidation newConsolidation(Element paramElement1,
+    Element paramElement2, double paramDouble);
 
   public abstract boolean isAttributeDimension();
 
@@ -101,10 +105,12 @@ public abstract interface Dimension extends PaloObject
   public abstract Attribute getAttributeByName(String paramString);
 
   /** @deprecated */
-  public abstract void setAttributeValues(Attribute[] paramArrayOfAttribute, Element[] paramArrayOfElement, Object[] paramArrayOfObject);
+  public abstract void setAttributeValues(Attribute[] paramArrayOfAttribute,
+    Element[] paramArrayOfElement, Object[] paramArrayOfObject);
 
   /** @deprecated */
-  public abstract Object[] getAttributeValues(Attribute[] paramArrayOfAttribute, Element[] paramArrayOfElement);
+  public abstract Object[] getAttributeValues(Attribute[] paramArrayOfAttribute,
+    Element[] paramArrayOfElement);
 
   /** @deprecated */
   public abstract Cube getAttributeCube();
@@ -157,7 +163,8 @@ public abstract interface Dimension extends PaloObject
   public abstract void reload(boolean paramBoolean);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.Dimension
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.Dimension JD-Core Version: 0.5.4
  */

@@ -1,8 +1,7 @@
 package org.palo.api;
 
 /** @deprecated */
-public abstract interface Subset extends NamedEntity
-{
+public abstract interface Subset extends NamedEntity {
   public abstract String getId();
 
   public abstract void setName(String paramString);
@@ -37,7 +36,8 @@ public abstract interface Subset extends NamedEntity
   public abstract void save();
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.Subset
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.Subset JD-Core Version: 0.5.4
  */
