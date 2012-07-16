@@ -17,85 +17,85 @@ import com.seekon.bicp.web.deployer.ModuleLoader;
 import com.seekon.bicp.web.deployer.def.WebAppLoader;
 
 public class WebSupportOsgiBundleApplicationContextListener implements
-		OsgiBundleApplicationContextListener {
+  OsgiBundleApplicationContextListener {
 
-	private static Logger log = Logger
-			.getLogger(WebSupportOsgiBundleApplicationContextListener.class);
+  private static Logger log = Logger
+    .getLogger(WebSupportOsgiBundleApplicationContextListener.class);
 
-	private List<ModuleLoader> moduleLoaders = new ArrayList<ModuleLoader>();
+  private List<ModuleLoader> moduleLoaders = new ArrayList<ModuleLoader>();
 
-	private List<Bundle> registeredBundles = new ArrayList<Bundle>();
+  private List<Bundle> registeredBundles = new ArrayList<Bundle>();
 
-	public WebSupportOsgiBundleApplicationContextListener() {
-		super();
-		moduleLoaders.add(new WebAppLoader());
-	}
+  public WebSupportOsgiBundleApplicationContextListener() {
+    super();
+    moduleLoaders.add(new WebAppLoader());
+  }
 
-	@Override
-	public void onOsgiApplicationEvent(OsgiBundleApplicationContextEvent event) {
-		if (event instanceof OsgiBundleContextRefreshedEvent) {
-			try {
-				OsgiBundleXmlWebApplicationContext context = (OsgiBundleXmlWebApplicationContext) event
-						.getApplicationContext();
-				if (context != null && context.getServletContext() != null) {
-					context.getServletContext().setAttribute(
-							"context_" + event.getBundle().getSymbolicName(), context);
-				}
-				registerApplication(event.getBundle());
-			} catch (Exception e) {
-				log.debug(e);
-			}
-		}
-		if (event instanceof OsgiBundleContextClosedEvent) {
-			try {
-				unregisterApplication(event.getBundle());
-			} catch (Exception e) {
-				log.debug(e);
-			}
-		}
-	}
+  @Override
+  public void onOsgiApplicationEvent(OsgiBundleApplicationContextEvent event) {
+    if (event instanceof OsgiBundleContextRefreshedEvent) {
+      try {
+        OsgiBundleXmlWebApplicationContext context = (OsgiBundleXmlWebApplicationContext) event
+          .getApplicationContext();
+        if (context != null && context.getServletContext() != null) {
+          context.getServletContext().setAttribute(
+            "context_" + event.getBundle().getSymbolicName(), context);
+        }
+        registerApplication(event.getBundle());
+      } catch (Exception e) {
+        log.debug(e);
+      }
+    }
+    if (event instanceof OsgiBundleContextClosedEvent) {
+      try {
+        unregisterApplication(event.getBundle());
+      } catch (Exception e) {
+        log.debug(e);
+      }
+    }
+  }
 
-	private void registerApplication(Bundle bundle) throws Exception {
-		if (registeredBundles.contains(bundle)) {
-			return;
-		}
+  private void registerApplication(Bundle bundle) throws Exception {
+    if (registeredBundles.contains(bundle)) {
+      return;
+    }
 
-		List succLoaders = new ArrayList();
-		for (Iterator it = moduleLoaders.iterator(); it.hasNext();) {
-			ModuleLoader loader = (ModuleLoader) it.next();
+    List succLoaders = new ArrayList();
+    for (Iterator it = moduleLoaders.iterator(); it.hasNext();) {
+      ModuleLoader loader = (ModuleLoader) it.next();
 
-			try {
-				loader.load(bundle);
-				succLoaders.add(loader);
-			} catch (LoadException e) {
-				for (Iterator it1 = succLoaders.iterator(); it1.hasNext();) {
-					ModuleLoader l = (ModuleLoader) it1.next();
-					try {
-						l.unload(bundle);
-					} catch (LoadException e1) {
-						log.error(e.getMessage(), e);
-					}
-				}
-				log.error(e.getMessage(), e);
-				throw e;
-			}
-		}
-		registeredBundles.add(bundle);
-	}
-	
-	private void unregisterApplication(Bundle bundle) throws Exception {
-		if (!registeredBundles.contains(bundle)) {
-			return;
-		}
+      try {
+        loader.load(bundle);
+        succLoaders.add(loader);
+      } catch (LoadException e) {
+        for (Iterator it1 = succLoaders.iterator(); it1.hasNext();) {
+          ModuleLoader l = (ModuleLoader) it1.next();
+          try {
+            l.unload(bundle);
+          } catch (LoadException e1) {
+            log.error(e.getMessage(), e);
+          }
+        }
+        log.error(e.getMessage(), e);
+        throw e;
+      }
+    }
+    registeredBundles.add(bundle);
+  }
 
-		for (Iterator it = moduleLoaders.iterator(); it.hasNext();) {
-			ModuleLoader loader = (ModuleLoader) it.next();
-			try {
-				loader.unload(bundle);
-			} catch (LoadException e) {
-				log.error(e.getMessage(), e);
-			}
-		}
-		registeredBundles.remove(bundle);
-	}
+  private void unregisterApplication(Bundle bundle) throws Exception {
+    if (!registeredBundles.contains(bundle)) {
+      return;
+    }
+
+    for (Iterator it = moduleLoaders.iterator(); it.hasNext();) {
+      ModuleLoader loader = (ModuleLoader) it.next();
+      try {
+        loader.unload(bundle);
+      } catch (LoadException e) {
+        log.error(e.getMessage(), e);
+      }
+    }
+    registeredBundles.remove(bundle);
+  }
 }
