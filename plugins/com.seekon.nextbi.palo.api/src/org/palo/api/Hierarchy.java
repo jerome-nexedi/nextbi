@@ -2,8 +2,7 @@ package org.palo.api;
 
 import org.palo.api.subsets.SubsetHandler;
 
-public abstract interface Hierarchy extends PaloObject
-{
+public abstract interface Hierarchy extends PaloObject {
   public abstract Dimension getDimension();
 
   public abstract boolean isNormal();
@@ -30,9 +29,12 @@ public abstract interface Hierarchy extends PaloObject
 
   public abstract void addElements(String[] paramArrayOfString, int[] paramArrayOfInt);
 
-  public abstract void addElements(String[] paramArrayOfString, int paramInt, Element[][] paramArrayOfElement, double[][] paramArrayOfDouble);
+  public abstract void addElements(String[] paramArrayOfString, int paramInt,
+    Element[][] paramArrayOfElement, double[][] paramArrayOfDouble);
 
-  public abstract void addElements(String[] paramArrayOfString, int[] paramArrayOfInt, Element[][] paramArrayOfElement, double[][] paramArrayOfDouble);
+  public abstract void addElements(String[] paramArrayOfString,
+    int[] paramArrayOfInt, Element[][] paramArrayOfElement,
+    double[][] paramArrayOfDouble);
 
   public abstract void updateConsolidations(Consolidation[] paramArrayOfConsolidation);
 
@@ -50,7 +52,8 @@ public abstract interface Hierarchy extends PaloObject
 
   public abstract void renameElement(Element paramElement, String paramString);
 
-  public abstract Consolidation newConsolidation(Element paramElement1, Element paramElement2, double paramDouble);
+  public abstract Consolidation newConsolidation(Element paramElement1,
+    Element paramElement2, double paramDouble);
 
   public abstract int getMaxLevel();
 
@@ -72,9 +75,11 @@ public abstract interface Hierarchy extends PaloObject
 
   public abstract Attribute getAttributeByName(String paramString);
 
-  public abstract void setAttributeValues(Attribute[] paramArrayOfAttribute, Element[] paramArrayOfElement, Object[] paramArrayOfObject);
+  public abstract void setAttributeValues(Attribute[] paramArrayOfAttribute,
+    Element[] paramArrayOfElement, Object[] paramArrayOfObject);
 
-  public abstract Object[] getAttributeValues(Attribute[] paramArrayOfAttribute, Element[] paramArrayOfElement);
+  public abstract Object[] getAttributeValues(Attribute[] paramArrayOfAttribute,
+    Element[] paramArrayOfElement);
 
   public abstract Cube getAttributeCube();
 
@@ -94,7 +99,8 @@ public abstract interface Hierarchy extends PaloObject
   public abstract void reload(boolean paramBoolean);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.Hierarchy
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.Hierarchy JD-Core Version: 0.5.4
  */

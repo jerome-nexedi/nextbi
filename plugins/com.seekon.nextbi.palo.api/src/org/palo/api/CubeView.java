@@ -1,10 +1,12 @@
 package org.palo.api;
 
-public abstract interface CubeView extends NamedEntity
-{
+public abstract interface CubeView extends NamedEntity {
   public static final String PROPERTY_ID_HIDE_EMPTY = "hideEmpty";
+
   public static final String PROPERTY_ID_REVERSE_HORIZONTAL_LAYOUT = "reverseHorizontal";
+
   public static final String PROPERTY_ID_REVERSE_VERTICAL_LAYOUT = "reverseVertical";
+
   public static final String PROPERTY_ID_SHOW_RULES = "showRules";
 
   public abstract String getId();
@@ -48,7 +50,8 @@ public abstract interface CubeView extends NamedEntity
   public abstract String getPropertyValue(String paramString);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.CubeView
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.CubeView JD-Core Version: 0.5.4
  */

@@ -3,8 +3,7 @@ package org.palo.api;
 import org.palo.api.subsets.Subset2;
 import org.palo.api.utils.ElementPath;
 
-public abstract interface Axis
-{
+public abstract interface Axis {
   public abstract String getId();
 
   public abstract void setName(String paramString);
@@ -32,7 +31,8 @@ public abstract interface Axis
 
   public abstract void setActiveSubset(Dimension paramDimension, Subset paramSubset);
 
-  public abstract void setActiveSubset2(Dimension paramDimension, Subset2 paramSubset2);
+  public abstract void setActiveSubset2(Dimension paramDimension,
+    Subset2 paramSubset2);
 
   public abstract Subset2 getActiveSubset2(Dimension paramDimension);
 
@@ -42,21 +42,27 @@ public abstract interface Axis
   public abstract Element getSelectedElement(Hierarchy paramHierarchy);
 
   /** @deprecated */
-  public abstract void setSelectedElement(Dimension paramDimension, Element paramElement);
+  public abstract void setSelectedElement(Dimension paramDimension,
+    Element paramElement);
 
-  public abstract void setSelectedElement(Hierarchy paramHierarchy, Element paramElement);
-
-  /** @deprecated */
-  public abstract void addExpanded(Dimension paramDimension, Element[] paramArrayOfElement, int paramInt);
-
-  /** @deprecated */
-  public abstract void addExpanded(Hierarchy paramHierarchy, Element[] paramArrayOfElement, int paramInt);
+  public abstract void setSelectedElement(Hierarchy paramHierarchy,
+    Element paramElement);
 
   /** @deprecated */
-  public abstract void removeExpanded(Dimension paramDimension, Element[] paramArrayOfElement, int paramInt);
+  public abstract void addExpanded(Dimension paramDimension,
+    Element[] paramArrayOfElement, int paramInt);
 
   /** @deprecated */
-  public abstract void removeExpanded(Hierarchy paramHierarchy, Element[] paramArrayOfElement, int paramInt);
+  public abstract void addExpanded(Hierarchy paramHierarchy,
+    Element[] paramArrayOfElement, int paramInt);
+
+  /** @deprecated */
+  public abstract void removeExpanded(Dimension paramDimension,
+    Element[] paramArrayOfElement, int paramInt);
+
+  /** @deprecated */
+  public abstract void removeExpanded(Hierarchy paramHierarchy,
+    Element[] paramArrayOfElement, int paramInt);
 
   /** @deprecated */
   public abstract Element[][] getExpanded(Dimension paramDimension);
@@ -73,22 +79,28 @@ public abstract interface Axis
   public abstract void removeExpanded(ElementPath paramElementPath);
 
   /** @deprecated */
-  public abstract int[] getRepetitionsForExpanded(Dimension paramDimension, Element[] paramArrayOfElement);
+  public abstract int[] getRepetitionsForExpanded(Dimension paramDimension,
+    Element[] paramArrayOfElement);
 
   /** @deprecated */
-  public abstract int[] getRepetitionsForExpanded(Hierarchy paramHierarchy, Element[] paramArrayOfElement);
+  public abstract int[] getRepetitionsForExpanded(Hierarchy paramHierarchy,
+    Element[] paramArrayOfElement);
 
   /** @deprecated */
-  public abstract void addHidden(Dimension paramDimension, Element[] paramArrayOfElement);
+  public abstract void addHidden(Dimension paramDimension,
+    Element[] paramArrayOfElement);
 
   /** @deprecated */
-  public abstract void addHidden(Hierarchy paramHierarchy, Element[] paramArrayOfElement);
+  public abstract void addHidden(Hierarchy paramHierarchy,
+    Element[] paramArrayOfElement);
 
   /** @deprecated */
-  public abstract void removeHidden(Dimension paramDimension, Element[] paramArrayOfElement);
+  public abstract void removeHidden(Dimension paramDimension,
+    Element[] paramArrayOfElement);
 
   /** @deprecated */
-  public abstract void removeHidden(Hierarchy paramHierarchy, Element[] paramArrayOfElement);
+  public abstract void removeHidden(Hierarchy paramHierarchy,
+    Element[] paramArrayOfElement);
 
   /** @deprecated */
   public abstract Element[][] getHidden(Dimension paramDimension);
@@ -123,7 +135,8 @@ public abstract interface Axis
   public abstract String getData(String paramString);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.Axis
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.Axis JD-Core Version: 0.5.4
  */

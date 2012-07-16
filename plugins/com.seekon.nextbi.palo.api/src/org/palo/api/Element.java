@@ -2,15 +2,21 @@ package org.palo.api;
 
 import com.tensegrity.palojava.ElementInfo;
 
-public abstract interface Element extends PaloObject
-{
+public abstract interface Element extends PaloObject {
   public static final int ELEMENTTYPE_NUMERIC = 0;
+
   public static final int ELEMENTTYPE_STRING = 1;
+
   public static final int ELEMENTTYPE_CONSOLIDATED = 2;
+
   public static final int ELEMENTTYPE_RULE = 3;
+
   public static final String ELEMENTTYPE_NUMERIC_STRING = "Numeric";
+
   public static final String ELEMENTTYPE_STRING_STRING = "String";
+
   public static final String ELEMENTTYPE_CONSOLIDATED_STRING = "Consolidated";
+
   public static final String ELEMENTTYPE_RULE_STRING = "Rule";
 
   public abstract String getName();
@@ -60,10 +66,12 @@ public abstract interface Element extends PaloObject
 
   public abstract void setAttributeValue(Attribute paramAttribute, Object paramObject);
 
-  public abstract void setAttributeValues(Attribute[] paramArrayOfAttribute, Object[] paramArrayOfObject);
+  public abstract void setAttributeValues(Attribute[] paramArrayOfAttribute,
+    Object[] paramArrayOfObject);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.Element
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.Element JD-Core Version: 0.5.4
  */

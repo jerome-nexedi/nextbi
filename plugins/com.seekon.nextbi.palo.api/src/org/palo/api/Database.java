@@ -3,8 +3,7 @@ package org.palo.api;
 import com.tensegrity.palojava.DatabaseInfo;
 import org.palo.api.subsets.SubsetStorageHandler;
 
-public abstract interface Database extends PaloObject
-{
+public abstract interface Database extends PaloObject {
   public abstract String getName();
 
   public abstract Connection getConnection();
@@ -47,7 +46,8 @@ public abstract interface Database extends PaloObject
 
   public abstract Cube addCube(String paramString, Dimension[] paramArrayOfDimension);
 
-  public abstract Cube addUserInfoCube(String paramString, Dimension[] paramArrayOfDimension);
+  public abstract Cube addUserInfoCube(String paramString,
+    Dimension[] paramArrayOfDimension);
 
   public abstract void removeCube(Cube paramCube);
 
@@ -55,7 +55,8 @@ public abstract interface Database extends PaloObject
 
   public abstract Cube addCube(VirtualCubeDefinition paramVirtualCubeDefinition);
 
-  public abstract String parseRule(Cube paramCube, String paramString1, String paramString2);
+  public abstract String parseRule(Cube paramCube, String paramString1,
+    String paramString2);
 
   public abstract boolean isSystem();
 
@@ -71,7 +72,8 @@ public abstract interface Database extends PaloObject
   public abstract void rename(String paramString);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.Database
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.Database JD-Core Version: 0.5.4
  */

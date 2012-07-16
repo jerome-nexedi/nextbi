@@ -1,12 +1,16 @@
 package org.palo.api;
 
-public abstract interface ExportContext
-{
+public abstract interface ExportContext {
   public static final String OR = "or";
+
   public static final String XOR = "xor";
+
   public static final String AND = "and";
+
   public static final int TYPE_BOTH = 0;
+
   public static final int TYPE_NUMERIC = 1;
+
   public static final int TYPE_STRING = 2;
 
   public abstract void setBlocksize(int paramInt);
@@ -43,7 +47,8 @@ public abstract interface ExportContext
 
   public abstract void setCondition(Condition paramCondition);
 
-  public abstract void setCombinedCondition(Condition paramCondition1, Condition paramCondition2, String paramString);
+  public abstract void setCombinedCondition(Condition paramCondition1,
+    Condition paramCondition2, String paramString);
 
   public abstract String getConditionRepresentation();
 
@@ -54,7 +59,8 @@ public abstract interface ExportContext
   public abstract void setProgress(double paramDouble);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.ExportContext
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.ExportContext JD-Core Version: 0.5.4
  */

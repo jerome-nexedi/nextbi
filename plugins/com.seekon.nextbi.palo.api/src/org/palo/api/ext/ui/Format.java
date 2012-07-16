@@ -1,7 +1,6 @@
 package org.palo.api.ext.ui;
 
-public abstract interface Format
-{
+public abstract interface Format {
   public abstract int getPriority();
 
   public abstract String getNumberFormatPattern();
@@ -13,7 +12,8 @@ public abstract interface Format
   public abstract ColorDescriptor getFontColor();
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.ext.ui.Format
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.ext.ui.Format JD-Core Version: 0.5.4
  */

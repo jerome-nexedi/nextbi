@@ -1,8 +1,8 @@
 package org.palo.api;
 
-public abstract interface Attribute
-{
+public abstract interface Attribute {
   public static final int TYPE_STRING = 1;
+
   public static final int TYPE_NUMERIC = 0;
 
   public abstract String getId();
@@ -15,7 +15,8 @@ public abstract interface Attribute
 
   public abstract void setValue(Element paramElement, Object paramObject);
 
-  public abstract void setValues(Element[] paramArrayOfElement, Object[] paramArrayOfObject);
+  public abstract void setValues(Element[] paramArrayOfElement,
+    Object[] paramArrayOfObject);
 
   public abstract Object[] getValues(Element[] paramArrayOfElement);
 
@@ -34,7 +35,8 @@ public abstract interface Attribute
   public abstract void setType(int paramInt);
 }
 
-/* Location:           E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:     org.palo.api.Attribute
- * JD-Core Version:    0.5.4
+/*
+ * Location:
+ * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
+ * Qualified Name: org.palo.api.Attribute JD-Core Version: 0.5.4
  */
