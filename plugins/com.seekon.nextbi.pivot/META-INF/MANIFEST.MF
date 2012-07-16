@@ -23,6 +23,7 @@ Require-Bundle: com.springsource.org.apache.log4j;bundle-version="1.2.15",
  com.seekon.org.jasig.cas.client;bundle-version="3.2.1"
 Import-Package: com.mysql.jdbc,
  javax.servlet;version="2.4.0",
+ javax.servlet.descriptor;resolution:=optional,
  javax.servlet.http;version="2.4.0",
  javax.servlet.jsp;version="2.0.0",
  javax.servlet.jsp.resources;version="2.0.0",

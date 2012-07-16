@@ -9,21 +9,24 @@ import com.google.gwt.user.client.rpc.core.java.util.Collection_CustomFieldSeria
 
 public final class LinkedHashSet_CustomFieldSerializer {
 
-  @SuppressWarnings("unchecked") // raw LinkedHashMap
+  @SuppressWarnings("unchecked")
+  // raw LinkedHashMap
   public static void deserialize(SerializationStreamReader streamReader,
     LinkedHashSet instance) throws SerializationException {
     Collection_CustomFieldSerializerBase.deserialize(streamReader, instance);
   }
 
-  @SuppressWarnings("unchecked") // raw LinkedHashMap
+  @SuppressWarnings("unchecked")
+  // raw LinkedHashMap
   public static LinkedHashSet instantiate(SerializationStreamReader streamReader)
-      throws SerializationException {
+    throws SerializationException {
     return new LinkedHashSet(16, .75f);
   }
 
-  @SuppressWarnings("unchecked") // raw LinkedHashMap
+  @SuppressWarnings("unchecked")
+  // raw LinkedHashMap
   public static void serialize(SerializationStreamWriter streamWriter,
-      LinkedHashSet instance) throws SerializationException {
+    LinkedHashSet instance) throws SerializationException {
     Collection_CustomFieldSerializerBase.serialize(streamWriter, instance);
   }
 }

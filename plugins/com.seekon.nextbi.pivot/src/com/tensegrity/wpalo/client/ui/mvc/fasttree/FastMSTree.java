@@ -46,19 +46,25 @@ import com.tensegrity.wpalo.client.ui.mvc.cubeview.SelectionCountListener;
  * <li>.gwt-FastTree { the tree itself }</li>
  * <li>.gwt-FastTree .gwt-FastMSTreeItem { a tree item }</li>
  * <li>.gwt-FastTree .selection-bar {the selection bar used to highlight the
- * selected tree item}</li> </ul>
+ * selected tree item}</li>
+ * </ul>
  */
 public class FastMSTree extends Panel implements HasWidgets, HasFocus,
-    HasFastMSTreeItems {
-	public static final int SELECT   = 0;
-	public static final int ADD      = 1;
-	public static final int INTERVAL = 2;
-	public static final int ADDONLY  = 3;
-	
-	private final boolean isMultiSelect;
-	private boolean childSelect;
-	private boolean listenToStateChange = false;
-	
+  HasFastMSTreeItems {
+  public static final int SELECT = 0;
+
+  public static final int ADD = 1;
+
+  public static final int INTERVAL = 2;
+
+  public static final int ADDONLY = 3;
+
+  private final boolean isMultiSelect;
+
+  private boolean childSelect;
+
+  private boolean listenToStateChange = false;
+
   /**
    * Resources used.
    */
@@ -102,18 +108,18 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
   private static FocusImpl impl = FocusImpl.getFocusImplForPanel();
 
   public void setListenToStateChange(boolean listen) {
-	 this.listenToStateChange = listen;
+    this.listenToStateChange = listen;
   }
-  
+
   public boolean isListenToStateChange() {
-	  return listenToStateChange;	  
+    return listenToStateChange;
   }
-  
+
   /**
    * Add the default style sheet and images.
    * 
-   * This method is not called by the Tree and should be called by explicitly
-   * by the consumer to include the default style sheet. 
+   * This method is not called by the Tree and should be called by explicitly by
+   * the consumer to include the default style sheet.
    */
   public static void addDefaultCSS() {
     DefaultResources instance = GWT.create(DefaultResources.class);
@@ -134,39 +140,55 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
   }
 
   private boolean lostMouseDown = true;
+
   /**
    * Map of TreeItem.widget -> TreeItem.
    */
   private final HashMap<Widget, FastMSTreeItem> childWidgets = new HashMap<Widget, FastMSTreeItem>();
+
   private final LinkedHashSet<FastMSTreeItem> curSelection = new LinkedHashSet<FastMSTreeItem>();
+
   private final Element focusable;
+
   private FocusListenerCollection focusListeners;
+
   private KeyboardListenerCollection keyboardListeners;
+
   private MouseListenerCollection mouseListeners;
+
   private final FastMSTreeItem root;
+
   private Event keyDown;
-  private final ArrayList <LoadListener> loadListeners = new ArrayList<LoadListener>();
+
+  private final ArrayList<LoadListener> loadListeners = new ArrayList<LoadListener>();
+
   private Event lastKeyDown;
+
   private FastMSTreeItem lastSelectedItem = null;
+
   private boolean firingLoadedEvent = false;
-  private ArrayList <LoadListener> toBeRemoved = new ArrayList<LoadListener>();
-  private ArrayList <LoadListener> toBeAdded = new ArrayList<LoadListener>();
-  private final ArrayList <DoubleClickListener> doubleClickListeners = new ArrayList<DoubleClickListener>();
-  private final ArrayList <SelectionCountListener> selectionCountListeners = new ArrayList<SelectionCountListener>();
-  
+
+  private ArrayList<LoadListener> toBeRemoved = new ArrayList<LoadListener>();
+
+  private ArrayList<LoadListener> toBeAdded = new ArrayList<LoadListener>();
+
+  private final ArrayList<DoubleClickListener> doubleClickListeners = new ArrayList<DoubleClickListener>();
+
+  private final ArrayList<SelectionCountListener> selectionCountListeners = new ArrayList<SelectionCountListener>();
+
   /**
    * Constructs a tree.
    */
   public FastMSTree(boolean ms) {
-	  childSelect = true;
-	  isMultiSelect = ms;
+    childSelect = true;
+    isMultiSelect = ms;
     setElement(DOM.createDiv());
 
     focusable = createFocusElement();
     setStyleName(focusable, STYLENAME_SELECTION);
 
     sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK | Event.KEYEVENTS
-        | Event.MOUSEEVENTS | Event.ONDBLCLICK);
+      | Event.MOUSEEVENTS | Event.ONDBLCLICK);
 
     // The 'root' item is invisible and serves only as a container
     // for all top-level items.
@@ -215,7 +237,7 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
 
     setStyleName(STYLENAME_DEFAULT);
     if (!curSelection.isEmpty()) {
-    	moveSelectionBar(curSelection.iterator().next());
+      moveSelectionBar(curSelection.iterator().next());
     }
   }
 
@@ -223,7 +245,8 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
    * Adds the widget as a root tree item.
    * 
    * @see com.google.gwt.user.client.ui.HasWidgets#add(com.google.gwt.user.client.ui.Widget)
-   * @param widget widget to add.
+   * @param widget
+   *          widget to add.
    */
   @Override
   public void add(Widget widget) {
@@ -231,68 +254,68 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
   }
 
   public void expandAll() {
-	  for (FastMSTreeItem item: getChildren()) {
-		  item.expandAll();
-	  }
+    for (FastMSTreeItem item : getChildren()) {
+      item.expandAll();
+    }
   }
-  
-  public void collapseAll() {	  
-	  LinkedHashSet <FastMSTreeItem> sels = new LinkedHashSet<FastMSTreeItem>(); 
-	  for (FastMSTreeItem item: getChildren()) {
-		  item.collapseAll();
-		  if (item.isSelected()) {
-			  sels.add(item);
-		  }
-	  }	  
-	  fastSetSelectedItems(sels);
+
+  public void collapseAll() {
+    LinkedHashSet<FastMSTreeItem> sels = new LinkedHashSet<FastMSTreeItem>();
+    for (FastMSTreeItem item : getChildren()) {
+      item.collapseAll();
+      if (item.isSelected()) {
+        sels.add(item);
+      }
+    }
+    fastSetSelectedItems(sels);
   }
-  
-  public void deepExpand(LinkedHashSet <FastMSTreeItem> nodes) {
-	  for (FastMSTreeItem node: nodes) {
-		  node.expandAll();
-	  }
+
+  public void deepExpand(LinkedHashSet<FastMSTreeItem> nodes) {
+    for (FastMSTreeItem node : nodes) {
+      node.expandAll();
+    }
   }
 
   public boolean moveItemUp(FastMSTreeItem item) {
-		int index = root.getChildren().indexOf(item);
-		if (index < 1) {
-			return false;
-		}
-		root.getChildren().remove(index);
-		index--;
-		root.getChildren().add(index, item);
-		Element cElem = item.getElement();
-		index = DOM.getChildIndex(FastMSTree.this.getElement(), cElem);
-		DOM.removeChild(FastMSTree.this.getElement(), cElem);
-		index--;
-		DOM.insertChild(FastMSTree.this.getElement(), cElem, index);
-		return true;
+    int index = root.getChildren().indexOf(item);
+    if (index < 1) {
+      return false;
+    }
+    root.getChildren().remove(index);
+    index--;
+    root.getChildren().add(index, item);
+    Element cElem = item.getElement();
+    index = DOM.getChildIndex(FastMSTree.this.getElement(), cElem);
+    DOM.removeChild(FastMSTree.this.getElement(), cElem);
+    index--;
+    DOM.insertChild(FastMSTree.this.getElement(), cElem, index);
+    return true;
   }
 
   public boolean moveItemDown(FastMSTreeItem item) {
-		int index = root.getChildren().indexOf(item);
-		if (index == -1 || index > root.getChildCount() - 2) {
-			return false;
-		}
-		root.getChildren().remove(index);
-		index++;
-		root.getChildren().add(index, item);
-		Element cElem = item.getElement();
-		index = DOM.getChildIndex(FastMSTree.this.getElement(), cElem);
-		DOM.removeChild(FastMSTree.this.getElement(), cElem);
-		index++;
-		DOM.insertChild(FastMSTree.this.getElement(), cElem, index);
-		return true;
+    int index = root.getChildren().indexOf(item);
+    if (index == -1 || index > root.getChildCount() - 2) {
+      return false;
+    }
+    root.getChildren().remove(index);
+    index++;
+    root.getChildren().add(index, item);
+    Element cElem = item.getElement();
+    index = DOM.getChildIndex(FastMSTree.this.getElement(), cElem);
+    DOM.removeChild(FastMSTree.this.getElement(), cElem);
+    index++;
+    DOM.insertChild(FastMSTree.this.getElement(), cElem, index);
+    return true;
   }
-  
+
   public int getTotalSize() {
-	  int result = getChildCount();
-	  for (FastMSTreeItem it: getChildren()) {
-		  result += it.getTotalSize();
-	  }
-	  return result;
+    int result = getChildCount();
+    for (FastMSTreeItem it : getChildren()) {
+      result += it.getTotalSize();
+    }
+    return result;
   }
-  
+
   public void addFocusListener(FocusListener listener) {
     if (focusListeners == null) {
       focusListeners = new FocusListenerCollection();
@@ -303,20 +326,22 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
   /**
    * Adds an item to the root level of this tree.
    * 
-   * @param item the item to be added
+   * @param item
+   *          the item to be added
    */
   public void addItem(FastMSTreeItem item) {
-    root.addItem(item);    
+    root.addItem(item);
   }
-  
+
   public void fastAddItem(FastMSTreeItem item) {
-	  root.fastAddItem(item);
+    root.fastAddItem(item);
   }
 
   /**
    * Adds a simple tree item containing the specified text.
    * 
-   * @param itemText the text of the item to be added
+   * @param itemText
+   *          the text of the item to be added
    * @return the item that was added
    */
   public FastMSTreeItem addItem(String itemText) {
@@ -329,7 +354,8 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
   /**
    * Adds a new tree item containing the specified widget.
    * 
-   * @param widget the widget to be added
+   * @param widget
+   *          the widget to be added
    */
   public FastMSTreeItem addItem(Widget widget) {
     return root.addItem(widget);
@@ -370,52 +396,52 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
     }
 
     FastMSTreeItem item = curSelection.iterator().next();
-   	FastMSTreeItem parent = item.getParentItem();
-   	while (parent != null) {
-   		parent.setState(true);
-   		parent = parent.getParentItem();
-   	}    	
-   	moveFocus(item);
+    FastMSTreeItem parent = item.getParentItem();
+    while (parent != null) {
+      parent.setState(true);
+      parent = parent.getParentItem();
+    }
+    moveFocus(item);
 
   }
 
   public void ensurePathOpen(FastMSTreeItem item) {
-		if (item == null) {
-			return;
-		}
+    if (item == null) {
+      return;
+    }
 
-		FastMSTreeItem parent = item.getParentItem();
-		while (parent != null) {
-			parent.setState(true, false);
-			parent = parent.getParentItem();
-		}	  
+    FastMSTreeItem parent = item.getParentItem();
+    while (parent != null) {
+      parent.setState(true, false);
+      parent = parent.getParentItem();
+    }
   }
-  
+
   public void ensureUnselectedItemVisible(FastMSTreeItem item) {
-		if (item == null) {
-			return;
-		}
+    if (item == null) {
+      return;
+    }
 
-		FastMSTreeItem parent = item.getParentItem();
-		while (parent != null) {
-			parent.setState(true);
-			parent = parent.getParentItem();
-		}
-		moveUnselectedFocus(item);
+    FastMSTreeItem parent = item.getParentItem();
+    while (parent != null) {
+      parent.setState(true);
+      parent = parent.getParentItem();
+    }
+    moveUnselectedFocus(item);
   }
-    
-  public void ensureItemVisible(FastMSTreeItem item) {
-	    if (item == null) {
-	      return;
-	    }
 
-	   	FastMSTreeItem parent = item.getParentItem();	   	
-	   	while (parent != null) {
-	   		parent.setState(true);
-	   		parent = parent.getParentItem();
-	   	}
-	   	moveFocus(item);
-	  }
+  public void ensureItemVisible(FastMSTreeItem item) {
+    if (item == null) {
+      return;
+    }
+
+    FastMSTreeItem parent = item.getParentItem();
+    while (parent != null) {
+      parent.setState(true);
+      parent = parent.getParentItem();
+    }
+    moveFocus(item);
+  }
 
   public FastMSTreeItem getChild(int index) {
     return root.getChild(index);
@@ -425,10 +451,10 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
     return root.getChildCount();
   }
 
-  public ArrayList <FastMSTreeItem> getChildren() {
-	  return root.getChildren();
+  public ArrayList<FastMSTreeItem> getChildren() {
+    return root.getChildren();
   }
-  
+
   public int getChildIndex(FastMSTreeItem child) {
     return root.getChildIndex(child);
   }
@@ -436,7 +462,8 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
   /**
    * Gets the top-level tree item at the specified index.
    * 
-   * @param index the index to be retrieved
+   * @param index
+   *          the index to be retrieved
    * @return the item at that index
    */
   public FastMSTreeItem getItem(int index) {
@@ -457,29 +484,29 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
    * 
    * @return the selected item
    */
-  public LinkedHashSet <FastMSTreeItem> getSelectedItems() {
+  public LinkedHashSet<FastMSTreeItem> getSelectedItems() {
     return curSelection;
   }
-  
+
   public int getNumberOfSelectedItems() {
-	  return curSelection.size();
+    return curSelection.size();
   }
 
   public void addSelectionCountListener(SelectionCountListener l) {
-	  selectionCountListeners.add(l);
+    selectionCountListeners.add(l);
   }
-  
+
   public void removeSelectionCountListener(SelectionCountListener l) {
-	  selectionCountListeners.remove(l);
+    selectionCountListeners.remove(l);
   }
-  
+
   public final void fireSelectionNumberChanged() {
-	 int n = getNumberOfSelectedItems();
-	  for (SelectionCountListener sl: selectionCountListeners) {
-		 sl.selectionCountChanged(n);
-	 }
+    int n = getNumberOfSelectedItems();
+    for (SelectionCountListener sl : selectionCountListeners) {
+      sl.selectionCountChanged(n);
+    }
   }
-  
+
   public int getTabIndex() {
     return impl.getTabIndex(focusable);
   }
@@ -496,133 +523,133 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
     int eventType = DOM.eventGetType(event);
 
     switch (eventType) {
-      case Event.ONDBLCLICK: {
-    	  doubleClicked(event);
-    	  break;
+    case Event.ONDBLCLICK: {
+      doubleClicked(event);
+      break;
+    }
+    case Event.ONCLICK: {
+      Element e = DOM.eventGetTarget(event);
+      if (shouldTreeDelegateFocusToElement(e)) {
+        // The click event should have given focus to this element already.
+        // Avoid moving focus back up to the tree (so that focusable widgets
+        // attached to TreeItems can receive keyboard events).
+      } else {
+        // if (!hasModifiers(event)) {
+        clickedOnFocus(DOM.eventGetTarget(event));
+        // }
       }
-      case Event.ONCLICK: {
-        Element e = DOM.eventGetTarget(event);                
-        if (shouldTreeDelegateFocusToElement(e)) {
-          // The click event should have given focus to this element already.
-          // Avoid moving focus back up to the tree (so that focusable widgets
-          // attached to TreeItems can receive keyboard events).
-        } else {
-//          if (!hasModifiers(event)) {
-            clickedOnFocus(DOM.eventGetTarget(event));
-//          }
-        }
-        break;
+      break;
+    }
+
+    case Event.ONMOUSEMOVE: {
+      if (mouseListeners != null) {
+        mouseListeners.fireMouseEvent(this, event);
       }
+      break;
+    }
 
-      case Event.ONMOUSEMOVE: {
-        if (mouseListeners != null) {
-          mouseListeners.fireMouseEvent(this, event);
-        }
-        break;
-      }
+    case Event.ONMOUSEUP: {
+      boolean left = event.getButton() == Event.BUTTON_LEFT;
 
-      case Event.ONMOUSEUP: {
-        boolean left = event.getButton() == Event.BUTTON_LEFT;
+      if (lostMouseDown) {
+        // artificial mouse down due to IE bug where mouse downs are lost.
 
-        if (lostMouseDown) {
-          // artificial mouse down due to IE bug where mouse downs are lost.
-
-          if (left) {
-            elementClicked(root, event);
-          }
-        }
-        if (mouseListeners != null) {
-          mouseListeners.fireMouseEvent(this, event);
-        }
-        lostMouseDown = true;
-        break;
-      }
-      case Event.ONMOUSEDOWN: {
-        boolean left = event.getButton() == Event.BUTTON_LEFT;
-
-        lostMouseDown = false;
-        if (mouseListeners != null) {
-          mouseListeners.fireMouseEvent(this, event);
-        }
         if (left) {
           elementClicked(root, event);
         }
+      }
+      if (mouseListeners != null) {
+        mouseListeners.fireMouseEvent(this, event);
+      }
+      lostMouseDown = true;
+      break;
+    }
+    case Event.ONMOUSEDOWN: {
+      boolean left = event.getButton() == Event.BUTTON_LEFT;
+
+      lostMouseDown = false;
+      if (mouseListeners != null) {
+        mouseListeners.fireMouseEvent(this, event);
+      }
+      if (left) {
+        elementClicked(root, event);
+      }
+      break;
+    }
+    case Event.ONMOUSEOVER: {
+      if (mouseListeners != null) {
+        mouseListeners.fireMouseEvent(this, event);
+      }
+      break;
+    }
+
+    case Event.ONMOUSEOUT: {
+      if (mouseListeners != null) {
+        mouseListeners.fireMouseEvent(this, event);
+      }
+      break;
+    }
+
+    case Event.ONFOCUS:
+      // If we already have focus, ignore the focus event.
+      if (focusListeners != null) {
+        focusListeners.fireFocusEvent(this, event);
+      }
+      break;
+
+    case Event.ONBLUR: {
+      if (focusListeners != null) {
+        focusListeners.fireFocusEvent(this, event);
+      }
+
+      break;
+    }
+
+    case Event.ONKEYDOWN:
+      keyDown = event;
+      // Intentional fallthrough.
+    case Event.ONKEYUP:
+      // if (eventType == Event.ONKEYUP) {
+      // // If we got here because of a key tab, then we need to make sure the
+      // // current tree item is selected.
+      // if (DOM.eventGetKeyCode(event) == KeyboardListener.KEY_TAB) {
+      // ArrayList<Element> chain = new ArrayList<Element>();
+      // collectElementChain(chain, getElement(), DOM.eventGetTarget(event));
+      // FastMSTreeItem item = findItemByChain(chain, 0, root);
+      // if (item != getSelectedItems()) {
+      // setSelectedItems(item, true);
+      // }
+      // }
+      // }
+
+      // Intentional fall through.
+    case Event.ONKEYPRESS: {
+      if (keyboardListeners != null) {
+        keyboardListeners.fireKeyboardEvent(this, event);
+      }
+
+      if (hasModifiers(event)) {
         break;
       }
-      case Event.ONMOUSEOVER: {
-        if (mouseListeners != null) {
-          mouseListeners.fireMouseEvent(this, event);
+
+      // Trying to avoid duplicate key downs and fire navigation despite
+      // missing key downs.
+      if (eventType != Event.ONKEYUP) {
+        if (lastKeyDown == null || (!lastKeyDown.equals(keyDown))) {
+          // keyboardNavigation(event);
         }
-        break;
+        if (eventType == Event.ONKEYPRESS) {
+          lastKeyDown = null;
+        } else {
+          lastKeyDown = keyDown;
+        }
       }
-
-      case Event.ONMOUSEOUT: {
-        if (mouseListeners != null) {
-          mouseListeners.fireMouseEvent(this, event);
-        }
-        break;
+      if (DOMHelper.isArrowKey(DOM.eventGetKeyCode(event))) {
+        DOM.eventCancelBubble(event, true);
+        DOM.eventPreventDefault(event);
       }
-
-      case Event.ONFOCUS:
-        // If we already have focus, ignore the focus event.
-        if (focusListeners != null) {
-          focusListeners.fireFocusEvent(this, event);
-        }
-        break;
-
-      case Event.ONBLUR: {
-        if (focusListeners != null) {
-          focusListeners.fireFocusEvent(this, event);
-        }
-
-        break;
-      }
-
-      case Event.ONKEYDOWN:
-        keyDown = event;
-        // Intentional fallthrough.
-      case Event.ONKEYUP:
-//        if (eventType == Event.ONKEYUP) {
-//          // If we got here because of a key tab, then we need to make sure the
-//          // current tree item is selected.
-//          if (DOM.eventGetKeyCode(event) == KeyboardListener.KEY_TAB) {
-//            ArrayList<Element> chain = new ArrayList<Element>();
-//            collectElementChain(chain, getElement(), DOM.eventGetTarget(event));
-//            FastMSTreeItem item = findItemByChain(chain, 0, root);
-//            if (item != getSelectedItems()) {
-//              setSelectedItems(item, true);
-//            }
-//          }
-//        }
-
-        // Intentional fall through.
-      case Event.ONKEYPRESS: {
-        if (keyboardListeners != null) {
-          keyboardListeners.fireKeyboardEvent(this, event);
-        }
-
-        if (hasModifiers(event)) {
-          break;
-        }
-
-        // Trying to avoid duplicate key downs and fire navigation despite
-        // missing key downs.
-        if (eventType != Event.ONKEYUP) {
-          if (lastKeyDown == null || (!lastKeyDown.equals(keyDown))) {
-            //keyboardNavigation(event);
-          }
-          if (eventType == Event.ONKEYPRESS) {
-            lastKeyDown = null;
-          } else {
-            lastKeyDown = keyDown;
-          }
-        }
-        if (DOMHelper.isArrowKey(DOM.eventGetKeyCode(event))) {
-          DOM.eventCancelBubble(event, true);
-          DOM.eventPreventDefault(event);
-        }
-        break;
-      }
+      break;
+    }
     }
 
     // We must call SynthesizedWidget's implementation for all other events.
@@ -630,29 +657,29 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
   }
 
   private final void doubleClicked(Event event) {
-	    Element target = DOM.eventGetTarget(event);
-	    ArrayList<Element> chain = new ArrayList<Element>();
-	    collectElementChain(chain, getElement(), target);
-	    FastMSTreeItem item = findItemByChain(chain, 0, root);
-	    if (item != null) {
-	    	fireDoubleClicked(item);
-	    }
+    Element target = DOM.eventGetTarget(event);
+    ArrayList<Element> chain = new ArrayList<Element>();
+    collectElementChain(chain, getElement(), target);
+    FastMSTreeItem item = findItemByChain(chain, 0, root);
+    if (item != null) {
+      fireDoubleClicked(item);
+    }
   }
 
   public void addDoubleClickListener(DoubleClickListener listener) {
-	  doubleClickListeners.add(listener);
+    doubleClickListeners.add(listener);
   }
-  
+
   public void removeDoubleClickListener(DoubleClickListener listener) {
-	  doubleClickListeners.remove(listener);
+    doubleClickListeners.remove(listener);
   }
-  
+
   private final void fireDoubleClicked(FastMSTreeItem item) {
-	  for (DoubleClickListener l: doubleClickListeners) {
-		  l.doubleClicked(item);
-	  }
+    for (DoubleClickListener l : doubleClickListeners) {
+      l.doubleClicked(item);
+    }
   }
-  
+
   @Override
   public boolean remove(Widget w) {
     // Validate.
@@ -675,7 +702,8 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
   /**
    * Removes an item from the root level of this tree.
    * 
-   * @param item the item to be removed
+   * @param item
+   *          the item to be removed
    */
   public void removeItem(FastMSTreeItem item) {
     root.removeItem(item);
@@ -711,47 +739,51 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
   /**
    * Selects a specified item.
    * 
-   * @param item the item to be selected, or <code>null</code> to deselect all
+   * @param item
+   *          the item to be selected, or <code>null</code> to deselect all
    *          items
    */
-  public void setSelectedItems(LinkedHashSet <FastMSTreeItem> items) {
+  public void setSelectedItems(LinkedHashSet<FastMSTreeItem> items) {
     setSelectedItems(items, true);
   }
 
-  public void fastSetSelectedItems(LinkedHashSet <FastMSTreeItem> items) {
-	  	Iterator<FastMSTreeItem> it = curSelection.iterator();
-	  	while (it.hasNext()) {			
-	  		FastMSTreeItem item = it.next();
-	        // Select the item and fire the selection event.
-	        item.setSelection(false, false);
-	        it.remove();
-		}
-	  selectTheseItems(items);
+  public void fastSetSelectedItems(LinkedHashSet<FastMSTreeItem> items) {
+    Iterator<FastMSTreeItem> it = curSelection.iterator();
+    while (it.hasNext()) {
+      FastMSTreeItem item = it.next();
+      // Select the item and fire the selection event.
+      item.setSelection(false, false);
+      it.remove();
+    }
+    selectTheseItems(items);
   }
-  
+
   /**
    * Selects a specified item.
    * 
-   * @param item the item to be selected, or <code>null</code> to deselect all
+   * @param item
+   *          the item to be selected, or <code>null</code> to deselect all
    *          items
-   * @param fireEvents <code>true</code> to allow selection events to be fired
+   * @param fireEvents
+   *          <code>true</code> to allow selection events to be fired
    */
-  public void setSelectedItems(LinkedHashSet <FastMSTreeItem> items, boolean fireEvents) {
+  public void setSelectedItems(LinkedHashSet<FastMSTreeItem> items,
+    boolean fireEvents) {
     if (items == null || items.isEmpty()) {
       if (curSelection.isEmpty()) {
         return;
       }
-      for (FastMSTreeItem item: curSelection) {
-    	  item.setSelection(false, fireEvents);
+      for (FastMSTreeItem item : curSelection) {
+        item.setSelection(false, fireEvents);
       }
       curSelection.clear();
       return;
     } else {
-    	setSelectedItems(null, false);
+      setSelectedItems(null, false);
     }
-    
-    for (FastMSTreeItem item: items) {
-    	onSelection(item, fireEvents, true, ADD);
+
+    for (FastMSTreeItem item : items) {
+      onSelection(item, fireEvents, true, ADD);
     }
   }
 
@@ -784,64 +816,65 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
     return root;
   }
 
-//  protected void keyboardNavigation(Event event) {
-//    // If nothing's selected, select the first item.
-//    if (curSelection == null) {
-//      if (root.getChildCount() > 0) {
-//        onSelection(root.getChild(0), true, true);
-//      }
-//      super.onBrowserEvent(event);
-//    } else {
-//
-//      // Handle keyboard events if keyboard navigation is enabled
-//
-//      switch (DOMHelper.standardizeKeycode(DOM.eventGetKeyCode(event))) {
-////        case KeyboardListener.KEY_UP: {
-////          moveSelectionUp(curSelection);
-////          break;
-////        }
-////        case KeyboardListener.KEY_DOWN: {
-////          moveSelectionDown(curSelection, true);
-////          break;
-////        }
-////        case KeyboardListener.KEY_LEFT: {
-////          if (curSelection.isOpen()) {
-////            curSelection.setState(false);
-////          } else {
-////            FastMSTreeItem parent = curSelection.getParentItem();
-////            if (parent != null) {
-////              setSelectedItems(parent);
-////            }
-////          }
-////          break;
-////        }
-////        case KeyboardListener.KEY_RIGHT: {
-////          if (!curSelection.isOpen()) {
-////            curSelection.setState(true);
-////          }
-////          // Do nothing if the element is already open.
-////          break;
-////        }
-//      }
-//    }
-//  }
+  // protected void keyboardNavigation(Event event) {
+  // // If nothing's selected, select the first item.
+  // if (curSelection == null) {
+  // if (root.getChildCount() > 0) {
+  // onSelection(root.getChild(0), true, true);
+  // }
+  // super.onBrowserEvent(event);
+  // } else {
+  //
+  // // Handle keyboard events if keyboard navigation is enabled
+  //
+  // switch (DOMHelper.standardizeKeycode(DOM.eventGetKeyCode(event))) {
+  // // case KeyboardListener.KEY_UP: {
+  // // moveSelectionUp(curSelection);
+  // // break;
+  // // }
+  // // case KeyboardListener.KEY_DOWN: {
+  // // moveSelectionDown(curSelection, true);
+  // // break;
+  // // }
+  // // case KeyboardListener.KEY_LEFT: {
+  // // if (curSelection.isOpen()) {
+  // // curSelection.setState(false);
+  // // } else {
+  // // FastMSTreeItem parent = curSelection.getParentItem();
+  // // if (parent != null) {
+  // // setSelectedItems(parent);
+  // // }
+  // // }
+  // // break;
+  // // }
+  // // case KeyboardListener.KEY_RIGHT: {
+  // // if (!curSelection.isOpen()) {
+  // // curSelection.setState(true);
+  // // }
+  // // // Do nothing if the element is already open.
+  // // break;
+  // // }
+  // }
+  // }
+  // }
 
   /**
    * Moves the selection bar around the given {@link FastMSTreeItem}.
    * 
-   * @param item the item to move selection bar to
+   * @param item
+   *          the item to move selection bar to
    */
   protected void moveSelectionBar(FastMSTreeItem item) {
-	  if (item == null || item.isShowing() == false) {
-		  UIObject.setVisible(focusable, false);
-		  return;
-	  }
-	  // focusable is being used for highlight as well.
-	  // Get the location and size of the given item's content element relative
-	  // to the tree.
-	  Element selectedElem = item.getContentElem();
-	  moveElementOverTarget(focusable, selectedElem);
-	  UIObject.setVisible(focusable, true);
+    if (item == null || item.isShowing() == false) {
+      UIObject.setVisible(focusable, false);
+      return;
+    }
+    // focusable is being used for highlight as well.
+    // Get the location and size of the given item's content element relative
+    // to the tree.
+    Element selectedElem = item.getContentElem();
+    moveElementOverTarget(focusable, selectedElem);
+    UIObject.setVisible(focusable, true);
   }
 
   @Override
@@ -851,289 +884,294 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
     }
   }
 
-  private final boolean addAllItems(FastMSTreeItem from, FastMSTreeItem to, LinkedHashSet <FastMSTreeItem> items) {
-	  if (from == null || to == null) {
-		  return false;
-	  }
-	  items.add(from);
-	  if (from.equals(to)) {
-		  return true;
-	  }
-	  if (childSelect) {
-		  if (from.getChildren() != null && from.isOpen()) {
-			  for (FastMSTreeItem kid: from.getChildren()) {			  
-				  if (addAllItems(kid, to, items)) {
-					  return true;
-				  }
-			  }
-		  }
-	  } else {
-		  if (from.getChildren() != null && from.isOpen()) {
-			  for (FastMSTreeItem kid: from.getChildren()) {			  
-				  if (checkAbortCondition(kid, to)) {
-					  return true;
-				  }
-			  }
-		  }		  
-	  }
-	  return false;
+  private final boolean addAllItems(FastMSTreeItem from, FastMSTreeItem to,
+    LinkedHashSet<FastMSTreeItem> items) {
+    if (from == null || to == null) {
+      return false;
+    }
+    items.add(from);
+    if (from.equals(to)) {
+      return true;
+    }
+    if (childSelect) {
+      if (from.getChildren() != null && from.isOpen()) {
+        for (FastMSTreeItem kid : from.getChildren()) {
+          if (addAllItems(kid, to, items)) {
+            return true;
+          }
+        }
+      }
+    } else {
+      if (from.getChildren() != null && from.isOpen()) {
+        for (FastMSTreeItem kid : from.getChildren()) {
+          if (checkAbortCondition(kid, to)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
-  
+
   private final boolean checkAbortCondition(FastMSTreeItem from, FastMSTreeItem to) {
-	  if (from == null || to == null) {
-		  return false;
-	  }
-	  if (from.equals(to)) {
-		  return true;
-	  }
-	  if (from.getChildren() != null && from.isOpen()) {
-		  for (FastMSTreeItem kid: from.getChildren()) {			  
-			  if (checkAbortCondition(kid, to)) {
-				  return true;
-			  }
-		  }
-	  }
-	  return false;
+    if (from == null || to == null) {
+      return false;
+    }
+    if (from.equals(to)) {
+      return true;
+    }
+    if (from.getChildren() != null && from.isOpen()) {
+      for (FastMSTreeItem kid : from.getChildren()) {
+        if (checkAbortCondition(kid, to)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
-  private final boolean collectAllItems(FastMSTreeItem from, FastMSTreeItem to, LinkedHashSet <FastMSTreeItem> items) {
-	  if (from == null || to == null) {
-		  return false;
-	  }
-	  items.add(from);
-	  if (from.equals(to)) {
-		  return true;
-	  }
-	  if (childSelect) {
-		  if (from.getChildren() != null && from.isOpen()) {
-			  for (FastMSTreeItem kid: from.getChildren()) {
-				  if (collectAllItems(kid, to, items)) {
-					  return true;
-				  }
-			  }
-		  }
-	  } else {
-		  if (from.getChildren() != null && from.isOpen()) {
-			  for (FastMSTreeItem kid: from.getChildren()) {
-				  if (checkAbortCondition(kid, to)) {
-					  return true;
-				  }
-			  }
-		  }		  
-	  }
-	  while (from.getParentItem() != null) {
-		  int index = from.getParentItem().getChildIndex(from);
-		  index++;
-		  if (index < from.getParentItem().getChildCount()) {
-			  for (; index < from.getParentItem().getChildCount(); index++) {
-				  if (addAllItems(from.getParentItem().getChild(index), to, items)) {
-					  return true;
-				  }
-			  }
-		  }
-		  from = from.getParentItem();
-	  }
-	  int index = from.getTree().getChildIndex(from);
-	  if (index != -1) {
-		  index++;
-		  if (index < from.getTree().getChildCount()) {
-			  for (; index < from.getTree().getChildCount(); index++) {
-				  if (addAllItems(from.getTree().getChild(index), to, items)) {
-					  return true;
-				  }
-			  }
-		  }
-	  }
-	  return false;
+  private final boolean collectAllItems(FastMSTreeItem from, FastMSTreeItem to,
+    LinkedHashSet<FastMSTreeItem> items) {
+    if (from == null || to == null) {
+      return false;
+    }
+    items.add(from);
+    if (from.equals(to)) {
+      return true;
+    }
+    if (childSelect) {
+      if (from.getChildren() != null && from.isOpen()) {
+        for (FastMSTreeItem kid : from.getChildren()) {
+          if (collectAllItems(kid, to, items)) {
+            return true;
+          }
+        }
+      }
+    } else {
+      if (from.getChildren() != null && from.isOpen()) {
+        for (FastMSTreeItem kid : from.getChildren()) {
+          if (checkAbortCondition(kid, to)) {
+            return true;
+          }
+        }
+      }
+    }
+    while (from.getParentItem() != null) {
+      int index = from.getParentItem().getChildIndex(from);
+      index++;
+      if (index < from.getParentItem().getChildCount()) {
+        for (; index < from.getParentItem().getChildCount(); index++) {
+          if (addAllItems(from.getParentItem().getChild(index), to, items)) {
+            return true;
+          }
+        }
+      }
+      from = from.getParentItem();
+    }
+    int index = from.getTree().getChildIndex(from);
+    if (index != -1) {
+      index++;
+      if (index < from.getTree().getChildCount()) {
+        for (; index < from.getTree().getChildCount(); index++) {
+          if (addAllItems(from.getTree().getChild(index), to, items)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
-  
+
   public void onDeselection(FastMSTreeItem item) {
-	  if (item == root) {
-		  return;
-	  }
-	  if (curSelection.isEmpty()) {
-		  return;
-	  }
-  	  if (!curSelection.contains(item)) {
-  		  return;
-  	  }
-	  curSelection.remove(item);
-	  item.setSelection(false, false);
-//	  moveSelectionBar(item);
-//	  moveFocus(item);	  
-  }
-  
-  public void selectTheseItems(LinkedHashSet <FastMSTreeItem> items) {
-  	if (items == null || items.size() == 0) {
-  		return;
-  	}
-  	FastMSTreeItem item = null;
-	for (FastMSTreeItem it: items) {
-		curSelection.add(it);
-        // Select the item and fire the selection event.
-        it.setSelection(true, false);
-        item = it;
-	}    	
-//  	FastMSTreeItem item = items.get(items.size() - 1);
-  	moveSelectionBar(item);
-	lastSelectedItem = item;
-	fireSelectionNumberChanged();
-  }
-    
-  public void deselectTheseItems(LinkedHashSet <FastMSTreeItem> items) {
-	  	if (items == null || items.size() == 0) {
-	  		return;
-	  	}
-	  	FastMSTreeItem item = null;
-	  	for (FastMSTreeItem it: items) {
-			curSelection.remove(it);
-	        // Select the item and fire the selection event.
-	        it.setSelection(false, false);
-	        item = it;
-		}
-	  	moveSelectionBar(item);
-	  	fireSelectionNumberChanged();
-  }
-
-  public void setMaySelectChildren(boolean childSelect) {
-	  this.childSelect = childSelect;
-  }
-  
-  private final boolean checkMaySelect(FastMSTreeItem item) {
-	  if (childSelect) {
-		  return true;
-	  }
-	  FastMSTreeItem parent = item.getParentItem();
-	  while (parent != null) {
-		  if (curSelection.contains(parent)) {
-			  return false;
-		  }
-		  parent = parent.getParentItem();
-	  }
-	  return true;
-  }
-  
-  private final LinkedHashSet <FastMSTreeItem> checkDeselectionNecessary(FastMSTreeItem item) {	  
-	  if (childSelect) {
-		  return null;
-	  }
-	  LinkedHashSet <FastMSTreeItem> newSel = new LinkedHashSet<FastMSTreeItem>();
-	  Iterator <FastMSTreeItem> itemIter = curSelection.iterator();
-	  while (itemIter.hasNext()) {
-		  FastMSTreeItem it = itemIter.next();
-		  FastMSTreeItem parent = it.getParentItem();
-		  while (parent != null) {
-			  if (parent.equals(item)) {
-				  newSel.add(it);
-				  break;
-			  }
-			  parent = parent.getParentItem();
-		  }
-	  }
-	  return newSel.size() == 0 ? null : newSel;
-  }
-  
-  public void onSelection(FastMSTreeItem item, boolean fireEvents,
-      boolean moveFocus, int mode) {
-	  try {
-    // 'root' isn't a real item, so don't let it be selected
-    // (some cases in the keyboard handler will try to do this)
     if (item == root) {
       return;
     }
+    if (curSelection.isEmpty()) {
+      return;
+    }
+    if (!curSelection.contains(item)) {
+      return;
+    }
+    curSelection.remove(item);
+    item.setSelection(false, false);
+    // moveSelectionBar(item);
+    // moveFocus(item);
+  }
 
-//    if (curSelection == item) {
-//      return;
-//    }
-    if (!curSelection.isEmpty()) {
-      if (mode == SELECT || !isMultiSelect) {
-    	  Iterator <FastMSTreeItem> iterate = curSelection.iterator();
-    	  while (iterate.hasNext()) {
-    		FastMSTreeItem it = iterate.next();
-    		if (!it.beforeSelectionLost()) {
-    			continue;
-    		}
-    		it.setSelection(false, fireEvents);
-    		iterate.remove();
-    	}
+  public void selectTheseItems(LinkedHashSet<FastMSTreeItem> items) {
+    if (items == null || items.size() == 0) {
+      return;
+    }
+    FastMSTreeItem item = null;
+    for (FastMSTreeItem it : items) {
+      curSelection.add(it);
+      // Select the item and fire the selection event.
+      it.setSelection(true, false);
+      item = it;
+    }
+    // FastMSTreeItem item = items.get(items.size() - 1);
+    moveSelectionBar(item);
+    lastSelectedItem = item;
+    fireSelectionNumberChanged();
+  }
+
+  public void deselectTheseItems(LinkedHashSet<FastMSTreeItem> items) {
+    if (items == null || items.size() == 0) {
+      return;
+    }
+    FastMSTreeItem item = null;
+    for (FastMSTreeItem it : items) {
+      curSelection.remove(it);
+      // Select the item and fire the selection event.
+      it.setSelection(false, false);
+      item = it;
+    }
+    moveSelectionBar(item);
+    fireSelectionNumberChanged();
+  }
+
+  public void setMaySelectChildren(boolean childSelect) {
+    this.childSelect = childSelect;
+  }
+
+  private final boolean checkMaySelect(FastMSTreeItem item) {
+    if (childSelect) {
+      return true;
+    }
+    FastMSTreeItem parent = item.getParentItem();
+    while (parent != null) {
+      if (curSelection.contains(parent)) {
+        return false;
+      }
+      parent = parent.getParentItem();
+    }
+    return true;
+  }
+
+  private final LinkedHashSet<FastMSTreeItem> checkDeselectionNecessary(
+    FastMSTreeItem item) {
+    if (childSelect) {
+      return null;
+    }
+    LinkedHashSet<FastMSTreeItem> newSel = new LinkedHashSet<FastMSTreeItem>();
+    Iterator<FastMSTreeItem> itemIter = curSelection.iterator();
+    while (itemIter.hasNext()) {
+      FastMSTreeItem it = itemIter.next();
+      FastMSTreeItem parent = it.getParentItem();
+      while (parent != null) {
+        if (parent.equals(item)) {
+          newSel.add(it);
+          break;
+        }
+        parent = parent.getParentItem();
       }
     }
-    
-    if (!isMultiSelect) {
-    	mode = SELECT;
-    }
-    
-    if (isMultiSelect && item != null && mode == INTERVAL && lastSelectedItem != null && lastSelectedItem.isSelected()) {
-    	// Get all items between item and lastSelectedItem (inclusive)
-    	if (item.equals(lastSelectedItem)) {
-    		fireSelectionNumberChanged();
-    		return;
-    	}
-    	FastMSTreeItem from;
-    	FastMSTreeItem to;
-    	if (lastSelectedItem.getElement().getAbsoluteTop() < item.getElement().getAbsoluteTop()) {
-    		// Travel down from lastSelectedItem
-    		from = lastSelectedItem;
-    		to = item;
-    	} else {
-    		// Travel down from currentItem
-    		from = item;
-    		to = lastSelectedItem;
-    	}
-    	
-    	LinkedHashSet <FastMSTreeItem> interval = new LinkedHashSet<FastMSTreeItem>();
-    	collectAllItems(from, to, interval);
-    	for (FastMSTreeItem it: interval) {
-    		curSelection.add(it);
-            // Select the item and fire the selection event.
-            it.setSelection(true, false);                      	
-    	}
-       	if (moveFocus) {
-       		moveFocus(item);
-        } else {
-             moveSelectionBar(item);
+    return newSel.size() == 0 ? null : newSel;
+  }
+
+  public void onSelection(FastMSTreeItem item, boolean fireEvents,
+    boolean moveFocus, int mode) {
+    try {
+      // 'root' isn't a real item, so don't let it be selected
+      // (some cases in the keyboard handler will try to do this)
+      if (item == root) {
+        return;
+      }
+
+      // if (curSelection == item) {
+      // return;
+      // }
+      if (!curSelection.isEmpty()) {
+        if (mode == SELECT || !isMultiSelect) {
+          Iterator<FastMSTreeItem> iterate = curSelection.iterator();
+          while (iterate.hasNext()) {
+            FastMSTreeItem it = iterate.next();
+            if (!it.beforeSelectionLost()) {
+              continue;
+            }
+            it.setSelection(false, fireEvents);
+            iterate.remove();
+          }
         }
-    	lastSelectedItem = item;
-    	fireSelectionNumberChanged();
-    	return;
-    }
-    if (item != null) {
-    	lastSelectedItem = item;
-    }    
-    if (item != null && !curSelection.contains(item)) {
-    	if (!checkMaySelect(item)) {
-    		return;
-    	}
-    	LinkedHashSet <FastMSTreeItem> newSel = checkDeselectionNecessary(item);
+      }
+
+      if (!isMultiSelect) {
+        mode = SELECT;
+      }
+
+      if (isMultiSelect && item != null && mode == INTERVAL
+        && lastSelectedItem != null && lastSelectedItem.isSelected()) {
+        // Get all items between item and lastSelectedItem (inclusive)
+        if (item.equals(lastSelectedItem)) {
+          fireSelectionNumberChanged();
+          return;
+        }
+        FastMSTreeItem from;
+        FastMSTreeItem to;
+        if (lastSelectedItem.getElement().getAbsoluteTop() < item.getElement()
+          .getAbsoluteTop()) {
+          // Travel down from lastSelectedItem
+          from = lastSelectedItem;
+          to = item;
+        } else {
+          // Travel down from currentItem
+          from = item;
+          to = lastSelectedItem;
+        }
+
+        LinkedHashSet<FastMSTreeItem> interval = new LinkedHashSet<FastMSTreeItem>();
+        collectAllItems(from, to, interval);
+        for (FastMSTreeItem it : interval) {
+          curSelection.add(it);
+          // Select the item and fire the selection event.
+          it.setSelection(true, false);
+        }
+        if (moveFocus) {
+          moveFocus(item);
+        } else {
+          moveSelectionBar(item);
+        }
+        lastSelectedItem = item;
+        fireSelectionNumberChanged();
+        return;
+      }
+      if (item != null) {
+        lastSelectedItem = item;
+      }
+      if (item != null && !curSelection.contains(item)) {
+        if (!checkMaySelect(item)) {
+          return;
+        }
+        LinkedHashSet<FastMSTreeItem> newSel = checkDeselectionNecessary(item);
         if (newSel != null) {
-        	deselectTheseItems(newSel);
+          deselectTheseItems(newSel);
         }
         curSelection.add(item);
         if (!curSelection.isEmpty()) {
-        	if (moveFocus) {
-              moveFocus(item);
-            } else {
-              // Move highlight even if we do no not need to move focus.
-              moveSelectionBar(item);
-            }
-
-            // Select the item and fire the selection event.
-            item.setSelection(true, fireEvents);
-          }        
-    } else if (item != null && mode == ADD && isMultiSelect) {
-    	curSelection.remove(item);
-    	item.setSelection(false, fireEvents);
-        if (moveFocus) {
+          if (moveFocus) {
             moveFocus(item);
           } else {
             // Move highlight even if we do no not need to move focus.
             moveSelectionBar(item);
-          }   
-    }    
-	  } catch (Throwable t) {
-		  t.printStackTrace();
-	  }
-	  fireSelectionNumberChanged();
+          }
+
+          // Select the item and fire the selection event.
+          item.setSelection(true, fireEvents);
+        }
+      } else if (item != null && mode == ADD && isMultiSelect) {
+        curSelection.remove(item);
+        item.setSelection(false, fireEvents);
+        if (moveFocus) {
+          moveFocus(item);
+        } else {
+          // Move highlight even if we do no not need to move focus.
+          moveSelectionBar(item);
+        }
+      }
+    } catch (Throwable t) {
+      t.printStackTrace();
+    }
+    fireSelectionNumberChanged();
   }
 
   /**
@@ -1190,7 +1228,7 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
    * Collects parents going up the element tree, terminated at the tree root.
    */
   private void collectElementChain(ArrayList<Element> chain, Element hRoot,
-      Element hElem) {
+    Element hElem) {
     if ((hElem == null) || hElem.equals(hRoot)) {
       return;
     }
@@ -1226,22 +1264,23 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
     FastMSTreeItem item = findItemByChain(chain, 0, root);
     if (item != null) {
       if (item.isInteriorNode() && item.getControlElement().equals(target)) {
-    	  item.getTree().setListenToStateChange(true);
-    	  item.setState(!item.isOpen(), true);
-    	  item.getTree().setListenToStateChange(false);
+        item.getTree().setListenToStateChange(true);
+        item.setState(!item.isOpen(), true);
+        item.getTree().setListenToStateChange(false);
         moveSelectionBar(item);
         disableSelection(target);
       } else if (processElementClicked(item)) {
-    	  if (event.getCtrlKey()) {
-    		onSelection(item, true, !shouldTreeDelegateFocusToElement(target), ADD);
-    		disableSelection(target);
-    	  } else if (event.getShiftKey()) {
-    		  onSelection(item, true, !shouldTreeDelegateFocusToElement(target), INTERVAL);
-    		  disableSelection(target);
-    	  } else {
-    		  onSelection(item, true, !shouldTreeDelegateFocusToElement(target), SELECT);
-    		  disableSelection(target);
-    	  }
+        if (event.getCtrlKey()) {
+          onSelection(item, true, !shouldTreeDelegateFocusToElement(target), ADD);
+          disableSelection(target);
+        } else if (event.getShiftKey()) {
+          onSelection(item, true, !shouldTreeDelegateFocusToElement(target),
+            INTERVAL);
+          disableSelection(target);
+        } else {
+          onSelection(item, true, !shouldTreeDelegateFocusToElement(target), SELECT);
+          disableSelection(target);
+        }
       }
     }
   }
@@ -1254,7 +1293,7 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
   }
 
   private FastMSTreeItem findItemByChain(ArrayList<Element> chain, int idx,
-      FastMSTreeItem root) {
+    FastMSTreeItem root) {
     if (idx == chain.size()) {
       return root;
     }
@@ -1293,71 +1332,71 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
    * @param selection
    */
   private void moveFocus(FastMSTreeItem item) {
-	moveSelectionBar(item);
-   	DOM.scrollIntoView(focusable);
-   	HasFocus focusableWidget = item.getFocusableWidget();
-   	if (focusableWidget != null) {
-   		focusableWidget.setFocus(true);
-   	} else {
-   		// Ensure Focus is set, as focus may have been previously delegated by
-   		// tree.
-   		impl.focus(focusable);
-   	}
+    moveSelectionBar(item);
+    DOM.scrollIntoView(focusable);
+    HasFocus focusableWidget = item.getFocusableWidget();
+    if (focusableWidget != null) {
+      focusableWidget.setFocus(true);
+    } else {
+      // Ensure Focus is set, as focus may have been previously delegated by
+      // tree.
+      impl.focus(focusable);
+    }
   }
 
   public void moveUnselectedFocus(FastMSTreeItem item) {
-	   	DOM.scrollIntoView(focusable);
-	   	HasFocus focusableWidget = item.getFocusableWidget();
-	   	if (focusableWidget != null) {
-	   		focusableWidget.setFocus(true);
-	   	} else {
-	   		// Ensure Focus is set, as focus may have been previously delegated by
-	   		// tree.
-	   		impl.focus(focusable);
-	   	}
-	  }
+    DOM.scrollIntoView(focusable);
+    HasFocus focusableWidget = item.getFocusableWidget();
+    if (focusableWidget != null) {
+      focusableWidget.setFocus(true);
+    } else {
+      // Ensure Focus is set, as focus may have been previously delegated by
+      // tree.
+      impl.focus(focusable);
+    }
+  }
 
   /**
    * Moves to the next item, going into children as if dig is enabled.
    */
-//  private void moveSelectionDown(FastMSTreeItem sel, boolean dig) {
-//    if (sel == root) {
-//      return;
-//    }
-//    FastMSTreeItem parent = sel.getParentItem();
-//    if (parent == null) {
-//      parent = root;
-//    }
-//    int idx = parent.getChildIndex(sel);
-//
-//    if (!dig || !sel.isOpen()) {
-//      if (idx < parent.getChildCount() - 1) {
-//        onSelection(parent.getChild(idx + 1), true, true);
-//      } else {
-//        moveSelectionDown(parent, false);
-//      }
-//    } else if (sel.getChildCount() > 0) {
-//      onSelection(sel.getChild(0), true, true);
-//    }
-//  }
+  // private void moveSelectionDown(FastMSTreeItem sel, boolean dig) {
+  // if (sel == root) {
+  // return;
+  // }
+  // FastMSTreeItem parent = sel.getParentItem();
+  // if (parent == null) {
+  // parent = root;
+  // }
+  // int idx = parent.getChildIndex(sel);
+  //
+  // if (!dig || !sel.isOpen()) {
+  // if (idx < parent.getChildCount() - 1) {
+  // onSelection(parent.getChild(idx + 1), true, true);
+  // } else {
+  // moveSelectionDown(parent, false);
+  // }
+  // } else if (sel.getChildCount() > 0) {
+  // onSelection(sel.getChild(0), true, true);
+  // }
+  // }
 
   /**
    * Moves the selected item up one.
    */
-//  private void moveSelectionUp(List <FastMSTreeItem> sel) {
-//    FastMSTreeItem parent = sel.getParentItem();
-//    if (parent == null) {
-//      parent = root;
-//    }
-//    int idx = parent.getChildIndex(sel);
-//
-//    if (idx > 0) {
-//      FastMSTreeItem sibling = parent.getChild(idx - 1);
-//      onSelection(findDeepestOpenChild(sibling), true, true);
-//    } else {
-//      onSelection(parent, true, true);
-//    }
-//  }
+  // private void moveSelectionUp(List <FastMSTreeItem> sel) {
+  // FastMSTreeItem parent = sel.getParentItem();
+  // if (parent == null) {
+  // parent = root;
+  // }
+  // int idx = parent.getChildIndex(sel);
+  //
+  // if (idx > 0) {
+  // FastMSTreeItem sibling = parent.getChild(idx - 1);
+  // onSelection(findDeepestOpenChild(sibling), true, true);
+  // } else {
+  // onSelection(parent, true, true);
+  // }
+  // }
 
   private native boolean shouldTreeDelegateFocusToElement(Element elem)
   /*-{
@@ -1370,82 +1409,82 @@ public class FastMSTree extends Panel implements HasWidgets, HasFocus,
        (name == "LABEL") 
     );
   }-*/;
-  
+
   public void addLoadListener(LoadListener listener) {
-	  if (firingLoadedEvent) {
-		  toBeAdded.add(listener);
-		  return;
-	  }
-	  loadListeners.add(listener);
-  }  
-  
+    if (firingLoadedEvent) {
+      toBeAdded.add(listener);
+      return;
+    }
+    loadListeners.add(listener);
+  }
+
   public void removeLoadListener(LoadListener listener) {
-	  if (firingLoadedEvent) {
-		  toBeRemoved.add(listener);
-		  return;
-	  }
-	  loadListeners.remove(listener);
+    if (firingLoadedEvent) {
+      toBeRemoved.add(listener);
+      return;
+    }
+    loadListeners.remove(listener);
   }
-  
+
   public void loaded(LoadEvent le) {
-	  try {
-		  firingLoadedEvent = true;
-		  for (LoadListener ll: loadListeners) {
-			  ll.loaderLoad(le);
-		  }		  
-		  loadListeners.removeAll(toBeRemoved);
-		  loadListeners.addAll(toBeAdded);
-		  toBeRemoved.clear();
-		  toBeAdded.clear();
-	  } finally {
-		  firingLoadedEvent = false;
-	  }
+    try {
+      firingLoadedEvent = true;
+      for (LoadListener ll : loadListeners) {
+        ll.loaderLoad(le);
+      }
+      loadListeners.removeAll(toBeRemoved);
+      loadListeners.addAll(toBeAdded);
+      toBeRemoved.clear();
+      toBeAdded.clear();
+    } finally {
+      firingLoadedEvent = false;
+    }
   }
-  
-  private final void traverse(FastMSTreeItem item, ArrayList <FastMSTreeItem> result) {
-	  if (item == null) {
-		  return;
-	  }
-	  result.add(item);
-	  if (item.isOpen()) {
-		  for (FastMSTreeItem kid: item.getChildren()) {
-			  traverse(kid, result);
-		  }
-	  }
+
+  private final void traverse(FastMSTreeItem item, ArrayList<FastMSTreeItem> result) {
+    if (item == null) {
+      return;
+    }
+    result.add(item);
+    if (item.isOpen()) {
+      for (FastMSTreeItem kid : item.getChildren()) {
+        traverse(kid, result);
+      }
+    }
   }
-  
-  public ArrayList <FastMSTreeItem> getVisibleItems() {
-	  ArrayList <FastMSTreeItem> result = new ArrayList<FastMSTreeItem>();
-	  for (FastMSTreeItem kid: root.getChildren()) {
-		  traverse(kid, result);
-	  }
-	  return result;
+
+  public ArrayList<FastMSTreeItem> getVisibleItems() {
+    ArrayList<FastMSTreeItem> result = new ArrayList<FastMSTreeItem>();
+    for (FastMSTreeItem kid : root.getChildren()) {
+      traverse(kid, result);
+    }
+    return result;
   }
-  
+
   private final FastMSTreeItem find(FastMSTreeItem item, TreeNode node) {
-	  if (node.equals(item.getModel())) {
-		  return item;
-	  }
-	  for (FastMSTreeItem kid: item.getChildren()) {
-		  FastMSTreeItem r = find(kid, node);
-		  if (r != null) {
-			  return r;
-		  }
-	  }
-	  return null;
+    if (node.equals(item.getModel())) {
+      return item;
+    }
+    for (FastMSTreeItem kid : item.getChildren()) {
+      FastMSTreeItem r = find(kid, node);
+      if (r != null) {
+        return r;
+      }
+    }
+    return null;
   }
-  
-//  public FastMSTreeItem find(TreeNode node) {
-//	  for (FastMSTreeItem kid: root.getChildren()) {
-//		  FastMSTreeItem r = find(kid, node);
-//		  if (r != null) {
-//			  return r;
-//		  }
-//	  }
-//	  return null;
-//  }
-  
- }
+
+  // public FastMSTreeItem find(TreeNode node) {
+  // for (FastMSTreeItem kid: root.getChildren()) {
+  // FastMSTreeItem r = find(kid, node);
+  // if (r != null) {
+  // return r;
+  // }
+  // }
+  // return null;
+  // }
+
+}
 
 /**
  * A collection of convenience factories for creating iterators for widgets.
@@ -1459,15 +1498,19 @@ class WidgetIterators {
    * <code>null</code> is allowed in the array and will be skipped during
    * iteration.
    * 
-   * @param container the container of the widgets in <code>contained</code>
-   * @param contained the array of widgets
+   * @param container
+   *          the container of the widgets in <code>contained</code>
+   * @param contained
+   *          the array of widgets
    * @return the iterator
    */
-  static final Iterator<Widget> createWidgetIterator(
-      final HasWidgets container, final Widget[] contained) {
+  static final Iterator<Widget> createWidgetIterator(final HasWidgets container,
+    final Widget[] contained) {
     return new Iterator<Widget>() {
       int index = -1, last = -1;
+
       boolean widgetsWasCopied = false;
+
       Widget[] widgets = contained;
 
       {

@@ -28,16 +28,19 @@ public interface HasFastMSTreeItems {
   /**
    * Adds another item as a child to this one.
    * 
-   * @param item the item to be added
+   * @param item
+   *          the item to be added
    */
 
   void addItem(FastMSTreeItem item);
+
   void fastAddItem(FastMSTreeItem item);
 
   /**
    * Adds a child tree item containing the specified text.
    * 
-   * @param itemText the text to be added
+   * @param itemText
+   *          the text to be added
    * @return the item that was added
    */
   FastMSTreeItem addItem(String itemText);
@@ -45,7 +48,8 @@ public interface HasFastMSTreeItems {
   /**
    * Adds a child tree item containing the specified widget.
    * 
-   * @param widget the widget to be added
+   * @param widget
+   *          the widget to be added
    * @return the item that was added
    */
   FastMSTreeItem addItem(Widget widget);
@@ -54,7 +58,8 @@ public interface HasFastMSTreeItems {
    * Gets the child at the specified index.
    * 
    * 
-   * @param index the index to be retrieved
+   * @param index
+   *          the index to be retrieved
    * @return the item at that index
    */
 
@@ -71,7 +76,8 @@ public interface HasFastMSTreeItems {
   /**
    * Gets the index of the specified child item.
    * 
-   * @param child the child item to be found
+   * @param child
+   *          the child item to be found
    * @return the child's index, or <code>-1</code> if none is found
    */
 
@@ -80,7 +86,8 @@ public interface HasFastMSTreeItems {
   /**
    * Removes one of this item's children.
    * 
-   * @param item the item to be removed
+   * @param item
+   *          the item to be removed
    */
 
   void removeItem(FastMSTreeItem item);
