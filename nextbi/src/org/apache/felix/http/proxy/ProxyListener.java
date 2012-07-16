@@ -43,128 +43,127 @@ import org.osgi.util.tracker.ServiceTracker;
  * @since 2.1.0
  */
 public class ProxyListener implements HttpSessionAttributeListener,
-		HttpSessionListener, ServletContextListener {
+  HttpSessionListener, ServletContextListener {
 
-	private ServletContext servletContext;
+  private ServletContext servletContext;
 
-	private ServiceTracker eventDispatcherTracker;
+  private ServiceTracker eventDispatcherTracker;
 
-	private HttpSessionListener sessionDispatcher;
+  private HttpSessionListener sessionDispatcher;
 
-	private HttpSessionAttributeListener attributeDispatcher;
+  private HttpSessionAttributeListener attributeDispatcher;
 
-	// ---------- ServletContextListener
+  // ---------- ServletContextListener
 
-	public void contextInitialized(final ServletContextEvent sce) {
-		this.servletContext = sce.getServletContext();
-	}
+  public void contextInitialized(final ServletContextEvent sce) {
+    this.servletContext = sce.getServletContext();
+  }
 
-	public void contextDestroyed(final ServletContextEvent sce) {
-		if (this.eventDispatcherTracker != null) {
-			this.eventDispatcherTracker.close();
-			this.eventDispatcherTracker = null;
-		}
-		this.servletContext = null;
-	}
+  public void contextDestroyed(final ServletContextEvent sce) {
+    if (this.eventDispatcherTracker != null) {
+      this.eventDispatcherTracker.close();
+      this.eventDispatcherTracker = null;
+    }
+    this.servletContext = null;
+  }
 
-	// ---------- HttpSessionListener
+  // ---------- HttpSessionListener
 
-	public void sessionCreated(final HttpSessionEvent se) {
-		final HttpSessionListener sessionDispatcher = getSessionDispatcher();
-		if (sessionDispatcher != null) {
-			sessionDispatcher.sessionCreated(se);
-		}
-	}
+  public void sessionCreated(final HttpSessionEvent se) {
+    final HttpSessionListener sessionDispatcher = getSessionDispatcher();
+    if (sessionDispatcher != null) {
+      sessionDispatcher.sessionCreated(se);
+    }
+  }
 
-	public void sessionDestroyed(final HttpSessionEvent se) {
-		final HttpSessionListener sessionDispatcher = getSessionDispatcher();
-		if (sessionDispatcher != null) {
-			sessionDispatcher.sessionDestroyed(se);
-		}
-	}
+  public void sessionDestroyed(final HttpSessionEvent se) {
+    final HttpSessionListener sessionDispatcher = getSessionDispatcher();
+    if (sessionDispatcher != null) {
+      sessionDispatcher.sessionDestroyed(se);
+    }
+  }
 
-	// ---------- HttpSessionAttributeListener
+  // ---------- HttpSessionAttributeListener
 
-	public void attributeAdded(final HttpSessionBindingEvent se) {
-		final HttpSessionAttributeListener attributeDispatcher = getAttributeDispatcher();
-		if (attributeDispatcher != null) {
-			attributeDispatcher.attributeAdded(se);
-		}
-	}
+  public void attributeAdded(final HttpSessionBindingEvent se) {
+    final HttpSessionAttributeListener attributeDispatcher = getAttributeDispatcher();
+    if (attributeDispatcher != null) {
+      attributeDispatcher.attributeAdded(se);
+    }
+  }
 
-	public void attributeRemoved(final HttpSessionBindingEvent se) {
-		final HttpSessionAttributeListener attributeDispatcher = getAttributeDispatcher();
-		if (attributeDispatcher != null) {
-			attributeDispatcher.attributeRemoved(se);
-		}
-	}
+  public void attributeRemoved(final HttpSessionBindingEvent se) {
+    final HttpSessionAttributeListener attributeDispatcher = getAttributeDispatcher();
+    if (attributeDispatcher != null) {
+      attributeDispatcher.attributeRemoved(se);
+    }
+  }
 
-	public void attributeReplaced(final HttpSessionBindingEvent se) {
-		final HttpSessionAttributeListener attributeDispatcher = getAttributeDispatcher();
-		if (attributeDispatcher != null) {
-			attributeDispatcher.attributeReplaced(se);
-		}
-	}
+  public void attributeReplaced(final HttpSessionBindingEvent se) {
+    final HttpSessionAttributeListener attributeDispatcher = getAttributeDispatcher();
+    if (attributeDispatcher != null) {
+      attributeDispatcher.attributeReplaced(se);
+    }
+  }
 
-	// ---------- internal
+  // ---------- internal
 
-	private Object getDispatcher() {
-		if (this.eventDispatcherTracker == null) {
-			// the bundle context may or may not be already provided;
-			// if not we cannot access the dispatcher yet
-			Object bundleContextAttr = this.servletContext
-					.getAttribute(BundleContext.class.getName());
-			if (!(bundleContextAttr instanceof BundleContext)) {
-				return null;
-			}
+  private Object getDispatcher() {
+    if (this.eventDispatcherTracker == null) {
+      // the bundle context may or may not be already provided;
+      // if not we cannot access the dispatcher yet
+      Object bundleContextAttr = this.servletContext
+        .getAttribute(BundleContext.class.getName());
+      if (!(bundleContextAttr instanceof BundleContext)) {
+        return null;
+      }
 
-			try {
-				BundleContext bundleContext = (BundleContext) bundleContextAttr;
-				Filter filter = createFilter(bundleContext, null);
-				this.eventDispatcherTracker = new ServiceTracker(bundleContext, filter,
-						null) {
-					public void removedService(ServiceReference reference, Object service) {
-						ProxyListener.this.sessionDispatcher = null;
-						ProxyListener.this.attributeDispatcher = null;
-						super.removedService(reference, service);
-					}
-				};
-				this.eventDispatcherTracker.open();
-			} catch (InvalidSyntaxException e) {
-				// not expected for our simple filter
-			}
+      try {
+        BundleContext bundleContext = (BundleContext) bundleContextAttr;
+        Filter filter = createFilter(bundleContext, null);
+        this.eventDispatcherTracker = new ServiceTracker(bundleContext, filter, null) {
+          public void removedService(ServiceReference reference, Object service) {
+            ProxyListener.this.sessionDispatcher = null;
+            ProxyListener.this.attributeDispatcher = null;
+            super.removedService(reference, service);
+          }
+        };
+        this.eventDispatcherTracker.open();
+      } catch (InvalidSyntaxException e) {
+        // not expected for our simple filter
+      }
 
-		}
-		return this.eventDispatcherTracker.getService();
-	}
+    }
+    return this.eventDispatcherTracker.getService();
+  }
 
-	private HttpSessionListener getSessionDispatcher() {
-		if (this.sessionDispatcher == null) {
-			final Object dispatcher = getDispatcher();
-			if (dispatcher instanceof HttpSessionListener) {
-				this.sessionDispatcher = (HttpSessionListener) dispatcher;
-			}
-		}
-		return this.sessionDispatcher;
-	}
+  private HttpSessionListener getSessionDispatcher() {
+    if (this.sessionDispatcher == null) {
+      final Object dispatcher = getDispatcher();
+      if (dispatcher instanceof HttpSessionListener) {
+        this.sessionDispatcher = (HttpSessionListener) dispatcher;
+      }
+    }
+    return this.sessionDispatcher;
+  }
 
-	private HttpSessionAttributeListener getAttributeDispatcher() {
-		if (this.attributeDispatcher == null) {
-			final Object dispatcher = getDispatcher();
-			if (dispatcher instanceof HttpSessionAttributeListener) {
-				this.attributeDispatcher = (HttpSessionAttributeListener) dispatcher;
-			}
-		}
-		return this.attributeDispatcher;
-	}
+  private HttpSessionAttributeListener getAttributeDispatcher() {
+    if (this.attributeDispatcher == null) {
+      final Object dispatcher = getDispatcher();
+      if (dispatcher instanceof HttpSessionAttributeListener) {
+        this.attributeDispatcher = (HttpSessionAttributeListener) dispatcher;
+      }
+    }
+    return this.attributeDispatcher;
+  }
 
-	private static Filter createFilter(BundleContext context, String filter)
-			throws InvalidSyntaxException {
-		StringBuffer str = new StringBuffer();
-		str.append("(&(").append(Constants.OBJECTCLASS).append("=");
-		str.append(EventListener.class.getName()).append(")");
-		str.append(filter != null ? filter : DispatcherTracker.DEFAULT_FILTER)
-				.append(")");
-		return context.createFilter(str.toString());
-	}
+  private static Filter createFilter(BundleContext context, String filter)
+    throws InvalidSyntaxException {
+    StringBuffer str = new StringBuffer();
+    str.append("(&(").append(Constants.OBJECTCLASS).append("=");
+    str.append(EventListener.class.getName()).append(")");
+    str.append(filter != null ? filter : DispatcherTracker.DEFAULT_FILTER).append(
+      ")");
+    return context.createFilter(str.toString());
+  }
 }

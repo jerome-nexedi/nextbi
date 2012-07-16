@@ -29,15 +29,15 @@ import org.osgi.framework.BundleContext;
 
 public final class ProxyServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 4653802091324863072L;
-	
-	private DispatcherTracker tracker;
+  private static final long serialVersionUID = 4653802091324863072L;
 
-	private Servlet jspServlet = null;
-	
-	@Override
-	public void init(ServletConfig config) throws ServletException {
-		super.init(config);
+  private DispatcherTracker tracker;
+
+  private Servlet jspServlet = null;
+
+  @Override
+  public void init(ServletConfig config) throws ServletException {
+    super.init(config);
 
     if (System.getProperty("catalina.base") != null) {
       try {
@@ -48,63 +48,62 @@ public final class ProxyServlet extends HttpServlet {
       }
       jspServlet.init(getServletConfig());
     }
-    
-		try {
-			doInit();
-		} catch (ServletException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new ServletException(e);
-		}
-	}
 
-	private void doInit() throws Exception {
-		this.tracker = new DispatcherTracker(getBundleContext(), null,
-				getServletConfig());
-		this.tracker.open();
-	}
+    try {
+      doInit();
+    } catch (ServletException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new ServletException(e);
+    }
+  }
 
-	@Override
-	protected void service(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		
-		String pathInfo = req.getPathInfo();
+  private void doInit() throws Exception {
+    this.tracker = new DispatcherTracker(getBundleContext(), null,
+      getServletConfig());
+    this.tracker.open();
+  }
+
+  @Override
+  protected void service(HttpServletRequest req, HttpServletResponse resp)
+    throws ServletException, IOException {
+
+    String pathInfo = req.getPathInfo();
     if ("/".equals(pathInfo)) {
       resp.sendRedirect("index.jsp");
       return;
     }
 
-    ////String uri = req.getRequestURI();
+    // //String uri = req.getRequestURI();
     if (jspServlet != null && pathInfo != null && pathInfo.endsWith(".jsp")
       && getServletContext().getResource(pathInfo) != null) {
       jspServlet.service(req, resp);
       return;
     }
-    
+
     System.out.println(req.getRequestURI());
-		HttpServlet dispatcher = this.tracker.getDispatcher();
-		if (dispatcher != null) {
-			dispatcher.service(req, resp);
-		} else {
-			resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-		}
-	}
+    HttpServlet dispatcher = this.tracker.getDispatcher();
+    if (dispatcher != null) {
+      dispatcher.service(req, resp);
+    } else {
+      resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+    }
+  }
 
-	@Override
-	public void destroy() {
-		this.tracker.close();
-		super.destroy();
-	}
+  @Override
+  public void destroy() {
+    this.tracker.close();
+    super.destroy();
+  }
 
-	private BundleContext getBundleContext() throws ServletException {
-		Object context = getServletContext().getAttribute(
-				BundleContext.class.getName());
-		if (context instanceof BundleContext) {
-			return (BundleContext) context;
-		}
+  private BundleContext getBundleContext() throws ServletException {
+    Object context = getServletContext().getAttribute(BundleContext.class.getName());
+    if (context instanceof BundleContext) {
+      return (BundleContext) context;
+    }
 
-		throw new ServletException("Bundle context attribute ["
-				+ BundleContext.class.getName() + "] not set in servlet context");
-	}
+    throw new ServletException("Bundle context attribute ["
+      + BundleContext.class.getName() + "] not set in servlet context");
+  }
 
 }
