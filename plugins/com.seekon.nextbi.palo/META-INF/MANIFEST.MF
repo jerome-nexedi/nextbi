@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Palo
+Bundle-SymbolicName: com.seekon.nextbi.palo
+Bundle-Version: 1.0.0
+Bundle-Vendor: SEEKON
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: com.tensegrity.palojava,
+ com.tensegrity.palojava.events,
+ com.tensegrity.palojava.http,
+ com.tensegrity.palojava.http.builders,
+ com.tensegrity.palojava.http.handlers,
+ com.tensegrity.palojava.http.loader,
+ com.tensegrity.palojava.impl,
+ com.tensegrity.palojava.loader
