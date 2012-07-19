@@ -6,12 +6,11 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: SEEKON
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: javax.servlet,
- javax.servlet.descriptor;resolution:=optional,
+ javax.servlet.descriptor,
  javax.servlet.http,
  org.osgi.framework,
- org.osgi.service.log,
- org.osgi.util.tracker
-Export-Package: com.seekon.bicp.http.helper;version="1.0.0",
- org.apache.felix.http.api;version="2.0.4";uses:="javax.servlet,org.osgi.service.http",
- org.osgi.service.http;version="1.2.0";uses:="javax.servlet.http,javax.servlet"
-Bundle-Activator: com.seekon.bicp.http.bridge.internal.BridgeActivator
+ org.osgi.service.http;version="1.2.0"
+Export-Package: org.eclipse.equinox.http.helper,
+ org.eclipse.equinox.http.servlet,
+ org.osgi.service.http;version="1.2.0"
+Bundle-Activator: org.eclipse.equinox.http.servlet.internal.Activator
