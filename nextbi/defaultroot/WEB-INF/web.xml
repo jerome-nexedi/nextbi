@@ -12,7 +12,7 @@
 
     <servlet>
         <servlet-name>proxy</servlet-name>
-        <servlet-class>org.apache.felix.http.proxy.ProxyServlet</servlet-class>
+        <servlet-class>org.apache.felix.http.proxy.BridgeServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
