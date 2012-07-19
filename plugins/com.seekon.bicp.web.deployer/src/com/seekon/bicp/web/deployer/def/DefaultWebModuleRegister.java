@@ -31,6 +31,7 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 import org.eclipse.equinox.http.helper.BundleEntryHttpContext;
+import org.eclipse.equinox.http.helper.ContextPathServletAdaptor;
 import org.eclipse.equinox.http.helper.HttpServiceConsts;
 import org.eclipse.equinox.http.servlet.ExtendedHttpService;
 import org.eclipse.equinox.jsp.jasper.JspServlet;
@@ -179,7 +180,8 @@ public class DefaultWebModuleRegister implements WebModuleRegister {
     try {
       httpService.registerResources(contextPath, "/", getHttpContext());
 
-      Servlet adaptedJspServlet = new JspServlet(bundle, webFolder);
+      Servlet adaptedJspServlet = new ContextPathServletAdaptor(new JspServlet(
+        bundle, webFolder), contextPath);
 
       Dictionary dictionary = new Hashtable();
       dictionary.put("bundle.name", bundle.getSymbolicName());
@@ -254,7 +256,7 @@ public class DefaultWebModuleRegister implements WebModuleRegister {
             if (servletNameList != null) {
               for (Node servletNameNode : servletNameList) {
                 String servletName = servletNameNode.getStringValue().trim();
-                registerFilter(null, servletName, filter, dictionary, ranking);
+                registerFilter(null, servletName, filter, dictionary);
               }
             }
 
@@ -268,7 +270,7 @@ public class DefaultWebModuleRegister implements WebModuleRegister {
                 if (filterPath.endsWith("/*")) {
                   filterPath = filterPath.substring(0, filterPath.length() - 2);
                 }
-                registerFilter(filterPath, null, filter, dictionary, ranking);
+                registerFilter(filterPath, null, filter, dictionary);
               }
             }
           } catch (Exception e) {
@@ -285,124 +287,9 @@ public class DefaultWebModuleRegister implements WebModuleRegister {
       throw new RegisterException(e);
     }
   }
-
-  /**
-   * 注册filter
-   * 
-   * @param httpService
-   * @param webXml
-   * @throws Exception
-   */
-  public void _registerFilters(Document doc) throws RegisterException {
-    try {
-      List filterNodes = doc.selectNodes("/web-app/filter");
-      int ranking = 0;
-
-      for (Iterator it = filterNodes.iterator(); it.hasNext();) {
-        Element el = (Element) it.next();
-        try {
-          String filterName = el.selectSingleNode("filter-name").getStringValue()
-            .trim();
-          String filterClass = el.selectSingleNode("filter-class").getStringValue()
-            .trim();
-
-          this.registerFilterWithUrlPattern(doc, filterName, filterClass, el,
-            ranking);
-          this.registerFilterWithServletPattern(doc, filterName, filterClass, el,
-            ranking);
-          ranking++;
-        } catch (Throwable e) {
-          log.error(e);
-        }
-      }
-    } catch (Throwable e) {
-      throw new RegisterException(e);
-    }
-  }
-
-  private void registerFilterWithServletPattern(Document doc, String filterName,
-    String filterClass, Element el, int ranking) {
-    List servletNameList = doc
-      .selectNodes("/web-app/filter-mapping/servlet-name[../filter-name='"
-        + filterName + "']");
-    if (servletNameList == null || servletNameList.isEmpty()) {
-      return;
-    }
-
-    Dictionary dictionary = getInitParams(el);
-    dictionary.put("filter-name", filterName);
-
-    ClassLoader cl = getWebResourceClassLoader();
-    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-
-    try {
-      Thread.currentThread().setContextClassLoader(cl);
-      try {
-        Filter servletFilter = (Filter) Class.forName(filterClass, true, cl)
-          .newInstance();
-        Iterator iterator = servletNameList.iterator();
-        while (iterator.hasNext()) {
-          Node servletNameElement = (Node) iterator.next();
-          if (servletNameElement != null) {
-            String servletName = servletNameElement.getStringValue().trim();
-            registerFilter(null, servletName, servletFilter, dictionary, ranking);
-          }
-        }
-      } finally {
-        Thread.currentThread().setContextClassLoader(contextClassLoader);
-      }
-    } catch (Throwable e) {
-      log.error("can't create instance class: " + filterClass + " at bundle"
-        + bundle, e);
-    }
-  }
-
-  private void registerFilterWithUrlPattern(Document doc, String filterName,
-    String filterClass, Element el, int ranking) {
-    List urlPatternList = doc
-      .selectNodes("/web-app/filter-mapping/url-pattern[../filter-name='"
-        + filterName + "']");
-    if (urlPatternList == null || urlPatternList.isEmpty()) {
-      return;
-    }
-
-    Dictionary dictionary = getInitParams(el);
-    dictionary.put("filter-name", filterName);
-
-    ClassLoader cl = getWebResourceClassLoader();
-    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-
-    try {
-      Thread.currentThread().setContextClassLoader(cl);
-      try {
-        Filter servletFilter = (Filter) Class.forName(filterClass, true, cl)
-          .newInstance();
-        Iterator iterator = urlPatternList.iterator();
-        while (iterator.hasNext()) {
-          Node urlPatternElement = (Node) iterator.next();
-          if (urlPatternElement != null) {
-            String urlPattern = urlPatternElement.getStringValue().trim();
-            if (!urlPattern.startsWith("/")) {
-              urlPattern = "/" + urlPattern;
-            }
-            String filterPath = contextPath.concat(urlPattern);
-            if (filterPath.endsWith("/*")) {
-              filterPath = filterPath.substring(0, filterPath.length() - 2);
-            }
-            registerFilter(filterPath, null, servletFilter, dictionary, ranking);
-          }
-        }
-      } finally {
-        Thread.currentThread().setContextClassLoader(contextClassLoader);
-      }
-    } catch (Throwable e) {
-      log.error("can't create instance class: " + filterClass + " at bundle"
-        + bundle, e);
-    }
-  }
-
+  
   public void registerFilter(String filterPath, String servletName,
-    Filter servletFilter, Dictionary dictionary, int ranking)
+    Filter servletFilter, Dictionary dictionary)
     throws ServletException, NamespaceException {
     httpService.registerFilter(filterPath, servletName, servletFilter, dictionary,
       getHttpContext());

@@ -20,6 +20,6 @@ public interface WebModuleRegister extends Register {
   public void registerServlets(Document doc) throws RegisterException;
 
   public void registerFilter(String filterPath, String servletName,
-    Filter servletFilter, Dictionary dictionary, int ranking)
-    throws ServletException, NamespaceException;
+    Filter servletFilter, Dictionary dictionary) throws ServletException,
+    NamespaceException;
 }
