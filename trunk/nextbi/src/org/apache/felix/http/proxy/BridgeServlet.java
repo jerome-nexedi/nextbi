@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.osgi.framework.BundleContext;
 
-public final class ProxyServlet extends HttpServlet {
+public final class BridgeServlet extends HttpServlet {
 
   private static final long serialVersionUID = 4653802091324863072L;
 
@@ -81,7 +81,6 @@ public final class ProxyServlet extends HttpServlet {
       return;
     }
 
-    System.out.println(req.getRequestURI());
     HttpServlet dispatcher = this.tracker.getDispatcher();
     if (dispatcher != null) {
       dispatcher.service(req, resp);
