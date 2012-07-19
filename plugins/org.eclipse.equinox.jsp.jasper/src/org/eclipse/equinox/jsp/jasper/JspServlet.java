@@ -116,7 +116,7 @@ public class JspServlet extends HttpServlet {
 		ClassLoader original = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(jspLoader);
-			request.setAttribute("org.apache.catalina.jsp_file", request.getPathInfo());
+			//request.setAttribute("org.apache.catalina.jsp_file", request.getPathInfo());
 			jspServlet.service(request, response);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -170,11 +170,7 @@ public class JspServlet extends HttpServlet {
 			if (alias != null && name.startsWith(alias))
 				name = name.substring(alias.length());
 
-			String resourceName = name;
-			if (!resourceName.startsWith(bundleResourcePath)) {
-				resourceName = bundleResourcePath + resourceName;
-			}
-
+			String resourceName = bundleResourcePath + name;
 			int lastSlash = resourceName.lastIndexOf('/');
 			if (lastSlash == -1)
 				return null;
