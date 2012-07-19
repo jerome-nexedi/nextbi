@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.felix.http.api.ExtHttpService;
 import org.apache.log4j.Logger;
+import org.eclipse.equinox.http.servlet.ExtendedHttpService;
 import org.osgi.framework.Bundle;
 
 import com.seekon.bicp.register.Register;
@@ -79,7 +79,7 @@ public class WebAppLoader implements ModuleLoader {
       }
       String webFolder = getWebFolder(bundle);
 
-      ExtHttpService httpService = HttpServiceFactory.getHttpService();
+      ExtendedHttpService httpService = HttpServiceFactory.getHttpService();
       if (httpService == null) {
         System.err.println(bundle + " httpService is null");
         return;

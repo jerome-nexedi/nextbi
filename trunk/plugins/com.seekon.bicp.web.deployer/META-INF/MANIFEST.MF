@@ -5,15 +5,15 @@ Bundle-SymbolicName: com.seekon.bicp.web.deployer
 Bundle-Version: 1.0.0
 Bundle-Vendor: SEEKON
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: com.seekon.bicp.http.helper,
- com.seekon.bicp.register,
+Import-Package: com.seekon.bicp.register,
  javax.servlet,
  javax.servlet.http;version="2.4.0",
  org.apache.felix.framework,
- org.apache.felix.http.api,
  org.apache.log4j;version="1.2.15",
  org.dom4j;version="1.6.1",
  org.dom4j.io;version="1.6.1",
+ org.eclipse.equinox.http.helper,
+ org.eclipse.equinox.http.servlet,
  org.eclipse.equinox.jsp.jasper;version="1.0.0",
  org.osgi.framework;version="1.4.0",
  org.osgi.framework.wiring,

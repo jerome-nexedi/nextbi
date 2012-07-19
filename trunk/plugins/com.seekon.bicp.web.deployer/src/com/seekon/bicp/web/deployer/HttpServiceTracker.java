@@ -1,6 +1,6 @@
 package com.seekon.bicp.web.deployer;
 
-import org.apache.felix.http.api.ExtHttpService;
+import org.eclipse.equinox.http.servlet.ExtendedHttpService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -11,7 +11,7 @@ public class HttpServiceTracker extends ServiceTracker {
 
   private BundleContext context = null;
 
-  private ExtHttpService httpService = null;
+  private ExtendedHttpService httpService = null;
 
   public HttpServiceTracker(BundleContext context) throws Exception {
     super(context, context
@@ -21,7 +21,7 @@ public class HttpServiceTracker extends ServiceTracker {
 
   @Override
   public Object addingService(ServiceReference reference) {
-    httpService = (ExtHttpService) this.context.getService(reference);
+    httpService = (ExtendedHttpService) this.context.getService(reference);
     startWebBundles();
 
     return httpService;
@@ -37,7 +37,7 @@ public class HttpServiceTracker extends ServiceTracker {
 
   }
 
-  public ExtHttpService getHttpService() {
+  public ExtendedHttpService getHttpService() {
     return httpService;
   }
 

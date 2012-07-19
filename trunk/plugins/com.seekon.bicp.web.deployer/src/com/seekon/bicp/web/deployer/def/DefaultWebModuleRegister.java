@@ -9,24 +9,30 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.felix.framework.BundleWiringImpl;
-import org.apache.felix.http.api.ExtHttpService;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.eclipse.equinox.http.helper.BundleEntryHttpContext;
+import org.eclipse.equinox.http.helper.HttpServiceConsts;
+import org.eclipse.equinox.http.servlet.ExtendedHttpService;
 import org.eclipse.equinox.jsp.jasper.JspServlet;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleWiring;
@@ -36,7 +42,6 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.seekon.bicp.http.helper.BundleEntryHttpContext;
 import com.seekon.bicp.register.Debug;
 import com.seekon.bicp.register.RegisterException;
 
@@ -81,14 +86,14 @@ public class DefaultWebModuleRegister implements WebModuleRegister {
 
   private String contextPath;
 
-  private ExtHttpService httpService;
+  private ExtendedHttpService httpService;
 
   private boolean registered;
 
   private ClassLoader webResourceClassLoader = null;
 
   public DefaultWebModuleRegister(Bundle bundle, String contextPath,
-    String webFolder, ExtHttpService httpService) {
+    String webFolder, ExtendedHttpService httpService) {
     super();
     this.bundle = bundle;
     this.webFolder = webFolder;
@@ -111,7 +116,7 @@ public class DefaultWebModuleRegister implements WebModuleRegister {
       + ")");
     try {
       Document doc = getWebXmlDocument();
-      // //registerListeners(doc);
+      registerListeners(doc);
       registerFilters(doc);
       registerDefault();
       registerServlets(doc);
@@ -121,44 +126,45 @@ public class DefaultWebModuleRegister implements WebModuleRegister {
     registered = true;
   }
 
-  // public void registerListeners(Document doc) throws RegisterException {
-  // try {
-  // ClassLoader cl = getWebResourceClassLoader();
-  // ClassLoader contextClassLoader = Thread.currentThread()
-  // .getContextClassLoader();
-  //
-  // Dictionary initParameter = getContextParams(doc);
-  // List listenerNodes = doc.selectNodes("/web-app/listener");
-  // for (Iterator it = listenerNodes.iterator(); it.hasNext();) {
-  // Element el = (Element) it.next();
-  // String listenerClass = el.selectSingleNode("listener-class")
-  // .getStringValue().trim();
-  // if (listenerClass != null) {
-  // Thread.currentThread().setContextClassLoader(cl);
-  // try {
-  // try {
-  // Object listener = Class.forName(listenerClass, true, cl).newInstance();
-  // if (listener instanceof ServletContextListener) {
-  // httpService.registerServletContextListeners((ServletContextListener)listener
-  // , initParameter, getHttpContext(), this.bundle.getBundleContext());
-  // registeredServletContextListeners.add(listener);
-  // }else if(listener instanceof ServletRequestListener){
-  // httpService.registerServletRequestListener((ServletRequestListener)listener,
-  // contextPath);
-  // }
-  // } catch (Throwable e) {
-  // log.error("can't create instance class: " + listenerClass
-  // + " at bundle" + bundle.getSymbolicName(), e);
-  // }
-  // } finally {
-  // Thread.currentThread().setContextClassLoader(contextClassLoader);
-  // }
-  // }
-  // }
-  // } catch (Throwable e) {
-  // throw new RegisterException(e);
-  // }
-  // }
+  public void registerListeners(Document doc) throws RegisterException {
+    try {
+      ClassLoader cl = getWebResourceClassLoader();
+      ClassLoader contextClassLoader = Thread.currentThread()
+        .getContextClassLoader();
+
+      Dictionary initParameter = getContextParams(doc);
+      List listenerNodes = doc.selectNodes("/web-app/listener");
+      for (Iterator it = listenerNodes.iterator(); it.hasNext();) {
+        Element el = (Element) it.next();
+        String listenerClass = el.selectSingleNode("listener-class")
+          .getStringValue().trim();
+        if (listenerClass != null) {
+          Thread.currentThread().setContextClassLoader(cl);
+          try {
+            try {
+              Object listener = Class.forName(listenerClass, true, cl).newInstance();
+              if (listener instanceof ServletContextListener) {
+                //                httpService.registerServletContextListeners(
+                //                  (ServletContextListener) listener, initParameter,
+                //                  getHttpContext(), this.bundle.getBundleContext());
+                //                registeredServletContextListeners.add(listener);
+              } else if (listener instanceof ServletRequestListener) {
+                httpService.registerServletRequestListener(
+                  (ServletRequestListener) listener, contextPath);
+              }
+            } catch (Throwable e) {
+              log.error("can't create instance class: " + listenerClass
+                + " at bundle" + bundle.getSymbolicName(), e);
+            }
+          } finally {
+            Thread.currentThread().setContextClassLoader(contextClassLoader);
+          }
+        }
+      }
+    } catch (Throwable e) {
+      throw new RegisterException(e);
+    }
+  }
 
   /**
    * 注册默认的资源，html，htm，jsp等
@@ -178,7 +184,7 @@ public class DefaultWebModuleRegister implements WebModuleRegister {
       Dictionary dictionary = new Hashtable();
       dictionary.put("bundle.name", bundle.getSymbolicName());
       if (this.contextPath != null && this.contextPath.trim().length() > 0) {
-        dictionary.put("Osgi-Context-Path", this.contextPath);
+        dictionary.put(HttpServiceConsts.KEY_OSGI_CONTEXT_PATH, this.contextPath);
       }
 
       httpService.registerServlet(contextPath.concat("/*.jsp"), adaptedJspServlet,
@@ -196,6 +202,90 @@ public class DefaultWebModuleRegister implements WebModuleRegister {
     }
   }
 
+  public void registerFilters(Document doc) throws RegisterException {
+    try {
+      Map<String, Object[]> filterMap = new HashMap<String, Object[]>();
+      List filterMappingNodes = doc.selectNodes("/web-app/filter-mapping");
+      int ranking = 0;
+
+      for (Iterator it = filterMappingNodes.iterator(); it.hasNext();) {
+        Element el = (Element) it.next();
+        try {
+          String filterName = el.selectSingleNode("filter-name").getStringValue()
+            .trim();
+          if (filterName == null || filterName.trim().length() == 0) {
+            continue;
+          }
+
+          List<Node> servletNameList = el.selectNodes("servlet-name");
+          List<Node> urlPatternList = el.selectNodes("url-pattern");
+          if ((servletNameList == null || servletNameList.isEmpty())
+            && (urlPatternList == null || urlPatternList.isEmpty())) {
+            continue;
+          }
+
+          ClassLoader cl = getWebResourceClassLoader();
+          ClassLoader contextClassLoader = Thread.currentThread()
+            .getContextClassLoader();
+
+          try {
+            Thread.currentThread().setContextClassLoader(cl);
+
+            Filter filter = null;
+            Dictionary dictionary = null;
+            Object[] fdList = filterMap.get(filterName);
+            if (fdList == null) {
+              Element filterNode = (Element) doc
+                .selectSingleNode("/web-app/filter[./filter-name='" + filterName
+                  + "']");
+              String filterClass = filterNode.selectSingleNode("filter-class")
+                .getStringValue().trim();
+              filter = (Filter) Class.forName(filterClass, true, cl).newInstance();
+
+              dictionary = getInitParams(filterNode);
+              dictionary.put("filter-name", filterName);
+
+              filterMap.put(filterName, new Object[] { filter, dictionary });
+            } else {
+              filter = (Filter) fdList[0];
+              dictionary = (Dictionary) fdList[1];
+            }
+
+            if (servletNameList != null) {
+              for (Node servletNameNode : servletNameList) {
+                String servletName = servletNameNode.getStringValue().trim();
+                registerFilter(null, servletName, filter, dictionary, ranking);
+              }
+            }
+
+            if (urlPatternList != null) {
+              for (Node urlPatternNode : urlPatternList) {
+                String urlPattern = urlPatternNode.getStringValue().trim();
+                if (!urlPattern.startsWith("/")) {
+                  urlPattern = "/" + urlPattern;
+                }
+                String filterPath = contextPath.concat(urlPattern);
+                if (filterPath.endsWith("/*")) {
+                  filterPath = filterPath.substring(0, filterPath.length() - 2);
+                }
+                registerFilter(filterPath, null, filter, dictionary, ranking);
+              }
+            }
+          } catch (Exception e) {
+            log.error(e);
+          } finally {
+            Thread.currentThread().setContextClassLoader(contextClassLoader);
+          }
+          ranking++;
+        } catch (Throwable e) {
+          log.error(e);
+        }
+      }
+    } catch (Throwable e) {
+      throw new RegisterException(e);
+    }
+  }
+
   /**
    * 注册filter
    * 
@@ -203,11 +293,8 @@ public class DefaultWebModuleRegister implements WebModuleRegister {
    * @param webXml
    * @throws Exception
    */
-  public void registerFilters(Document doc) throws RegisterException {
+  public void _registerFilters(Document doc) throws RegisterException {
     try {
-      // if (isChangeApplusContext()) {
-      // registerApplusContextAdapterFilter();
-      // }
       List filterNodes = doc.selectNodes("/web-app/filter");
       int ranking = 0;
 
@@ -317,7 +404,7 @@ public class DefaultWebModuleRegister implements WebModuleRegister {
   public void registerFilter(String filterPath, String servletName,
     Filter servletFilter, Dictionary dictionary, int ranking)
     throws ServletException, NamespaceException {
-    httpService.registerFilter(servletFilter, filterPath, dictionary, ranking,
+    httpService.registerFilter(filterPath, servletName, servletFilter, dictionary,
       getHttpContext());
     registeredFilters.add(servletFilter);
   }
@@ -516,7 +603,7 @@ public class DefaultWebModuleRegister implements WebModuleRegister {
 
     dictionary.put("bundle.name", bundle.getSymbolicName());
     if (this.contextPath != null && this.contextPath.trim().length() > 0) {
-      dictionary.put("Osgi-Context-Path", this.contextPath);
+      dictionary.put(HttpServiceConsts.KEY_OSGI_CONTEXT_PATH, this.contextPath);
     }
     return dictionary;
   }
@@ -548,20 +635,19 @@ public class DefaultWebModuleRegister implements WebModuleRegister {
     httpService.unregister(contextPath.concat("/*.jsp")); //$NON-NLS-1$
     unregisterServlets(httpService);
     unregisterFilters(httpService);
-    // //unregisterListeners();
+    unregisterListeners();
   }
 
-  // protected void unregisterListeners() {
-  // while (!this.registeredServletContextListeners.isEmpty()) {
-  // ServletContextListener listener = (ServletContextListener)
-  // registeredServletContextListeners
-  // .remove(0);
-  // httpService.unregisterServletContextListeners(listener, httpContext);
-  // }
-  // httpService.unregisterServletRequestListeners(contextPath);
-  // }
+  protected void unregisterListeners() {
+    //    while (!this.registeredServletContextListeners.isEmpty()) {
+    //      ServletContextListener listener = (ServletContextListener) registeredServletContextListeners
+    //        .remove(0);
+    //      httpService.unregisterServletContextListeners(listener, httpContext);
+    //    }
+    httpService.unregisterServletRequestListeners(contextPath);
+  }
 
-  protected void unregisterServlets(final ExtHttpService httpService) {
+  protected void unregisterServlets(final ExtendedHttpService httpService) {
     while (!registeredServlets.isEmpty()) {
       httpService.unregister(registeredServlets.remove(0).toString());
     }
@@ -572,7 +658,7 @@ public class DefaultWebModuleRegister implements WebModuleRegister {
    * 
    * @param httpService
    */
-  protected void unregisterFilters(final ExtHttpService httpService) {
+  protected void unregisterFilters(final ExtendedHttpService httpService) {
     while (!registeredFilters.isEmpty()) {
       Filter filter = (Filter) registeredFilters.remove(0);
       try {
