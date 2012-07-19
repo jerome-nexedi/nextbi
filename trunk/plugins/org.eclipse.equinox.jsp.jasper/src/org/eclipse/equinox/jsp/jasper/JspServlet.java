@@ -116,6 +116,7 @@ public class JspServlet extends HttpServlet {
 		ClassLoader original = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(jspLoader);
+			request.setAttribute("org.apache.catalina.jsp_file", request.getPathInfo());
 			jspServlet.service(request, response);
 		} catch (Exception e) {
 			e.printStackTrace();
