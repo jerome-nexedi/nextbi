@@ -1,16 +1,15 @@
-﻿
-目前仅支持mysql数据库，需建立如下的数据库：
-1、多维分析展现
-	数据库实例：wpalodatabase
-	用户名：palo
-	密码：palo
-	导入sql脚本：mysql/wpalodatabase.sql
 
-2、门户
-	数据库实例：uportal
-	用户名：uportal
-	密码：空
-	导入sql脚本：mysql/uportal.sql
+tomcat配置调整如下：
+    1、目前端口号必须为8090（程序中暂时写死了）
+	修改conf/server.xml将8080端口修改为8090
+    2、将nextbi的应用上下文配置为"/"，需进行如下的调整：
+	修改conf/server.xml文件host节点改为
+	 <Host name="localhost"  appBase="deploy"
+            unpackWARs="false" autoDeploy="false">
 
-3、olap服务器
-	
+            <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"  
+               prefix="localhost_access_log." suffix=".txt"
+               pattern="%h %l %u %t &quot;%r&quot; %s %b" resolveHosts="false"/>
+
+	    <Context docBase="../webapps/nextbi" path="/" reloadable="false"/>
+         </Host>
