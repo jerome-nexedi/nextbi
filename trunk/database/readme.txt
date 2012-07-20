@@ -1,16 +1,16 @@
 
-Ä¿Ç°½öÖ§³ÖmysqlÊı¾İ¿â£¬Ğè½¨Á¢ÈçÏÂµÄÊı¾İ¿â£º
-1¡¢¶àÎ¬·ÖÎöÕ¹ÏÖ
-	Êı¾İ¿âÊµÀı£ºwpalodatabase
-	ÓÃ»§Ãû£ºpalo
-	ÃÜÂë£ºpalo
-	µ¼Èësql½Å±¾£ºmysql/wpalodatabase.sql
+ç›®å‰ä»…æ”¯æŒmysqlæ•°æ®åº“ï¼Œéœ€å»ºç«‹å¦‚ä¸‹çš„æ•°æ®åº“ï¼š
+1ã€å¤šç»´åˆ†æå±•ç°
+	æ•°æ®åº“å®ä¾‹ï¼šwpalodatabase
+	ç”¨æˆ·åï¼špalo
+	å¯†ç ï¼špalo
+	å¯¼å…¥sqlè„šæœ¬ï¼šmysql/wpalodatabase.sql
 
-2¡¢ÃÅ»§
-	Êı¾İ¿âÊµÀı£ºuportal
-	ÓÃ»§Ãû£ºuportal
-	ÃÜÂë£º¿Õ
-	µ¼Èësql½Å±¾£ºmysql/uportal.sql
+2ã€é—¨æˆ·
+	æ•°æ®åº“å®ä¾‹ï¼šuportal
+	ç”¨æˆ·åï¼šuportal
+	å¯†ç ï¼šç©º
+	å¯¼å…¥sqlè„šæœ¬ï¼šmysql/uportal.sql
 
-3¡¢olap·şÎñÆ÷
+3ã€olapæœåŠ¡å™¨
 	
