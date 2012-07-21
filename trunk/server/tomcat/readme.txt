@@ -13,3 +13,6 @@ tomcat配置调整如下：
 
 	    <Context docBase="../webapps/nextbi" path="/" reloadable="false"/>
          </Host>
+    3、设置jvm的内存
+	在bin/catalina.bat中，设置jvm大小（特别是PermSiz的大小）
+	  set JAVA_OPTS=%JAVA_OPTS% -Xms512m -Xmx1536m -XX:PermSize=64M -XX:MaxPermSize=128m
