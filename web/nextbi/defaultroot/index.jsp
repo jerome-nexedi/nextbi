@@ -7,6 +7,8 @@
 <title>index page</title>
 </head>
 <body>
-	this is the index page.
+	<%
+		response.sendRedirect("/portal/Login");
+	%>
 </body>
 </html>

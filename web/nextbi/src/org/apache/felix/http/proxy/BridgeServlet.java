@@ -43,10 +43,10 @@ public final class BridgeServlet extends HttpServlet {
       try {
         jspServlet = (Servlet) Thread.currentThread().getContextClassLoader()
           .loadClass("org.apache.jasper.servlet.JspServlet").newInstance();
+        jspServlet.init(getServletConfig());
       } catch (Exception e) {
         throw new ServletException(e);
       }
-      jspServlet.init(getServletConfig());
     }
 
     try {
@@ -69,7 +69,8 @@ public final class BridgeServlet extends HttpServlet {
     throws ServletException, IOException {
 
     String pathInfo = req.getPathInfo();
-    if ("/".equals(pathInfo)) {
+    if ("/".equals(pathInfo) || "/index.htm".equalsIgnoreCase(pathInfo)
+      || "/index.html".equalsIgnoreCase(pathInfo)) {
       resp.sendRedirect("index.jsp");
       return;
     }
