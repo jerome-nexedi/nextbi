@@ -10,9 +10,8 @@ import org.apache.felix.framework.util.Util;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.wiring.BundleRevision;
-import org.osgi.service.packageadmin.PackageAdmin;
+import org.osgi.framework.wiring.FrameworkWiring;
 
 public final class ProvisionActivator implements BundleActivator {
   private final ServletContext servletContext;
@@ -30,23 +29,14 @@ public final class ProvisionActivator implements BundleActivator {
       Bundle bundle = context.installBundle(url.toExternalForm());
       installed.add(bundle);
     }
-
-    ServiceReference ref = context.getServiceReference(PackageAdmin.class.getName());
-
-    if (ref == null) {
-      System.out.println("PackageAdmin service is unavailable.");
+    
+    Bundle systemBundle = context.getBundle(0);//SystemBundleµÄidÄ¬ÈÏÎª0£¬¡¶osgi.r4.code¡· P92
+    if (systemBundle == null || !systemBundle.getLocation().equalsIgnoreCase("System Bundle")) {
+      System.out.println("The system bundle is unavailable.");
       return;
     }
-
-    PackageAdmin pa = (PackageAdmin) context.getService(ref);
-    if (pa == null) {
-      System.out.println("PackageAdmin service is unavailable.");
-      return;
-    }
-
-    pa.resolveBundles((Bundle[]) (Bundle[]) installed.toArray(new Bundle[installed
-      .size()]));
-
+    FrameworkWiring fWiring = systemBundle.adapt(FrameworkWiring.class);
+    fWiring.resolveBundles(installed);
     for (Bundle bundle : installed) {
       if (!Util.isFragment(bundle.adapt(BundleRevision.class))) {
         String activator = bundle.getHeaders().get("Bundle-Activator");
