@@ -1,0 +1,78 @@
+;;
+;; list of people who substantially contributed to the worksheet server core.
+;; for individuals who commited smaller patches see the CHANGELOG file.
+;;
+;; legend:
+;; (N) name, (E) email, (W) web adress, (D) description of role and
+;; contributions, (S) address and nationality
+;;
+;; thanks!
+;;
+
+N: Vladislav Malicevic
+E: vladislav.malicevic@jedox.com
+D: head of r&d jedox
+S: freiburg, baden wuerttemberg
+S: germany
+
+N: Florian Schaper
+E: florian.schaper@jedox.com
+D: programming lead
+S: freiburg, baden wuerttemberg
+S: germany
+
+N: Dragan Simic
+E: dragan.simic@develabs.com
+D: initial linux port
+D: linux port build system
+D: cell attributes handling
+D: ajax-ui optimized soap-json interface
+D: embedded php macro engine
+S: banja luka
+S: bosnia and herzegovina
+
+N: Frieder Hofmann
+E: frieder.hofman@jedox.com
+D: user and group management implementation
+D: text metrics subsystem
+S: freiburg, baden wuerttemberg
+S: germany
+
+N: Marek Pikulski
+E: marek.pikulski@jedox.com
+D: cell formating
+S: freiburg, baden wuerttemberg
+S: germany
+
+N: Marko Stijak
+E: mstijak@gmail.com
+D: xls-x import/export filter
+S: banja luka
+S: bosnia and herzegovina
+
+N: Matthias Roy
+E: matthias.roy@jedox.com
+D: internal function library
+S: freiburg, baden wuerttemberg
+S: germany
+
+N: Dominik Lenz
+E: dominik.lenz@jedox.com
+D: QA / wss support
+S: freiburg, baden wuerttemberg
+S: germany
+
+N: Predrag Malicevic
+E: predrag.malicevic@jedox.com
+D: invaluable feedback, tips and recommendations
+D: testing during ui development
+S: banja luka
+S: bosnia and herzegovina
+
+N: Drazen Kljajic
+E: drazen.kljajic@jedox.com
+D: invaluable feedback, tips and recommendations
+D: testing during ui development
+S: banja luka
+S: bosnia and herzegovina
+
