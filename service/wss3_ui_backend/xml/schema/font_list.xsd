@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.jedox.com/jedox/wss" xmlns="http://www.jedox.com/jedox/wss" xmlns:NS="http://www.jedox.com/jedox/wss" attributeFormDefault="unqualified" elementFormDefault="qualified">
+  <xs:complexType name="CT_Font">
+    <xs:sequence />
+    <xs:attribute name="font_name" type="xs:string" use="required" />
+  </xs:complexType>
+  <xs:complexType name="CT_FontList">
+    <xs:sequence>
+      <xs:element name="font" type="CT_Font" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="font_list" type="CT_FontList">
+  </xs:element>
+</xs:schema>

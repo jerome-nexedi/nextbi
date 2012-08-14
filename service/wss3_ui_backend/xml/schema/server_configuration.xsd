@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.jedox.com/jedox/wss" xmlns="http://www.jedox.com/jedox/wss" xmlns:NS="http://www.jedox.com/jedox/wss" attributeFormDefault="unqualified" elementFormDefault="qualified">
+  <xs:complexType name="CT_module">
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="config" type="xs:string" use="optional" />
+  </xs:complexType>
+  <xs:complexType name="CT_session_timeout">
+    <xs:attribute name="seconds" type="xs:long" use="optional" default="3600" />
+  </xs:complexType>
+  <xs:complexType name="CT_autosave_interval">
+    <xs:attribute name="seconds" type="xs:long" use="optional" default="3600" />
+  </xs:complexType>
+  <xs:complexType name="CT_dpi">
+    <xs:attribute name="default_dpi" type="xs:int" default="96" />
+  </xs:complexType>
+  <xs:complexType name="CT_path">
+    <xs:attribute name="font_path" type="xs:string" default="C:\\WINDOWS\\Fonts" />
+  </xs:complexType>
+  <xs:complexType name="CT_textmetric">
+    <xs:sequence>
+      <xs:element name="dpi" type="CT_dpi" minOccurs="0" maxOccurs="1" />
+      <xs:element name="font_path" type="CT_path"  minOccurs="0" maxOccurs="1"  />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="ST_loglevel">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="debug" />
+      <xs:enumeration value="info" />
+      <xs:enumeration value="notice" />
+      <xs:enumeration value="warning" />
+      <xs:enumeration value="error" />
+      <xs:enumeration value="critical" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="wss_configuration" type="CT_wss_configuration">
+  </xs:element>
+  <xs:complexType name="CT_modifier">
+    <xs:sequence />
+    <xs:attribute name="priority" type="xs:unsignedShort" />
+    <xs:attribute name="name" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="CT_modifiers">
+    <xs:sequence>
+      <xs:element name="modifier" type="CT_modifier" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CT_logger">
+    <xs:sequence>
+      <xs:element name="modifiers" type="CT_modifiers" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" />
+    <xs:attribute name="level" type="ST_loglevel" />
+    <xs:attribute name="target" type="xs:string" />
+    <xs:attribute name="module" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="CT_logging">
+    <xs:sequence>
+      <xs:element name="logger" type="CT_logger" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CT_session">
+    <xs:sequence>
+      <xs:element name="timeout" type="CT_session_timeout" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CT_autosave">
+    <xs:sequence>
+      <xs:element name="interval" type="CT_autosave_interval" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CT_extensions">
+    <xs:sequence>
+      <xs:element name="extension" type="CT_module" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CT_precision">
+    <xs:attribute name="precision" type="xs:int" use="optional" default="12" />
+  </xs:complexType>
+  <xs:complexType name="CT_wss_configuration">
+    <xs:sequence>
+      <xs:element name="logging" type="CT_logging" />
+      <xs:element name="session" type="CT_session" />
+      <xs:element name="autosave" type="CT_autosave" />
+      <xs:element name="textmetric" type="CT_textmetric" maxOccurs="1" minOccurs="1" />
+      <xs:element name="precision" type="CT_precision" maxOccurs="1" minOccurs="1"  />
+      <xs:element name="extensions" type="CT_extensions" />
+    </xs:sequence>
+    <xs:attribute name="version" type="xs:decimal" use="required" />
+  </xs:complexType>
+</xs:schema>

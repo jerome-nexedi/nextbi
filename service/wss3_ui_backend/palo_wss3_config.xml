@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<palo_wss3_config xmlns="http://www.jedox.com/jedox/wss" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <server>
+    <host name="127.0.0.1" />
+    <port name="7921" />
+    <username name="admin" />
+    <password name="admin" />
+  </server>
+</palo_wss3_config>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wss_configuration version="1.0" xmlns="http://www.jedox.com/jedox/wss" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <logging>
+  <!-- logger name="console" level="error" target="" module="">
+	  <modifiers>
+		  <modifier priority="500" name="timestamp" />
+		  <modifier priority="400" name="loglevel" />
+	  </modifiers>
+	</logger //-->
+	<logger name="file" level="debug" target="../log/core.log" module="">
+	  <modifiers>
+		  <modifier priority="500" name="timestamp" />
+		  <modifier priority="400" name="loglevel" />
+	  </modifiers>
+	</logger>
+  </logging>
+  <session>
+	  <timeout seconds="3600"/>
+  </session>
+  <autosave>
+	  <interval seconds="1200"/>
+  </autosave>
+  <textmetric>
+    <dpi default_dpi="96" />
+    <font_path />
+  </textmetric>
+  <extensions>
+  	<extension name="ui_backend.dll" config="ui_backend_config.xml" />
+  	<extension name="php_macro_engine.dll" config="php_macro_engine_config.xml" />
+  	<!--
+  	<extension name="palo_wss3.dll" config="palo_wss3_config.xml" />
+  	-->
+  	<extension name="filter_xlsx.dll" config="" />
+  </extensions>
+</wss_configuration>

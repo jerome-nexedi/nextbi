@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.jedox.com/jedox/wss" xmlns="http://www.jedox.com/jedox/wss" xmlns:NS="http://www.jedox.com/jedox/wss" attributeFormDefault="unqualified" elementFormDefault="qualified">
+  <xs:element name="ui_backend_config" type="CT_interfaceB" />
+  <xs:complexType name="CT_interfaceB">
+    <xs:sequence>
+      <xs:element name="diff" type="CT_diffB" />
+      <xs:element name="network" type="CT_networkB" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CT_diffB">
+    <xs:sequence />
+    <xs:attribute name="gc_interval" type="xs:unsignedShort" />
+  </xs:complexType>
+  <xs:complexType name="CT_networkB">
+    <xs:sequence>
+      <xs:element name="listen" type="CT_listenB" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CT_listenB">
+    <xs:sequence>
+      <xs:element name="tcp" type="CT_tcpB" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CT_tcpB">
+    <xs:sequence />
+    <xs:attribute name="address" type="xs:string" />
+    <xs:attribute name="port" type="xs:unsignedShort" />
+  </xs:complexType>
+</xs:schema>

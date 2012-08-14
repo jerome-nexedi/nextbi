@@ -1,0 +1,13 @@
+;; will be used after wss3 is released into the wild.
+;;
+;; format used for the wss3 changelog. see: 
+;; http://www.gnu.org/software/guile/changelogs/guile-changelogs_3.html
+;;
+;; sample:
+;; YYYY-MM-DD John Doe johndoe@example.com
+;;
+;;    * myfile.ext (myfunction): my changes made
+;;    additional changes
+;;
+;;    * anotherfile.ext (somefunction): more changes
+;;
