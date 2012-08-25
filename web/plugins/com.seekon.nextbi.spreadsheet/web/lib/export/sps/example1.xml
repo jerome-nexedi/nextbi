@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<worksheet>
+	<sheetproperties>
+
+	</sheetproperties>
+	<grid>
+		<charts>
+			<chart left="100px" top="100px" z-index="1001" src="Jedox.jpg"></chart>
+			<chart left="200px" top="200px" z-index="1002" src="Jedox.jpg"></chart>
+			<chart left="300px" top="300px" z-index="1003" src="Jedox.jpg"></chart>
+		</charts>
+
+		<rows>
+			<row height="50pt">
+				<cells>
+					<cell width="100px" background-color="#c0c0c0" color="#000000" font-family="Arial" font-size="10px" text-align="left" text-decoration="none" font-style="normal" font-weight="normal">
+						<value>30</value>
+					</cell>
+					<cell width="50px" background-color="#c0c0c0" color="#000000" font-family="Arial" font-size="10px" text-align="left" text-decoration="none" font-style="normal" font-weight="normal">
+						<value>10</value>
+					</cell>
+					<cell width="100px" background-color="#c0c0c0" color="#000000" font-family="Arial" font-size="10px" text-align="left" text-decoration="none" font-style="normal" font-weight="normal">
+						<value>10</value>
+					</cell>
+					<cell width="50px" background-color="#c0c0c0" color="#000000" font-family="Arial" font-size="10px" text-align="left" text-decoration="none" font-style="normal" font-weight="normal">
+						<value>10</value>
+					</cell>
+					<cell width="30px" background-color="#c0c0c0" color="#000000" font-family="Arial" font-size="10px" text-align="left" text-decoration="none" font-style="normal" font-weight="normal">
+						<value>10</value>
+					</cell>
+					<cell width="70px" background-color="#c0c0c0" color="#000000" font-family="Arial" font-size="10px" text-align="left" text-decoration="none" font-style="normal" font-weight="normal">
+						<value>10</value>
+					</cell>
+					<cell width="100px" background-color="#c0c0c0" color="#000000" font-family="Arial" font-size="10px" text-align="left" text-decoration="none" font-style="normal" font-weight="normal">
+						<value>10</value>
+					</cell>
+				</cells>
+			</row>
+
+			<row height="20pt">
+				<cells>
+					<cell width="100" background-color="#ffffff" color="#808080" font-family="Arial" font-size="12px" text-align="left" text-decoration="none" font-style="normal" font-weight="normal">
+						<value>20</value>
+					</cell>
+					<cell width="50" background-color="#ffffff" color="#808080" font-family="Arial" font-size="10px" text-align="right" text-decoration="none" font-style="normal" font-weight="normal">
+						<value>10</value>
+					</cell>
+					<cell width="100" background-color="#ffffff" color="#808080" font-family="Arial" font-size="12px" text-align="left" text-decoration="none" font-style="normal" font-weight="normal">
+						<value>10</value>
+					</cell>
+					<cell width="50" background-color="#ffffff" color="#808080" font-family="Arial" font-size="10px" text-align="right" text-decoration="none" font-style="normal" font-weight="normal">
+						<value>10</value>
+					</cell>
+					<cell width="30" background-color="#ffffff" color="#808080" font-family="Arial" font-size="12px" text-align="left" text-decoration="none" font-style="normal" font-weight="normal">
+						<value>10</value>
+					</cell>
+					<cell width="70" background-color="#ffffff" color="#808080" font-family="Arial" font-size="10px" text-align="right" text-decoration="none" font-style="normal" font-weight="normal">
+						<value>10</value>
+					</cell>
+					<cell width="100" background-color="#ffffff" color="#808080" font-family="Arial" font-size="12px" text-align="left" text-decoration="none" font-style="normal" font-weight="normal">
+						<value>10</value>
+					</cell>
+				</cells>
+			</row>
+
+			<row height="30pt">
+				<cells>
+					<cell width="100" background-color="#ffffff" color="#000000" font-family="Arial" font-size="10px" text-align="left" text-decoration="none" font-style="italic" font-weight="normal">
+						<value>50</value>
+					</cell>
+					<cell width="50" background-color="#c0c0c0" color="#808080" font-family="Arial" font-size="10px" text-align="left" text-decoration="none" font-style="normal" font-weight="bold">
+						<value>10</value>
+					</cell>
+					<cell width="100" background-color="#ffffff" color="#000000" font-family="Arial" font-size="10px" text-align="left" text-decoration="none" font-style="italic" font-weight="normal">
+						<value>10</value>
+					</cell>
+					<cell width="50" background-color="#c0c0c0" color="#808080" font-family="Arial" font-size="10px" text-align="left" text-decoration="none" font-style="normal" font-weight="bold">
+						<value>10</value>
+					</cell>
+					<cell width="30" background-color="#ffffff" color="#000000" font-family="Arial" font-size="10px" text-align="left" text-decoration="none" font-style="italic" font-weight="normal">
+						<value>10</value>
+					</cell>
+					<cell width="70" background-color="#c0c0c0" color="#808080" font-family="Arial" font-size="10px" text-align="left" text-decoration="none" font-style="normal" font-weight="bold">
+						<value>10</value>
+					</cell>
+					<cell width="100" background-color="#ffffff" color="#000000" font-family="Arial" font-size="10px" text-align="left" text-decoration="none" font-style="italic" font-weight="normal">
+						<value>10</value>
+					</cell>
+				</cells>
+			</row>
+
+		</rows>
+	</grid>
+</worksheet>

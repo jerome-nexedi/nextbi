@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grid xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="C:\Data\projects\jedox\tmp\exporter\grid.xsd">
+	<table>
+		<thead>
+			<col width="20"/>
+			<col width="20"/>
+			<col width="20"/>
+			<col width="30"/>
+			<col width="30"/>
+			<col width="30"/>
+			<col width="40"/>
+			<col width="40"/>
+			<col width="40"/>
+			<col width="50"/>
+		</thead>
+		<tbody>
+			<tr height="20">
+				<td width="20">A1</td>
+				<td width="20">B1</td>
+				<td width="20">C1</td>
+				<td width="30">D1</td>
+				<td width="30">E1</td>
+				<td width="30">F1</td>
+				<td width="40">G1</td>
+				<td width="40">H1</td>
+				<td width="40">I1</td>
+				<td width="50">J1</td>
+			</tr>
+			<tr height="30">
+				<td width="20">A2</td>
+				<td width="20">B2</td>
+				<td width="20">C2</td>
+				<td width="30">D2</td>
+				<td width="30">E2</td>
+				<td width="30">F2</td>
+				<td width="40">G2</td>
+				<td width="40">H2</td>
+				<td width="40">I2</td>
+				<td width="50">J2</td>
+			</tr>
+			<tr height="20">
+				<td width="20">A3</td>
+				<td width="20">B3</td>
+				<td width="20">C3</td>
+				<td width="30">D3</td>
+				<td width="30">E3</td>
+				<td width="30">F3</td>
+				<td width="40">G3</td>
+				<td width="40">H3</td>
+				<td width="40">I3</td>
+				<td width="50">J3</td>
+			</tr>
+		</tbody>
+	</table>
+</grid>

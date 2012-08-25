@@ -1,0 +1,1 @@
+Jedox.wss.app.dynJSRegistry={cubeWizard:["cubewizard.js",["palo"],"CubeWizard",false,false,"../common/base"],paloWizard:["palowizard.js",["palo"],"openPaloWizard",false,false,"../common/base"],chooseElement:["chooseelement.js",["palo"],"ChooseElement",false,false,"../common/base"],ruleEditor:["ruleeditor.js",["palo"],"ruleEditor",false,false,"../common/base"]};

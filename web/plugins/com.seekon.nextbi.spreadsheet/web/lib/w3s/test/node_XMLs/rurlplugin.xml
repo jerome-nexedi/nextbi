@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Report URL plugin -->
+<element name="n2" type="rurlplugin">
+
+	<info>
+		<name>Net Sales</name>
+		<desc>View sales statistic for all products.</desc>
+
+		<i18n>
+			<en_US>
+				<name>Net Sales</name>
+				<desc>View sales statistics for all products.</desc>
+			</en_US>
+
+			<de_DE>
+				<name>Netzverkauf</name>
+				<desc>Betrachte Verkaufsstatistik fuer alle Produkte.</desc>
+			</de_DE>
+		</i18n>
+	</info>
+
+	<ref group="_test5" hierarchy="h1" node="n3" type="ahview"/>
+
+	<params>
+		<param name="key1" value="val1"/>
+		<param name="key2" value="val2"/>
+	</params>
+
+</element>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message>
+	<img path="warning.png" w="48px" h="48px"></img>
+	<text>It's not posible to generate report.</text>
+</message>
