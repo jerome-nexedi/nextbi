@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<portlet-app
+    xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd"
+    version="1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd
+                        http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" id="ProxyCasPortlet">
+
+    <portlet>
+        <portlet-name>pivotMain</portlet-name>
+        <portlet-class>com.seekon.bicp.springsupport.web.portlet.OsgiSupportDispatcherPortlet</portlet-class>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>classpath:context/portlet/portlet-pivot.xml</value>
+        </init-param>
+        <init-param>
+            <name>contextAttribute</name>
+            <value>context_com.seekon.bicp.portlet.pivot</value>
+        </init-param>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>pivot report</title>
+            <short-title>pivot report</short-title>
+        </portlet-info>
+    </portlet>
+    
+    <user-attribute>
+        <!-- 
+            This attribute name must match the key name configured in uPortal's 
+            CasTicketUserInfoService 
+        -->
+        <name>casProxyTicket</name>
+    </user-attribute>
+
+</portlet-app>
