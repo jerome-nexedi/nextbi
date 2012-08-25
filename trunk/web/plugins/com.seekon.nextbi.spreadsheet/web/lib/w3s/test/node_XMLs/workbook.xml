@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Workbook -->
+<element name="n2" type="workbook">
+
+	<info>
+		<name>Net Sales</name>
+		<desc>View sales statistic for all products.</desc>
+
+		<i18n>
+			<en_US>
+				<name>Net Sales</name>
+				<desc>View sales statistics for all products.</desc>
+			</en_US>
+
+			<de_DE>
+				<name>Netzverkauf</name>
+				<desc>Betrachte Verkaufsstatistik fuer alle Produkte.</desc>
+			</de_DE>
+		</i18n>
+	</info>
+
+	<vars>
+		<var name="Year"/>
+		<var name="Month"/>
+		<var name="Product"/>
+		<var name="Abc"/>
+		<var name="Product"/>
+	</vars>
+
+	<referrers>
+		<referrer group="treeTest" hierarchy="h1" node="n2"/>
+	</referrers>
+
+	<resources>
+		<resource group="treeTest" hierarchy="h1" node="n2"/>
+	</resources>
+
+	<dependents>
+		<dependent group="treeTest" hierarchy="h1" node="n2"/>
+	</dependents>
+
+</element>

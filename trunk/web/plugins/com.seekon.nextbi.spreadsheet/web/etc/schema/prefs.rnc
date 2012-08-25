@@ -1,0 +1,62 @@
+element prefs
+{
+	element general
+	{
+		element l10n { "en_US" | "de_DE" | "fr_FR" }? &
+		element theme { "default" | "gray" }?
+	}? &
+
+	element studio
+	{
+		element default
+		{
+			element files
+			{
+				element group { text },
+				element hierarchy { text }?
+			}? &
+
+			element reports
+			{
+				element group { text },
+				(
+					element hierarchy { text }
+					|
+					(
+						element hierarchy { text },
+						element node { text },
+						element path { text },
+						element var
+						{
+							element type { text },
+							element name { text },
+							element val { text }
+						}*
+					)
+				)?
+			}?
+		}?
+	}? &
+
+	element wss
+	{
+		element interface { "toolbar" | "ribbon" }?
+	}? &
+
+	element etl
+	{
+		empty
+	}? &
+
+	element palo
+	{
+		empty
+	}? &
+
+	element mypalo
+	{
+		element username { text },
+		element password { text }
+	}?
+
+}

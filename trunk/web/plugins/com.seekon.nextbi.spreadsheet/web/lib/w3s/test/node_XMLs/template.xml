@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Template -->
+<element name="n2" type="template">
+
+	<info>
+		<name>Net Sales</name>
+		<desc>View sales statistic for all products.</desc>
+
+		<i18n>
+			<en_US>
+				<name>Net Sales</name>
+				<desc>View sales statistics for all products.</desc>
+			</en_US>
+
+			<de_DE>
+				<name>Netzverkauf</name>
+				<desc>Betrachte Verkaufsstatistik fuer alle Produkte.</desc>
+			</de_DE>
+		</i18n>
+	</info>
+	
+	<ref group="_test5" hierarchy="h1" node="n3" type="workbook"/>
+	
+	<maps>
+		<!--
+			Types:
+				link = Link to a list of one parent dynamic folder
+				palo = Palo,
+				odbc = ODBC,
+				clist = constant list,
+				cval = constant value
+		 -->
+
+		<map>
+			<var name="Account" defval="ABC"/>
+			<list type="link" id="n1"/>
+		</map>
+
+		<map>
+			<var name="Account2" defval="asdfasdfa"/>
+			<list type="link" id="n10"/>
+		</map>
+
+
+		<map>
+			<var name="Products" defval="car"/>
+			<list type="palo">
+				<conn name="Palo local" db="Demo"/>
+				
+				<!-- <values type="dimension" dimension="Years"/> -->
+				<values type="subset" dimension="Years" subset="3Years"/>
+			</list>
+		</map>
+		
+		<map>
+			<var name="Productssss" defval="car"/>
+			<list type="palosubset">				
+				<values>
+					<![CDATA[{a: "abc", b: 44, c: 85, d: {aaa: 13, bbb: 18}}]]>
+				</values>
+			</list>
+		</map>
+
+		<map>
+			<var name="Years" defval="2005"/>
+			<list type="odbc">
+				<conn name="ODBC remote" db="Test"/>
+				<values type="query">SELECT year FROM years WHERE year > 2000</values>
+			</list>
+		</map>
+
+
+		<!--
+		<map>
+			<var name="Years" defval="2005"/>
+			<list type="clist">
+				<value>2002</value>
+				<value>2003</value>
+				<value>2004</value>
+				<value>2008</value>
+			</list>
+		</map>
+		-->
+
+
+		<map>
+			<var name="Months" defval="July"/>
+			<list type="cval">
+				<value>2002</value>
+			</list>
+		</map>
+
+
+	</maps>
+
+</element>

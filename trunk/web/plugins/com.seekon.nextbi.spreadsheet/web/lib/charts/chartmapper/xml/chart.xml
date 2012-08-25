@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chart [
+	<!ENTITY BaseChart SYSTEM "../../lib/charts/chartmapper/xml/base/BaseChart.xml">
+	<!ENTITY XYChart SYSTEM "../../lib/charts/chartmapper/xml/base/XYChart.xml">
+	<!ENTITY Layer SYSTEM "../../lib/charts/chartmapper/xml/base/Layer.xml">
+	<!ENTITY BarLayer SYSTEM "../../lib/charts/chartmapper/xml/base/BarLayer.xml">
+	<!ENTITY Axis SYSTEM "../../lib/charts/chartmapper/xml/base/Axis.xml">
+	<!ENTITY AngularAxis SYSTEM "../../lib/charts/chartmapper/xml/base/AngularAxis.xml">
+	<!ENTITY Box SYSTEM "../../lib/charts/chartmapper/xml/base/Box.xml">
+	<!ENTITY BaseBoxLayer SYSTEM "../../lib/charts/chartmapper/xml/base/BaseBoxLayer.xml">
+	<!ENTITY TextBox SYSTEM "../../lib/charts/chartmapper/xml/base/TextBox.xml">
+	<!ENTITY LegendBox SYSTEM "../../lib/charts/chartmapper/xml/base/LegendBox.xml">
+	<!ENTITY PlotArea SYSTEM "../../lib/charts/chartmapper/xml/base/PlotArea.xml">
+	<!ENTITY PieChart SYSTEM "../../lib/charts/chartmapper/xml/base/PieChart.xml">
+	<!ENTITY PolarChart SYSTEM "../../lib/charts/chartmapper/xml/base/PolarChart.xml">
+	<!ENTITY LineLayer SYSTEM "../../lib/charts/chartmapper/xml/base/LineLayer.xml">
+	<!ENTITY PolarLayer SYSTEM "../../lib/charts/chartmapper/xml/base/PolarLayer.xml">
+	<!ENTITY BaseMeter SYSTEM "../../lib/charts/chartmapper/xml/base/BaseMeter.xml">
+	<!ENTITY AngularMeter SYSTEM "../../lib/charts/chartmapper/xml/base/AngularMeter.xml">
+	<!ENTITY LinearMeter SYSTEM "../../lib/charts/chartmapper/xml/base/LinearMeter.xml">
+
+	<!ENTITY adapter_FormatConvertor_hexColor SYSTEM "../../lib/charts/chartmapper/xml/adapters/FormatConvertor_hexColor.xml">
+	<!ENTITY adapter_FormatConvertor_colorObject SYSTEM "../../lib/charts/chartmapper/xml/adapters/FormatConvertor_colorObject.xml">
+	<!ENTITY adapter_FormatConvertor_fontFileName SYSTEM "../../lib/charts/chartmapper/xml/adapters/FormatConvertor_fontFileName.xml">
+	<!ENTITY adapter_UnitConvertor_pointToPixel SYSTEM "../../lib/charts/chartmapper/xml/adapters/UnitConvertor_pointToPixel.xml">
+]>
+<chart type="object" class="@base_chart_type" context="Chart">
+	&@base_chart_type;
+	@chart_layers
+</chart>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Report folder -->
+<element name="n1" type="rfolder">
+
+	<info>
+		<name>Year</name>
+		<desc>Accounting Year</desc>
+
+		<i18n>
+			<en_US>
+				<name>Year</name>
+				<desc>Accounting Year</desc>
+			</en_US>
+
+			<de_DE>
+				<name>Jahr</name>
+				<desc>Rechnungsjahr</desc>
+			</de_DE>
+		</i18n>
+	</info>
+
+	<maps>
+		<!--
+			Types:
+				palo = Palo,
+				odbc = ODBC,
+				clist = constant list,
+				cval = constant value
+		 -->		
+		<map>
+			<list type="palo">
+				<conn name="Palo local" db="Demo"/>
+
+		<!--		<values type="dimension" dimension="Years"/>
+				OR-->
+				<values type="subset" dimension="Years" subset="3Years"/>
+			</list>
+		</map>
+
+		<!--
+		<map>
+			<list type="odbc">
+				<conn name="ODBC remote" db="Test"/>
+				<values type="query">SELECT year FROM years WHERE year > 2000</values>
+			</list>
+		</map>
+		-->
+
+		<!--
+		<map>
+			<list type="clist">
+				<value>2002</value>
+				<value>2003</value>
+				<value>2004</value>
+				<value>2008</value>
+			</list>
+		</map>
+		-->
+
+		<!--
+		<map>
+			<list type="cval">
+				<value>2002</value>
+			</list>
+		</map>
+		-->
+
+	</maps>
+
+</element>

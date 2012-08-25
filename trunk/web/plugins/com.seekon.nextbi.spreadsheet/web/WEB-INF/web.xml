@@ -2,75 +2,65 @@
 
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.4" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee          http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-    
-    <filter>
-    	<filter-name>CAS Authentication Filter</filter-name>
-    	<filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
-    	<init-param>
-        	<param-name>casServerLoginUrl</param-name>
-        	<param-value>http://localhost:8090/cas/login</param-value>
-    	</init-param>
-    	<init-param>
-        	<param-name>serverName</param-name>
-        	<param-value>http://localhost:8090</param-value>
-    	</init-param>
-  	</filter>
-    <filter>
-        <filter-name>CAS Validation Filter</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-        <init-param>
-            <param-name>targetBeanName</param-name>
-            <param-value>ticketValidationFilter</param-value>
-        </init-param>
-        <init-param>
-			<param-name>contextAttribute</param-name>
-			<param-value>context_com.seekon.nextbi.spreadsheet</param-value>
-		</init-param>
-    </filter>   
-    <filter>
-        <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
-        <filter-class>org.jasig.cas.client.util.HttpServletRequestWrapperFilter</filter-class>
-    </filter>   
-    <filter>
-        <filter-name>CAS Assertion Thread Local Filter</filter-name>
-        <filter-class>org.jasig.cas.client.util.AssertionThreadLocalFilter</filter-class>
-    </filter>   
-
-    <filter-mapping>
-        <filter-name>CAS Authentication Filter</filter-name>
-        <url-pattern>*.jsp</url-pattern>
-    </filter-mapping>
-    <!-- 
-    <filter-mapping>
-        <filter-name>CAS Validation Filter</filter-name>
-        <url-pattern>*.jsp</url-pattern>
-    </filter-mapping>
-     -->
-    <filter-mapping>
-        <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
-        <url-pattern>*.jsp</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>CAS Assertion Thread Local Filter</filter-name>
-        <url-pattern>*.jsp</url-pattern>
-    </filter-mapping>
-              
-	<servlet>
-		<servlet-name>wss</servlet-name>
-		<servlet-class>com.seekon.nextbi.spreadsheet.servlet.WssServlet</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>ub</servlet-name>
-		<servlet-class>com.seekon.nextbi.spreadsheet.servlet.UbServlet</servlet-class>
-	</servlet>
-		
-	<servlet-mapping>
-		<servlet-name>wss</servlet-name>
-		<url-pattern>/wss</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>ub</servlet-name>
-		<url-pattern>/ub</url-pattern>
-	</servlet-mapping>
+	<filter>
+		<filter-name>RequestProxyFilter</filter-name>
+		<filter-class>
+			com.caucho.quercus.lib.proxy.RequestProxyFilter
+		</filter-class>
+	</filter>
+	 	 
+	<filter-mapping>
+		<filter-name>RequestProxyFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping> 
 	
+  <servlet>
+    <servlet-name>Quercus Servlet</servlet-name>
+    <servlet-class>com.caucho.quercus.servlet.QuercusServlet</servlet-class>
+
+    <!--
+      Specifies the encoding Quercus should use to read in PHP scripts.
+    -->
+    <!--
+    <init-param>
+      <param-name>script-encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+    -->
+
+    <!--
+      Tells Quercus to use the following JDBC database and to ignore the
+      arguments of mysql_connect().
+    -->
+    <!--
+    <init-param>
+      <param-name>database</param-name>
+      <param-value>jdbc/test</param-value>
+    </init-param>
+    -->
+
+    <!--
+    <init-param>
+      <param-name>ini-file</param-name>
+      <param-value>WEB-INF/php.ini</param-value>
+    </init-param>
+    -->
+    
+    <!--
+      Location of the license to enable php to java compilation.
+    -->
+    <init-param>
+      <param-name>license-directory</param-name>
+      <param-value>WEB-INF/licenses</param-value>
+    </init-param>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>Quercus Servlet</servlet-name>
+    <url-pattern>*.php</url-pattern>
+  </servlet-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.php</welcome-file>
+  </welcome-file-list>
 </web-app>

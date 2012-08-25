@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+ <!-- Folder -->
+<element name="n0" type="folder">
+
+	<info>
+		<name>Reports</name>
+		<desc>All reports</desc>
+
+		<i18n>
+			<en_US>
+				<name>Reports</name>
+				<desc>All reports</desc>
+			</en_US>
+
+			<de_DE>
+				<name>Berichte</name>
+				<desc>Alle Berichte</desc>
+			</de_DE>
+		</i18n>
+	</info>
+
+</element>

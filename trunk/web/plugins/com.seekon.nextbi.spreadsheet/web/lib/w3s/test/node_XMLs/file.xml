@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+ <!-- File hierarchy -->
+<element name="h2" type="file">
+
+	<info>
+		<name>Reports</name>
+		<desc>All reports</desc>
+		<comment>Some comment</comment>
+		<created by="admin" date="2008-12-15 15:10:00"/>
+		<modified by="poweruser" date="2008-12-17 18:10:00"/>
+	</info>
+
+	<backend type="local" location="C:/Data/core/storage/workbooks" username="admin" password="somepass"/>
+
+</element>
