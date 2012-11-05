@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.aspectj.weaver.patch
+Bundle-SymbolicName: com.springsource.org.aspectj.weaver.patch
+Bundle-Version: 1.0.0
+Bundle-Vendor: SPRINGSOURCE
+Fragment-Host: com.springsource.org.aspectj.weaver;bundle-version="1.6.12"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Is-Path: true
+Import-Package: org.objectweb.asm
+Export-Package: org.aspectj.internal.lang.reflect,
+ org.aspectj.weaver.bcel.asm
