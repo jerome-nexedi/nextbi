@@ -2,6 +2,9 @@ package com.seekon.bicp.osgi.bridge.internal;
 
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.FelixConstants;
+
+import com.seekon.bicp.osgi.patch.internal.PatchActivator;
+
 import javax.servlet.ServletContext;
 import java.util.Map;
 import java.util.HashMap;
@@ -57,12 +60,13 @@ public final class FrameworkService {
       map.put(key.toString(), props.get(key));
     }
 
-    map.put(FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP, Arrays
-      .asList(new ProvisionActivator(this.context)));
+    map.put(FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP,
+      Arrays.asList(new ProvisionActivator(this.context), new PatchActivator()));
     return map;
   }
 
   private void log(String message, Throwable cause) {
     this.context.log(message, cause);
+    System.out.println(message + (cause == null ? "" : ":" + cause.toString()));
   }
 }
