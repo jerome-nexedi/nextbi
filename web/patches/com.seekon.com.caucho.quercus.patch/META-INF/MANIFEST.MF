@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: com.caucho.quercus.patch
+Bundle-SymbolicName: com.seekon.com.caucho.quercus.patch
+Bundle-Version: 1.0.0
+Bundle-Vendor: SEEKON
+Fragment-Host: com.seekon.com.caucho.quercus;bundle-version="4.0.25"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Is-Patch: true
