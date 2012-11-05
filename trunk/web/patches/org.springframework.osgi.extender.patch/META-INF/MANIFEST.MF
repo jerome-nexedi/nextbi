@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: springframework.osgi.extender.patch
+Bundle-SymbolicName: org.springframework.osgi.extender.patch
+Bundle-Version: 1.0.0
+Fragment-Host: org.springframework.osgi.extender;bundle-version="1.2.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Is-Patch: true
+Import-Package: com.seekon.bicp.osgi.bridge,
+ org.springframework.osgi.web.context.support,
+ org.springframework.web.context;version="3.1.1.RELEASE"
