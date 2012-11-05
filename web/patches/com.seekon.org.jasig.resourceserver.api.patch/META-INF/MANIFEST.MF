@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.jasig.resourceserver.api.patch
+Bundle-SymbolicName: com.seekon.org.jasig.resourceserver.api.patch
+Bundle-Version: 1.0.0
+Bundle-Vendor: SEEKON
+Fragment-Host: com.seekon.org.jasig.resourceserver.api;bundle-version="1.0.25"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Is-Patch: true
+Export-Package: org.jasig.resourceserver.aggr
