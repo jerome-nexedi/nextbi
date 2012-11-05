@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: net.sf.ehcache.core.patch
+Bundle-SymbolicName: com.seekon.net.sf.ehcache.core.patch
+Bundle-Version: 1.0.0
+Bundle-Vendor: SEEKON
+Fragment-Host: com.seekon.net.sf.ehcache.core;bundle-version="2.5.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Is-Patch: true
+Export-Package: net.sf.ehcache.hibernate,
+ net.sf.ehcache.hibernate.management.impl
