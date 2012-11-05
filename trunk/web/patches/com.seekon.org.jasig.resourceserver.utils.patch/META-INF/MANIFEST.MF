@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.jasig.resourceserver.utils.patch
+Bundle-SymbolicName: com.seekon.org.jasig.resourceserver.utils.patch
+Bundle-Version: 1.0.0
+Bundle-Vendor: SEEKON
+Fragment-Host: com.seekon.org.jasig.resourceserver.utils;bundle-version="1.0.25"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Is-Patch: true
+Export-Package: org.jasig.resourceserver.utils.aggr,
+ org.jasig.resourceserver.utils.filter,
+ org.jasig.resourceserver.utils.taglib
