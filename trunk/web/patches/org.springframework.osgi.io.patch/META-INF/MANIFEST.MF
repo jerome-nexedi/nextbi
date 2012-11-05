@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: springframework.osgi.io.patch
+Bundle-SymbolicName: org.springframework.osgi.io.patch
+Bundle-Version: 1.0.0
+Fragment-Host: org.springframework.osgi.io;bundle-version="1.2.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Is-Patch: true
