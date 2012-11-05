@@ -53,6 +53,14 @@
       <param-name>license-directory</param-name>
       <param-value>WEB-INF/licenses</param-value>
     </init-param>
+    
+    <!-- Tells Quercus to use the following JDBC database
+		and to ignore the arguments of mysqli_connect(). -->
+	<init-param>
+		<param-name>database</param-name>
+		<param-value>jdbc/spreadsheet</param-value>
+	</init-param>
+
   </servlet>
 
   <servlet-mapping>
