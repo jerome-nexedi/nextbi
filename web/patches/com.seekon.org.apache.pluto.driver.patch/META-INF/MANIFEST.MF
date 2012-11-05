@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.apache.pluto.driver.patch
+Bundle-SymbolicName: com.seekon.org.apache.pluto.driver.patch
+Bundle-Version: 1.0.0
+Bundle-Vendor: SEEKON
+Fragment-Host: com.seekon.org.apache.pluto.driver;bundle-version="2.1.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Is-Patch: true
