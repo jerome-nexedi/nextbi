@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: springframework.osgi.core.patch
+Bundle-SymbolicName: org.springframework.osgi.core.patch
+Bundle-Version: 1.0.0
+Fragment-Host: org.springframework.osgi.core;bundle-version="1.2.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.springframework.osgi.context.internal.classloader,
+ org.springframework.osgi.context.support,
+ org.springframework.osgi.util.internal
+Is-Patch: true
