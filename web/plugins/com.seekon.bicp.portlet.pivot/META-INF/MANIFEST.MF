@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Pivot
+Bundle-Name: portlet.pivot
 Bundle-SymbolicName: com.seekon.bicp.portlet.pivot
 Bundle-Version: 1.0.0
 Bundle-Vendor: SEEKON
@@ -26,5 +26,7 @@ Require-Bundle: org.springframework.beans;bundle-version="3.1.1",
  org.springframework.web.portlet;bundle-version="3.1.1",
  org.springframework.web.servlet;bundle-version="3.1.1",
  com.springsource.org.apache.commons.logging;bundle-version="1.1.1",
- com.seekon.org.springframework.security.core;bundle-version="3.1.0",
  com.seekon.org.jasig.cas.client;bundle-version="3.2.1"
+Import-Package: org.springframework.security.core;version="3.1.0.RELEASE",
+ org.springframework.security.core.context;version="3.1.0.RELEASE",
+ org.springframework.security.core.userdetails;version="3.1.0.RELEASE"
