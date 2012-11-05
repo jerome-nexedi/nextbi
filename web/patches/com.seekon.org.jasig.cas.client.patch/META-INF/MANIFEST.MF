@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.jasig.cas.client.patch
+Bundle-SymbolicName: com.seekon.org.jasig.cas.client.patch
+Bundle-Version: 1.0.0
+Bundle-Vendor: SEEKON
+Fragment-Host: com.seekon.org.jasig.cas.client;bundle-version="3.2.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.jasig.cas.client.validation
+Is-Patch: true
