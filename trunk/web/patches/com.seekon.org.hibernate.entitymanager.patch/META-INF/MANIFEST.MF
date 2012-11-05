@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.hibernate.entitymanager.patch
+Bundle-SymbolicName: com.seekon.org.hibernate.entitymanager.patch
+Bundle-Version: 1.0.0
+Bundle-Vendor: SEEKON
+Fragment-Host: com.seekon.org.hibernate.entitymanager;bundle-version="4.0.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Is-Patch: true
+Export-Package: org.hibernate.ejb.packaging,
+ org.hibernate.engine.spi
