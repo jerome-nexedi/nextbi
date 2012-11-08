@@ -550,7 +550,7 @@ public class ModuleContext
         }
       }
       
-      if(urlSet.isEmpty()){////TODO:2012-08-10
+      //if(urlSet.isEmpty()){////TODO:2012-08-10
         urls = this.getClass().getClassLoader().getResources(quercusModule);
         while (urls.hasMoreElements()) {
           URL url = urls.nextElement();
@@ -561,7 +561,7 @@ public class ModuleContext
             urlSet.add(url);
           }
         }
-      }
+      //}
       
       for (URL url : urlSet) {
         InputStream is = null;
