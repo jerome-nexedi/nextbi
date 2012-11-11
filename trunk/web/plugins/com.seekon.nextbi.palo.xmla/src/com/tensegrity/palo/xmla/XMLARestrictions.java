@@ -1,3 +1,34 @@
+/*
+*
+* @file XMLARestrictions.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Michael Raue <Michael.Raue@tensegrity-software.com>
+*
+* @version $Id: XMLARestrictions.java,v 1.4 2009/04/29 10:35:37 PhilippBouillon Exp $
+*
+*/
+
 package com.tensegrity.palo.xmla;
 
 public class XMLARestrictions {
@@ -38,214 +69,195 @@ public class XMLARestrictions {
   private String memberType;
 
   public String getCatalog() {
-    return this.catalog;
+    return catalog;
   }
 
-  public void setCatalog(String paramString) {
-    this.catalog = paramString;
+  public void setCatalog(String s) {
+    catalog = s;
   }
 
   public String getSchema() {
-    return this.schemaName;
+    return schemaName;
   }
 
-  public void setSchema(String paramString) {
-    this.schemaName = paramString;
+  public void setSchema(String s) {
+    schemaName = s;
   }
 
   public String getCubeSource() {
-    return this.cubeSource;
+    return cubeSource;
   }
 
-  public void setCubeSource(String paramString) {
-    this.cubeSource = paramString;
+  public void setCubeSource(String s) {
+    cubeSource = s;
   }
 
   public String getBaseCube() {
-    return this.baseCube;
+    return baseCube;
   }
 
-  public void setBaseCube(String paramString) {
-    this.baseCube = paramString;
+  public void setBaseCube(String s) {
+    baseCube = s;
   }
 
   public String getCubeName() {
-    return this.cubeName;
+    return cubeName;
   }
 
-  public void setCubeName(String paramString) {
-    this.cubeName = paramString;
+  public void setCubeName(String s) {
+    cubeName = s;
   }
 
   public String getDimensionUniqueName() {
-    return this.dimensionUniqueName;
+    return dimensionUniqueName;
   }
 
-  public void setDimensionUniqueName(String paramString) {
-    this.dimensionUniqueName = paramString;
+  public void setDimensionUniqueName(String s) {
+    dimensionUniqueName = s;
   }
 
   public String getDimensionName() {
-    return this.dimensionName;
+    return dimensionName;
   }
 
-  public void setDimensionName(String paramString) {
-    this.dimensionName = paramString;
+  public void setDimensionName(String s) {
+    dimensionName = s;
   }
 
   public String getHierarchyUniqueName() {
-    return this.hierarchyUniqueName;
+    return hierarchyUniqueName;
   }
 
-  public void setHierarchyUniqueName(String paramString) {
-    this.hierarchyUniqueName = paramString;
+  public void setHierarchyUniqueName(String s) {
+    hierarchyUniqueName = s;
   }
 
   public String getHierarchyName() {
-    return this.hierarchyName;
+    return hierarchyName;
   }
 
-  public void setHierarchyName(String paramString) {
-    this.hierarchyName = paramString;
+  public void setHierarchyName(String s) {
+    hierarchyName = s;
   }
 
   public String getHierarchyOrigin() {
-    return this.hierarchyOrigin;
+    return hierarchyOrigin;
   }
 
-  public void setHierarchyOrigin(String paramString) {
-    this.hierarchyOrigin = paramString;
+  public void setHierarchyOrigin(String s) {
+    hierarchyOrigin = s;
   }
 
   public String getHierarchyVisibility() {
-    return this.hierarchyVisibility;
+    return hierarchyVisibility;
   }
 
-  public void setHierarchyVisibility(String paramString) {
-    this.hierarchyVisibility = paramString;
+  public void setHierarchyVisibility(String s) {
+    hierarchyVisibility = s;
   }
 
   public String getDimensionVisibility() {
-    return this.dimensionVisibility;
+    return dimensionVisibility;
   }
 
-  public void setDimensionVisibility(String paramString) {
-    this.dimensionVisibility = paramString;
+  public void setDimensionVisibility(String s) {
+    dimensionVisibility = s;
   }
 
-  public void setLevelUniqueName(String paramString) {
-    this.levelUniqueName = paramString;
+  public void setLevelUniqueName(String s) {
+    levelUniqueName = s;
   }
 
   public String getLevelUniqueName() {
-    return this.levelUniqueName;
+    return levelUniqueName;
   }
 
-  public void setMemberUniqueName(String paramString) {
-    this.memberUniqueName = paramString;
+  public void setMemberUniqueName(String s) {
+    memberUniqueName = s;
   }
 
   public String getMemberUniqueName() {
-    return this.memberUniqueName;
+    return memberUniqueName;
   }
 
-  public void setMemberType(int paramInt) {
-    this.memberType = ("" + paramInt);
+  public void setMemberType(int i) {
+    memberType = "" + i;
   }
 
   public String getMemberType() {
-    return this.memberType;
+    return memberType;
   }
 
-  public void setTreeOp(int paramInt) {
-    this.treeOp = ("" + paramInt);
+  public void setTreeOp(int _treeOp) {
+    treeOp = "" + _treeOp;
   }
 
   public String getTreeOp() {
-    return this.treeOp;
+    return treeOp;
   }
 
   public String getLevelNumber() {
-    return this.levelNumber;
+    return levelNumber;
   }
 
-  public void setLevelNumber(String paramString) {
-    this.levelNumber = paramString;
+  public void setLevelNumber(String levelNumber) {
+    this.levelNumber = levelNumber;
   }
 
-  private final boolean valid(String paramString) {
-    return (paramString != null) && (paramString.trim().length() > 0);
+  private final boolean valid(String s) {
+    return s != null && s.trim().length() > 0;
   }
 
-  private final String format(String paramString1, String paramString2,
-    String paramString3) {
-    return "\n" + paramString1 + elementIndent + "<" + paramString2 + ">"
-      + paramString3.trim() + "</" + paramString2 + ">";
+  private final String format(String indent, String tag, String content) {
+    return "\n" + indent + elementIndent + "<" + tag + ">" + content.trim() + "</"
+      + tag + ">";
   }
 
-  protected String getRestrictionListXML(String paramString) {
-    StringBuffer localStringBuffer = new StringBuffer("\n" + paramString
-      + "<RestrictionList>");
-    if (valid(this.catalog))
-      localStringBuffer.append(format(paramString, "CATALOG_NAME", this.catalog));
-    if (valid(this.cubeName))
-      localStringBuffer.append(format(paramString, "CUBE_NAME", this.cubeName));
-    if (valid(this.dimensionUniqueName))
-      localStringBuffer.append(format(paramString, "DIMENSION_UNIQUE_NAME",
-        this.dimensionUniqueName));
-    if (valid(this.dimensionName))
-      localStringBuffer.append(format(paramString, "DIMENSION_NAME",
-        this.dimensionName));
-    if (valid(this.hierarchyUniqueName))
-      localStringBuffer.append(format(paramString, "HIERARCHY_UNIQUE_NAME",
-        this.hierarchyUniqueName));
-    if (valid(this.levelUniqueName))
-      localStringBuffer.append(format(paramString, "LEVEL_UNIQUE_NAME",
-        this.levelUniqueName));
-    if (valid(this.memberUniqueName))
-      localStringBuffer.append(format(paramString, "MEMBER_UNIQUE_NAME",
-        this.memberUniqueName));
-    if (valid(this.treeOp))
-      localStringBuffer.append(format(paramString, "TREE_OP", this.treeOp));
-    if (valid(this.levelNumber))
-      localStringBuffer
-        .append(format(paramString, "LEVEL_NUMBER", this.levelNumber));
-    if (valid(this.schemaName))
-      localStringBuffer.append(format(paramString, "SCHEMA_NAME", this.schemaName));
-    if (valid(this.cubeSource))
-      localStringBuffer.append(format(paramString, "CUBE_SOURCE", this.cubeSource));
-    if (valid(this.baseCube))
-      localStringBuffer.append(format(paramString, "BASE_CUBE_NAME", this.baseCube));
-    if (valid(this.hierarchyName))
-      localStringBuffer.append(format(paramString, "HIERARCHY_NAME",
-        this.hierarchyName));
-    if (valid(this.hierarchyOrigin))
-      localStringBuffer.append(format(paramString, "HIERARCHY_ORIGIN",
-        this.hierarchyOrigin));
-    if (valid(this.hierarchyVisibility))
-      localStringBuffer.append(format(paramString, "HIERARCHY_VISIBILITY",
-        this.hierarchyVisibility));
-    if (valid(this.dimensionVisibility))
-      localStringBuffer.append(format(paramString, "DIMENSION_VISIBILITY",
-        this.dimensionVisibility));
-    if (valid(this.memberType))
-      localStringBuffer.append(format(paramString, "MEMBER_TYPE", this.memberType));
-    localStringBuffer.append("\n" + paramString + "</RestrictionList>");
-    return localStringBuffer.toString();
+  protected String getRestrictionListXML(String indent) {
+    StringBuffer sb = new StringBuffer("\n" + indent + "<RestrictionList>");
+
+    if (valid(catalog))
+      sb.append(format(indent, "CATALOG_NAME", catalog));
+    if (valid(cubeName))
+      sb.append(format(indent, "CUBE_NAME", cubeName));
+    if (valid(dimensionUniqueName))
+      sb.append(format(indent, "DIMENSION_UNIQUE_NAME", dimensionUniqueName));
+    if (valid(dimensionName))
+      sb.append(format(indent, "DIMENSION_NAME", dimensionName));
+    if (valid(hierarchyUniqueName))
+      sb.append(format(indent, "HIERARCHY_UNIQUE_NAME", hierarchyUniqueName));
+    if (valid(levelUniqueName))
+      sb.append(format(indent, "LEVEL_UNIQUE_NAME", levelUniqueName));
+    if (valid(memberUniqueName))
+      sb.append(format(indent, "MEMBER_UNIQUE_NAME", memberUniqueName));
+    if (valid(treeOp))
+      sb.append(format(indent, "TREE_OP", treeOp));
+    if (valid(levelNumber))
+      sb.append(format(indent, "LEVEL_NUMBER", levelNumber));
+    if (valid(schemaName))
+      sb.append(format(indent, "SCHEMA_NAME", schemaName));
+    if (valid(cubeSource))
+      sb.append(format(indent, "CUBE_SOURCE", cubeSource));
+    if (valid(baseCube))
+      sb.append(format(indent, "BASE_CUBE_NAME", baseCube));
+    if (valid(hierarchyName))
+      sb.append(format(indent, "HIERARCHY_NAME", hierarchyName));
+    if (valid(hierarchyOrigin))
+      sb.append(format(indent, "HIERARCHY_ORIGIN", hierarchyOrigin));
+    if (valid(hierarchyVisibility))
+      sb.append(format(indent, "HIERARCHY_VISIBILITY", hierarchyVisibility));
+    if (valid(dimensionVisibility))
+      sb.append(format(indent, "DIMENSION_VISIBILITY", dimensionVisibility));
+    if (valid(memberType))
+      sb.append(format(indent, "MEMBER_TYPE", memberType));
+    sb.append("\n" + indent + "</RestrictionList>");
+    return sb.toString();
   }
 
-  public String getXML(String paramString) {
-    return "\n"
-      + paramString
-      + "<Restrictions>"
-      + getRestrictionListXML(new StringBuilder().append(paramString).append(
-        elementIndent).toString()) + "\n" + paramString + "</Restrictions>";
+  public String getXML(String indent) {
+    return "\n" + indent + "<Restrictions>"
+      + getRestrictionListXML(indent + elementIndent) + "\n" + indent
+      + "</Restrictions>";
+
   }
 }
-
-/*
- * Location:
- * D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
- * Qualified Name: com.tensegrity.palo.xmla.XMLARestrictions JD-Core Version:
- * 0.5.4
- */

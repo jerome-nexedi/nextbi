@@ -1,7 +1,37 @@
+/*
+*
+* @file XMLAVariableInfo.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Michael Raue <Michael.Raue@tensegrity-software.com>
+*
+* @version $Id: XMLAVariableInfo.java,v 1.7 2009/04/29 10:35:37 PhilippBouillon Exp $
+*
+*/
+
 package com.tensegrity.palo.xmla;
 
 import com.tensegrity.palo.xmla.builders.BuilderRegistry;
-import com.tensegrity.palo.xmla.builders.VariableInfoBuilder;
 import com.tensegrity.palojava.DimensionInfo;
 import com.tensegrity.palojava.ElementInfo;
 import com.tensegrity.palojava.VariableInfo;
@@ -52,9 +82,9 @@ public class XMLAVariableInfo implements VariableInfo {
 
   private String description;
 
-  private DimensionInfo elementDimension = null;
+  private DimensionInfo elementDimension;
 
-  private boolean elementsSet = false;
+  private boolean elementsSet;
 
   private ElementInfo value;
 
@@ -68,247 +98,246 @@ public class XMLAVariableInfo implements VariableInfo {
 
   private String textValue;
 
-  public void setName(String paramString) {
-    this.name = paramString;
+  public XMLAVariableInfo() {
+    elementsSet = false;
+    elementDimension = null;
   }
 
-  public void setId(String paramString) {
-    this.id = paramString;
+  public void setName(String newName) {
+    name = newName;
   }
 
-  public void setUId(String paramString) {
-    this.uid = paramString;
+  public void setId(String newId) {
+    id = newId;
   }
 
-  public void setOrdinal(String paramString) {
-    this.ordinal = paramString;
+  public void setUId(String newUid) {
+    uid = newUid;
   }
 
-  public void setType(int paramInt) {
-    this.variableType = paramInt;
+  public void setOrdinal(String newOrdinal) {
+    ordinal = newOrdinal;
   }
 
-  public void setDataType(String paramString) {
-    this.dataType = paramString;
+  public void setType(int newVariableType) {
+    variableType = newVariableType;
   }
 
-  public void setCharacterMaximumLength(String paramString) {
-    this.characterMaxLength = paramString;
+  public void setDataType(String newDataType) {
+    dataType = newDataType;
   }
 
-  public void setVariableProcessingType(int paramInt) {
-    this.variableProcessingType = paramInt;
+  public void setCharacterMaximumLength(String newCharMax) {
+    characterMaxLength = newCharMax;
   }
 
-  public void setSelectionType(int paramInt) {
-    this.variableSelectionType = paramInt;
+  public void setVariableProcessingType(int newVariableProc) {
+    variableProcessingType = newVariableProc;
   }
 
-  public void setInputType(int paramInt) {
-    this.variableInputType = paramInt;
+  public void setSelectionType(int newVarSelectionType) {
+    variableSelectionType = newVarSelectionType;
   }
 
-  public void setReferenceDimension(String paramString) {
-    this.referenceDimension = paramString;
+  public void setInputType(int newVarInputType) {
+    variableInputType = newVarInputType;
   }
 
-  public void setReferenceHierarchy(String paramString) {
-    this.referenceHierarchy = paramString;
+  public void setReferenceDimension(String newReferenceDimension) {
+    referenceDimension = newReferenceDimension;
   }
 
-  public void setDefaultLow(String paramString) {
-    this.defaultLow = paramString;
+  public void setReferenceHierarchy(String newReferenceHierarchy) {
+    referenceHierarchy = newReferenceHierarchy;
   }
 
-  public void setDefaultLowCap(String paramString) {
-    this.defaultLowCap = paramString;
+  public void setDefaultLow(String newDefaultLow) {
+    defaultLow = newDefaultLow;
   }
 
-  public void setDefaultHigh(String paramString) {
-    this.defaultHigh = paramString;
+  public void setDefaultLowCap(String newDefaultLowCap) {
+    defaultLowCap = newDefaultLowCap;
   }
 
-  public void setDefaultHighCap(String paramString) {
-    this.defaultHighCap = paramString;
+  public void setDefaultHigh(String newDefaultHigh) {
+    defaultHigh = newDefaultHigh;
   }
 
-  public void setDescription(String paramString) {
-    this.description = paramString;
+  public void setDefaultHighCap(String newDefaultHighCap) {
+    defaultHighCap = newDefaultHighCap;
+  }
+
+  public void setDescription(String newDescription) {
+    description = newDescription;
   }
 
   public String getName() {
-    return this.name;
+    return name;
   }
 
   public String getId() {
-    return this.id;
+    return id;
   }
 
   public String getUId() {
-    return this.uid;
+    return uid;
   }
 
   public String getOrdinal() {
-    return this.ordinal;
+    return ordinal;
   }
 
   public String getDataType() {
-    return this.dataType;
+    return dataType;
   }
 
   public String getCharacterMaximumLength() {
-    return this.characterMaxLength;
+    return characterMaxLength;
   }
 
   public int getCharacterProcessingType() {
-    return this.variableProcessingType;
+    return variableProcessingType;
   }
 
   public int getSelectionType() {
-    return this.variableSelectionType;
+    return variableSelectionType;
   }
 
   public int getInputType() {
-    return this.variableInputType;
+    return variableInputType;
   }
 
   public String getReferenceDimension() {
-    return this.referenceDimension;
+    return referenceDimension;
   }
 
   public String getReferenceHierarchy() {
-    return this.referenceHierarchy;
+    return referenceHierarchy;
   }
 
   public String getDefaultLow() {
-    return this.defaultLow;
+    return defaultLow;
   }
 
   public String getDefaultLowCap() {
-    return this.defaultLowCap;
+    return defaultLowCap;
   }
 
   public String getDefaultHigh() {
-    return this.defaultHigh;
+    return defaultHigh;
   }
 
   public String getDefaultHighCap() {
-    return this.defaultHighCap;
+    return defaultHighCap;
   }
 
   public String getDescription() {
-    return this.description;
+    return description;
   }
 
   public boolean areElementsSet() {
-    return this.elementsSet;
+    return elementsSet;
   }
 
-  public void loadVariableElements(XMLAClient paramXMLAClient,
-    XMLAConnection paramXMLAConnection, XMLADatabaseInfo paramXMLADatabaseInfo) {
+  public void loadVariableElements(XMLAClient client, XMLAConnection con,
+    XMLADatabaseInfo database) {
     BuilderRegistry.getInstance().getVariableInfoBuilder().requestVarElements(this,
-      paramXMLAConnection, paramXMLADatabaseInfo, paramXMLAClient);
-    this.elementsSet = true;
+      con, database, client);
+    elementsSet = true;
   }
 
-  public void setElementDimension(DimensionInfo paramDimensionInfo) {
-    this.elementDimension = paramDimensionInfo;
+  public void setElementDimension(DimensionInfo newDimension) {
+    elementDimension = newDimension;
   }
 
   public DimensionInfo getElementDimension() {
-    return this.elementDimension;
+    return elementDimension;
   }
 
   public String toString() {
-    return "XMLA-Variable:            " + this.id + "\n"
-      + "Name:                     " + this.name + "\n"
-      + "UId:                      " + this.uid + "\n"
-      + "Ordinal:                  " + this.ordinal + "\n"
-      + "Type:                     " + this.VAR_TYPE_STRING[this.variableType]
-      + "\n" + "Datatype:                 " + this.dataType + "\n"
-      + "Character Maximum Length: " + this.characterMaxLength + "\n"
-      + "Processing Type:          "
-      + this.VAR_PROC_TYPE_STRING[this.variableProcessingType] + "\n"
-      + "Selection Type:           "
-      + this.VAR_SELECTION_TYPE_STRING[this.variableSelectionType] + "\n"
-      + "Entry Type:               "
-      + this.VAR_INPUT_TYPE_STRING[this.variableInputType] + "\n"
-      + "Reference Dimension:      " + this.referenceDimension + "\n"
-      + "Reference Hierarchy:      " + this.referenceHierarchy + "\n"
-      + "Default Low:              " + this.defaultLow + "\n"
-      + "Default Low Cap:          " + this.defaultLowCap + "\n"
-      + "Default High:             " + this.defaultHigh + "\n"
-      + "Default High Cap:         " + this.defaultHighCap + "\n"
-      + "Description:              " + this.description + "\n"
+    return "XMLA-Variable:            " + id + "\n" + "Name:                     "
+      + name + "\n" + "UId:                      " + uid + "\n"
+      + "Ordinal:                  " + ordinal + "\n" + "Type:                     "
+      + VAR_TYPE_STRING[variableType] + "\n" + "Datatype:                 "
+      + dataType + "\n" + "Character Maximum Length: " + characterMaxLength + "\n"
+      + "Processing Type:          " + VAR_PROC_TYPE_STRING[variableProcessingType]
+      + "\n" + "Selection Type:           "
+      + VAR_SELECTION_TYPE_STRING[variableSelectionType] + "\n"
+      + "Entry Type:               " + VAR_INPUT_TYPE_STRING[variableInputType]
+      + "\n" + "Reference Dimension:      " + referenceDimension + "\n"
+      + "Reference Hierarchy:      " + referenceHierarchy + "\n"
+      + "Default Low:              " + defaultLow + "\n"
+      + "Default Low Cap:          " + defaultLowCap + "\n"
+      + "Default High:             " + defaultHigh + "\n"
+      + "Default High Cap:         " + defaultHighCap + "\n"
+      + "Description:              " + description + "\n"
       + "------------------------------------------------------------\n";
   }
 
   public int getType() {
-    return this.variableType;
+    return variableType;
   }
 
   public ElementInfo[] getInterval() {
-    return new ElementInfo[] { this.from, this.to };
+    return new ElementInfo[] { from, to };
   }
 
   public ElementInfo getValue() {
-    return this.value;
+    return value;
   }
 
-  public void setInterval(ElementInfo paramElementInfo1,
-    ElementInfo paramElementInfo2) {
-    this.from = paramElementInfo1;
-    this.to = paramElementInfo2;
+  public void setInterval(ElementInfo from, ElementInfo to) {
+    this.from = from;
+    this.to = to;
   }
 
-  public void setInterval(String paramString1, String paramString2) {
-    this.from = ((XMLADimensionInfo) this.elementDimension)
-      .getMemberByIdInternal(paramString1);
-    this.to = ((XMLADimensionInfo) this.elementDimension)
-      .getMemberByIdInternal(paramString2);
+  public void setInterval(String fromId, String toId) {
+    from = ((XMLADimensionInfo) elementDimension).getMemberByIdInternal(fromId);
+    to = ((XMLADimensionInfo) elementDimension).getMemberByIdInternal(toId);
   }
 
-  public void setValue(ElementInfo paramElementInfo) {
-    this.value = paramElementInfo;
+  public void setValue(ElementInfo element) {
+    value = element;
   }
 
-  public void setValue(String paramString) {
-    this.value = ((XMLADimensionInfo) this.elementDimension)
-      .getMemberByIdInternal(paramString);
+  public void setValue(String elementId) {
+    value = ((XMLADimensionInfo) elementDimension).getMemberByIdInternal(elementId);
   }
 
-  public void setHideConsolidations(boolean paramBoolean) {
-    this.hideConsolidations = paramBoolean;
+  public void setHideConsolidations(boolean newHide) {
+    hideConsolidations = newHide;
   }
 
   public boolean getHideConsolidations() {
-    return this.hideConsolidations;
+    return hideConsolidations;
   }
 
   public String getText() {
-    if (this.textValue == null)
+    if (textValue == null) {
       return "";
-    return this.textValue;
+    }
+    return textValue;
   }
 
-  public void setText(String paramString) {
-    this.textValue = paramString;
+  public void setText(String newText) {
+    textValue = newText;
   }
 
   public ElementInfo[] getSelectedElements() {
-    return this.selectedElements;
+    return selectedElements;
   }
 
-  public void setSelectedElements(String[] paramArrayOfString) {
-    if (paramArrayOfString == null) {
-      this.selectedElements = null;
+  public void setSelectedElements(String[] elementIds) {
+    if (elementIds == null) {
+      selectedElements = null;
       return;
     }
-    int i = 0;
-    this.selectedElements = new ElementInfo[paramArrayOfString.length];
-    for (String str : paramArrayOfString)
-      this.selectedElements[(i++)] = ((XMLADimensionInfo) this.elementDimension)
-        .getMemberByIdInternal(str);
+    int counter = 0;
+    selectedElements = new ElementInfo[elementIds.length];
+    for (String id : elementIds) {
+      selectedElements[counter++] = ((XMLADimensionInfo) elementDimension)
+        .getMemberByIdInternal(id);
+    }
   }
 
   public boolean canBeModified() {
@@ -319,10 +348,3 @@ public class XMLAVariableInfo implements VariableInfo {
     return false;
   }
 }
-
-/*
- * Location:
- * D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
- * Qualified Name: com.tensegrity.palo.xmla.XMLAVariableInfo JD-Core Version:
- * 0.5.4
- */

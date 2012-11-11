@@ -1,4 +1,39 @@
+/*
+*
+* @file XMLACubeInfo.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Michael Raue <Michael.Raue@tensegrity-software.com>
+*
+* @version $Id: XMLACubeInfo.java,v 1.14 2009/04/29 10:35:37 PhilippBouillon Exp $
+*
+*/
+
 package com.tensegrity.palo.xmla;
+
+import java.math.BigInteger;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.tensegrity.palo.xmla.parsers.XMLADimensionRequestor;
 import com.tensegrity.palojava.CubeInfo;
@@ -6,10 +41,6 @@ import com.tensegrity.palojava.DatabaseInfo;
 import com.tensegrity.palojava.DbConnection;
 import com.tensegrity.palojava.PropertyInfo;
 import com.tensegrity.palojava.impl.PropertyInfoImpl;
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class XMLACubeInfo implements CubeInfo, XMLAPaloInfo {
   private String name;
@@ -36,68 +67,70 @@ public class XMLACubeInfo implements CubeInfo, XMLAPaloInfo {
 
   private final XMLAConnection xmlaConnection;
 
-  public XMLACubeInfo(String paramString1, String paramString2,
-    XMLADatabaseInfo paramXMLADatabaseInfo, String paramString3,
-    XMLAClient paramXMLAClient, XMLAConnection paramXMLAConnection) {
-    this.name = paramString1;
-    this.id = paramString2;
-    this.database = paramXMLADatabaseInfo;
-    this.dimensionMap = new LinkedHashMap();
-    this.variables = new XMLAVariableInfo[0];
-    this.connectionName = paramString3;
-    this.xmlaClient = paramXMLAClient;
-    this.xmlaConnection = paramXMLAConnection;
+  public XMLACubeInfo(String name, String id, XMLADatabaseInfo database,
+    String connectionName, XMLAClient xmlaClient, XMLAConnection con) {
+    this.name = name;
+    this.id = id;
+    this.database = database;
+    dimensionMap = new LinkedHashMap();
+    variables = new XMLAVariableInfo[0];
+    this.connectionName = connectionName;
+    this.xmlaClient = xmlaClient;
+    this.xmlaConnection = con;
   }
 
   public BigInteger getCellCount() {
-    return this.cellCount;
+    return cellCount;
   }
 
   public DatabaseInfo getDatabase() {
-    return this.database;
+    return database;
   }
 
   public int getDimensionCount() {
-    return this.dimensionCount;
+    return dimensionCount;
   }
 
   public String[] getDimensions() {
-    if (this.dimensions == null) {
-      XMLADimensionRequestor localXMLADimensionRequestor = new XMLADimensionRequestor(
-        this, this.xmlaConnection);
-      localXMLADimensionRequestor.setCatalogNameRestriction(getDatabase().getId());
-      localXMLADimensionRequestor.setCubeNameRestriction(getId());
-      XMLADimensionInfo[] arrayOfXMLADimensionInfo = localXMLADimensionRequestor
-        .requestDimensions(this.xmlaClient);
-      this.dimensions = new String[arrayOfXMLADimensionInfo.length];
-      for (int i = 0; i < arrayOfXMLADimensionInfo.length; ++i)
-        this.dimensions[i] = arrayOfXMLADimensionInfo[i].getId();
+    if (dimensions == null) {
+      XMLADimensionRequestor req = new XMLADimensionRequestor(this, xmlaConnection);
+      req.setCatalogNameRestriction(getDatabase().getId());
+      req.setCubeNameRestriction(getId());
+      XMLADimensionInfo[] dims = req.requestDimensions(xmlaClient);
+      //			ArrayList dims = BuilderRegistry.getInstance().getCubeInfoBuilder().
+      //				requestDimensions(xmlaClient, connectionName, database, id);
+      //			setDimensionCount(dims.size());
+      //			dimensions = (String[]) dims.toArray(new String[0]);
+      dimensions = new String[dims.length];
+      for (int i = 0; i < dims.length; i++) {
+        dimensions[i] = dims[i].getId();
+      }
     }
-    return this.dimensions;
+    return dimensions;
   }
 
   public BigInteger getFilledCellCount() {
-    return this.filledCellCount;
+    return filledCellCount;
   }
 
-  public final void setDimensionCount(int paramInt) {
-    this.dimensionCount = paramInt;
+  public final void setDimensionCount(int newDimensionCount) {
+    dimensionCount = newDimensionCount;
   }
 
-  public final void setDimensions(String[] paramArrayOfString) {
-    this.dimensions = paramArrayOfString;
+  public final void setDimensions(String[] dimensions) {
+    this.dimensions = dimensions;
   }
 
   public String getName() {
-    return this.name;
+    return name;
   }
 
-  public void setName(String paramString) {
-    this.name = paramString;
+  public void setName(String name) {
+    this.name = name;
   }
 
   public int getStatus() {
-    return 1;
+    return STATUS_LOADED;
   }
 
   public int getToken() {
@@ -105,23 +138,23 @@ public class XMLACubeInfo implements CubeInfo, XMLAPaloInfo {
   }
 
   public String getId() {
-    return this.id;
+    return id;
   }
 
-  public void setId(String paramString) {
-    this.id = paramString;
+  public void setId(String id) {
+    this.id = id;
   }
 
   public int getType() {
-    return 0;
+    return TYPE_NORMAL;
   }
 
-  public final void setCellCount(BigInteger paramBigInteger) {
-    this.cellCount = paramBigInteger;
+  public final void setCellCount(BigInteger newCellCount) {
+    cellCount = newCellCount;
   }
 
-  public final void setFilledCellCount(BigInteger paramBigInteger) {
-    this.filledCellCount = paramBigInteger;
+  public final void setFilledCellCount(BigInteger newCellCount) {
+    filledCellCount = newCellCount;
   }
 
   public String toString() {
@@ -129,146 +162,144 @@ public class XMLACubeInfo implements CubeInfo, XMLAPaloInfo {
       + ", DimensionCount: " + getDimensionCount() + ", Cells: " + getCellCount();
   }
 
-  public void addDimensionInternal(XMLADimensionInfo paramXMLADimensionInfo) {
-    this.dimensionMap.put(paramXMLADimensionInfo.getName(), paramXMLADimensionInfo);
+  public void addDimensionInternal(XMLADimensionInfo dim) {
+    dimensionMap.put(dim.getName(), dim);
   }
 
-  public XMLADimensionInfo getDimensionInternal(String paramString) {
-    return (XMLADimensionInfo) this.dimensionMap.get(paramString);
+  public XMLADimensionInfo getDimensionInternal(String dimName) {
+    return (XMLADimensionInfo) dimensionMap.get(dimName);
   }
 
   public XMLADimensionInfo[] getDimensionsInternal() {
-    return (XMLADimensionInfo[]) (XMLADimensionInfo[]) this.dimensionMap.values()
-      .toArray(new XMLADimensionInfo[0]);
+    return (XMLADimensionInfo[]) dimensionMap.values().toArray(
+      new XMLADimensionInfo[0]);
   }
 
-  public void setVariables(XMLAVariableInfo[] paramArrayOfXMLAVariableInfo) {
-    this.variables = paramArrayOfXMLAVariableInfo;
+  public void setVariables(XMLAVariableInfo[] vars) {
+    variables = vars;
   }
 
   private XMLAVariableInfo[] getVariables() {
-    return this.variables;
+    return variables;
   }
 
-  public String[] getAllKnownPropertyIds(DbConnection paramDbConnection) {
-    return new String[] { "SAP_VARIABLE_DEF" };
+  public String[] getAllKnownPropertyIds(DbConnection con) {
+    return new String[] { XMLAConnection.PROPERTY_SAP_VARIABLE_DEFINITION };
   }
 
-  private void addProp(String paramString1, String paramString2,
-    PropertyInfo paramPropertyInfo) {
-    PropertyInfoImpl localPropertyInfoImpl = new PropertyInfoImpl(paramString1,
-      paramString2, paramPropertyInfo, 2, true);
-    paramPropertyInfo.addChild(localPropertyInfoImpl);
+  private void addProp(String id, String content, PropertyInfo parent) {
+    PropertyInfo property = new PropertyInfoImpl(id, content, parent,
+      PropertyInfoImpl.TYPE_STRING, true);
+    parent.addChild(property);
   }
 
-  private void addElements(PropertyInfo paramPropertyInfo,
-    XMLAElementInfo[] paramArrayOfXMLAElementInfo) {
-    if (paramArrayOfXMLAElementInfo == null)
+  private void addElements(PropertyInfo parent, XMLAElementInfo[] elements) {
+    if (elements == null) {
       return;
-    for (XMLAElementInfo localXMLAElementInfo : paramArrayOfXMLAElementInfo) {
-      PropertyInfoImpl localPropertyInfoImpl = new PropertyInfoImpl(
-        localXMLAElementInfo.getId(), localXMLAElementInfo.getName(),
-        paramPropertyInfo, 2, true);
-      addElements(localPropertyInfoImpl, localXMLAElementInfo.getChildrenInternal());
-      paramPropertyInfo.addChild(localPropertyInfoImpl);
+    }
+    for (XMLAElementInfo element : elements) {
+      PropertyInfo prop = new PropertyInfoImpl(element.getId(), element.getName(),
+        parent, PropertyInfoImpl.TYPE_STRING, true);
+      addElements(prop, element.getChildrenInternal());
+      parent.addChild(prop);
     }
   }
 
-  private void addElementTree(XMLAElementInfo[] paramArrayOfXMLAElementInfo,
-    PropertyInfo paramPropertyInfo) {
-    PropertyInfoImpl localPropertyInfoImpl1 = new PropertyInfoImpl("ELEMENTS",
-      "True", paramPropertyInfo, 3, true);
-    paramPropertyInfo.addChild(localPropertyInfoImpl1);
-    for (XMLAElementInfo localXMLAElementInfo : paramArrayOfXMLAElementInfo) {
-      if (localXMLAElementInfo.getParentCount() != 0)
-        continue;
-      PropertyInfoImpl localPropertyInfoImpl2 = new PropertyInfoImpl(
-        localXMLAElementInfo.getId(), localXMLAElementInfo.getName(),
-        localPropertyInfoImpl1, 2, true);
-      addElements(localPropertyInfoImpl2, localXMLAElementInfo.getChildrenInternal());
-      localPropertyInfoImpl1.addChild(localPropertyInfoImpl2);
-    }
-  }
-
-  private void addDefaultSelection(XMLAVariableInfo paramXMLAVariableInfo,
-    PropertyInfo paramPropertyInfo, XMLAElementInfo[] paramArrayOfXMLAElementInfo) {
-    String str = "";
-    switch (paramXMLAVariableInfo.getSelectionType()) {
-    case 1:
-    case 3:
-      if ((paramArrayOfXMLAElementInfo != null)
-        && (paramArrayOfXMLAElementInfo.length > 0))
-        str = paramArrayOfXMLAElementInfo[0].getId();
-      break;
-    case 2:
-      if ((paramArrayOfXMLAElementInfo != null)
-        && (paramArrayOfXMLAElementInfo.length > 0)) {
-        str = paramArrayOfXMLAElementInfo[0].getId();
-        if (paramArrayOfXMLAElementInfo.length > 1)
-          str = str + "\n" + paramArrayOfXMLAElementInfo[1].getId();
-        else
-          str = str + "\n" + paramArrayOfXMLAElementInfo[0].getId();
+  private void addElementTree(XMLAElementInfo[] elements, PropertyInfo parent) {
+    PropertyInfo property = new PropertyInfoImpl(
+      XMLAConnection.PROPERTY_SAP_VAR_ELEMENTS, "True", parent,
+      PropertyInfoImpl.TYPE_BOOLEAN, true);
+    parent.addChild(property);
+    for (XMLAElementInfo element : elements) {
+      if (element.getParentCount() == 0) {
+        PropertyInfo prop = new PropertyInfoImpl(element.getId(), element.getName(),
+          property, PropertyInfoImpl.TYPE_STRING, true);
+        addElements(prop, element.getChildrenInternal());
+        property.addChild(prop);
       }
     }
-    PropertyInfoImpl localPropertyInfoImpl = new PropertyInfoImpl("SELECTEDVALUES",
-      str, paramPropertyInfo, 2, false);
-    paramPropertyInfo.addChild(localPropertyInfoImpl);
   }
 
-  public PropertyInfo getProperty(DbConnection paramDbConnection, String paramString) {
-    if (paramString.equals("SAP_VARIABLE_DEF")) {
-      PropertyInfoImpl localPropertyInfoImpl1 = new PropertyInfoImpl(paramString,
-        "True", null, 3, true);
-      for (XMLAVariableInfo localXMLAVariableInfo : getVariables()) {
-        PropertyInfoImpl localPropertyInfoImpl2 = new PropertyInfoImpl("SAP_VAR",
-          "True", localPropertyInfoImpl1, 3, true);
-        localPropertyInfoImpl1.addChild(localPropertyInfoImpl2);
-        addProp("ID", localXMLAVariableInfo.getId(), localPropertyInfoImpl2);
-        addProp("NAME", localXMLAVariableInfo.getName(), localPropertyInfoImpl2);
-        addProp("UID", localXMLAVariableInfo.getUId(), localPropertyInfoImpl2);
-        addProp("ORDINAL", localXMLAVariableInfo.getOrdinal(),
-          localPropertyInfoImpl2);
-        addProp("TYPE", "" + localXMLAVariableInfo.getType(), localPropertyInfoImpl2);
-        addProp("DATATYPE", localXMLAVariableInfo.getDataType(),
-          localPropertyInfoImpl2);
-        addProp("CHARMAXLENGTH", localXMLAVariableInfo.getCharacterMaximumLength(),
-          localPropertyInfoImpl2);
-        addProp("PROCESSINGTYPE", ""
-          + localXMLAVariableInfo.getCharacterProcessingType(),
-          localPropertyInfoImpl2);
-        addProp("SELECTIONTYPE", "" + localXMLAVariableInfo.getSelectionType(),
-          localPropertyInfoImpl2);
-        addProp("ENTRYTYPE", "" + localXMLAVariableInfo.getInputType(),
-          localPropertyInfoImpl2);
-        addProp("REFERENCEDIMENSION", localXMLAVariableInfo.getReferenceDimension(),
-          localPropertyInfoImpl2);
-        addProp("REFERENCEHIERARCHY", localXMLAVariableInfo.getReferenceHierarchy(),
-          localPropertyInfoImpl2);
-        addProp("DEFAULTLOW", localXMLAVariableInfo.getDefaultLow(),
-          localPropertyInfoImpl2);
-        addProp("DEFAULTLOWCAP", localXMLAVariableInfo.getDefaultLowCap(),
-          localPropertyInfoImpl2);
-        addProp("DEFAULTHIGH", localXMLAVariableInfo.getDefaultHigh(),
-          localPropertyInfoImpl2);
-        addProp("DEFAULTHIGHCAP", localXMLAVariableInfo.getDefaultHighCap(),
-          localPropertyInfoImpl2);
-        addProp("DESCRIPTION", localXMLAVariableInfo.getDescription(),
-          localPropertyInfoImpl2);
-        localXMLAVariableInfo.loadVariableElements(this.xmlaClient,
-          (XMLAConnection) paramDbConnection, this.database);
-        XMLADimensionInfo localXMLADimensionInfo = (XMLADimensionInfo) localXMLAVariableInfo
-          .getElementDimension();
-        if (localXMLADimensionInfo != null) {
-          XMLAElementInfo[] arrayOfXMLAElementInfo = localXMLADimensionInfo
-            .getMembersInternal();
-          addElementTree(arrayOfXMLAElementInfo, localPropertyInfoImpl2);
-          addDefaultSelection(localXMLAVariableInfo, localPropertyInfoImpl2,
-            arrayOfXMLAElementInfo);
-        } else {
-          addDefaultSelection(localXMLAVariableInfo, localPropertyInfoImpl2, null);
+  private void addDefaultSelection(XMLAVariableInfo var, PropertyInfo parent,
+    XMLAElementInfo[] elements) {
+    String content = "";
+    switch (var.getSelectionType()) {
+    case XMLAVariableInfo.VAR_SELECTION_TYPE_VALUE:
+    case XMLAVariableInfo.VAR_SELECTION_TYPE_COMPLEX:
+      if (elements != null && elements.length > 0) {
+        content = elements[0].getId();
+      }
+      break;
+    case XMLAVariableInfo.VAR_SELECTION_TYPE_INTERVAL:
+      if (elements != null) {
+        if (elements.length > 0) {
+          content = elements[0].getId();
+          if (elements.length > 1) {
+            content += "\n" + elements[1].getId();
+          } else {
+            content += "\n" + elements[0].getId();
+          }
         }
       }
-      return localPropertyInfoImpl1;
+      break;
+    }
+
+    PropertyInfo property = new PropertyInfoImpl(
+      XMLAConnection.PROPERTY_SAP_VAR_SELECTED_VALUES, content, parent,
+      PropertyInfoImpl.TYPE_STRING, false);
+    parent.addChild(property);
+  }
+
+  public PropertyInfo getProperty(DbConnection con, String id) {
+    if (id.equals(XMLAConnection.PROPERTY_SAP_VARIABLE_DEFINITION)) {
+      PropertyInfo info = new PropertyInfoImpl(id, "True", null,
+        PropertyInfoImpl.TYPE_BOOLEAN, true);
+      for (XMLAVariableInfo var : getVariables()) {
+        PropertyInfo prop = new PropertyInfoImpl(
+          XMLAConnection.PROPERTY_SAP_VARIABLE_INSTANCE, "True", info,
+          PropertyInfoImpl.TYPE_BOOLEAN, true);
+        info.addChild(prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_ID, var.getId(), prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_NAME, var.getName(), prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_UID, var.getUId(), prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_ORDINAL, var.getOrdinal(), prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_TYPE, "" + var.getType(), prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_DATATYPE, var.getDataType(), prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_CHARMAXLENGTH, var
+          .getCharacterMaximumLength(), prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_PROCESSINGTYPE, ""
+          + var.getCharacterProcessingType(), prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_SELECTIONTYPE, ""
+          + var.getSelectionType(), prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_ENTRYTYPE, "" + var.getInputType(),
+          prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_REFERENCEDIMENSION, var
+          .getReferenceDimension(), prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_REFERENCEHIERARCHY, var
+          .getReferenceHierarchy(), prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_DEFAULTLOW, var.getDefaultLow(),
+          prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_DEFAULTLOWCAP, var
+          .getDefaultLowCap(), prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_DEFAULTHIGH, var.getDefaultHigh(),
+          prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_DEFAULTHIGHCAP, var
+          .getDefaultHighCap(), prop);
+        addProp(XMLAConnection.PROPERTY_SAP_VAR_DESCRIPTION, var.getDescription(),
+          prop);
+
+        var.loadVariableElements(xmlaClient, (XMLAConnection) con, database);
+        XMLADimensionInfo dimInfo = (XMLADimensionInfo) var.getElementDimension();
+        if (dimInfo != null) {
+          XMLAElementInfo[] elements = dimInfo.getMembersInternal();
+          addElementTree(elements, prop);
+          addDefaultSelection(var, prop, elements);
+        } else {
+          addDefaultSelection(var, prop, null);
+        }
+      }
+      return info;
+
     }
     return null;
   }
@@ -281,9 +312,3 @@ public class XMLACubeInfo implements CubeInfo, XMLAPaloInfo {
     return true;
   }
 }
-
-/*
- * Location:
- * D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
- * Qualified Name: com.tensegrity.palo.xmla.XMLACubeInfo JD-Core Version: 0.5.4
- */

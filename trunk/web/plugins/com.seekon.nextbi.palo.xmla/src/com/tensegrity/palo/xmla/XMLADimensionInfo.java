@@ -1,17 +1,49 @@
+/*
+*
+* @file XMLADimensionInfo.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Michael Raue <Michael.Raue@tensegrity-software.com>
+*
+* @version $Id: XMLADimensionInfo.java,v 1.20 2009/04/29 10:35:37 PhilippBouillon Exp $
+*
+*/
+
 package com.tensegrity.palo.xmla;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.tensegrity.palo.xmla.loader.XMLADimensionLoader;
 import com.tensegrity.palo.xmla.parsers.XMLAHierarchyRequestor;
 import com.tensegrity.palojava.DatabaseInfo;
 import com.tensegrity.palojava.DbConnection;
 import com.tensegrity.palojava.DimensionInfo;
 import com.tensegrity.palojava.HierarchyInfo;
 import com.tensegrity.palojava.PropertyInfo;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 public class XMLADimensionInfo implements DimensionInfo, XMLAPaloInfo {
   public static final int XMLA_TYPE_NORMAL = 0;
@@ -38,6 +70,7 @@ public class XMLADimensionInfo implements DimensionInfo, XMLAPaloInfo {
 
   private String hierarchyCaption;
 
+  //private XMLACubeInfo cube;
   private String cubeId;
 
   private final Map elements;
@@ -62,22 +95,23 @@ public class XMLADimensionInfo implements DimensionInfo, XMLAPaloInfo {
 
   private final XMLAConnection connection;
 
-  public XMLADimensionInfo(XMLAClient paramXMLAClient, String paramString1,
-    String paramString2, XMLADatabaseInfo paramXMLADatabaseInfo,
-    String paramString3, XMLAConnection paramXMLAConnection) {
-    this.name = paramString1;
-    this.connection = paramXMLAConnection;
-    this.database = paramXMLADatabaseInfo;
-    this.cubeId = paramString3;
-    if (paramString3 != null)
-      this.id = getIDString(paramString2, paramString3);
-    else
-      this.id = getIDString(paramString2, "");
-    this.elements = new LinkedHashMap();
-    this.elementIds = new LinkedHashMap();
-    this.hierarchies = new ArrayList();
-    this.defaultElementName = "";
-    this.xmlaClient = paramXMLAClient;
+  public XMLADimensionInfo(XMLAClient xmlaClient, String dimensionName,
+    String dimensionId, XMLADatabaseInfo database, String cubeId,
+    XMLAConnection connection) {
+    this.name = dimensionName;
+    this.connection = connection;
+    this.database = database;
+    this.cubeId = cubeId;
+    if (cubeId != null) {
+      this.id = getIDString(dimensionId, cubeId);
+    } else {
+      this.id = getIDString(dimensionId, "");
+    }
+    elements = new LinkedHashMap();
+    elementIds = new LinkedHashMap();
+    hierarchies = new ArrayList<XMLAHierarchyInfo>();
+    defaultElementName = "";
+    this.xmlaClient = xmlaClient;
   }
 
   public String getAttributeCube() {
@@ -89,47 +123,48 @@ public class XMLADimensionInfo implements DimensionInfo, XMLAPaloInfo {
   }
 
   public String getDefaultElementName() {
-    return this.defaultElementName;
+    return defaultElementName;
   }
 
-  public void setDefaultElementName(String paramString) {
-    this.defaultElementName = paramString;
+  public void setDefaultElementName(String name) {
+    defaultElementName = name;
   }
 
   public DatabaseInfo getDatabase() {
-    return this.database;
+    return database;
   }
 
   public int getElementCount() {
     return getDefaultHierarchy().getElementCount();
   }
 
-  public void setElementCount(int paramInt) {
-    this.elementCount = paramInt;
+  public void setElementCount(int newElementCount) {
+    elementCount = newElementCount;
   }
 
   public int getMaxDepth() {
-    return this.maxDepth;
+    return maxDepth;
   }
 
   public int getMaxIndent() {
+    //		 TODO Auto-generated method stub
     return 0;
   }
 
   public int getMaxLevel() {
-    return this.maxLevel;
+    return maxLevel;
   }
 
-  public void setMaxLevel(int paramInt) {
-    this.maxLevel = paramInt;
+  public void setMaxLevel(int newMaxLevel) {
+    maxLevel = newMaxLevel;
   }
 
-  public void setMaxDepth(int paramInt) {
-    this.maxDepth = paramInt;
+  public void setMaxDepth(int newMaxDepth) {
+    maxDepth = newMaxDepth;
   }
 
   public String getName() {
-    return this.name;
+    return name;
   }
 
   public String getRightsCube() {
@@ -140,47 +175,48 @@ public class XMLADimensionInfo implements DimensionInfo, XMLAPaloInfo {
     return 0;
   }
 
-  public void setName(String paramString) {
-    this.name = paramString;
+  public void setName(String name) {
+    this.name = name;
   }
 
   public String getId() {
-    return this.id;
+    return id;
   }
 
-  public void setId(String paramString) {
-    if (this.cubeId != null)
-      this.id = getIDString(paramString, this.cubeId);
-    else
-      this.id = getIDString(paramString, "");
+  public void setId(String newNameForId) {
+    if (cubeId != null) {
+      this.id = getIDString(newNameForId, cubeId);
+    } else {
+      this.id = getIDString(newNameForId, "");
+    }
   }
 
   public int getType() {
-    return 0;
+    return TYPE_NORMAL;
   }
 
   public String getHierarchyUniqueName() {
-    return this.hierarchyUniqueName;
+    return hierarchyUniqueName;
   }
 
   public String getDimensionUniqueName() {
-    return this.dimensionUniqueName;
+    return dimensionUniqueName;
   }
 
-  public void setHierarchyUniqueName(String paramString) {
-    this.hierarchyUniqueName = paramString;
+  public void setHierarchyUniqueName(String newName) {
+    hierarchyUniqueName = newName;
   }
 
-  public void setDimensionUniqueName(String paramString) {
-    this.dimensionUniqueName = paramString;
+  public void setDimensionUniqueName(String newName) {
+    dimensionUniqueName = newName;
   }
 
-  public void setCubeId(String paramString) {
-    this.cubeId = paramString;
+  public void setCubeId(String cubeId) {
+    this.cubeId = cubeId;
   }
 
   public String getCubeId() {
-    return this.cubeId;
+    return cubeId;
   }
 
   public String toString() {
@@ -189,139 +225,152 @@ public class XMLADimensionInfo implements DimensionInfo, XMLAPaloInfo {
   }
 
   public void clearMembersInternal() {
-    this.elements.clear();
-    this.elementIds.clear();
+    elements.clear();
+    elementIds.clear();
   }
 
-  public void addMemberInternal(XMLAElementInfo paramXMLAElementInfo) {
-    this.elements.put(paramXMLAElementInfo.getUniqueName(), paramXMLAElementInfo);
-    this.elementIds.put(paramXMLAElementInfo.getId(), paramXMLAElementInfo);
+  public void addMemberInternal(XMLAElementInfo element) {
+    elements.put(element.getUniqueName(), element);
+    elementIds.put(//"" + element.getUniqueName().hashCode(), element);
+      element.getId(), element);
   }
 
   public int getMemberCountInternal() {
-    return this.elements.size();
+    return elements.size();
   }
 
-  public XMLAElementInfo getMemberInternal(String paramString) {
-    if (this.elements.get(paramString) == null) {
-      String str = transformId(paramString);
-      return (XMLAElementInfo) this.elements.get(str);
+  public XMLAElementInfo getMemberInternal(String elementName) {
+    if (elements.get(elementName) == null) {
+      String ee = transformId(elementName);
+      return (XMLAElementInfo) elements.get(ee);
     }
-    return (XMLAElementInfo) this.elements.get(paramString);
+    return (XMLAElementInfo) elements.get(elementName);
   }
 
-  public XMLAElementInfo getMemberByIdInternal(String paramString) {
-    if (this.elementIds.get(paramString) == null) {
-      String str = transformId(paramString);
-      return (XMLAElementInfo) this.elementIds.get(str);
+  public XMLAElementInfo getMemberByIdInternal(String elementId) {
+    if (elementIds.get(elementId) == null) {
+      String ee = transformId(elementId);
+      return (XMLAElementInfo) elementIds.get(ee);
     }
-    return (XMLAElementInfo) this.elementIds.get(paramString);
+    return (XMLAElementInfo) elementIds.get(elementId);
   }
 
   public XMLAElementInfo[] getMembersInternal() {
-    return (XMLAElementInfo[]) (XMLAElementInfo[]) this.elements.values().toArray(
-      new XMLAElementInfo[0]);
+    return (XMLAElementInfo[]) elements.values().toArray(new XMLAElementInfo[0]);
   }
 
-  public static String getIDString(String paramString1, String paramString2) {
-    String str1 = paramString2.replaceAll("\\[", "((");
-    str1 = str1.replaceAll("\\]", "))");
-    str1 = str1.replaceAll(":", "**");
-    String str2 = paramString1.replaceAll("\\[", "((");
-    str2 = str2.replaceAll("\\]", "))");
-    str2 = str2.replaceAll(":", "**");
-    str2 = str2.replaceAll(",", "(comma)");
-    return str1 + "|.#.|" + str2;
+  public static String getIDString(String text, String cubeName) {
+    String cleanedCubeName = cubeName.replaceAll("\\[", "((");
+    cleanedCubeName = cleanedCubeName.replaceAll("\\]", "))");
+    cleanedCubeName = cleanedCubeName.replaceAll(":", "**");
+    String cleanedText = text.replaceAll("\\[", "((");
+    cleanedText = cleanedText.replaceAll("\\]", "))");
+    cleanedText = cleanedText.replaceAll(":", "**");
+    cleanedText = cleanedText.replaceAll(",", "(comma)");
+    //System.out.println(cleanedCubeName + "." + cleanedText);
+    return cleanedCubeName + XMLADimensionLoader.DIMENSION_ID_SEP + cleanedText;
+    //		String idString;
+    //		//if (type == XMLA_TYPE_MEASURES) {
+    //			idString = "" + (cubeName + text.hashCode()).hashCode();	
+    //		//} else {
+    //		//	idString = "" + text.hashCode();
+    //		//}		
+    //		return idString;
   }
 
-  public static String getCubeNameFromId(String paramString) {
-    int i = paramString.indexOf("|.#.|");
-    if (i == -1)
-      return paramString;
-    String str = paramString.substring(0, i).trim();
-    str = str.replaceAll("\\*\\*", ":");
-    str = str.replaceAll("\\)\\)", "]");
-    str = str.replaceAll("\\(\\(", "[");
-    return str;
+  public static String getCubeNameFromId(String id) {
+    int index = id.indexOf(XMLADimensionLoader.DIMENSION_ID_SEP);
+    if (index == -1) {
+      return id;
+    }
+    String cubeName = id.substring(0, index).trim();
+    cubeName = cubeName.replaceAll("\\*\\*", ":");
+    cubeName = cubeName.replaceAll("\\)\\)", "]");
+    cubeName = cubeName.replaceAll("\\(\\(", "[");
+    return cubeName;
   }
 
-  public static String getDimIdFromId(String paramString) {
-    int i = paramString.indexOf("|.#.|");
-    if (i == -1)
-      return paramString;
-    String str = paramString.substring(i + "|.#.|".length()).trim();
-    str = str.replaceAll("\\*\\*", ":");
-    str = str.replaceAll("\\)\\)", "]");
-    str = str.replaceAll("\\(\\(", "[");
-    str = str.replaceAll("\\(comma\\)", ",");
-    return str;
+  public static String getDimIdFromId(String id) {
+    int index = id.indexOf(XMLADimensionLoader.DIMENSION_ID_SEP);
+    if (index == -1) {
+      return id;
+    }
+    String dimensionId = id.substring(
+      index + XMLADimensionLoader.DIMENSION_ID_SEP.length()).trim();
+    dimensionId = dimensionId.replaceAll("\\*\\*", ":");
+    dimensionId = dimensionId.replaceAll("\\)\\)", "]");
+    dimensionId = dimensionId.replaceAll("\\(\\(", "[");
+    dimensionId = dimensionId.replaceAll("\\(comma\\)", ",");
+    return dimensionId;
+
   }
 
-  public static String transformId(String paramString) {
-    String str = paramString.replaceAll("\\(\\(", "[");
-    str = str.replaceAll("\\)\\)", "]");
-    str = str.replaceAll("\\*\\*", ":");
-    str = str.replaceAll("\\(comma\\)", ",");
-    return str;
+  public static String transformId(String id) {
+    String res = id.replaceAll("\\(\\(", "[");
+    res = res.replaceAll("\\)\\)", "]");
+    res = res.replaceAll("\\*\\*", ":");
+    res = res.replaceAll("\\(comma\\)", ",");
+    return res;
   }
 
-  public void setXmlaType(int paramInt) {
-    this.xmlaType = paramInt;
+  public void setXmlaType(int newXmlaType) {
+    xmlaType = newXmlaType;
     setId(getHierarchyUniqueName());
   }
 
   public int getXmlaType() {
-    return this.xmlaType;
+    return xmlaType;
   }
 
-  public void setHierarchyCaption(String paramString) {
-    this.hierarchyCaption = paramString;
+  public void setHierarchyCaption(String newCaption) {
+    hierarchyCaption = newCaption;
   }
 
   public String getHierarchyCaption() {
-    return this.hierarchyCaption;
+    return hierarchyCaption;
   }
 
-  public void setDimensionCaption(String paramString) {
-    this.dimensionCaption = paramString;
+  public void setDimensionCaption(String newCaption) {
+    dimensionCaption = newCaption;
   }
 
   public String getDimensionCaption() {
-    return this.dimensionCaption;
+    return dimensionCaption;
   }
 
-  public void addHierarchy(XMLAHierarchyInfo paramXMLAHierarchyInfo) {
-    this.hierarchies.add(paramXMLAHierarchyInfo);
+  public void addHierarchy(XMLAHierarchyInfo hier) {
+    hierarchies.add(hier);
   }
 
   public XMLAHierarchyInfo[] getHierarchies() {
-    if (this.hierarchies.size() == 0) {
-      XMLAHierarchyRequestor localXMLAHierarchyRequestor = new XMLAHierarchyRequestor(
-        this, (XMLADatabaseInfo) getDatabase(), this.connection);
-      localXMLAHierarchyRequestor.setCubeNameRestriction(getCubeId());
-      localXMLAHierarchyRequestor.setCatalogNameRestriction(getDatabase().getId());
-      localXMLAHierarchyRequestor
-        .setDimensionUniqueNameRestriction(getDimensionUniqueName());
-      this.hierarchies.addAll(Arrays.asList(localXMLAHierarchyRequestor
-        .requestHierarchies(this.xmlaClient)));
+    if (hierarchies.size() == 0) {
+      XMLAHierarchyRequestor req = new XMLAHierarchyRequestor(this,
+        (XMLADatabaseInfo) getDatabase(), connection);
+      req.setCubeNameRestriction(getCubeId());
+      req.setCatalogNameRestriction(getDatabase().getId());
+      req.setDimensionUniqueNameRestriction(getDimensionUniqueName());
+      hierarchies.addAll(Arrays.asList(req.requestHierarchies(xmlaClient)));
     }
-    return (XMLAHierarchyInfo[]) this.hierarchies.toArray(new XMLAHierarchyInfo[0]);
+    //		if (connection.usedByWPalo()) {
+    //			return new XMLAHierarchyInfo [] {getDefaultHierarchy()};
+    //		}
+    return hierarchies.toArray(new XMLAHierarchyInfo[0]);
   }
 
-  public String[] getAllKnownPropertyIds(DbConnection paramDbConnection) {
+  public String[] getAllKnownPropertyIds(DbConnection con) {
     return new String[0];
   }
 
-  public PropertyInfo getProperty(DbConnection paramDbConnection, String paramString) {
+  public PropertyInfo getProperty(DbConnection con, String id) {
     return null;
   }
 
   public int getInternalXmlaType() {
-    return this.internalType;
+    return internalType;
   }
 
-  public void setInternalXmlaType(int paramInt) {
-    this.internalType = paramInt;
+  public void setInternalXmlaType(int newType) {
+    internalType = newType;
   }
 
   public boolean canBeModified() {
@@ -332,36 +381,33 @@ public class XMLADimensionInfo implements DimensionInfo, XMLAPaloInfo {
     return false;
   }
 
-  public void setDefaultHierarchy(XMLAHierarchyInfo paramXMLAHierarchyInfo) {
-    this.defaultHierarchy = paramXMLAHierarchyInfo;
+  public void setDefaultHierarchy(XMLAHierarchyInfo defaultHier) {
+    defaultHierarchy = defaultHier;
   }
 
   public XMLAHierarchyInfo getDefaultHierarchy() {
-    return this.defaultHierarchy;
+    return defaultHierarchy;
   }
 
   public HierarchyInfo getActiveHierarchy() {
-    if (this.activeHierarchy == null)
-      this.activeHierarchy = this.defaultHierarchy;
-    return this.activeHierarchy;
+    if (activeHierarchy == null) {
+      activeHierarchy = defaultHierarchy;
+    }
+    return activeHierarchy;
   }
 
-  public void setActiveHierarchy(HierarchyInfo paramHierarchyInfo) {
-    this.activeHierarchy = ((XMLAHierarchyInfo) paramHierarchyInfo);
+  public void setActiveHierarchy(HierarchyInfo newActive) {
+    activeHierarchy = (XMLAHierarchyInfo) newActive;
   }
 
   public int getHierarchyCount() {
-    return this.hierarchyCount;
+    //		if (connection.usedByWPalo()) {
+    //			return 1;
+    //		}
+    return hierarchyCount;
   }
 
-  public void setHierarchyCount(int paramInt) {
-    this.hierarchyCount = paramInt;
+  public void setHierarchyCount(int hierCount) {
+    hierarchyCount = hierCount;
   }
 }
-
-/*
- * Location:
- * D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
- * Qualified Name: com.tensegrity.palo.xmla.XMLADimensionInfo JD-Core Version:
- * 0.5.4
- */
