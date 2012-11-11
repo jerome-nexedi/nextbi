@@ -520,6 +520,9 @@ class Studio
 
 	public function setPaloConnData ($connName = null)
 	{
+		////require_once('D:/devTools/Jedox/Palo Suite/httpd/app/docroot/FirePHPCore/FirePHP.class.php');
+		//$firephp = FirePHP::getInstance(true);
+		
 		if ($connName == null)
 		{
 			unset($_SESSION['paloConnData']);
@@ -532,9 +535,11 @@ class Studio
 		{
 			$connData = $this->getConnection($connName);
 			$connData = array('name' => $connName, 'host' => $connData[3], 'port' => $connData[4], 'username' => $connData[5], 'password' => $connData[6]);
-
+			
+			//$firephp->log($connData, '$connData');
 			$apol = new AccessPolicy($connData['host'], $connData['port'], $connData['username'], $connData['password'], $connData['username'], $connData['password'], false);
-
+			
+			//$firephp->log($apol->getSuperConn(), '$apol->getSuperConn()');
 			if (!is_resource($apol->getSuperConn()))
 				return $err_codes[1];
 
@@ -552,6 +557,7 @@ class Studio
 		}
 		catch (Exception $e)
 		{
+			//$firephp->log($e, '$e');
 			return $err_codes[1];
 		}
 	}
@@ -604,7 +610,9 @@ class Studio
 			if ($this->_isError($result))
 				throw new Exception($result[0], $result[1]);
 
-			return array_slice($result, 2);
+			//return array_slice($result, 2);
+			array_splice($result, 0, 2);
+			return $result;
 		}
 		catch (Exception $e) {
 			return array($e->getMessage(), self::$errMsg[$e->getCode()]);
