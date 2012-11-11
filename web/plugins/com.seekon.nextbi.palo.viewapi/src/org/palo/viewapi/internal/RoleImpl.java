@@ -1,7 +1,7 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import org.palo.viewapi.Right; /*     */
+/*     */import org.palo.viewapi.Right;
 import org.palo.viewapi.Role;
 
 /*     */

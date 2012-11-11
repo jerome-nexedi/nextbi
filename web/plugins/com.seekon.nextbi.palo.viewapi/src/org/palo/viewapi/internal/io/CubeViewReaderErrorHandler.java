@@ -1,9 +1,8 @@
 /*    */package org.palo.viewapi.internal.io;
 
 /*    */
-/*    */import java.io.PrintStream; /*    */
-import org.xml.sax.ErrorHandler; /*    */
-import org.xml.sax.SAXException; /*    */
+/*    */import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /*    */

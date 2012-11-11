@@ -1,18 +1,19 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import java.sql.SQLException; /*     */
-import java.util.ArrayList; /*     */
-import java.util.HashSet; /*     */
-import java.util.List; /*     */
-import java.util.Set; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.Report; /*     */
-import org.palo.viewapi.Right; /*     */
-import org.palo.viewapi.Role; /*     */
-import org.palo.viewapi.User; /*     */
-import org.palo.viewapi.View; /*     */
-import org.palo.viewapi.exceptions.OperationFailedException; /*     */
+/*     */import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.Report;
+import org.palo.viewapi.Right;
+import org.palo.viewapi.Role;
+import org.palo.viewapi.User;
+import org.palo.viewapi.View;
+import org.palo.viewapi.exceptions.OperationFailedException;
 import org.palo.viewapi.services.ReportService;
 
 /*     */

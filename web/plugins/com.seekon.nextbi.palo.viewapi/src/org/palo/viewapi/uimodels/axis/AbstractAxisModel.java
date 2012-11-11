@@ -1,10 +1,11 @@
 /*     */package org.palo.viewapi.uimodels.axis;
 
 /*     */
-/*     */import java.util.HashSet; /*     */
-import org.palo.viewapi.Axis; /*     */
-import org.palo.viewapi.AxisHierarchy; /*     */
-import org.palo.viewapi.uimodels.axis.events.AxisModelEvent; /*     */
+/*     */import java.util.HashSet;
+
+import org.palo.viewapi.Axis;
+import org.palo.viewapi.AxisHierarchy;
+import org.palo.viewapi.uimodels.axis.events.AxisModelEvent;
 import org.palo.viewapi.uimodels.axis.events.AxisModelListener;
 
 /*     */

@@ -1,8 +1,9 @@
 /*    */package org.palo.viewapi.internal.dbmappers;
 
 /*    */
-/*    */import java.util.HashMap; /*    */
-import java.util.Map; /*    */
+/*    */import java.util.HashMap;
+import java.util.Map;
+
 import org.palo.viewapi.DomainObject;
 
 /*    */

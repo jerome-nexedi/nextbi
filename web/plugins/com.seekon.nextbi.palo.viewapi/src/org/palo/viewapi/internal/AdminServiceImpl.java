@@ -1,18 +1,18 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import java.sql.SQLException; /*     */
-import java.util.ArrayList; /*     */
-import java.util.List; /*     */
-import org.palo.viewapi.Account; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.Group; /*     */
-import org.palo.viewapi.PaloConnection; /*     */
-import org.palo.viewapi.Right; /*     */
-import org.palo.viewapi.Role; /*     */
-import org.palo.viewapi.User; /*     */
-import org.palo.viewapi.exceptions.OperationFailedException; /*     */
-import org.palo.viewapi.internal.dbmappers.MapperRegistry; /*     */
+/*     */import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.palo.viewapi.Account;
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.Group;
+import org.palo.viewapi.PaloConnection;
+import org.palo.viewapi.Right;
+import org.palo.viewapi.Role;
+import org.palo.viewapi.User;
+import org.palo.viewapi.exceptions.OperationFailedException;
 import org.palo.viewapi.services.AdministrationService;
 
 /*     */

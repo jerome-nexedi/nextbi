@@ -1,8 +1,8 @@
 /*    */package org.palo.viewapi.internal;
 
 /*    */
-/*    */import org.palo.api.Connection; /*    */
-import org.palo.api.ConnectionConfiguration; /*    */
+/*    */import org.palo.api.Connection;
+import org.palo.api.ConnectionConfiguration;
 import org.palo.api.ConnectionFactory;
 
 /*    */

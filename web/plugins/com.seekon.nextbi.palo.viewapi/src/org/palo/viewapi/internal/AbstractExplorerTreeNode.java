@@ -1,16 +1,17 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import java.util.ArrayList; /*     */
-import java.util.HashMap; /*     */
-import java.util.HashSet; /*     */
-import java.util.List; /*     */
-import java.util.Set; /*     */
-import java.util.UUID; /*     */
-import org.palo.api.exceptions.PaloIOException; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.PaloConnection; /*     */
-import org.palo.viewapi.Role; /*     */
+/*     */import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+import org.palo.api.exceptions.PaloIOException;
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.PaloConnection;
+import org.palo.viewapi.Role;
 import org.palo.viewapi.User;
 
 /*     */

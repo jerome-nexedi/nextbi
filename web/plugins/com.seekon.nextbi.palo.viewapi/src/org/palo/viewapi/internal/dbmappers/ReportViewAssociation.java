@@ -1,15 +1,16 @@
 /*     */package org.palo.viewapi.internal.dbmappers;
 
 /*     */
-/*     */import java.sql.Connection; /*     */
-import java.sql.PreparedStatement; /*     */
-import java.sql.ResultSet; /*     */
-import java.sql.SQLException; /*     */
-import java.util.ArrayList; /*     */
-import java.util.List; /*     */
-import org.palo.viewapi.Report; /*     */
-import org.palo.viewapi.View; /*     */
-import org.palo.viewapi.internal.DbService; /*     */
+/*     */import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.palo.viewapi.Report;
+import org.palo.viewapi.View;
+import org.palo.viewapi.internal.DbService;
 import org.palo.viewapi.internal.IReportViewManagement;
 
 /*     */

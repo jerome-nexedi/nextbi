@@ -1,8 +1,8 @@
 /*     */package org.palo.viewapi.exceptions;
 
 /*     */
-/*     */import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.DomainObject; /*     */
+/*     */import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.DomainObject;
 import org.palo.viewapi.Right;
 
 /*     */

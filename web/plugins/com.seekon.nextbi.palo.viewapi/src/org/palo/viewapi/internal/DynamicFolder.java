@@ -1,19 +1,18 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import java.util.ArrayList; /*     */
-import java.util.HashMap; /*     */
-import java.util.List; /*     */
-import org.palo.api.Connection; /*     */
-import org.palo.api.Consolidation; /*     */
-import org.palo.api.Database; /*     */
-import org.palo.api.Dimension; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.ElementNode; /*     */
-import org.palo.api.ElementNodeVisitor; /*     */
-import org.palo.api.Hierarchy; /*     */
-import org.palo.api.parameters.ParameterProvider; /*     */
-import org.palo.api.parameters.ParameterReceiver; /*     */
+/*     */import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.palo.api.Connection;
+import org.palo.api.Consolidation;
+import org.palo.api.Element;
+import org.palo.api.ElementNode;
+import org.palo.api.ElementNodeVisitor;
+import org.palo.api.Hierarchy;
+import org.palo.api.parameters.ParameterProvider;
+import org.palo.api.parameters.ParameterReceiver;
 import org.palo.api.subsets.Subset2;
 
 /*     */

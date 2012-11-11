@@ -1,25 +1,24 @@
 /*     */package org.palo.viewapi.internal.dbmappers;
 
 /*     */
-/*     */import java.sql.Connection; /*     */
-import java.sql.PreparedStatement; /*     */
-import java.sql.ResultSet; /*     */
-import java.sql.SQLException; /*     */
-import java.util.ArrayList; /*     */
-import java.util.List; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.DomainObject; /*     */
-import org.palo.viewapi.Role; /*     */
-import org.palo.viewapi.User; /*     */
-import org.palo.viewapi.internal.AbstractExplorerTreeNode; /*     */
-import org.palo.viewapi.internal.AbstractExplorerTreeNode.Builder; /*     */
-import org.palo.viewapi.internal.DbService; /*     */
-import org.palo.viewapi.internal.ExplorerTreeNode; /*     */
-import org.palo.viewapi.internal.IFolderManagement; /*     */
-import org.palo.viewapi.internal.IFolderRoleManagement; /*     */
-import org.palo.viewapi.internal.IRoleManagement; /*     */
-import org.palo.viewapi.internal.IUserManagement; /*     */
-import org.palo.viewapi.services.FolderService; /*     */
+/*     */import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.DomainObject;
+import org.palo.viewapi.Role;
+import org.palo.viewapi.User;
+import org.palo.viewapi.internal.AbstractExplorerTreeNode;
+import org.palo.viewapi.internal.DbService;
+import org.palo.viewapi.internal.ExplorerTreeNode;
+import org.palo.viewapi.internal.IFolderManagement;
+import org.palo.viewapi.internal.IFolderRoleManagement;
+import org.palo.viewapi.internal.IRoleManagement;
+import org.palo.viewapi.internal.IUserManagement;
 import org.palo.viewapi.services.ServiceProvider;
 
 /*     */

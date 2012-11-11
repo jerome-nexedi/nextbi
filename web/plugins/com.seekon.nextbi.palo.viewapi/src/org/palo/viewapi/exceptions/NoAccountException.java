@@ -1,7 +1,7 @@
 /*    */package org.palo.viewapi.exceptions;
 
 /*    */
-/*    */import org.palo.viewapi.PaloConnection; /*    */
+/*    */import org.palo.viewapi.PaloConnection;
 import org.palo.viewapi.User;
 
 /*    */

@@ -1,19 +1,18 @@
 /*     */package org.palo.viewapi.internal.dbmappers;
 
 /*     */
-/*     */import java.sql.Connection; /*     */
-import java.sql.PreparedStatement; /*     */
-import java.sql.ResultSet; /*     */
-import java.sql.SQLException; /*     */
-import java.util.ArrayList; /*     */
-import java.util.List; /*     */
-import org.palo.viewapi.DomainObject; /*     */
-import org.palo.viewapi.PaloConnection; /*     */
-import org.palo.viewapi.internal.DbService; /*     */
-import org.palo.viewapi.internal.IAccountManagement; /*     */
+/*     */import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.palo.viewapi.DomainObject;
+import org.palo.viewapi.PaloConnection;
+import org.palo.viewapi.internal.DbService;
 import org.palo.viewapi.internal.IConnectionManagement;
 import org.palo.viewapi.internal.PaloConnectionImpl;
-import org.palo.viewapi.internal.PaloConnectionImpl.Builder;
 
 /*     */
 /*     */final class ConnectionMapper extends AbstractMapper

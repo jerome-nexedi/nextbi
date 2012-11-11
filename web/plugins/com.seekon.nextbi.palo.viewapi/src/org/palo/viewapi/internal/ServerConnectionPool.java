@@ -1,13 +1,15 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import com.tensegrity.palojava.ServerInfo; /*     */
-import org.palo.api.Connection; /*     */
-import org.palo.api.ConnectionContext; /*     */
-import org.palo.api.ConnectionListener; /*     */
-import org.palo.api.Database; /*     */
-import org.palo.api.Property2; /*     */
+/*     */import org.palo.api.Connection;
+import org.palo.api.ConnectionContext;
+import org.palo.api.ConnectionListener;
+import org.palo.api.Database;
+import org.palo.api.Property2;
 import org.palo.api.ext.favoriteviews.FavoriteViewTreeNode;
+
+import com.tensegrity.palojava.LicenseInfo;
+import com.tensegrity.palojava.ServerInfo;
 
 /*     */
 /*     */public class ServerConnectionPool
@@ -415,7 +417,14 @@ import org.palo.api.ext.favoriteviews.FavoriteViewTreeNode;
     /*     */{
       /* 391 */return null;
       /*     */}
+
     /*     */
+
+    @Override
+    public LicenseInfo getLicenseInfo() {
+      // TODO Auto-generated method stub
+      return null;
+    }
   }
   /*     */
 }

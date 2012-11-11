@@ -1,6 +1,7 @@
 package org.palo.viewapi;
 
 import java.util.List;
+
 import org.palo.viewapi.services.Service;
 
 public abstract interface AuthUser extends User {

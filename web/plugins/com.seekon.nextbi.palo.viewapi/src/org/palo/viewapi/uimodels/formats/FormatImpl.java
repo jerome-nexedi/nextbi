@@ -1,8 +1,9 @@
 /*     */package org.palo.viewapi.uimodels.formats;
 
 /*     */
-/*     */import java.util.ArrayList; /*     */
-import org.palo.api.ext.ui.ColorDescriptor; /*     */
+/*     */import java.util.ArrayList;
+
+import org.palo.api.ext.ui.ColorDescriptor;
 import org.palo.api.ext.ui.FontDescriptor;
 
 /*     */

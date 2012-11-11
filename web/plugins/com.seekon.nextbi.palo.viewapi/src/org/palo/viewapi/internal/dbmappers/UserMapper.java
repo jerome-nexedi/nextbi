@@ -1,25 +1,25 @@
 /*     */package org.palo.viewapi.internal.dbmappers;
 
 /*     */
-/*     */import java.sql.Connection; /*     */
-import java.sql.PreparedStatement; /*     */
-import java.sql.ResultSet; /*     */
-import java.sql.SQLException; /*     */
-import java.util.ArrayList; /*     */
-import java.util.List; /*     */
-import org.palo.viewapi.Account; /*     */
-import org.palo.viewapi.DomainObject; /*     */
-import org.palo.viewapi.Role; /*     */
-import org.palo.viewapi.User; /*     */
-import org.palo.viewapi.internal.DbService; /*     */
-import org.palo.viewapi.internal.IAccountManagement; /*     */
-import org.palo.viewapi.internal.IGroupManagement; /*     */
-import org.palo.viewapi.internal.IRoleManagement; /*     */
-import org.palo.viewapi.internal.IUserGroupManagement; /*     */
-import org.palo.viewapi.internal.IUserManagement; /*     */
-import org.palo.viewapi.internal.IUserRoleManagement; /*     */
-import org.palo.viewapi.internal.UserImpl; /*     */
-import org.palo.viewapi.internal.UserImpl.Builder;
+/*     */import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.palo.viewapi.Account;
+import org.palo.viewapi.DomainObject;
+import org.palo.viewapi.Role;
+import org.palo.viewapi.User;
+import org.palo.viewapi.internal.DbService;
+import org.palo.viewapi.internal.IAccountManagement;
+import org.palo.viewapi.internal.IGroupManagement;
+import org.palo.viewapi.internal.IRoleManagement;
+import org.palo.viewapi.internal.IUserGroupManagement;
+import org.palo.viewapi.internal.IUserManagement;
+import org.palo.viewapi.internal.IUserRoleManagement;
+import org.palo.viewapi.internal.UserImpl;
 
 /*     */
 /*     */final class UserMapper extends AbstractMapper

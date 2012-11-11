@@ -1,19 +1,18 @@
 /*     */package org.palo.viewapi.internal.dbmappers;
 
 /*     */
-/*     */import java.sql.Connection; /*     */
-import java.sql.PreparedStatement; /*     */
-import java.sql.ResultSet; /*     */
-import java.sql.SQLException; /*     */
-import java.util.ArrayList; /*     */
-import java.util.List; /*     */
-import org.palo.viewapi.Account; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.DomainObject; /*     */
-import org.palo.viewapi.PaloConnection; /*     */
-import org.palo.viewapi.User; /*     */
-import org.palo.viewapi.internal.AccountImpl.Builder;
-import org.palo.viewapi.internal.AccountImpl; /*     */
+/*     */import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.palo.viewapi.Account;
+import org.palo.viewapi.DomainObject;
+import org.palo.viewapi.PaloConnection;
+import org.palo.viewapi.User;
+import org.palo.viewapi.internal.AccountImpl;
 import org.palo.viewapi.internal.DbService;
 import org.palo.viewapi.internal.IAccountManagement;
 

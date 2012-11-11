@@ -1,8 +1,7 @@
 /*     */package org.palo.viewapi;
 
 /*     */
-/*     */import java.util.Collection; /*     */
-import java.util.LinkedHashMap; /*     */
+/*     */import java.util.LinkedHashMap;
 import java.util.Map;
 
 /*     */

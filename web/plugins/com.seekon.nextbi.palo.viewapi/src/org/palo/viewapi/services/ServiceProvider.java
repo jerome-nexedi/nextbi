@@ -1,13 +1,14 @@
 /*     */package org.palo.viewapi.services;
 
 /*     */
-/*     */import java.sql.SQLException; /*     */
-import java.util.List; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.DbConnection; /*     */
-import org.palo.viewapi.Group; /*     */
-import org.palo.viewapi.Right; /*     */
-import org.palo.viewapi.Role; /*     */
+/*     */import java.sql.SQLException;
+import java.util.List;
+
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.DbConnection;
+import org.palo.viewapi.Group;
+import org.palo.viewapi.Right;
+import org.palo.viewapi.Role;
 import org.palo.viewapi.internal.ServiceProviderImpl;
 
 /*     */

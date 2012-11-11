@@ -1,29 +1,30 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import java.sql.SQLException; /*     */
-import java.util.HashSet; /*     */
-import java.util.Iterator; /*     */
-import java.util.LinkedHashSet; /*     */
-import java.util.List; /*     */
-import java.util.Set; /*     */
-import org.palo.api.Hierarchy; /*     */
-import org.palo.api.exceptions.PaloIOException; /*     */
-import org.palo.api.parameters.ParameterReceiver; /*     */
-import org.palo.api.subsets.Subset2; /*     */
-import org.palo.viewapi.Account; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.CubeView; /*     */
-import org.palo.viewapi.Group; /*     */
-import org.palo.viewapi.PaloConnection; /*     */
-import org.palo.viewapi.Right; /*     */
-import org.palo.viewapi.Role; /*     */
-import org.palo.viewapi.User; /*     */
-import org.palo.viewapi.View; /*     */
-import org.palo.viewapi.exceptions.NoAccountException; /*     */
-import org.palo.viewapi.exceptions.OperationFailedException; /*     */
-import org.palo.viewapi.internal.dbmappers.MapperRegistry; /*     */
-import org.palo.viewapi.services.FolderService; /*     */
+/*     */import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.palo.api.Hierarchy;
+import org.palo.api.exceptions.PaloIOException;
+import org.palo.api.parameters.ParameterReceiver;
+import org.palo.api.subsets.Subset2;
+import org.palo.viewapi.Account;
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.CubeView;
+import org.palo.viewapi.Group;
+import org.palo.viewapi.PaloConnection;
+import org.palo.viewapi.Right;
+import org.palo.viewapi.Role;
+import org.palo.viewapi.User;
+import org.palo.viewapi.View;
+import org.palo.viewapi.exceptions.NoAccountException;
+import org.palo.viewapi.exceptions.OperationFailedException;
+import org.palo.viewapi.internal.dbmappers.MapperRegistry;
+import org.palo.viewapi.services.FolderService;
 import org.palo.viewapi.services.ServiceProvider;
 
 /*     */

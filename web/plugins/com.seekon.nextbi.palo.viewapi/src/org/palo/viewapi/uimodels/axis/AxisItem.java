@@ -1,14 +1,14 @@
 /*     */package org.palo.viewapi.uimodels.axis;
 
 /*     */
-/*     */import java.util.ArrayList; /*     */
-import java.util.Collection; /*     */
-import java.util.HashMap; /*     */
-import java.util.LinkedHashSet; /*     */
-import java.util.Set; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.ElementNode; /*     */
-import org.palo.api.Hierarchy; /*     */
+/*     */import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.palo.api.Element;
+import org.palo.api.ElementNode;
+import org.palo.api.Hierarchy;
 import org.palo.viewapi.Property;
 
 /*     */

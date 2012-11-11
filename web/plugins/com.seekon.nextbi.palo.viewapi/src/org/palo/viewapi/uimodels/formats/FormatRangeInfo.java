@@ -1,9 +1,9 @@
 /*     */package org.palo.viewapi.uimodels.formats;
 
 /*     */
-/*     */import java.util.LinkedHashMap; /*     */
-import java.util.Set; /*     */
-import org.palo.api.Dimension; /*     */
+/*     */import java.util.LinkedHashMap;
+
+import org.palo.api.Dimension;
 import org.palo.api.Element;
 
 /*     */

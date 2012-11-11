@@ -1,8 +1,9 @@
 /*     */package org.palo.viewapi.uimodels.axis;
 
 /*     */
-/*     */import java.util.Comparator; /*     */
-import org.palo.api.Dimension; /*     */
+/*     */import java.util.Comparator;
+
+import org.palo.api.Dimension;
 import org.palo.api.utils.ElementPath;
 
 /*     */

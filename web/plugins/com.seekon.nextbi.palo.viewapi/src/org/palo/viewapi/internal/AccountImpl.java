@@ -1,11 +1,12 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import java.sql.SQLException; /*     */
-import org.palo.viewapi.Account; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.PaloConnection; /*     */
-import org.palo.viewapi.User; /*     */
+/*     */import java.sql.SQLException;
+
+import org.palo.viewapi.Account;
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.PaloConnection;
+import org.palo.viewapi.User;
 import org.palo.viewapi.internal.dbmappers.MapperRegistry;
 
 /*     */

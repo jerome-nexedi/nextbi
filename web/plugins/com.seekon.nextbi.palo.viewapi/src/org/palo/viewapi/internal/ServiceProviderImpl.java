@@ -1,17 +1,18 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import java.sql.SQLException; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.DbConnection; /*     */
-import org.palo.viewapi.Right; /*     */
-import org.palo.viewapi.exceptions.NoPermissionException; /*     */
-import org.palo.viewapi.services.AdministrationService; /*     */
-import org.palo.viewapi.services.AuthenticationService; /*     */
-import org.palo.viewapi.services.FolderService; /*     */
-import org.palo.viewapi.services.ReportService; /*     */
-import org.palo.viewapi.services.Service; /*     */
-import org.palo.viewapi.services.ServiceProvider; /*     */
+/*     */import java.sql.SQLException;
+
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.DbConnection;
+import org.palo.viewapi.Right;
+import org.palo.viewapi.exceptions.NoPermissionException;
+import org.palo.viewapi.services.AdministrationService;
+import org.palo.viewapi.services.AuthenticationService;
+import org.palo.viewapi.services.FolderService;
+import org.palo.viewapi.services.ReportService;
+import org.palo.viewapi.services.Service;
+import org.palo.viewapi.services.ServiceProvider;
 import org.palo.viewapi.services.ViewService;
 
 /*     */

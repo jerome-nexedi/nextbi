@@ -1,10 +1,10 @@
 /*    */package org.palo.viewapi.internal.io;
 
 /*    */
-/*    */import org.palo.api.Cube; /*    */
-import org.palo.api.exceptions.PaloIOException; /*    */
-import org.palo.viewapi.AuthUser; /*    */
-import org.palo.viewapi.CubeView; /*    */
+/*    */import org.palo.api.Cube;
+import org.palo.api.exceptions.PaloIOException;
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.CubeView;
 import org.palo.viewapi.View;
 
 /*    */

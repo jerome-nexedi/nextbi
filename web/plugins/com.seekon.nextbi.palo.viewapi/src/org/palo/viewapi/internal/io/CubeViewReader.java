@@ -1,22 +1,24 @@
 /*     */package org.palo.viewapi.internal.io;
 
 /*     */
-/*     */import java.io.IOException; /*     */
-import java.io.InputStream; /*     */
-import javax.xml.transform.stream.StreamSource; /*     */
-import javax.xml.validation.Schema; /*     */
-import javax.xml.validation.SchemaFactory; /*     */
-import javax.xml.validation.Validator; /*     */
-import javax.xml.validation.ValidatorHandler; /*     */
-import org.palo.api.Cube; /*     */
-import org.palo.api.exceptions.PaloIOException; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.CubeView; /*     */
-import org.palo.viewapi.View; /*     */
-import org.palo.viewapi.internal.io.xml.CubeViewXMLHandler; /*     */
-import org.xml.sax.InputSource; /*     */
-import org.xml.sax.SAXException; /*     */
-import org.xml.sax.XMLReader; /*     */
+/*     */import java.io.IOException;
+import java.io.InputStream;
+
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import javax.xml.validation.ValidatorHandler;
+
+import org.palo.api.Cube;
+import org.palo.api.exceptions.PaloIOException;
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.CubeView;
+import org.palo.viewapi.View;
+import org.palo.viewapi.internal.io.xml.CubeViewXMLHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /*     */

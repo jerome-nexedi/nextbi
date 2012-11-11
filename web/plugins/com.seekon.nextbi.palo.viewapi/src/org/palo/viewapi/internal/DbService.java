@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.ResourceBundle;
+
 import org.palo.viewapi.Account;
 import org.palo.viewapi.DbConnection;
 import org.palo.viewapi.Group;

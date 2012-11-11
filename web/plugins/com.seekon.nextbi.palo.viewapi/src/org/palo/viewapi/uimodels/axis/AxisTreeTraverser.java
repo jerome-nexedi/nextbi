@@ -1,11 +1,11 @@
 /*     */package org.palo.viewapi.uimodels.axis;
 
 /*     */
-/*     */import org.palo.api.Element; /*     */
-import org.palo.api.ElementNode; /*     */
-import org.palo.api.Hierarchy; /*     */
-import org.palo.api.subsets.Subset2; /*     */
-import org.palo.viewapi.Axis; /*     */
+/*     */import org.palo.api.Element;
+import org.palo.api.ElementNode;
+import org.palo.api.Hierarchy;
+import org.palo.api.subsets.Subset2;
+import org.palo.viewapi.Axis;
 import org.palo.viewapi.AxisHierarchy;
 
 /*     */

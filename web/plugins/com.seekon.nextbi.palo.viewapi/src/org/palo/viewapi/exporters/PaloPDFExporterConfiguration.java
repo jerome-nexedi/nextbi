@@ -1,7 +1,7 @@
 /*     */package org.palo.viewapi.exporters;
 
 /*     */
-/*     */import com.itextpdf.text.PageSize; /*     */
+/*     */import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Rectangle;
 
 /*     */

@@ -1,15 +1,16 @@
 /*     */package org.palo.viewapi.internal.io.xml;
 
 /*     */
-/*     */import java.lang.reflect.Constructor; /*     */
-import java.util.Enumeration; /*     */
-import java.util.HashMap; /*     */
-import java.util.Stack; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.internal.ExplorerTreeNode; /*     */
-import org.palo.viewapi.internal.StaticFolder; /*     */
-import org.xml.sax.Attributes; /*     */
-import org.xml.sax.SAXException; /*     */
+/*     */import java.lang.reflect.Constructor;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Stack;
+
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.internal.ExplorerTreeNode;
+import org.palo.viewapi.internal.StaticFolder;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /*     */

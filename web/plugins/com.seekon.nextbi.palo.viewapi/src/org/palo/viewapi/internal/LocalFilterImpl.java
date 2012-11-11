@@ -1,11 +1,12 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import java.util.ArrayList; /*     */
-import java.util.Arrays; /*     */
-import java.util.List; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.ElementNode; /*     */
+/*     */import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.palo.api.Element;
+import org.palo.api.ElementNode;
 import org.palo.viewapi.LocalFilter;
 
 /*     */

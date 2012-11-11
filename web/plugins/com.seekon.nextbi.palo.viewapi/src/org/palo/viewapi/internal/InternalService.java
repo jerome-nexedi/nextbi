@@ -1,7 +1,7 @@
 /*    */package org.palo.viewapi.internal;
 
 /*    */
-/*    */import org.palo.viewapi.AuthUser; /*    */
+/*    */import org.palo.viewapi.AuthUser;
 import org.palo.viewapi.internal.dbmappers.MapperRegistry;
 
 /*    */

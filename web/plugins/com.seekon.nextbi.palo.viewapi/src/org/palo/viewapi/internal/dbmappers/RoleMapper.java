@@ -1,23 +1,23 @@
 /*     */package org.palo.viewapi.internal.dbmappers;
 
 /*     */
-/*     */import java.sql.Connection; /*     */
-import java.sql.PreparedStatement; /*     */
-import java.sql.ResultSet; /*     */
-import java.sql.SQLException; /*     */
-import java.util.ArrayList; /*     */
-import java.util.List; /*     */
-import org.palo.viewapi.DomainObject; /*     */
-import org.palo.viewapi.Right; /*     */
-import org.palo.viewapi.Role; /*     */
-import org.palo.viewapi.internal.DbService; /*     */
-import org.palo.viewapi.internal.IGroupRoleManagement; /*     */
-import org.palo.viewapi.internal.IReportRoleManagement; /*     */
-import org.palo.viewapi.internal.IRoleManagement; /*     */
-import org.palo.viewapi.internal.IUserRoleManagement; /*     */
+/*     */import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.palo.viewapi.DomainObject;
+import org.palo.viewapi.Right;
+import org.palo.viewapi.Role;
+import org.palo.viewapi.internal.DbService;
+import org.palo.viewapi.internal.IGroupRoleManagement;
+import org.palo.viewapi.internal.IReportRoleManagement;
+import org.palo.viewapi.internal.IRoleManagement;
+import org.palo.viewapi.internal.IUserRoleManagement;
 import org.palo.viewapi.internal.IViewRoleManagement;
 import org.palo.viewapi.internal.RoleImpl;
-import org.palo.viewapi.internal.RoleImpl.Builder;
 
 /*     */
 /*     */final class RoleMapper extends AbstractMapper

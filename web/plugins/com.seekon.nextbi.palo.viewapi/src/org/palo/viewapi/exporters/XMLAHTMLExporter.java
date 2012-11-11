@@ -1,23 +1,24 @@
 /*     */package org.palo.viewapi.exporters;
 
 /*     */
-/*     */import java.text.DecimalFormat; /*     */
-import java.util.ArrayList; /*     */
-import java.util.HashMap; /*     */
-import org.palo.api.Cube; /*     */
-import org.palo.api.Dimension; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.Hierarchy; /*     */
-import org.palo.api.ext.ui.ColorDescriptor; /*     */
-import org.palo.api.ext.ui.FontDescriptor; /*     */
-import org.palo.viewapi.Axis; /*     */
-import org.palo.viewapi.AxisHierarchy; /*     */
-import org.palo.viewapi.CubeView; /*     */
-import org.palo.viewapi.Property; /*     */
-import org.palo.viewapi.uimodels.axis.AxisFlatModel; /*     */
-import org.palo.viewapi.uimodels.axis.AxisItem; /*     */
-import org.palo.viewapi.uimodels.formats.Format; /*     */
-import org.palo.viewapi.uimodels.formats.FormatRangeInfo; /*     */
+/*     */import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.palo.api.Cube;
+import org.palo.api.Dimension;
+import org.palo.api.Element;
+import org.palo.api.Hierarchy;
+import org.palo.api.ext.ui.ColorDescriptor;
+import org.palo.api.ext.ui.FontDescriptor;
+import org.palo.viewapi.Axis;
+import org.palo.viewapi.AxisHierarchy;
+import org.palo.viewapi.CubeView;
+import org.palo.viewapi.Property;
+import org.palo.viewapi.uimodels.axis.AxisFlatModel;
+import org.palo.viewapi.uimodels.axis.AxisItem;
+import org.palo.viewapi.uimodels.formats.Format;
+import org.palo.viewapi.uimodels.formats.FormatRangeInfo;
 import org.palo.viewapi.uimodels.formats.TrafficLightData;
 
 /*     */

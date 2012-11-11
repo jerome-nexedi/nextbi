@@ -1,16 +1,14 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import java.util.HashMap; /*     */
-import java.util.Set; /*     */
-import org.palo.api.Connection; /*     */
-import org.palo.api.Database; /*     */
-import org.palo.api.Dimension; /*     */
-import org.palo.api.Hierarchy; /*     */
-import org.palo.api.PaloObject; /*     */
-import org.palo.api.parameters.ParameterProvider; /*     */
-import org.palo.api.parameters.ParameterReceiver; /*     */
-import org.palo.api.subsets.Subset2; /*     */
+/*     */import java.util.HashMap;
+
+import org.palo.api.Connection;
+import org.palo.api.Hierarchy;
+import org.palo.api.PaloObject;
+import org.palo.api.parameters.ParameterProvider;
+import org.palo.api.parameters.ParameterReceiver;
+import org.palo.api.subsets.Subset2;
 import org.palo.viewapi.View;
 
 /*     */

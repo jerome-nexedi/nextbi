@@ -1,11 +1,12 @@
 /*     */package org.palo.viewapi.internal.io.xml;
 
 /*     */
-/*     */import java.util.Stack; /*     */
-import org.palo.api.PaloAPIException; /*     */
-import org.palo.viewapi.CubeView; /*     */
-import org.palo.viewapi.Property; /*     */
-import org.palo.viewapi.internal.util.XMLUtil; /*     */
+/*     */import java.util.Stack;
+
+import org.palo.api.PaloAPIException;
+import org.palo.viewapi.CubeView;
+import org.palo.viewapi.Property;
+import org.palo.viewapi.internal.util.XMLUtil;
 import org.xml.sax.Attributes;
 
 /*     */

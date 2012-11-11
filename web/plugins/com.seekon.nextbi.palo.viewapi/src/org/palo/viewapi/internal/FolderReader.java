@@ -1,15 +1,17 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import java.io.IOException; /*     */
-import java.io.InputStream; /*     */
-import javax.xml.transform.stream.StreamSource; /*     */
-import org.palo.api.exceptions.PaloIOException; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.internal.io.xml.FolderXMLHandler; /*     */
-import org.xml.sax.InputSource; /*     */
-import org.xml.sax.SAXException; /*     */
-import org.xml.sax.XMLReader; /*     */
+/*     */import java.io.IOException;
+import java.io.InputStream;
+
+import javax.xml.transform.stream.StreamSource;
+
+import org.palo.api.exceptions.PaloIOException;
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.internal.io.xml.FolderXMLHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /*     */
