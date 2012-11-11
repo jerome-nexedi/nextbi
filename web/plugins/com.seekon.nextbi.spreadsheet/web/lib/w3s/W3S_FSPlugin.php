@@ -49,8 +49,7 @@ class W3S_FSPlugin implements W3S_Plugin {
 	const NODE_FOLDER = 'folder';
 	const NODE_WB = 'workbook';
 	const NODE_STATIC = 'static';
-	const WB_STORAGE = '../../../lib/templates';
-	////const WB_STORAGE = 'c:/wss/lib/templates';
+	const WB_STORAGE = '../../lib/templates';
 	const WB_EXTENSION = '.wss';
 	const BLANK_WB_TPL = 'blank_workbook_template';
 	const ACT_MOVE = 'move';

@@ -196,7 +196,6 @@ class HTML_AJAX_Server
         if (substr($serverUrl,-1) != '?') {
             $serverUrl .= '?';
         }
-        
         $this->ajax->serverUrl =  $serverUrl . $querystring;
         
         $methods = get_class_methods($this);

@@ -48,8 +48,8 @@ class Login
 	{
 		$apol = new AccessPolicy(CFG_PALO_HOST, CFG_PALO_PORT, CFG_PALO_USER, CFG_PALO_PASS, $user, $pass);
 
-		//if (!is_resource($apol->getConn()))
-		//	return array(false, 'ERROR: Username or password invalid!');
+		if (!is_resource($apol->getConn()))
+			return array(false, 'ERROR: Username or password invalid!');
 
 		$groups = $apol->getGroups();
 

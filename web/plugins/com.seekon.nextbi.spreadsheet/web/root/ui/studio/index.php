@@ -149,11 +149,11 @@ foreach (array('reports', 'files', 'palo', 'users', 'etl', 'conns') as $module)
 
 		Jedox.studio.app.params = <?php print json_encode($prefs->dump(0)); ?>;
 
-		//Jedox.studio.access.rules = <?php print json_encode($apol->getRules()); ?>;
-		//Jedox.studio.access.perm_g = <?php print $apol->getRule('database'); ?>;
+		Jedox.studio.access.rules = <?php print json_encode($apol->getRules()); ?>;
+		Jedox.studio.access.perm_g = <?php print $apol->getRule('database'); ?>;
 
-		Jedox.studio.access.rules = {"user":7,"password":7,"group":7,"database":7,"cube":7,"dimension":7,"dimension element":7,"cell data":15,"rights":7,"system operations":7,"event processor":7,"sub-set view":7,"user info":7,"rule":7,"ste_reports":7,"ste_files":7,"ste_palo":7,"ste_users":7,"ste_etl":7,"ste_conns":7};
-		Jedox.studio.access.perm_g = 7; 
+		//Jedox.studio.access.rules = {"user":7,"password":7,"group":7,"database":7,"cube":7,"dimension":7,"dimension element":7,"cell data":15,"rights":7,"system operations":7,"event processor":7,"sub-set view":7,"user info":7,"rule":7,"ste_reports":7,"ste_files":7,"ste_palo":7,"ste_users":7,"ste_etl":7,"ste_conns":7};
+		//Jedox.studio.access.perm_g = 7; 
 		
 		Jedox.studio.app.defaultFiles = <?php print ($studio_def_files = $prefs->search('studio/default/files')) ? json_encode($studio_def_files) : '\'\'' ?>;
 		Jedox.studio.app.defaultReports = <?php print ($studio_def_reports = $prefs->search('studio/default/reports')) ? json_encode($studio_def_reports) : '\'\'' ?>;

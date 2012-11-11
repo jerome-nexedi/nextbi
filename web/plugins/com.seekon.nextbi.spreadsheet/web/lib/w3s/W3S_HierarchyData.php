@@ -120,11 +120,22 @@ class W3S_HierarchyData extends W3S_BaseData {
 	}
 
 	private function importBackend(&$backend) {
+		////require_once('D:/devTools/Jedox/Palo Suite/httpd/app/docroot/FirePHPCore/FirePHP.class.php');
+		//$firephp = FirePHP::getInstance(true);
+		//$firephp->log($backend->attributes, '$backend->attributes');
+		
 		// Process backend.
 		$arr_backend = array();
-		foreach ($backend->attributes as $attr_name => $attr_node)
-			$arr_backend[$attr_name] = $attr_node->value;
-
+		//foreach ($backend->attributes as $attr_name => $attr_node)
+		//	$arr_backend[$attr_name] = $attr_node->value;
+		
+		$length = $backend->attributes->length;
+		for ($i = 0; $i < $length; ++$i) {
+			$attributeItem = $backend->attributes->item($i);
+			$arr_backend[$attributeItem->name] = $attributeItem->value;
+		}
+			
+		//$firephp->log($arr_backend, '$arr_backend');
 		$this->backend = new W3S_Backend($arr_backend);
 	}
 

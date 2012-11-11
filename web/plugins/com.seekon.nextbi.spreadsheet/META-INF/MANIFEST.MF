@@ -5,6 +5,7 @@ Bundle-SymbolicName: com.seekon.nextbi.spreadsheet
 Bundle-Version: 1.0.0
 Bundle-Vendor: SEEKON
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: com.seekon.com.caucho.quercus;bundle-version="4.0.25"
+Require-Bundle: com.seekon.com.caucho.quercus;bundle-version="4.0.25",
+ com.seekon.nextbi.palo.api;bundle-version="1.0.0"
 Context-Path: /spreadsheet
 Web-Folder: /web

@@ -76,7 +76,7 @@ class Prefs
 		$this->prefs = array();
 
 		$xmlData = new XMLData($_SERVER['DOCUMENT_ROOT'] . '/../etc/schema/prefs.rng');
-		
+
 		$loc = &self::$locations[$this->level];
 
 		switch ($this->level)
@@ -289,11 +289,11 @@ class Prefs
 
 		$loc = &self::$locations[$this->level];
 
-		if (!is_int(palo_eindex($conn = $apol->getSuperConn(), $loc['db'], $loc['dim'], self::ATTR_NAME, true)))
-		{
-			palo_eadd($conn, $loc['db'], $loc['dim'], 'S', self::ATTR_NAME, '', 1, false, true);
-			palo_ping($conn);
-		}
+		////if (!is_int(palo_eindex($conn = $apol->getSuperConn(), $loc['db'], $loc['dim'], self::ATTR_NAME, true)))
+		//{
+		//	palo_eadd($conn, $loc['db'], $loc['dim'], 'S', self::ATTR_NAME, '', 1, false, true);
+		//	palo_ping($conn);
+		//}
 
 		return $xmlData->savePalo($apol, $loc['db'], $loc['cube'], array($this->name, self::ATTR_NAME));
 	}

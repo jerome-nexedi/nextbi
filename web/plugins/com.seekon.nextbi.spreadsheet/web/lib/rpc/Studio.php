@@ -454,7 +454,9 @@ class Studio
 	}
 
 	public function getAllPaloConnections($prop, $incCurr){
-
+		////require_once('D:/devTools/Jedox/Palo Suite/httpd/app/docroot/FirePHPCore/FirePHP.class.php');
+		//$firephp = FirePHP::getInstance(true);
+		
 		try {
 		    $connection = $this->_get_connection();
 		    $dbName = 'Config';
@@ -467,7 +469,7 @@ class Studio
 				array_push($properties, $prop[$i]);
 
 			$result = $this->_getElementsList($connection, $dbName, $dimName);
-
+			//$firephp->log($result, 'result0');
 			if ($this->_isError($result))
 				throw new Exception($result[0], $result[1]);
 
@@ -478,17 +480,22 @@ class Studio
 				array_push($coordinates, $connectionNames[$i]['name']);
 
 			$result = $this->_getData($connection, $dbName, $cubeName, $properties, $coordinates);
-
+			//$firephp->log($result, 'result');
 			if ($this->_isError($result))
 				throw new Exception($result[0], $result[1]);
 
 
-			$result = array_slice($result, 2);
+			//$result = array_slice($result, 2);
+			array_splice($result, 0, 2);
 			$connectons = array();
 
 			$rowNmb = count($result)/count($prop);
-
+			//$firephp->log(count($result), 'count($result)');
+			//$firephp->log($result, '$result');
+			//$firephp->log($rowNmb, '$rowNmb');
+			
 			for ($i=0; $i<$rowNmb; $i++){
+				//$firephp->log($result[$rowNmb+$i], 'palo');
 				if ($result[$rowNmb+$i]=='palo')
 				{
 					$tmConn = array();
@@ -498,6 +505,7 @@ class Studio
 					array_push($connectons, $tmConn);
 				}
 			}
+			//$firephp->log($connectons, '$connectons');
 			if ($incCurr){
 				return array('connections' => $connectons, 'currConn' => isset($_SESSION['paloConnData']) ? $_SESSION['paloConnData']['name'] : null);
 			}
@@ -1553,16 +1561,16 @@ class Studio
 	{
 		if (!isset($this->currGroup[$type]))
 			return false;
-
+		
 		$group = new W3S_Group($this->accessPolicy, $uid);
-
+		
 		$this->currGroup[$type] = $group;
-
+		
 		if ($group->getType() == 'file' && $this->plugins['fs'] instanceof W3S_Plugin)
 			$group->registerPlugin($this->plugins['fs'], true);
-
+		
 		$this->currHierarchy[$type] = ($hierarchy = $group->getFirstHierarchy()) instanceof W3S_Hierarchy ? $hierarchy->getUID() : '';
-
+		
 		return true;
 	}
 
@@ -1631,9 +1639,9 @@ class Studio
 
 	public function treeMngGroup ($method)
 	{
-		if (!is_callable($callback = 'W3S_Group::' . $method))
+		if (!is_callable($callback = 'W3S_Group::' . $method, true))
 			return false;
-
+				
 		$args = func_get_args();
 		$args[0] = $this->accessPolicy;
 

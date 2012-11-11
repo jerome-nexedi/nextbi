@@ -89,7 +89,7 @@ $ui_ver = is_readable($ui_ver_file = '../../../version') ? split("\t", trim(file
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>WSS</title>
+	<title>电子报表-WSS</title>
 <?php if ($ui_ver[0] != 'dev') { ?>
  	<link rel="stylesheet" type="text/css" media="screen" href="/spreadsheet/root/ui/ld/index.php?wss/dznr/main,wss/dznr/<?php print $prefs_iface; ?>.<?php print $ui_ver[0]; ?>.css" />
 <?php } else { require('../ld/dev.php'); ld('wss/dznr/main,wss/dznr/' . $prefs_iface . '.css'); } ?>

@@ -65,8 +65,8 @@ class common
 
 		$connData = &$_SESSION['paloConnData'];
 
-		$conn = @palo_init($connData['host'], $connData['port'], $connData['username'], $connData['password']);
-		@palo_use_unicode(true);
+		$conn = palo_init($connData['host'], $connData['port'], $connData['username'], $connData['password']);
+		palo_use_unicode(true);
 
 		return $conn;
 	}
