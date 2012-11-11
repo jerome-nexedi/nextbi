@@ -79,13 +79,13 @@ public class PaloResource {
           result.add(data[j + i]);
         }
       }
-    }else{
+    } else {
       result.addAll(Arrays.asList(data));
     }
 
     result.add(0, fromIndex_1 * toIndex_1);
     result.add(0, fromIndex_0 * toIndex_0);
-    
+
     return result;
   }
 
@@ -151,6 +151,18 @@ public class PaloResource {
       } else {
         result.add(dim.getName());
       }
+    }
+    return result;
+  }
+
+  public List<String> palo_cube_list_dimensions(String databaseName, String cubeName) {
+    Database database = connection.getDatabaseByName(databaseName);
+    Cube cube = database.getCubeByName(cubeName);
+    Dimension[] dimensions = cube.getDimensions();
+    
+    List<String> result = new ArrayList<String>();
+    for(Dimension dimesion: dimensions){
+      result.add(dimesion.getName());
     }
     return result;
   }

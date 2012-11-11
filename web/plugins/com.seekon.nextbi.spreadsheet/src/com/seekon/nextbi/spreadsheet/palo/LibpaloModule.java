@@ -78,8 +78,9 @@ public class LibpaloModule extends AbstractQuercusModule {
     return resource.palo_database_list_dimensions(databaseName, -1);
   }
 
-  public void palo_debug_out(String message) {
-    System.out.println(message);
+  public List<String> palo_cube_list_dimensions(PaloResource resource,
+    String databaseName, String cubeName){
+    return resource.palo_cube_list_dimensions(databaseName, cubeName);
   }
 
   public static void main(String[] args) {

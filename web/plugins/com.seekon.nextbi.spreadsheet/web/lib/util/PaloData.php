@@ -72,7 +72,7 @@ class PaloData
 
 	public function get ($db, $cube, array $order = array(), array $coords = array())
 	{
-		$dims = @palo_cube_list_dimensions($this->conn, $db, $cube);
+		$dims = palo_cube_list_dimensions($this->conn, $db, $cube);
 
 		if (!is_array($dims))
 			return (object) array();
@@ -97,7 +97,7 @@ class PaloData
 			$datav_params[] = array_merge(array($curr_num, $curr_num ? 1 : 0), $coords[$dim]);
 		}
 
-		$datav = @call_user_func_array('palo_datav', $datav_params);
+		$datav = call_user_func_array('palo_datav', $datav_params);
 
 		if (is_array($datav))
 			array_splice($datav, 0, 2);
