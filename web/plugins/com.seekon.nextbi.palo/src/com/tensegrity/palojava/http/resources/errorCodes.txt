@@ -1,5 +1,6 @@
       ERROR_UNKNOWN                    =    1,
       ERROR_INTERNAL                   =    2,
+      ERROR_INVALID_LICENSE            =    3,
       
       // 100-999 is used by libpalo_ng
 

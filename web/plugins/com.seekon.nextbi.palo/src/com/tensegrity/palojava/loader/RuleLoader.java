@@ -1,133 +1,209 @@
-/*     */package com.tensegrity.palojava.loader;
-
-/*     */
-/*     */import com.tensegrity.palojava.CubeInfo; /*     */
-import com.tensegrity.palojava.DbConnection; /*     */
-import com.tensegrity.palojava.ElementInfo; /*     */
-import com.tensegrity.palojava.PaloException; /*     */
-import com.tensegrity.palojava.PaloInfo; /*     */
-import com.tensegrity.palojava.RuleInfo; /*     */
-import com.tensegrity.palojava.ServerInfo; /*     */
-import java.util.Map;
-
-/*     */
-/*     */public abstract class RuleLoader extends PaloInfoLoader
-/*     */{
-  /*     */private static final int MIN_RULES_MAJOR = 1;
-
-  /*     */private static final int MIN_RULES_MINOR = 5;
-
-  /*     */private static final int MIN_RULES_BUILD = 1646;
-
-  /*     */protected final CubeInfo cube;
-
-  /*     */
-  /*     */public RuleLoader(DbConnection paloConnection, CubeInfo cube)
-  /*     */{
-    /* 68 */super(paloConnection);
-    /* 69 */this.cube = cube;
-    /*     */}
-
-  /*     */
-  /*     */public abstract String[] getAllRuleIds();
-
-  /*     */
-  /*     */public final RuleInfo create(String definition)
-  /*     */{
-    /* 84 */return create(definition, null, false, null, true);
-    /*     */}
-
-  /*     */
-  /*     */public final RuleInfo create(String definition, String externalId,
-    boolean useIt, String comment, boolean activate)
-  /*     */{
-    /* 100 */checkRuleSupport();
-    /* 101 */RuleInfo rule = this.paloConnection.createRule(this.cube, definition,
-      externalId,
-      /* 102 */useIt, comment, activate);
-    /* 103 */loaded(rule);
-    /* 104 */return rule;
-    /*     */}
-
-  /*     */
-  /*     */public final boolean delete(RuleInfo rule)
-  /*     */{
-    /* 115 */if (this.paloConnection.delete(rule)) {
-      /* 116 */removed(rule);
-      /* 117 */return true;
-      /*     */}
-    /* 119 */return false;
-    /*     */}
-
-  /*     */
-  /*     */public final boolean delete(String ruleId)
-  /*     */{
-    /* 132 */if (this.paloConnection.delete(ruleId, this.cube))
-    /*     */{
-      /* 134 */this.loadedInfo.remove(ruleId);
-      /* 135 */return true;
-      /*     */}
-    /* 137 */return false;
-    /*     */}
-
-  /*     */
-  /*     */public final RuleInfo load(String id)
-  /*     */{
-    /* 148 */PaloInfo rule = (PaloInfo) this.loadedInfo.get(id);
-    /* 149 */if (rule == null) {
-      /* 150 */rule = this.paloConnection.getRule(this.cube, id);
-      /* 151 */loaded(rule);
-      /*     */}
-    /* 153 */return (RuleInfo) rule;
-    /*     */}
-
-  /*     */
-  /*     */public final RuleInfo load(ElementInfo[] coordinate)
-  /*     */{
-    /* 165 */String id = this.paloConnection.getRule(this.cube, coordinate);
-    /* 166 */if ((id != null) && (id.trim().length() > 0)) {
-      /* 167 */return load(id);
-      /*     */}
-    /*     */
-    /* 171 */return null;
-    /*     */}
-
-  /*     */
-  /*     */public static boolean supportsRules(DbConnection paloConnection)
-  /*     */{
-    /* 181 */ServerInfo server = paloConnection.getServerInfo();
-    /* 182 */if (server.getMajor() < 1)
-      /* 183 */return false;
-    /* 184 */if (server.getMajor() == 1) {
-      /* 185 */if (server.getMinor() < 5)
-        /* 186 */return false;
-      /* 187 */if ((server.getMinor() == 5) &&
-      /* 188 */(server.getBuildNumber() <= 1646)) {
-        /* 189 */return false;
-        /*     */}
-      /*     */}
-    /*     */
-    /* 193 */return true;
-    /*     */}
-
-  /*     */
-  /*     */private final void checkRuleSupport() {
-    /* 197 */if (!supportsRules(this.paloConnection)) {
-      /* 198 */ServerInfo srvInfo = this.paloConnection.getServerInfo();
-      /* 199 */int major = srvInfo.getMajor();
-      /* 200 */int minor = srvInfo.getMinor();
-      /* 201 */int build = srvInfo.getBuildNumber();
-      /* 202 */String srvVersion = major + "." + minor + " (" + build + ")";
-      /* 203 */throw new PaloException("Palo Server " + srvVersion +
-      /* 204 */" does not support rules!");
-      /*     */}
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file RuleLoader.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author ArndHouben
+*
+* @version $Id: RuleLoader.java,v 1.10 2009/04/29 10:35:49 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
- * Qualified Name: com.tensegrity.palojava.loader.RuleLoader JD-Core Version:
- * 0.5.4
+ * (c) Tensegrity Software 2007
+ * All rights reserved
  */
+package com.tensegrity.palojava.loader;
+
+import com.tensegrity.palojava.CubeInfo;
+import com.tensegrity.palojava.DbConnection;
+import com.tensegrity.palojava.ElementInfo;
+import com.tensegrity.palojava.PaloException;
+import com.tensegrity.palojava.PaloInfo;
+import com.tensegrity.palojava.RuleInfo;
+import com.tensegrity.palojava.ServerInfo;
+
+/**
+ * <p><code>RuleLoader</code></p>
+ * This abstract base class manages the loading of {@link RuleInfo} objects.
+ *
+ * @author ArndHouben
+ * @version $Id: RuleLoader.java,v 1.10 2009/04/29 10:35:49 PhilippBouillon Exp $
+ **/
+public abstract class RuleLoader extends PaloInfoLoader {
+
+  // Fix for PR 6732: Jedox Server does not support rules for this version.
+  private final static int MIN_RULES_MAJOR = 1;
+
+  private final static int MIN_RULES_MINOR = 5;
+
+  private final static int MIN_RULES_BUILD = 1646;
+
+  protected final CubeInfo cube;
+
+  /**
+   * Creates a new loader instance.
+   * @param paloConnection
+   * @param cube
+   */
+  public RuleLoader(DbConnection paloConnection, CubeInfo cube) {
+    super(paloConnection);
+    this.cube = cube;
+  }
+
+  /**
+   * Returns the identifiers of all rules currently known to the palo server.
+   * @return ids of all known palo rules
+   */
+  public abstract String[] getAllRuleIds();
+
+  /**
+   * Creates a new {@link RuleInfo} instance for the given rule definition
+   * @param definition a valid rule definition.
+   * @return a new <code>RuleInfo</code> object
+   */
+  public final RuleInfo create(String definition) {
+    return create(definition, null, false, null, true);
+  }
+
+  /**
+   * Creates a new {@link RuleInfo} instance for the given rule definition 
+   * and with the given external id and comment
+   * @param definition a valid rule definition
+   * @param externalId an optional external id
+   * @param useIt set to <code>true</code> if external id should be used, to
+   * <code>false</code> otherwise
+   * @param an optional comment for the rule
+   * @param activate specifies if the rule is active or not 
+   * @return a new <code>RuleInfo</code> object
+   */
+  public final RuleInfo create(String definition, String externalId, boolean useIt,
+    String comment, boolean activate) {
+    checkRuleSupport();
+    RuleInfo rule = paloConnection.createRule(cube, definition, externalId, useIt,
+      comment, activate);
+    loaded(rule);
+    return rule;
+  }
+
+  /**
+   * Deletes the given <code>RuleInfo</code> instance from the palo server as
+   * well as from the internal cache.
+   * @param rule the <code>RuleInfo</code> instance to delete
+   * @return <code>true</code> if deletion was successful, <code>false</code>
+   * otherwise
+   */
+  public final boolean delete(RuleInfo rule) {
+    if (paloConnection.delete(rule)) {
+      removed(rule);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Deletes the <code>RuleInfo</code> which corresponds to the given id. The 
+   * difference to {@link #delete(RuleInfo)} is that this method can delete
+   * rules which could not be loaded and therefore no corresponding 
+   * <code>RuleInfo</code> instance exists.
+   * @param rule the <code>RuleInfo</code> instance to delete
+   * @return <code>true</code> if deletion was successful, <code>false</code>
+   * otherwise
+   */
+  public final boolean delete(String ruleId) {
+    if (paloConnection.delete(ruleId, cube)) {
+      //remove a possible loaded info...
+      loadedInfo.remove(ruleId);
+      return true;
+    }
+    return false;
+
+  }
+
+  /**
+   * Loads the <code>RuleInfo</code> object which corresponds to the given
+   * id
+   * @param id the identifier of the <code>RuleInfo</code> object to load
+   * @return the loaded <code>RuleInfo</code> object
+   */
+  public final RuleInfo load(String id) {
+    PaloInfo rule = loadedInfo.get(id);
+    if (rule == null) {
+      rule = paloConnection.getRule(cube, id);
+      loaded(rule);
+    }
+    return (RuleInfo) rule;
+  }
+
+  /**
+   * Loads the <code>RuleInfo</code> object at the given cell coordinate
+   * @param coordinate a valid cell coordinate
+   * @return the loaded <code>RuleInfo</code> object or <code>null</code> if
+   * corresponding cell has no rule.
+   * @throws PaloException if loading fails   
+   */
+  public final RuleInfo load(ElementInfo[] coordinate) {
+    //		try {
+    String id = paloConnection.getRule(cube, coordinate);
+    if (id != null && id.trim().length() > 0)
+      return load(id);
+    //		} catch (PaloException pex) {
+    //			/* ignore */
+    //		}
+    return null;
+  }
+
+  /**
+   * Checks if the given connection supports rules
+   * @param paloConnection the connection to check rules support for
+   * @return <code>true</code> if rules are supported, <code>false</code>
+   * otherwise
+   */
+  public static boolean supportsRules(DbConnection paloConnection) {
+    ServerInfo server = paloConnection.getServerInfo();
+    if (server.getMajor() < MIN_RULES_MAJOR) {
+      return false;
+    } else if (server.getMajor() == MIN_RULES_MAJOR) {
+      if (server.getMinor() < MIN_RULES_MINOR) {
+        return false;
+      } else if (server.getMinor() == MIN_RULES_MINOR) {
+        if (server.getBuildNumber() <= MIN_RULES_BUILD) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  private final void checkRuleSupport() {
+    if (!supportsRules(paloConnection)) {
+      ServerInfo srvInfo = paloConnection.getServerInfo();
+      int major = srvInfo.getMajor();
+      int minor = srvInfo.getMinor();
+      int build = srvInfo.getBuildNumber();
+      String srvVersion = major + "." + minor + " (" + build + ")";
+      throw new PaloException("Palo Server " + srvVersion
+        + " does not support rules!");
+    }
+  }
+}

@@ -1,92 +1,114 @@
-/*     */package com.tensegrity.palojava.http;
+/*
+*
+* @file BoundedInputStream.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author ArndHouben
+*
+* @version $Id: BoundedInputStream.java,v 1.4 2009/04/29 10:35:49 PhilippBouillon Exp $
+*
+*/
 
-/*     */
-/*     */import java.io.IOException; /*     */
+package com.tensegrity.palojava.http;
+
+import java.io.IOException;
 import java.io.InputStream;
 
-/*     */
-/*     */public class BoundedInputStream extends InputStream
-/*     */{
-  /*     */private final int maxBytes;
-
-  /*     */private int bytesRead;
-
-  /*     */private boolean isClosed;
-
-  /* 49 */private InputStream inStream = null;
-
-  /*     */
-  /*     */public BoundedInputStream(InputStream inStream, int maxBytes) {
-    /* 52 */this.maxBytes = maxBytes;
-    /* 53 */this.inStream = inStream;
-    /*     */}
-
-  /*     */
-  /*     */public final synchronized int read() throws IOException {
-    /* 57 */if (this.isClosed) {
-      /* 58 */throw new IOException("InputStream is closed!");
-      /*     */}
-    /* 60 */if (this.bytesRead >= this.maxBytes) {
-      /* 61 */return -1;
-      /*     */}
-    /* 63 */this.bytesRead += 1;
-    /* 64 */return this.inStream.read();
-    /*     */}
-
-  /*     */
-  /*     */public final synchronized int read(byte[] b, int off, int len)
-    throws IOException {
-    /* 68 */if (this.isClosed) {
-      /* 69 */throw new IOException("InputStream is closed!");
-      /*     */}
-    /* 71 */if (this.bytesRead >= this.maxBytes) {
-      /* 72 */return -1;
-      /*     */}
-    /*     */
-    /* 75 */if (this.bytesRead + len > this.maxBytes) {
-      /* 76 */len = this.maxBytes - this.bytesRead;
-      /*     */}
-    /* 78 */int count = this.inStream.read(b, off, len);
-    /* 79 */this.bytesRead += count;
-    /* 80 */return count;
-    /*     */}
-
-  /*     */
-  /*     */public final int read(byte[] b) throws IOException {
-    /* 84 */return read(b, 0, b.length);
-    /*     */}
-
-  /*     */
-  /*     */public final synchronized void close() throws IOException {
-    /* 88 */if (this.isClosed)
-      /*     */return;
-    /*     */try {
-      /* 91 */byte[] bytes = new byte[1024];
-      /* 92 */while (read(bytes) >= 0)
-        ;
-      /*     */}
-    /*     */finally
-    /*     */{
-      /* 96 */this.isClosed = true;
-      /*     */}
-    /*     */}
-
-  /*     */
-  /*     */public final synchronized long skip(long n) throws IOException
-  /*     */{
-    /* 102 */long length = Math.min(n, this.maxBytes - this.bytesRead);
-    /* 103 */length = this.inStream.skip(length);
-    /* 104 */if (length > 0L) {
-      /* 105 */this.bytesRead = (int) (this.bytesRead + length);
-      /*     */}
-    /* 107 */return length;
-    /*     */}
-  /*     */
-}
-
-/*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
- * Qualified Name: com.tensegrity.palojava.http.BoundedInputStream JD-Core
- * Version: 0.5.4
+/**
+ * This class represents a bounded input stream, i.e. the number of bytes
+ * which are read from the stream are restricted by constant integer value
+ * 
+ * @author ArndHouben
+ * @version $Id: BoundedInputStream.java,v 1.4 2009/04/29 10:35:49 PhilippBouillon Exp $
  */
+public class BoundedInputStream extends InputStream {
+
+  private final int maxBytes; //max number of bytes to read
+
+  private int bytesRead; //bytes already read
+
+  private boolean isClosed;
+
+  private InputStream inStream = null;
+
+  public BoundedInputStream(InputStream inStream, int maxBytes) {
+    this.maxBytes = maxBytes;
+    this.inStream = inStream;
+  }
+
+  public final synchronized int read() throws IOException {
+    if (isClosed)
+      throw new IOException("InputStream is closed!");
+
+    if (bytesRead >= maxBytes)
+      return -1;
+
+    bytesRead++;
+    return this.inStream.read();
+  }
+
+  public final synchronized int read(byte[] b, int off, int len)
+    throws java.io.IOException {
+    if (isClosed)
+      throw new IOException("InputStream is closed!");
+
+    if (bytesRead >= maxBytes)
+      return -1;
+
+    //check length
+    if (bytesRead + len > maxBytes) {
+      len = (int) (maxBytes - bytesRead);
+    }
+    int count = this.inStream.read(b, off, len);
+    bytesRead += count;
+    return count;
+  }
+
+  public final int read(byte[] b) throws IOException {
+    return read(b, 0, b.length);
+  }
+
+  public final synchronized void close() throws IOException {
+    if (!isClosed) {
+      try {
+        //we read until end:
+        byte bytes[] = new byte[1024];
+        while (this.read(bytes) >= 0) {
+          ;
+        }
+      } finally {
+        isClosed = true;
+      }
+    }
+  }
+
+  public final synchronized long skip(long n) throws IOException {
+    long length = Math.min(n, maxBytes - bytesRead);
+    length = this.inStream.skip(length);
+    if (length > 0) {
+      bytesRead += length;
+    }
+    return length;
+  }
+
+}

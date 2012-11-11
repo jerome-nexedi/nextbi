@@ -1,29 +1,61 @@
+/*
+*
+* @file PropertyInfo.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author PhilippBouillon
+*
+* @version $Id: PropertyInfo.java,v 1.4 2009/04/29 10:35:49 PhilippBouillon Exp $
+*
+*/
+
+/**
+ * 
+ */
 package com.tensegrity.palojava;
 
-public abstract interface PropertyInfo extends PaloInfo {
-  public abstract String getValue();
-
-  public abstract void setValue(String paramString);
-
-  public abstract PropertyInfo getParent();
-
-  public abstract int getChildCount();
-
-  public abstract PropertyInfo[] getChildren();
-
-  public abstract void addChild(PropertyInfo paramPropertyInfo);
-
-  public abstract void removeChild(PropertyInfo paramPropertyInfo);
-
-  public abstract void clearChildren();
-
-  public abstract boolean isReadOnly();
-
-  public abstract PropertyInfo getChild(String paramString);
-}
-
-/*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
- * Qualified Name: com.tensegrity.palojava.PropertyInfo JD-Core Version: 0.5.4
+/**
+ * @author PhilippBouillon
+ * 
  */
+public interface PropertyInfo extends PaloInfo {
+  String getValue();
+
+  void setValue(String newValue);
+
+  PropertyInfo getParent();
+
+  int getChildCount();
+
+  PropertyInfo[] getChildren();
+
+  void addChild(PropertyInfo child);
+
+  void removeChild(PropertyInfo child);
+
+  void clearChildren();
+
+  boolean isReadOnly();
+
+  PropertyInfo getChild(String id);
+}

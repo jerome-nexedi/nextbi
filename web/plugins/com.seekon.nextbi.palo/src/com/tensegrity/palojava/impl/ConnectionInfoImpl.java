@@ -1,130 +1,149 @@
-/*     */package com.tensegrity.palojava.impl;
-
-/*     */
-/*     */import com.tensegrity.palojava.ConnectionInfo; /*     */
-import java.util.HashMap;
-
-/*     */
-/*     */public class ConnectionInfoImpl
-/*     */implements ConnectionInfo
-/*     */{
-  /*     */private final String host;
-
-  /*     */private final String port;
-
-  /*     */private String username;
-
-  /*     */private String password;
-
-  /* 56 */private final HashMap<String, Object> dataMap = new HashMap();
-
-  /*     */
-  /*     */public ConnectionInfoImpl(String host, String port) {
-    /* 59 */this(host, port, null, null);
-    /*     */}
-
-  /*     */
-  /*     */public ConnectionInfoImpl(String host, String port, String username,
-    String password)
-  /*     */{
-    /* 64 */this.host = host;
-    /* 65 */this.port = port;
-    /* 66 */this.username = username;
-    /* 67 */this.password = password;
-    /*     */}
-
-  /*     */
-  /*     */public final String getHost() {
-    /* 71 */return this.host;
-    /*     */}
-
-  /*     */
-  /*     */public final synchronized String getPassword() {
-    /* 75 */return this.password;
-    /*     */}
-
-  /*     */
-  /*     */public final String getPort() {
-    /* 79 */return this.port;
-    /*     */}
-
-  /*     */
-  /*     */public final synchronized String getUsername() {
-    /* 83 */return this.username;
-    /*     */}
-
-  /*     */
-  /*     */public final synchronized void setPassword(String password) {
-    /* 87 */this.password = password;
-    /*     */}
-
-  /*     */
-  /*     */public final synchronized void setUser(String username) {
-    /* 91 */this.username = username;
-    /*     */}
-
-  /*     */
-  /*     */public final void setData(String id, Object data) {
-    /* 95 */this.dataMap.put(id, data);
-    /*     */}
-
-  /*     */
-  /*     */public final Object getData(String id) {
-    /* 99 */return this.dataMap.get(id);
-    /*     */}
-
-  /*     */
-  /*     */public final String toString() {
-    /* 103 */StringBuffer str = new StringBuffer();
-    /* 104 */str.append(this.host);
-    /* 105 */str.append(":");
-    /* 106 */str.append(this.port);
-    /* 107 */str.append(" user:");
-    /* 108 */str.append(this.username);
-    /*     */
-    /* 111 */return str.toString();
-    /*     */}
-
-  /*     */
-  /*     */public final boolean equals(Object obj) {
-    /* 115 */if (obj instanceof ConnectionInfo) {
-      /* 116 */ConnectionInfo other = (ConnectionInfo) obj;
-      /* 117 */boolean equals = (this.host.equals(other.getHost())) &&
-      /* 118 */(this.port.equals(other.getPort()));
-      /*     */
-      /* 121 */if (this.username != null)
-        /* 122 */equals = (equals) && (this.username.equals(other.getUsername()));
-      /*     */else {
-        /* 124 */equals = (equals) && (other.getUsername() == null);
-        /*     */}
-      /*     */
-      /* 127 */if (this.password != null)
-        /* 128 */equals = (equals) && (this.password.equals(other.getPassword()));
-      /*     */else {
-        /* 130 */equals = (equals) && (other.getPassword() == null);
-        /*     */}
-      /* 132 */return equals;
-      /*     */}
-    /* 134 */return false;
-    /*     */}
-
-  /*     */
-  /*     */public final int hashCode() {
-    /* 138 */int hc = 23;
-    /* 139 */hc += 37 * this.host.hashCode();
-    /* 140 */hc += 37 * this.port.hashCode();
-    /* 141 */if (this.username != null)
-      /* 142 */hc += 37 * this.username.hashCode();
-    /* 143 */if (this.password != null)
-      /* 144 */hc += 37 * this.password.hashCode();
-    /* 145 */return hc;
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file ConnectionInfoImpl.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author ArndHouben
+*
+* @version $Id: ConnectionInfoImpl.java,v 1.6 2009/04/29 10:35:49 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
- * Qualified Name: com.tensegrity.palojava.impl.ConnectionInfoImpl JD-Core
- * Version: 0.5.4
+ * (c) 2007 Tensegrity Software GmbH
+ * All rights reserved
  */
+package com.tensegrity.palojava.impl;
+
+import java.util.HashMap;
+
+import com.tensegrity.palojava.ConnectionInfo;
+
+/**
+ * <code></code>
+ * TODO DOCUMENT ME
+ * 
+ * @author ArndHouben
+ * @version $Id: ConnectionInfoImpl.java,v 1.6 2009/04/29 10:35:49 PhilippBouillon Exp $
+ */
+public class ConnectionInfoImpl implements ConnectionInfo {
+
+  private final String host;
+
+  private final String port;
+
+  private String username;
+
+  private String password;
+
+  private final HashMap<String, Object> dataMap = new HashMap<String, Object>();
+
+  public ConnectionInfoImpl(String host, String port) {
+    this(host, port, null, null);
+  }
+
+  public ConnectionInfoImpl(String host, String port, String username,
+    String password) {
+    this.host = host;
+    this.port = port;
+    this.username = username;
+    this.password = password;
+  }
+
+  public final String getHost() {
+    return host;
+  }
+
+  public final synchronized String getPassword() {
+    return password;
+  }
+
+  public final String getPort() {
+    return port;
+  }
+
+  public final synchronized String getUsername() {
+    return username;
+  }
+
+  public final synchronized void setPassword(String password) {
+    this.password = password;
+  }
+
+  public final synchronized void setUser(String username) {
+    this.username = username;
+  }
+
+  public final void setData(String id, Object data) {
+    dataMap.put(id, data);
+  }
+
+  public final Object getData(String id) {
+    return dataMap.get(id);
+  }
+
+  public final String toString() {
+    StringBuffer str = new StringBuffer();
+    str.append(host);
+    str.append(":");
+    str.append(port);
+    str.append(" user:");
+    str.append(username);
+    //		str.append(" password:");
+    //		str.append(password);
+    return str.toString();
+  }
+
+  public final boolean equals(Object obj) {
+    if (obj instanceof ConnectionInfo) {
+      ConnectionInfo other = (ConnectionInfo) obj;
+      boolean equals = host.equals(other.getHost()) && port.equals(other.getPort());
+
+      // check user name if any:
+      if (username != null)
+        equals = equals && username.equals(other.getUsername());
+      else
+        equals = equals && (other.getUsername() == null);
+
+      // check password if any:
+      if (password != null)
+        equals = equals && password.equals(other.getPassword());
+      else
+        equals = equals && (other.getPassword() == null);
+
+      return equals;
+    }
+    return false;
+  }
+
+  public final int hashCode() {
+    int hc = 23;
+    hc += 37 * host.hashCode();
+    hc += 37 * port.hashCode();
+    if (username != null)
+      hc += 37 * username.hashCode();
+    if (password != null)
+      hc += 37 * password.hashCode();
+    return hc;
+  }
+}
