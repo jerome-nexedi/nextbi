@@ -1,12 +1,13 @@
 /*    */package org.palo.viewapi.internal.io;
 
 /*    */
-/*    */import java.io.ByteArrayInputStream; /*    */
-import java.io.ByteArrayOutputStream; /*    */
-import org.palo.api.Cube; /*    */
-import org.palo.api.exceptions.PaloIOException; /*    */
-import org.palo.viewapi.AuthUser; /*    */
-import org.palo.viewapi.CubeView; /*    */
+/*    */import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
+import org.palo.api.Cube;
+import org.palo.api.exceptions.PaloIOException;
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.CubeView;
 import org.palo.viewapi.View;
 
 /*    */

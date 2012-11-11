@@ -5,6 +5,33 @@
 
 package org.palo.viewapi.exporters;
 
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.palo.api.Cell;
+import org.palo.api.Cube;
+import org.palo.api.Dimension;
+import org.palo.api.Element;
+import org.palo.api.ext.ui.ColorDescriptor;
+import org.palo.api.ext.ui.FontDescriptor;
+import org.palo.viewapi.Axis;
+import org.palo.viewapi.AxisHierarchy;
+import org.palo.viewapi.CubeView;
+import org.palo.viewapi.uimodels.axis.AxisFlatModel;
+import org.palo.viewapi.uimodels.axis.AxisItem;
+import org.palo.viewapi.uimodels.formats.BorderData;
+import org.palo.viewapi.uimodels.formats.Format;
+import org.palo.viewapi.uimodels.formats.FormatRangeInfo;
+
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -22,34 +49,6 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
-import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-import org.palo.api.Cell;
-import org.palo.api.Cube;
-import org.palo.api.Dimension;
-import org.palo.api.Element;
-import org.palo.api.ElementNode;
-import org.palo.api.Hierarchy;
-import org.palo.api.ext.ui.ColorDescriptor;
-import org.palo.api.ext.ui.FontDescriptor;
-import org.palo.viewapi.Axis;
-import org.palo.viewapi.AxisHierarchy;
-import org.palo.viewapi.CubeView;
-import org.palo.viewapi.uimodels.axis.AxisFlatModel;
-import org.palo.viewapi.uimodels.axis.AxisItem;
-import org.palo.viewapi.uimodels.formats.BorderData;
-import org.palo.viewapi.uimodels.formats.Format;
-import org.palo.viewapi.uimodels.formats.FormatRangeInfo;
 
 // Referenced classes of package org.palo.viewapi.exporters:
 //            CubeViewExporter, PaloPDFExporterConfiguration, PDFUtils

@@ -1,24 +1,22 @@
 /*     */package org.palo.viewapi.internal.io.xml;
 
 /*     */
-/*     */import org.palo.api.Connection; /*     */
-import org.palo.api.Database; /*     */
-import org.palo.api.Dimension; /*     */
-import org.palo.api.Hierarchy; /*     */
-import org.palo.api.PaloAPIException; /*     */
-import org.palo.api.subsets.Subset2; /*     */
-import org.palo.api.subsets.SubsetHandler; /*     */
-import org.palo.viewapi.Account; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.Group; /*     */
-import org.palo.viewapi.PaloAccount; /*     */
-import org.palo.viewapi.PaloConnection; /*     */
-import org.palo.viewapi.Role; /*     */
-import org.palo.viewapi.View; /*     */
-import org.palo.viewapi.internal.FolderElement; /*     */
-import org.palo.viewapi.internal.IRoleManagement; /*     */
-import org.palo.viewapi.internal.dbmappers.MapperRegistry; /*     */
-import org.palo.viewapi.services.ServiceProvider; /*     */
+/*     */import org.palo.api.Connection;
+import org.palo.api.Database;
+import org.palo.api.Dimension;
+import org.palo.api.Hierarchy;
+import org.palo.api.PaloAPIException;
+import org.palo.api.subsets.Subset2;
+import org.palo.viewapi.Account;
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.Group;
+import org.palo.viewapi.PaloAccount;
+import org.palo.viewapi.Role;
+import org.palo.viewapi.View;
+import org.palo.viewapi.internal.FolderElement;
+import org.palo.viewapi.internal.IRoleManagement;
+import org.palo.viewapi.internal.dbmappers.MapperRegistry;
+import org.palo.viewapi.services.ServiceProvider;
 import org.xml.sax.Attributes;
 
 /*     */

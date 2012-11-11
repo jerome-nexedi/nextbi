@@ -1,13 +1,14 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import com.tensegrity.palojava.ElementInfo; /*     */
-import org.palo.api.Attribute; /*     */
-import org.palo.api.Consolidation; /*     */
-import org.palo.api.Dimension; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.Hierarchy; /*     */
+/*     */import org.palo.api.Attribute;
+import org.palo.api.Consolidation;
+import org.palo.api.Dimension;
+import org.palo.api.Element;
+import org.palo.api.Hierarchy;
 import org.palo.viewapi.VirtualElement;
+
+import com.tensegrity.palojava.ElementInfo;
 
 /*     */
 /*     */public class VirtualElementImpl

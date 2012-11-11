@@ -1,27 +1,24 @@
 /*     */package org.palo.viewapi.internal.io.xml;
 
 /*     */
-/*     */import java.io.PrintStream; /*     */
-import org.palo.api.Attribute; /*     */
-import org.palo.api.Cube; /*     */
-import org.palo.api.Dimension; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.ElementNode; /*     */
-import org.palo.api.Hierarchy; /*     */
-import org.palo.api.PaloAPIException; /*     */
-import org.palo.api.PaloObject; /*     */
-import org.palo.api.subsets.Subset2; /*     */
-import org.palo.api.subsets.SubsetHandler; /*     */
-import org.palo.api.utils.ElementPath; /*     */
-import org.palo.viewapi.Axis; /*     */
-import org.palo.viewapi.AxisHierarchy; /*     */
-import org.palo.viewapi.CubeView; /*     */
-import org.palo.viewapi.LocalFilter; /*     */
-import org.palo.viewapi.Property; /*     */
-import org.palo.viewapi.VirtualElement; /*     */
-import org.palo.viewapi.internal.LocalFilterImpl; /*     */
-import org.palo.viewapi.internal.VirtualElementImpl; /*     */
-import org.palo.viewapi.internal.util.XMLUtil; /*     */
+/*     */import org.palo.api.Attribute;
+import org.palo.api.Dimension;
+import org.palo.api.Element;
+import org.palo.api.ElementNode;
+import org.palo.api.Hierarchy;
+import org.palo.api.PaloAPIException;
+import org.palo.api.PaloObject;
+import org.palo.api.subsets.Subset2;
+import org.palo.api.utils.ElementPath;
+import org.palo.viewapi.Axis;
+import org.palo.viewapi.AxisHierarchy;
+import org.palo.viewapi.CubeView;
+import org.palo.viewapi.LocalFilter;
+import org.palo.viewapi.Property;
+import org.palo.viewapi.VirtualElement;
+import org.palo.viewapi.internal.LocalFilterImpl;
+import org.palo.viewapi.internal.VirtualElementImpl;
+import org.palo.viewapi.internal.util.XMLUtil;
 import org.xml.sax.Attributes;
 
 /*     */

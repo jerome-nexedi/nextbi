@@ -1,10 +1,10 @@
 /*     */package org.palo.viewapi.uimodels.axis;
 
 /*     */
-/*     */import java.io.PrintStream; /*     */
-import java.util.ArrayList; /*     */
-import org.palo.api.Hierarchy; /*     */
-import org.palo.viewapi.Axis; /*     */
+/*     */import java.util.ArrayList;
+
+import org.palo.api.Hierarchy;
+import org.palo.viewapi.Axis;
 import org.palo.viewapi.AxisHierarchy;
 
 /*     */

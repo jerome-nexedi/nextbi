@@ -1,18 +1,18 @@
 /*     */package org.palo.viewapi.internal.io;
 
 /*     */
-/*     */import java.io.BufferedWriter; /*     */
-import java.io.OutputStream; /*     */
-import java.io.OutputStreamWriter; /*     */
-import java.io.PrintWriter; /*     */
-import org.palo.api.Cube; /*     */
-import org.palo.api.exceptions.PaloIOException; /*     */
-import org.palo.viewapi.Axis; /*     */
-import org.palo.viewapi.CubeView; /*     */
-import org.palo.viewapi.Property; /*     */
-import org.palo.viewapi.internal.io.xml.AxisHandler; /*     */
-import org.palo.viewapi.internal.io.xml.FormatHandler; /*     */
-import org.palo.viewapi.internal.io.xml.PropertyHandler; /*     */
+/*     */import java.io.BufferedWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+
+import org.palo.api.exceptions.PaloIOException;
+import org.palo.viewapi.Axis;
+import org.palo.viewapi.CubeView;
+import org.palo.viewapi.Property;
+import org.palo.viewapi.internal.io.xml.AxisHandler;
+import org.palo.viewapi.internal.io.xml.FormatHandler;
+import org.palo.viewapi.internal.io.xml.PropertyHandler;
 import org.palo.viewapi.uimodels.formats.Format;
 
 /*     */

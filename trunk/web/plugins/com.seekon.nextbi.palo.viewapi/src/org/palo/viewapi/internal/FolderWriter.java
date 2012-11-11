@@ -1,10 +1,11 @@
 /*    */package org.palo.viewapi.internal;
 
 /*    */
-/*    */import java.io.BufferedWriter; /*    */
-import java.io.OutputStream; /*    */
-import java.io.OutputStreamWriter; /*    */
-import java.io.PrintWriter; /*    */
+/*    */import java.io.BufferedWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+
 import org.palo.api.exceptions.PaloIOException;
 
 /*    */

@@ -1,19 +1,19 @@
 /*     */package org.palo.viewapi.internal.cubeview;
 
 /*     */
-/*     */import java.util.ArrayList; /*     */
-import java.util.Arrays; /*     */
-import java.util.Collection; /*     */
-import java.util.HashMap; /*     */
-import java.util.HashSet; /*     */
-import java.util.LinkedHashMap; /*     */
-import java.util.List; /*     */
-import java.util.Set; /*     */
-import org.palo.api.Hierarchy; /*     */
-import org.palo.api.utils.ElementPath; /*     */
-import org.palo.viewapi.Axis; /*     */
-import org.palo.viewapi.AxisHierarchy; /*     */
-import org.palo.viewapi.Property; /*     */
+/*     */import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Set;
+
+import org.palo.api.Hierarchy;
+import org.palo.api.utils.ElementPath;
+import org.palo.viewapi.Axis;
+import org.palo.viewapi.AxisHierarchy;
+import org.palo.viewapi.Property;
 import org.palo.viewapi.View;
 
 /*     */

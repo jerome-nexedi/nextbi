@@ -1,10 +1,11 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import java.util.ArrayList; /*     */
-import java.util.HashMap; /*     */
-import org.palo.api.parameters.ParameterProvider; /*     */
-import org.palo.api.parameters.ParameterReceiver; /*     */
+/*     */import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.palo.api.parameters.ParameterProvider;
+import org.palo.api.parameters.ParameterReceiver;
 import org.palo.viewapi.View;
 
 /*     */

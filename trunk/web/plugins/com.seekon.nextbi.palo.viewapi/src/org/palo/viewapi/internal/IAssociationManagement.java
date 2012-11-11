@@ -1,6 +1,7 @@
 package org.palo.viewapi.internal;
 
 import java.sql.SQLException;
+
 import org.palo.viewapi.DomainObject;
 
 public abstract interface IAssociationManagement {

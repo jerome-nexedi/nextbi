@@ -1,25 +1,25 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import java.sql.SQLException; /*     */
-import java.util.ArrayList; /*     */
-import java.util.List; /*     */
-import org.palo.api.Connection; /*     */
-import org.palo.api.Cube; /*     */
-import org.palo.api.Database; /*     */
-import org.palo.api.exceptions.PaloIOException; /*     */
-import org.palo.viewapi.Account; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.CubeView; /*     */
-import org.palo.viewapi.PaloConnection; /*     */
-import org.palo.viewapi.Right; /*     */
-import org.palo.viewapi.Role; /*     */
-import org.palo.viewapi.User; /*     */
-import org.palo.viewapi.View; /*     */
-import org.palo.viewapi.exceptions.NoAccountException; /*     */
-import org.palo.viewapi.exceptions.OperationFailedException; /*     */
-import org.palo.viewapi.internal.cubeview.CubeViewFactory; /*     */
-import org.palo.viewapi.internal.io.CubeViewIO; /*     */
+/*     */import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.palo.api.Connection;
+import org.palo.api.Cube;
+import org.palo.api.exceptions.PaloIOException;
+import org.palo.viewapi.Account;
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.CubeView;
+import org.palo.viewapi.PaloConnection;
+import org.palo.viewapi.Right;
+import org.palo.viewapi.Role;
+import org.palo.viewapi.User;
+import org.palo.viewapi.View;
+import org.palo.viewapi.exceptions.NoAccountException;
+import org.palo.viewapi.exceptions.OperationFailedException;
+import org.palo.viewapi.internal.cubeview.CubeViewFactory;
+import org.palo.viewapi.internal.io.CubeViewIO;
 import org.palo.viewapi.services.ViewService;
 
 /*     */

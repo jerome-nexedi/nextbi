@@ -1,17 +1,16 @@
 /*     */package org.palo.viewapi.internal.io.xml;
 
 /*     */
-/*     */import org.palo.api.Cube; /*     */
-import org.palo.api.PaloAPIException; /*     */
-import org.palo.api.ext.ui.ColorDescriptor; /*     */
-import org.palo.api.ext.ui.FontDescriptor; /*     */
-import org.palo.viewapi.CubeView; /*     */
-import org.palo.viewapi.internal.util.XMLUtil; /*     */
-import org.palo.viewapi.uimodels.formats.BorderData; /*     */
-import org.palo.viewapi.uimodels.formats.Format; /*     */
-import org.palo.viewapi.uimodels.formats.FormatImpl; /*     */
-import org.palo.viewapi.uimodels.formats.FormatRangeInfo; /*     */
-import org.palo.viewapi.uimodels.formats.TrafficLightData; /*     */
+/*     */import org.palo.api.PaloAPIException;
+import org.palo.api.ext.ui.ColorDescriptor;
+import org.palo.api.ext.ui.FontDescriptor;
+import org.palo.viewapi.CubeView;
+import org.palo.viewapi.internal.util.XMLUtil;
+import org.palo.viewapi.uimodels.formats.BorderData;
+import org.palo.viewapi.uimodels.formats.Format;
+import org.palo.viewapi.uimodels.formats.FormatImpl;
+import org.palo.viewapi.uimodels.formats.FormatRangeInfo;
+import org.palo.viewapi.uimodels.formats.TrafficLightData;
 import org.xml.sax.Attributes;
 
 /*     */

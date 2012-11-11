@@ -1,33 +1,33 @@
 /*     */package org.palo.viewapi.internal.dbmappers;
 
 /*     */
-/*     */import org.palo.viewapi.Account; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.DomainObject; /*     */
-import org.palo.viewapi.Group; /*     */
-import org.palo.viewapi.PaloConnection; /*     */
-import org.palo.viewapi.Report; /*     */
-import org.palo.viewapi.Role; /*     */
-import org.palo.viewapi.User; /*     */
-import org.palo.viewapi.View; /*     */
-import org.palo.viewapi.internal.AdminServiceImpl; /*     */
-import org.palo.viewapi.internal.DbService; /*     */
-import org.palo.viewapi.internal.ExplorerTreeNode; /*     */
-import org.palo.viewapi.internal.IAccountManagement; /*     */
-import org.palo.viewapi.internal.IConnectionManagement; /*     */
-import org.palo.viewapi.internal.IFolderManagement; /*     */
-import org.palo.viewapi.internal.IFolderRoleManagement; /*     */
-import org.palo.viewapi.internal.IGroupManagement; /*     */
-import org.palo.viewapi.internal.IGroupRoleManagement; /*     */
-import org.palo.viewapi.internal.IReportManagement; /*     */
-import org.palo.viewapi.internal.IReportRoleManagement; /*     */
-import org.palo.viewapi.internal.IReportViewManagement; /*     */
-import org.palo.viewapi.internal.IRoleManagement; /*     */
-import org.palo.viewapi.internal.IUserGroupManagement; /*     */
-import org.palo.viewapi.internal.IUserManagement; /*     */
-import org.palo.viewapi.internal.IUserRoleManagement; /*     */
-import org.palo.viewapi.internal.IViewManagement; /*     */
-import org.palo.viewapi.internal.IViewRoleManagement; /*     */
+/*     */import org.palo.viewapi.Account;
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.DomainObject;
+import org.palo.viewapi.Group;
+import org.palo.viewapi.PaloConnection;
+import org.palo.viewapi.Report;
+import org.palo.viewapi.Role;
+import org.palo.viewapi.User;
+import org.palo.viewapi.View;
+import org.palo.viewapi.internal.AdminServiceImpl;
+import org.palo.viewapi.internal.DbService;
+import org.palo.viewapi.internal.ExplorerTreeNode;
+import org.palo.viewapi.internal.IAccountManagement;
+import org.palo.viewapi.internal.IConnectionManagement;
+import org.palo.viewapi.internal.IFolderManagement;
+import org.palo.viewapi.internal.IFolderRoleManagement;
+import org.palo.viewapi.internal.IGroupManagement;
+import org.palo.viewapi.internal.IGroupRoleManagement;
+import org.palo.viewapi.internal.IReportManagement;
+import org.palo.viewapi.internal.IReportRoleManagement;
+import org.palo.viewapi.internal.IReportViewManagement;
+import org.palo.viewapi.internal.IRoleManagement;
+import org.palo.viewapi.internal.IUserGroupManagement;
+import org.palo.viewapi.internal.IUserManagement;
+import org.palo.viewapi.internal.IUserRoleManagement;
+import org.palo.viewapi.internal.IViewManagement;
+import org.palo.viewapi.internal.IViewRoleManagement;
 import org.palo.viewapi.internal.UserImpl;
 
 /*     */

@@ -1,13 +1,14 @@
 /*     */package org.palo.viewapi.internal.dbmappers;
 
 /*     */
-/*     */import java.sql.Connection; /*     */
-import java.sql.PreparedStatement; /*     */
-import java.sql.ResultSet; /*     */
-import java.sql.SQLException; /*     */
-import org.palo.viewapi.DomainObject; /*     */
-import org.palo.viewapi.internal.DbService; /*     */
-import org.palo.viewapi.internal.DomainObjectImpl; /*     */
+/*     */import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.palo.viewapi.DomainObject;
+import org.palo.viewapi.internal.DbService;
+import org.palo.viewapi.internal.DomainObjectImpl;
 import org.palo.viewapi.internal.IDomainObjectManagement;
 
 /*     */

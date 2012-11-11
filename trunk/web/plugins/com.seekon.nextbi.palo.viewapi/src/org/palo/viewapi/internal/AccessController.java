@@ -1,17 +1,18 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import java.util.Iterator; /*     */
-import java.util.List; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.DomainObject; /*     */
-import org.palo.viewapi.Group; /*     */
-import org.palo.viewapi.GuardedObject; /*     */
-import org.palo.viewapi.Right; /*     */
-import org.palo.viewapi.Role; /*     */
-import org.palo.viewapi.exceptions.NoPermissionException; /*     */
-import org.palo.viewapi.internal.dbmappers.MapperRegistry; /*     */
-import org.palo.viewapi.internal.io.CubeViewReader; /*     */
+/*     */import java.util.Iterator;
+import java.util.List;
+
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.DomainObject;
+import org.palo.viewapi.Group;
+import org.palo.viewapi.GuardedObject;
+import org.palo.viewapi.Right;
+import org.palo.viewapi.Role;
+import org.palo.viewapi.exceptions.NoPermissionException;
+import org.palo.viewapi.internal.dbmappers.MapperRegistry;
+import org.palo.viewapi.internal.io.CubeViewReader;
 import org.palo.viewapi.services.ServiceProvider;
 
 /*     */

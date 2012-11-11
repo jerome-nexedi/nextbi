@@ -1,6 +1,7 @@
 package org.palo.viewapi.services;
 
 import java.util.List;
+
 import org.palo.viewapi.Account;
 import org.palo.viewapi.Group;
 import org.palo.viewapi.PaloConnection;

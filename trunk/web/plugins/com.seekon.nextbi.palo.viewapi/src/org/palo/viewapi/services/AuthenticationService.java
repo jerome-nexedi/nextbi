@@ -1,6 +1,7 @@
 package org.palo.viewapi.services;
 
 import java.sql.SQLException;
+
 import org.palo.viewapi.AuthUser;
 import org.palo.viewapi.exceptions.AuthenticationFailedException;
 

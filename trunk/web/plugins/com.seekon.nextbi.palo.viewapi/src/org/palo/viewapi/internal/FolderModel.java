@@ -1,20 +1,20 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import java.io.ByteArrayInputStream; /*     */
-import java.io.ByteArrayOutputStream; /*     */
-import java.io.IOException; /*     */
-import java.io.PrintStream; /*     */
-import java.sql.Connection; /*     */
-import java.sql.ResultSet; /*     */
-import java.sql.SQLException; /*     */
-import java.sql.Statement; /*     */
-import org.palo.api.PaloAPIException; /*     */
-import org.palo.api.exceptions.PaloIOException; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.Role; /*     */
-import org.palo.viewapi.internal.dbmappers.MapperRegistry; /*     */
-import org.palo.viewapi.services.FolderService; /*     */
+/*     */import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import org.palo.api.PaloAPIException;
+import org.palo.api.exceptions.PaloIOException;
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.Role;
+import org.palo.viewapi.internal.dbmappers.MapperRegistry;
+import org.palo.viewapi.services.FolderService;
 import org.palo.viewapi.services.ServiceProvider;
 
 /*     */

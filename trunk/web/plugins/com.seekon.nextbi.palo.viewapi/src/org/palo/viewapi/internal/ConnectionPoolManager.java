@@ -1,11 +1,11 @@
 /*     */package org.palo.viewapi.internal;
 
 /*     */
-/*     */import java.util.HashMap; /*     */
-import java.util.Map; /*     */
-import org.palo.viewapi.Account; /*     */
-import org.palo.viewapi.PaloAccount; /*     */
-import org.palo.viewapi.PaloConnection;
+/*     */import java.util.HashMap;
+import java.util.Map;
+
+import org.palo.viewapi.Account;
+import org.palo.viewapi.PaloAccount;
 
 /*     */
 /*     */public class ConnectionPoolManager

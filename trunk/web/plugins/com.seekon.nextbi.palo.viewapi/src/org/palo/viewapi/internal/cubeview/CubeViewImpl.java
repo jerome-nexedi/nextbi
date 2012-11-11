@@ -1,33 +1,32 @@
 /*     */package org.palo.viewapi.internal.cubeview;
 
 /*     */
-/*     */import java.util.ArrayList; /*     */
-import java.util.Collection; /*     */
-import java.util.HashMap; /*     */
-import java.util.HashSet; /*     */
-import java.util.Iterator; /*     */
-import java.util.LinkedHashMap; /*     */
-import java.util.List; /*     */
-import java.util.Map; /*     */
-import java.util.Set; /*     */
-import org.palo.api.Cube; /*     */
-import org.palo.api.Database; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.Hierarchy; /*     */
-import org.palo.api.PaloAPIException; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.Axis; /*     */
-import org.palo.viewapi.AxisHierarchy; /*     */
-import org.palo.viewapi.CubeView; /*     */
-import org.palo.viewapi.Property; /*     */
-import org.palo.viewapi.Right; /*     */
-import org.palo.viewapi.View; /*     */
-import org.palo.viewapi.exceptions.NoPermissionException; /*     */
-import org.palo.viewapi.internal.ViewImpl; /*     */
-import org.palo.viewapi.internal.io.CubeViewReader; /*     */
-import org.palo.viewapi.internal.util.CompoundKey; /*     */
-import org.palo.viewapi.uimodels.formats.Format; /*     */
-import org.palo.viewapi.uimodels.formats.FormatImpl; /*     */
+/*     */import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.palo.api.Cube;
+import org.palo.api.Element;
+import org.palo.api.Hierarchy;
+import org.palo.api.PaloAPIException;
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.Axis;
+import org.palo.viewapi.AxisHierarchy;
+import org.palo.viewapi.CubeView;
+import org.palo.viewapi.Property;
+import org.palo.viewapi.Right;
+import org.palo.viewapi.View;
+import org.palo.viewapi.exceptions.NoPermissionException;
+import org.palo.viewapi.internal.ViewImpl;
+import org.palo.viewapi.internal.io.CubeViewReader;
+import org.palo.viewapi.internal.util.CompoundKey;
+import org.palo.viewapi.uimodels.formats.Format;
+import org.palo.viewapi.uimodels.formats.FormatImpl;
 import org.palo.viewapi.uimodels.formats.FormatRangeInfo;
 
 /*     */

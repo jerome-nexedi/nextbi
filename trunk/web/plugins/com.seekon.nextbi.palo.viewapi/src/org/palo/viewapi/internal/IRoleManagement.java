@@ -2,6 +2,7 @@ package org.palo.viewapi.internal;
 
 import java.sql.SQLException;
 import java.util.List;
+
 import org.palo.viewapi.Role;
 
 public abstract interface IRoleManagement extends IDomainObjectManagement {

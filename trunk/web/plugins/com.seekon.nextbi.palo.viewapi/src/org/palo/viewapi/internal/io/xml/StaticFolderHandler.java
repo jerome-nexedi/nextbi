@@ -1,12 +1,11 @@
 /*     */package org.palo.viewapi.internal.io.xml;
 
 /*     */
-/*     */import org.palo.api.PaloAPIException; /*     */
-import org.palo.viewapi.AuthUser; /*     */
-import org.palo.viewapi.View; /*     */
-import org.palo.viewapi.internal.StaticFolder; /*     */
-import org.palo.viewapi.services.ServiceProvider; /*     */
-import org.palo.viewapi.services.ViewService; /*     */
+/*     */import org.palo.api.PaloAPIException;
+import org.palo.viewapi.AuthUser;
+import org.palo.viewapi.View;
+import org.palo.viewapi.internal.StaticFolder;
+import org.palo.viewapi.services.ServiceProvider;
 import org.xml.sax.Attributes;
 
 /*     */

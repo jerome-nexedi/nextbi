@@ -1,11 +1,12 @@
 /*     */package org.palo.viewapi.exporters;
 
 /*     */
-/*     */import com.itextpdf.text.BaseColor; /*     */
-import com.itextpdf.text.pdf.PdfContentByte; /*     */
-import org.palo.api.ext.ui.ColorDescriptor; /*     */
-import org.palo.api.ext.ui.FontDescriptor; /*     */
+/*     */import org.palo.api.ext.ui.ColorDescriptor;
+import org.palo.api.ext.ui.FontDescriptor;
 import org.palo.viewapi.uimodels.formats.BorderData;
+
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.pdf.PdfContentByte;
 
 /*     */
 /*     */class PDFUtils
