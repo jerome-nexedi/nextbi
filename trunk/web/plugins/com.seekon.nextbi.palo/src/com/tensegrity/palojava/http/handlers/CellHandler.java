@@ -1,317 +1,380 @@
-/*     */package com.tensegrity.palojava.http.handlers;
-
-/*     */
-/*     */import com.tensegrity.palojava.CellInfo; /*     */
-import com.tensegrity.palojava.CubeInfo; /*     */
-import com.tensegrity.palojava.DatabaseInfo; /*     */
-import com.tensegrity.palojava.ElementInfo; /*     */
-import com.tensegrity.palojava.ExportContextInfo; /*     */
-import com.tensegrity.palojava.PaloException; /*     */
-import com.tensegrity.palojava.http.HttpConnection; /*     */
-import com.tensegrity.palojava.http.builders.CellInfoBuilder; /*     */
-import com.tensegrity.palojava.http.builders.InfoBuilderRegistry; /*     */
-import java.io.IOException;
-
-/*     */
-/*     */public class CellHandler extends HttpHandler
-/*     */{
-  /*     */private static final String AREA_PREFIX = "/cell/area?database=";
-
-  /*     */private static final String EXPORT_PREFIX = "/cell/export?database=";
-
-  /*     */private static final String REPLACE_PREFIX = "/cell/replace?database=";
-
-  /*     */private static final String REPLACE_BULK_PREFIX = "/cell/replace_bulk?database=";
-
-  /*     */private static final String VALUE_PREFIX = "/cell/value?database=";
-
-  /*     */private static final String VALUES_PREFIX = "/cell/values?database=";
-
-  /*     */private static final String BLOCKSIZE_PREFIX = "&blocksize=";
-
-  /*     */private static final String TYPE_PREFIX = "&type=";
-
-  /*     */private static final String CONDITION_PREFIX = "&condition=";
-
-  /*     */private static final String BASE_ONLY_PREFIX = "&base_only=";
-
-  /*     */private static final String SKIP_EMPTY_PREFIX = "&skip_empty=";
-
-  /*     */private static final String USE_RULES_PREFIX = "&use_rules=";
-
-  /*     */private static final String SHOW_RULE = "&show_rule=1";
-
-  /* 89 */private static final CellHandler instance = new CellHandler();
-
-  /*     */private final InfoBuilderRegistry builderReg;
-
-  /*     */
-  /*     */static final CellHandler getInstance(HttpConnection connection)
-  /*     */{
-    /* 91 */instance.use(connection);
-    /* 92 */return instance;
-    /*     */}
-
-  /*     */
-  /*     */private CellHandler()
-  /*     */{
-    /* 100 */this.builderReg = InfoBuilderRegistry.getInstance();
-    /*     */}
-
-  /*     */
-  /*     */public final CellInfo[] getCellArea(CubeInfo cube,
-    ElementInfo[][] coordinates)
-  /*     */throws IOException
-  /*     */{
-    /* 106 */DatabaseInfo database = cube.getDatabase();
-    /* 107 */StringBuffer query = new StringBuffer();
-    /* 108 */query.append("/cell/area?database=");
-    /* 109 */query.append(database.getId());
-    /* 110 */query.append("&cube=");
-    /* 111 */query.append(cube.getId());
-    /* 112 */query.append("&area=");
-    /* 113 */query.append(getAreaIds(coordinates));
-    /* 114 */query.append("&show_rule=1");
-    /* 115 */String[][] response = request(query.toString());
-    /* 116 */CellInfo[] cells = new CellInfo[response.length];
-    /* 117 */CellInfoBuilder cellBuilder = this.builderReg.getCellBuilder();
-    /* 118 */for (int i = 0; i < response.length; ++i) {
-      /* 119 */cells[i] = cellBuilder.create(null, response[i]);
-      /*     */}
-    /*     */
-    /* 122 */return cells;
-    /*     */}
-
-  /*     */
-  /*     */public final boolean copyCell(CubeInfo cube,
-    ElementInfo[] fromCoordinate, ElementInfo[] toCoordinate)
-  /*     */{
-    /* 128 */throw new PaloException("Currently not supported!!");
-    /*     */}
-
-  /*     */
-  /*     */public final boolean copyCell(CubeInfo cube,
-    ElementInfo[] fromCoordinate, ElementInfo[] targetCoordinate, Object targetValue)
-  /*     */{
-    /* 133 */throw new PaloException("Currently not supported!!");
-    /*     */}
-
-  /*     */
-  /*     */public final boolean replaceValue(CubeInfo cube,
-    ElementInfo[] coordinate, Object newValue, int splashMode)
-  /*     */throws IOException
-  /*     */{
-    /* 139 */DatabaseInfo database = cube.getDatabase();
-    /* 140 */String path = getIdString(coordinate);
-    /* 141 */if (splashMode == -1)
-      /* 142 */splashMode = 0;
-    /* 143 */StringBuffer query = new StringBuffer();
-    /* 144 */query.append("/cell/replace?database=");
-    /* 145 */query.append(database.getId());
-    /* 146 */query.append("&cube=");
-    /* 147 */query.append(cube.getId());
-    /* 148 */query.append("&path=");
-    /* 149 */query.append(path);
-    /* 150 */query.append("&value=");
-    /* 151 */query.append(encode(newValue.toString()));
-    /* 152 */query.append("&splash=");
-    /* 153 */query.append(splashMode);
-    /* 154 */String[][] response = request(query.toString());
-    /* 155 */return response[0][0].equals("1");
-    /*     */}
-
-  /*     */
-  /*     */public final boolean replaceValues(CubeInfo cube,
-    ElementInfo[][] coordinates, Object[] newValues, boolean add, int splashMode,
-    boolean notifyProcessors)
-  /*     */throws IOException
-  /*     */{
-    /* 162 */DatabaseInfo database = cube.getDatabase();
-    /* 163 */String paths = getPaths(coordinates);
-    /* 164 */if (splashMode == -1)
-      /* 165 */splashMode = 0;
-    /* 166 */StringBuffer query = new StringBuffer();
-    /* 167 */query.append("/cell/replace_bulk?database=");
-    /* 168 */query.append(database.getId());
-    /* 169 */query.append("&cube=");
-    /* 170 */query.append(cube.getId());
-    /* 171 */query.append("&paths=");
-    /* 172 */query.append(paths);
-    /* 173 */query.append("&values=");
-    /* 174 */query.append(encode(newValues));
-    /* 175 */if (add)
-      /* 176 */query.append("&add=1");
-    /*     */else
-      /* 178 */query.append("&add=0");
-    /* 179 */query.append("&splash=");
-    /* 180 */query.append(splashMode);
-    /* 181 */if (notifyProcessors)
-      /* 182 */query.append("&event_processor=1");
-    /*     */else
-      /* 184 */query.append("&event_processor=0");
-    /* 185 */String[][] response = request(query.toString());
-    /* 186 */return response[0][0].equals("1");
-    /*     */}
-
-  /*     */
-  /*     */public final String getRule(CubeInfo cube, ElementInfo[] coordinate)
-    throws IOException
-  /*     */{
-    /* 191 */StringBuffer path = new StringBuffer();
-    /* 192 */int lastId = coordinate.length - 1;
-    /* 193 */for (int i = 0; i < coordinate.length; ++i) {
-      /* 194 */path.append(coordinate[i].getId());
-      /* 195 */if (i < lastId)
-        /* 196 */path.append(",");
-      /*     */}
-    /* 198 */StringBuffer query = new StringBuffer();
-    /* 199 */query.append("/cell/value?database=");
-    /* 200 */query.append(cube.getDatabase().getId());
-    /* 201 */query.append("&cube=");
-    /* 202 */query.append(cube.getId());
-    /* 203 */query.append("&path=");
-    /* 204 */query.append(path);
-    /* 205 */query.append("&show_rule=1");
-    /* 206 */String[][] response = request(query.toString());
-    /* 207 */if (response[0].length > 3)
-      /* 208 */return response[0][3];
-    /* 209 */return null;
-    /*     */}
-
-  /*     */
-  /*     */public final CellInfo getValue(CubeInfo cube, ElementInfo[] coordinate)
-  /*     */throws IOException
-  /*     */{
-    /* 221 */StringBuffer path = new StringBuffer();
-    /* 222 */int lastId = coordinate.length - 1;
-    /* 223 */for (int i = 0; i < coordinate.length; ++i) {
-      /* 224 */path.append(coordinate[i].getId());
-      /* 225 */if (i < lastId)
-        /* 226 */path.append(",");
-      /*     */}
-    /* 228 */StringBuffer query = new StringBuffer();
-    /* 229 */query.append("/cell/value?database=");
-    query.append(cube.getDatabase().getId());
-    /* 230 */query.append("&cube=");
-    query.append(cube.getId());
-    /* 231 */query.append("&path=");
-    query.append(path);
-    /* 232 */query.append("&show_rule=1");
-    /* 233 */String[][] response = request(query.toString());
-    /* 234 */CellInfoBuilder cellBuilder = this.builderReg.getCellBuilder();
-    /* 235 */CellInfo cell = cellBuilder.create(null, response[0]);
-    /* 236 */return cell;
-    /*     */}
-
-  /*     */
-  /*     */public final CellInfo[] getValues(CubeInfo cube, ElementInfo[][] area)
-  /*     */throws IOException
-  /*     */{
-    /* 243 */DatabaseInfo database = cube.getDatabase();
-    /* 244 */String paths = getPaths(area);
-    /* 245 */StringBuffer query = new StringBuffer();
-    /* 246 */query.append("/cell/values?database=");
-    /* 247 */query.append(database.getId());
-    /* 248 */query.append("&cube=");
-    /* 249 */query.append(cube.getId());
-    /* 250 */query.append("&paths=");
-    /* 251 */query.append(paths);
-    /* 252 */query.append("&show_rule=1");
-    /* 253 */String[][] response = request(query.toString());
-    /* 254 */CellInfo[] cells = new CellInfo[response.length];
-    /* 255 */CellInfoBuilder cellBuilder = this.builderReg.getCellBuilder();
-    /* 256 */for (int i = 0; i < response.length; ++i) {
-      /* 257 */cells[i] = cellBuilder.create(null, response[i]);
-      /*     */}
-    /* 259 */return cells;
-    /*     */}
-
-  /*     */
-  /*     */public final CellInfo[] export(CubeInfo cube, ExportContextInfo context)
-  /*     */throws IOException
-  /*     */{
-    /* 265 */DatabaseInfo database = cube.getDatabase();
-    /* 266 */String[] dimIds = cube.getDimensions();
-    /* 267 */StringBuffer query = new StringBuffer();
-    /* 268 */query.append("/cell/export?database=");
-    /* 269 */query.append(database.getId());
-    /* 270 */query.append("&cube=");
-    /* 271 */query.append(cube.getId());
-    /* 272 */query.append("&blocksize=");
-    /* 273 */query.append(context.getBlocksize());
-    /* 274 */query.append("&type=");
-    /* 275 */query.append(context.getType());
-    /*     */
-    /* 277 */String condition = context.getConditionRepresentation();
-    /* 278 */if ((condition != null) && (condition.length() > 0)) {
-      /* 279 */query.append("&condition=");
-      /* 280 */query.append(encode(condition));
-      /*     */}
-    /* 282 */query.append("&use_rules=").append((context.useRules()) ? "1" : "0");
-    /* 283 */query.append("&base_only=").append(
-    /* 284 */(context.isBaseCellsOnly()) ? "1" : "0");
-    /* 285 */query.append("&skip_empty=").append(
-    /* 286 */(context.ignoreEmptyCells()) ? "1" : "0");
-    /* 287 */String[] startAfterPath = context.getExportAfter();
-    /* 288 */if ((startAfterPath != null) && (startAfterPath.length > 0)) {
-      /* 289 */query.append("&path=");
-      /* 290 */int lastElement = dimIds.length - 1;
-      /* 291 */for (int i = 0; i < dimIds.length; ++i) {
-        /* 292 */query.append(startAfterPath[i]);
-        /* 293 */if (i < lastElement)
-          /* 294 */query.append(",");
-        /*     */}
-      /*     */}
-    /* 297 */query.append("&area=");
-    /* 298 */StringBuffer elIDPaths = new StringBuffer(1000);
-    /* 299 */String[][] area = context.getCellsArea();
-    /* 300 */int lastPath = area.length - 1;
-    /* 301 */for (int i = 0; i < area.length; ++i) {
-      /* 302 */int lastID = area[i].length - 1;
-      /* 303 */for (int j = 0; j < area[i].length; ++j) {
-        /* 304 */elIDPaths.append(area[i][j]);
-        /* 305 */if (j < lastID)
-          /* 306 */elIDPaths.append(":");
-        /*     */}
-      /* 308 */if (i < lastPath)
-        /* 309 */elIDPaths.append(",");
-      /*     */}
-    /* 311 */query.append(elIDPaths);
-    /* 312 */String[][] response = request(query.toString());
-    /* 313 */if ((response.length == 1) && (response[0].length == 3))
-      /* 314 */throw new PaloException("getDataExport failed: " + response[0][0] +
-      /* 315 */", " + response[0][1] + ", " + response[0][2]);
-    /* 316 */int lastCell = response.length - 1;
-    /* 317 */CellInfo[] cells = new CellInfo[response.length - 1];
-    /* 318 */CellInfoBuilder cellBuilder = this.builderReg.getCellBuilder();
-    /* 319 */for (int i = 0; i < lastCell; ++i) {
-      /* 320 */cells[i] = cellBuilder.create(null, response[i]);
-      /*     */}
-    /*     */
-    /* 323 */context.setProgress(
-    /* 324 */Double.parseDouble(response[lastCell][0]) /
-    /* 325 */Double.parseDouble(response[lastCell][1]));
-    /* 326 */return cells;
-    /*     */}
-
-  /*     */
-  /*     */private final String getAreaIds(ElementInfo[][] coordinates)
-  /*     */{
-    /* 334 */StringBuffer ids = new StringBuffer();
-    /* 335 */int lastCoordinate = coordinates.length - 1;
-    /* 336 */for (int i = 0; i < coordinates.length; ++i) {
-      /* 337 */ids.append(getIdString(coordinates[i], ":"));
-      /* 338 */if (i < lastCoordinate)
-        /* 339 */ids.append(",");
-      /*     */}
-    /* 341 */return ids.toString();
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file CellHandler.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author ArndHouben
+*
+* @version $Id: CellHandler.java,v 1.16 2010/05/12 08:16:25 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
- * Qualified Name: com.tensegrity.palojava.http.handlers.CellHandler JD-Core
- * Version: 0.5.4
+ * (c) 2007 Tensegrity Software GmbH
  */
+package com.tensegrity.palojava.http.handlers;
+
+import java.io.IOException;
+
+import com.tensegrity.palojava.CellInfo;
+import com.tensegrity.palojava.CubeInfo;
+import com.tensegrity.palojava.DatabaseInfo;
+import com.tensegrity.palojava.ElementInfo;
+import com.tensegrity.palojava.ExportContextInfo;
+import com.tensegrity.palojava.PaloException;
+import com.tensegrity.palojava.http.HttpConnection;
+import com.tensegrity.palojava.http.builders.CellInfoBuilder;
+import com.tensegrity.palojava.http.builders.InfoBuilderRegistry;
+
+/**
+ * <code></code>
+ * TODO DOCUMENT ME
+ * 
+ * @author ArndHouben
+ * @version $Id: CellHandler.java,v 1.16 2010/05/12 08:16:25 PhilippBouillon Exp $
+ */
+public class CellHandler extends HttpHandler {
+
+  //have to add database and cube ids and define the area, e.g.:
+  // /cell/area?idatabase=0&icube=0&area=0:1,1:2,2:3,3:4,0,0
+  private static final String AREA_PREFIX = "/cell/area?database=";
+
+  //have to add database and cube ids, e.g.:	/cell/export?idatabase=0&icube=0
+  private static final String EXPORT_PREFIX = "/cell/export?database=";
+
+  //have to add database and cube ids and define the path, i.e. the element
+  //ids and the new value and the splash mode, e.g.:	
+  // /cell/replace?idatabase=0&icube=0&path=1,1,1,1,1,1&value=123.00&splash=1
+  private static final String REPLACE_PREFIX = "/cell/replace?database=";
+
+  //have to add database and cube ids and define the path, i.e. the element
+  //ids and their new values and the splash mode, e.g.:
+  // /cell/replace_bulk?idatabase=0&icube=0&paths=1,1,1,1,1,1:2,2,2,2,2,2&values=123.00:-1&splash=1
+  private static final String REPLACE_BULK_PREFIX = "/cell/replace_bulk?database=";
+
+  //have to add database and cube ids and define the path, i.e. the element
+  //ids, e.g.: /cell/value?idatabase=0&icube=0&path=0,0,2,3,0,0
+  private static final String VALUE_PREFIX = "/cell/value?database=";
+
+  //have to add database and cube ids and define the paths, i.e. the elements
+  //ids, e.g.: /cell/values?idatabase=0&icube=0&paths=0,0,0,0,0,0:1,0,0,0,0,0
+  private static final String VALUES_PREFIX = "/cell/values?database=";
+
+  private static final String COPY_PREFIX = "/cell/copy?database=";
+
+  private static final String BLOCKSIZE_PREFIX = "&blocksize=";
+
+  private static final String TYPE_PREFIX = "&type=";
+
+  private static final String CONDITION_PREFIX = "&condition=";
+
+  private static final String BASE_ONLY_PREFIX = "&base_only=";
+
+  private static final String SKIP_EMPTY_PREFIX = "&skip_empty=";
+
+  private static final String USE_RULES_PREFIX = "&use_rules=";
+
+  private static final String SHOW_RULE = "&show_rule=1";
+
+  //--------------------------------------------------------------------------
+  // FACTORY
+  //
+  private static final CellHandler instance = new CellHandler();
+
+  static final CellHandler getInstance(HttpConnection connection) {
+    instance.use(connection);
+    return instance;
+  }
+
+  //--------------------------------------------------------------------------
+  // INSTANCE
+  //
+  private final InfoBuilderRegistry builderReg;
+
+  private CellHandler() {
+    builderReg = InfoBuilderRegistry.getInstance();
+  }
+
+  //	/cell/area  	Shows datatype and value of an area of cube cells.  	cube
+  public final CellInfo[] getCellArea(CubeInfo cube, ElementInfo[][] coordinates)
+    throws IOException {
+    DatabaseInfo database = cube.getDatabase();
+    StringBuffer query = new StringBuffer();
+    query.append(AREA_PREFIX);
+    query.append(database.getId());
+    query.append(CUBE_PREFIX);
+    query.append(cube.getId());
+    query.append("&area=");
+    query.append(getAreaIds(coordinates));
+    query.append(SHOW_RULE);
+    String[][] response = request(query.toString());
+    CellInfo[] cells = new CellInfo[response.length];
+    CellInfoBuilder cellBuilder = builderReg.getCellBuilder();
+    for (int i = 0; i < response.length; ++i) {
+      cells[i] = cellBuilder.create(null, response[i]);
+    }
+
+    return cells;
+  }
+
+  // /cell/copy Copies cells. cube
+  public final boolean copyCell(CubeInfo cube, ElementInfo[] fromCoordinate,
+    ElementInfo[] toCoordinate) throws IOException {
+    DatabaseInfo database = cube.getDatabase();
+    StringBuffer query = new StringBuffer();
+    query.append(COPY_PREFIX);
+    query.append(database.getId());
+    query.append(CUBE_PREFIX);
+    query.append(cube.getId());
+    query.append("&path=");
+    query.append(getIdString(fromCoordinate));
+    query.append("&path_to=");
+    query.append(getIdString(toCoordinate));
+    String[][] response = request(query.toString());
+    return response[0][0].equals(OK);
+  }
+
+  public final boolean copyCell(CubeInfo cube, ElementInfo[] fromCoordinate,
+    ElementInfo[] targetCoordinate, Object targetValue) throws IOException {
+    DatabaseInfo database = cube.getDatabase();
+    StringBuffer query = new StringBuffer();
+    query.append(COPY_PREFIX);
+    query.append(database.getId());
+    query.append(CUBE_PREFIX);
+    query.append(cube.getId());
+    query.append("&path=");
+    query.append(getIdString(fromCoordinate));
+    query.append("&path_to=");
+    query.append(getIdString(targetCoordinate));
+    query.append("&value=");
+    query.append(encode(targetValue.toString()));
+    String[][] response = request(query.toString());
+    return response[0][0].equals(OK);
+  }
+
+  //	/cell/replace 	Sets value of a cube cell. 	cube
+  public final boolean replaceValue(CubeInfo cube, ElementInfo[] coordinate,
+    Object newValue, int splashMode) throws IOException {
+    DatabaseInfo database = cube.getDatabase();
+    String path = getIdString(coordinate);
+    if (splashMode == -1)
+      splashMode = CellInfo.SPLASH_MODE_DISABLED;
+    StringBuffer query = new StringBuffer();
+    query.append(REPLACE_PREFIX);
+    query.append(database.getId());
+    query.append(CUBE_PREFIX);
+    query.append(cube.getId());
+    query.append("&path=");
+    query.append(path);
+    query.append("&value=");
+    query.append(encode(newValue.toString())); // ,true));
+    query.append("&splash=");
+    query.append(splashMode);
+    String[][] response = request(query.toString());
+    return response[0][0].equals(OK);
+  }
+
+  //	/cell/replace_bulk 	Sets values of cube cells. 	cube
+  public final boolean replaceValues(CubeInfo cube, ElementInfo[][] coordinates,
+    Object[] newValues, boolean add, int splashMode, boolean notifyProcessors)
+    throws IOException {
+    DatabaseInfo database = cube.getDatabase();
+    String paths = getPaths(coordinates);
+    if (splashMode == -1)
+      splashMode = CellInfo.SPLASH_MODE_DISABLED; // default
+    StringBuffer query = new StringBuffer();
+    query.append(REPLACE_BULK_PREFIX);
+    query.append(database.getId());
+    query.append(CUBE_PREFIX);
+    query.append(cube.getId());
+    query.append("&paths=");
+    query.append(paths);
+    query.append("&values=");
+    query.append(encode(newValues));
+    if (add)
+      query.append("&add=1");
+    else
+      query.append("&add=0");
+    query.append("&splash=");
+    query.append(splashMode);
+    if (notifyProcessors)
+      query.append("&event_processor=1");
+    else
+      query.append("&event_processor=0");
+    String[][] response = request(query.toString());
+    return response[0][0].equals(OK);
+  }
+
+  public final String getRule(CubeInfo cube, ElementInfo[] coordinate)
+    throws IOException {
+    StringBuffer path = new StringBuffer();
+    int lastId = coordinate.length - 1;
+    for (int i = 0; i < coordinate.length; ++i) {
+      path.append(coordinate[i].getId());
+      if (i < lastId)
+        path.append(",");
+    }
+    StringBuffer query = new StringBuffer();
+    query.append(VALUE_PREFIX);
+    query.append(cube.getDatabase().getId());
+    query.append(CUBE_PREFIX);
+    query.append(cube.getId());
+    query.append("&path=");
+    query.append(path);
+    query.append(SHOW_RULE);
+    String[][] response = request(query.toString());
+    if (response[0].length > 3)
+      return response[0][3];
+    return null;
+  }
+
+  /**
+   * Receives the cell value at the given coordinate. 
+   * @param cube the cube which contains the cell
+   * @param coordinate cell coordinate within the cube 
+   * @return the value of the cube cell
+   * @throws IOException if an I/O exception occurs
+   */
+  public final CellInfo getValue(CubeInfo cube, ElementInfo[] coordinate)
+    throws IOException {
+    //the path or coordinate consist of element ids
+    StringBuffer path = new StringBuffer();
+    int lastId = coordinate.length - 1;
+    for (int i = 0; i < coordinate.length; ++i) {
+      path.append(coordinate[i].getId());
+      if (i < lastId)
+        path.append(",");
+    }
+    StringBuffer query = new StringBuffer();
+    query.append(VALUE_PREFIX);
+    query.append(cube.getDatabase().getId());
+    query.append(CUBE_PREFIX);
+    query.append(cube.getId());
+    query.append("&path=");
+    query.append(path);
+    query.append(SHOW_RULE);
+    String[][] response = request(query.toString());
+    CellInfoBuilder cellBuilder = builderReg.getCellBuilder();
+    CellInfo cell = cellBuilder.create(null, response[0]);
+    return cell;
+  }
+
+  //	/cell/values 	Shows datatype and value of a list of cube cells. 	cube
+  public final CellInfo[] getValues(CubeInfo cube, ElementInfo[][] area)
+    throws IOException {
+    DatabaseInfo database = cube.getDatabase();
+    String paths = getPaths(area);
+    StringBuffer query = new StringBuffer();
+    query.append(VALUES_PREFIX);
+    query.append(database.getId());
+    query.append(CUBE_PREFIX);
+    query.append(cube.getId());
+    query.append("&paths=");
+    query.append(paths);
+    query.append(SHOW_RULE);
+    String[][] response = request(query.toString());
+    CellInfo[] cells = new CellInfo[response.length];
+    CellInfoBuilder cellBuilder = builderReg.getCellBuilder();
+    for (int i = 0; i < response.length; ++i) {
+      cells[i] = cellBuilder.create(null, response[i]);
+    }
+    return cells;
+  }
+
+  public final CellInfo[] export(CubeInfo cube, ExportContextInfo context)
+    throws IOException {
+    DatabaseInfo database = cube.getDatabase();
+    String[] dimIds = cube.getDimensions();
+    StringBuffer query = new StringBuffer();
+    query.append(EXPORT_PREFIX);
+    query.append(database.getId());
+    query.append(CUBE_PREFIX);
+    query.append(cube.getId());
+    query.append(BLOCKSIZE_PREFIX);
+    query.append(context.getBlocksize());
+    query.append(TYPE_PREFIX);
+    query.append(context.getType());
+    // export condition:
+    String condition = context.getConditionRepresentation();
+    if (condition != null && condition.length() > 0) {
+      query.append(CONDITION_PREFIX);
+      query.append(encode(condition));
+    }
+    query.append(USE_RULES_PREFIX).append(context.useRules() ? "1" : "0");
+    query.append(BASE_ONLY_PREFIX).append(context.isBaseCellsOnly() ? "1" : "0");
+    query.append(SKIP_EMPTY_PREFIX).append(context.ignoreEmptyCells() ? "1" : "0");
+    String[] startAfterPath = context.getExportAfter();
+    if (startAfterPath != null && startAfterPath.length > 0) {
+      query.append("&path=");
+      int lastElement = dimIds.length - 1;
+      for (int i = 0; i < dimIds.length; i++) {
+        query.append(startAfterPath[i]);
+        if (i < lastElement)
+          query.append(",");
+      }
+    }
+    query.append("&area=");
+    StringBuffer elIDPaths = new StringBuffer(1000);
+    String[][] area = context.getCellsArea();
+    int lastPath = area.length - 1;
+    for (int i = 0; i < area.length; i++) {
+      int lastID = area[i].length - 1;
+      for (int j = 0; j < area[i].length; j++) {
+        elIDPaths.append(area[i][j]);
+        if (j < lastID)
+          elIDPaths.append(":");
+      }
+      if (i < lastPath)
+        elIDPaths.append(",");
+    }
+    query.append(elIDPaths);
+    String[][] response = request(query.toString());
+    if (response.length == 1 && response[0].length == 3)
+      throw new PaloException("getDataExport failed: " + response[0][0] + ", "
+        + response[0][1] + ", " + response[0][2]);
+    int lastCell = response.length - 1;
+    CellInfo[] cells = new CellInfo[response.length - 1];
+    CellInfoBuilder cellBuilder = builderReg.getCellBuilder();
+    for (int i = 0; i < lastCell; ++i) {
+      cells[i] = cellBuilder.create(null, response[i]);
+    }
+
+    context.setProgress((Double.parseDouble(response[lastCell][0]))
+      / (Double.parseDouble(response[lastCell][1])));
+    return cells;
+  }
+
+  //--------------------------------------------------------------------------
+  // PRIVATE METHODS
+  //
+  private final String getAreaIds(ElementInfo[][] coordinates) {
+    StringBuffer ids = new StringBuffer();
+    int lastCoordinate = coordinates.length - 1;
+    for (int i = 0; i < coordinates.length; ++i) {
+      ids.append(getIdString(coordinates[i], ":"));
+      if (i < lastCoordinate)
+        ids.append(",");
+    }
+    return ids.toString();
+  }
+}

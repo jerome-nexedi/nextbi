@@ -1,135 +1,165 @@
-/*     */package com.tensegrity.palojava.impl;
+/*
+*
+* @file PropertyInfoImpl.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author PhilippBouillon
+*
+* @version $Id: PropertyInfoImpl.java,v 1.5 2009/04/29 10:35:49 PhilippBouillon Exp $
+*
+*/
 
-/*     */
-/*     */import com.tensegrity.palojava.PropertyInfo; /*     */
+/**
+ * 
+ */
+package com.tensegrity.palojava.impl;
+
 import java.util.LinkedHashSet;
 
-/*     */
-/*     */public class PropertyInfoImpl
-/*     */implements PropertyInfo
-/*     */{
-  /*     */public static final int TYPE_NUMERIC = 1;
+import com.tensegrity.palojava.PropertyInfo;
 
-  /*     */public static final int TYPE_STRING = 2;
-
-  /*     */public static final int TYPE_BOOLEAN = 3;
-
-  /*     */private final LinkedHashSet<PropertyInfo> children;
-
-  /*     */private String id;
-
-  /*     */private String value;
-
-  /*     */private PropertyInfo parent;
-
-  /*     */private int type;
-
-  /*     */private boolean readOnly;
-
-  /*     */
-  /*     */public PropertyInfoImpl(String id, String value, PropertyInfo parent,
-    int type, boolean readOnly)
-  /*     */{
-    /* 61 */this.children = new LinkedHashSet();
-    /* 62 */this.id = id;
-    /* 63 */this.value = value;
-    /* 64 */this.parent = parent;
-    /* 65 */this.type = type;
-    /* 66 */this.readOnly = readOnly;
-    /*     */}
-
-  /*     */
-  /*     */public void addChild(PropertyInfo child)
-  /*     */{
-    /* 73 */this.children.add(child);
-    /*     */}
-
-  /*     */
-  /*     */public void clearChildren()
-  /*     */{
-    /* 80 */this.children.clear();
-    /*     */}
-
-  /*     */
-  /*     */public int getChildCount()
-  /*     */{
-    /* 87 */return this.children.size();
-    /*     */}
-
-  /*     */
-  /*     */public PropertyInfo[] getChildren()
-  /*     */{
-    /* 94 */return (PropertyInfo[]) this.children.toArray(new PropertyInfo[0]);
-    /*     */}
-
-  /*     */
-  /*     */public PropertyInfo getParent()
-  /*     */{
-    /* 101 */return this.parent;
-    /*     */}
-
-  /*     */
-  /*     */public String getValue()
-  /*     */{
-    /* 108 */return this.value;
-    /*     */}
-
-  /*     */
-  /*     */public void removeChild(PropertyInfo child)
-  /*     */{
-    /* 115 */if (!this.readOnly)
-      /* 116 */this.children.remove(child);
-    /*     */}
-
-  /*     */
-  /*     */public void setValue(String newValue)
-  /*     */{
-    /* 124 */if (!this.readOnly)
-      /* 125 */this.value = newValue;
-    /*     */}
-
-  /*     */
-  /*     */public String getId()
-  /*     */{
-    /* 133 */return this.id;
-    /*     */}
-
-  /*     */
-  /*     */public int getType()
-  /*     */{
-    /* 140 */return this.type;
-    /*     */}
-
-  /*     */
-  /*     */public boolean isReadOnly() {
-    /* 144 */return this.readOnly;
-    /*     */}
-
-  /*     */
-  /*     */public PropertyInfo getChild(String id) {
-    /* 148 */for (PropertyInfo info : this.children) {
-      /* 149 */if (info.getId().equals(id)) {
-        /* 150 */return info;
-        /*     */}
-      /*     */}
-    /* 153 */return null;
-    /*     */}
-
-  /*     */
-  /*     */public boolean canBeModified() {
-    /* 157 */return true;
-    /*     */}
-
-  /*     */
-  /*     */public boolean canCreateChildren() {
-    /* 161 */return true;
-    /*     */}
-  /*     */
-}
-
-/*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
- * Qualified Name: com.tensegrity.palojava.impl.PropertyInfoImpl JD-Core
- * Version: 0.5.4
+/**
+ * @author PhilippBouillon
+ *
  */
+public class PropertyInfoImpl implements PropertyInfo {
+  // Property types:
+  public static final int TYPE_NUMERIC = 1, TYPE_STRING = 2, TYPE_BOOLEAN = 3;
+
+  private final LinkedHashSet<PropertyInfo> children;
+
+  private String id;
+
+  private String value;
+
+  private PropertyInfo parent;
+
+  private int type;
+
+  private boolean readOnly;
+
+  public PropertyInfoImpl(String id, String value, PropertyInfo parent, int type,
+    boolean readOnly) {
+    children = new LinkedHashSet<PropertyInfo>();
+    this.id = id;
+    this.value = value;
+    this.parent = parent;
+    this.type = type;
+    this.readOnly = readOnly;
+  }
+
+  /* (non-Javadoc)
+   * @see com.tensegrity.palojava.PropertyInfo#addChild(com.tensegrity.palojava.PropertyInfo)
+   */
+  public void addChild(PropertyInfo child) {
+    children.add(child);
+  }
+
+  /* (non-Javadoc)
+   * @see com.tensegrity.palojava.PropertyInfo#clearChildren()
+   */
+  public void clearChildren() {
+    children.clear();
+  }
+
+  /* (non-Javadoc)
+   * @see com.tensegrity.palojava.PropertyInfo#getChildCount()
+   */
+  public int getChildCount() {
+    return children.size();
+  }
+
+  /* (non-Javadoc)
+   * @see com.tensegrity.palojava.PropertyInfo#getChildren()
+   */
+  public PropertyInfo[] getChildren() {
+    return children.toArray(new PropertyInfo[0]);
+  }
+
+  /* (non-Javadoc)
+   * @see com.tensegrity.palojava.PropertyInfo#getParent()
+   */
+  public PropertyInfo getParent() {
+    return parent;
+  }
+
+  /* (non-Javadoc)
+   * @see com.tensegrity.palojava.PropertyInfo#getValue()
+   */
+  public String getValue() {
+    return value;
+  }
+
+  /* (non-Javadoc)
+   * @see com.tensegrity.palojava.PropertyInfo#removeChild(com.tensegrity.palojava.PropertyInfo)
+   */
+  public void removeChild(PropertyInfo child) {
+    if (!readOnly) {
+      children.remove(child);
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see com.tensegrity.palojava.PropertyInfo#setValue(java.lang.String)
+   */
+  public void setValue(String newValue) {
+    if (!readOnly) {
+      value = newValue;
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see com.tensegrity.palojava.PaloInfo#getId()
+   */
+  public String getId() {
+    return id;
+  }
+
+  /* (non-Javadoc)
+   * @see com.tensegrity.palojava.PaloInfo#getType()
+   */
+  public int getType() {
+    return type;
+  }
+
+  public boolean isReadOnly() {
+    return readOnly;
+  }
+
+  public PropertyInfo getChild(String id) {
+    for (PropertyInfo info : children) {
+      if (info.getId().equals(id)) {
+        return info;
+      }
+    }
+    return null;
+  }
+
+  public boolean canBeModified() {
+    return true;
+  }
+
+  public boolean canCreateChildren() {
+    return true;
+  }
+}

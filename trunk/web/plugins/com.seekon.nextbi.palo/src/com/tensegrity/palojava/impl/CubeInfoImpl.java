@@ -1,145 +1,146 @@
-/*     */package com.tensegrity.palojava.impl;
+/*
+*
+* @file CubeInfoImpl.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Michael Raue <Michael.Raue@tensegrity-software.com>
+*
+* @version $Id: CubeInfoImpl.java,v 1.6 2010/02/22 11:38:54 PhilippBouillon Exp $
+*
+*/
 
-/*     */
-/*     */import com.tensegrity.palojava.CubeInfo; /*     */
-import com.tensegrity.palojava.DatabaseInfo; /*     */
+package com.tensegrity.palojava.impl;
+
 import java.math.BigInteger;
 
-/*     */
-/*     */public class CubeInfoImpl
-/*     */implements CubeInfo
-/*     */{
-  /*     */private final String id;
+import com.tensegrity.palojava.CubeInfo;
+import com.tensegrity.palojava.DatabaseInfo;
 
-  /*     */private int type;
+public class CubeInfoImpl implements CubeInfo {
 
-  /*     */private final DatabaseInfo database;
+  private final String id;
 
-  /*     */private final String[] dimensions;
+  private int type;
 
-  /*     */private String name;
+  private final DatabaseInfo database;
 
-  /*     */private int dimCount;
+  private final String[] dimensions; //dimension ids...
 
-  /*     */private BigInteger cellCount;
+  private String name;
 
-  /*     */private BigInteger filledCellCount;
+  private int dimCount;
 
-  /*     */private int status;
+  //	private int cellCount;
+  //	private int filledCellCount;
+  private BigInteger cellCount;
 
-  /*     */private int token;
+  private BigInteger filledCellCount;
 
-  /*     */
-  /*     */public CubeInfoImpl(DatabaseInfo database, String id, int type,
-    String[] dimensions)
-  /*     */{
-    /* 59 */this.id = id;
-    /* 60 */this.type = type;
-    /* 61 */this.database = database;
-    /* 62 */this.dimensions = dimensions;
-    /*     */}
+  private int status;
 
-  /*     */
-  /*     */public void setType(int newType) {
-    /* 66 */this.type = newType;
-    /*     */}
+  private int token;
 
-  /*     */
-  /*     */public final String getId() {
-    /* 70 */return this.id;
-    /*     */}
+  public CubeInfoImpl(DatabaseInfo database, String id, int type, String[] dimensions) {
+    this.id = id;
+    this.type = type;
+    this.database = database;
+    this.dimensions = dimensions;
+  }
 
-  /*     */
-  /*     */public final String getName() {
-    /* 74 */return this.name;
-    /*     */}
+  public void setType(int newType) {
+    this.type = newType;
+  }
 
-  /*     */
-  /*     */public final int getType() {
-    /* 78 */return this.type;
-    /*     */}
+  public final String getId() {
+    return id;
+  }
 
-  /*     */
-  /*     */public final DatabaseInfo getDatabase() {
-    /* 82 */return this.database;
-    /*     */}
+  public final String getName() {
+    return name;
+  }
 
-  /*     */
-  /*     */public final String[] getDimensions() {
-    /* 86 */return this.dimensions;
-    /*     */}
+  public final int getType() {
+    return type;
+  }
 
-  /*     */
-  /*     */public final synchronized void setCellCount(BigInteger cellCount) {
-    /* 90 */this.cellCount = cellCount;
-    /*     */}
+  public final DatabaseInfo getDatabase() {
+    return database;
+  }
 
-  /*     */
-  /*     */public final synchronized void setDimensionCount(int dimCount) {
-    /* 94 */this.dimCount = dimCount;
-    /*     */}
+  public final String[] getDimensions() {
+    return dimensions;
+  }
 
-  /*     */
-  /*     */public final synchronized void setFilledCellCount(
-    BigInteger filledCellCount) {
-    /* 98 */this.filledCellCount = filledCellCount;
-    /*     */}
+  public final synchronized void setCellCount(BigInteger cellCount) {
+    this.cellCount = cellCount;
+  }
 
-  /*     */
-  /*     */public final synchronized void setName(String name) {
-    /* 102 */this.name = name;
-    /*     */}
+  public final synchronized void setDimensionCount(int dimCount) {
+    this.dimCount = dimCount;
+  }
 
-  /*     */
-  /*     */public final synchronized void setStatus(int status) {
-    /* 106 */this.status = status;
-    /*     */}
+  public final synchronized void setFilledCellCount(BigInteger filledCellCount) {
+    this.filledCellCount = filledCellCount;
+  }
 
-  /*     */
-  /*     */public final synchronized void setToken(int token) {
-    /* 110 */this.token = token;
-    /*     */}
+  public final synchronized void setName(String name) {
+    this.name = name;
+  }
 
-  /*     */
-  /*     */public final synchronized BigInteger getCellCount() {
-    /* 114 */return this.cellCount;
-    /*     */}
+  public final synchronized void setStatus(int status) {
+    this.status = status;
+  }
 
-  /*     */
-  /*     */public final synchronized int getDimensionCount() {
-    /* 118 */return this.dimCount;
-    /*     */}
+  public final synchronized void setToken(int token) {
+    this.token = token;
+  }
 
-  /*     */
-  /*     */public final synchronized BigInteger getFilledCellCount() {
-    /* 122 */return this.filledCellCount;
-    /*     */}
+  public final synchronized BigInteger getCellCount() {
+    return cellCount;
+  }
 
-  /*     */
-  /*     */public final synchronized int getStatus() {
-    /* 126 */return this.status;
-    /*     */}
+  public final synchronized int getDimensionCount() {
+    return dimCount;
+  }
 
-  /*     */
-  /*     */public final synchronized int getToken() {
-    /* 130 */return this.token;
-    /*     */}
+  public final synchronized BigInteger getFilledCellCount() {
+    return filledCellCount;
+  }
 
-  /*     */
-  /*     */public boolean canBeModified() {
-    /* 134 */return true;
-    /*     */}
+  public final synchronized int getStatus() {
+    return status;
+  }
 
-  /*     */
-  /*     */public boolean canCreateChildren() {
-    /* 138 */return true;
-    /*     */}
-  /*     */
+  public final synchronized int getToken() {
+    return token;
+  }
+
+  public boolean canBeModified() {
+    return true;
+  }
+
+  public boolean canCreateChildren() {
+    return true;
+  }
+
 }
-
-/*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
- * Qualified Name: com.tensegrity.palojava.impl.CubeInfoImpl JD-Core Version:
- * 0.5.4
- */

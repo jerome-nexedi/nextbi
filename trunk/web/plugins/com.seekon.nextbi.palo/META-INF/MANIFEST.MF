@@ -12,4 +12,7 @@ Export-Package: com.tensegrity.palojava,
  com.tensegrity.palojava.http.handlers,
  com.tensegrity.palojava.http.loader,
  com.tensegrity.palojava.impl,
+ com.tensegrity.palojava.legacy,
+ com.tensegrity.palojava.legacy.builders,
  com.tensegrity.palojava.loader
+Import-Package: org.osgi.framework

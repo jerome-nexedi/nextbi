@@ -1,253 +1,299 @@
-/*     */package com.tensegrity.palojava.http;
-
-/*     */
-/*     */import com.tensegrity.palojava.PaloException; /*     */
-import java.io.ByteArrayOutputStream; /*     */
-import java.io.IOException; /*     */
-import java.io.InputStream; /*     */
-import java.io.UnsupportedEncodingException; /*     */
-import java.net.URLEncoder; /*     */
-import java.util.ArrayList; /*     */
-import java.util.regex.Pattern;
-
-/*     */
-/*     */public class HttpParser
-/*     */{
-  /*     */public static final String DEFAULT_CHARACTER_ENCODING = "UTF-8";
-
-  /*     */private static final char QUOTE = '"';
-
-  /*     */private static final char TAG_START = '<';
-
-  /*     */private static final char TAG_END = '>';
-
-  /*     */private static final char AMPERSAND = '&';
-
-  /*     */private static final char SEMICOLON = ';';
-
-  /* 63 */private static final Pattern lineEnd = Pattern.compile(";[\r\n]");
-
-  /*     */
-  /*     */public static final String readLine(InputStream in) throws IOException {
-    /* 66 */return readLine(in, "UTF-8");
-    /*     */}
-
-  /*     */
-  /*     */public static final String readLine(InputStream in, String charset)
-    throws IOException {
-    /* 70 */byte[] rawdata = readBytes(in);
-    /* 71 */if (rawdata == null) {
-      /* 72 */return null;
-      /*     */}
-    /*     */
-    /* 75 */int len = rawdata.length;
-    /* 76 */int offset = 0;
-    /* 77 */if ((len > 0) &&
-    /* 78 */(rawdata[(len - 1)] == 10)) {
-      /* 79 */++offset;
-      /* 80 */if ((len > 1) &&
-      /* 81 */(rawdata[(len - 2)] == 13)) {
-        /* 82 */++offset;
-        /*     */}
-      /*     */}
-    /*     */
-    /*     */try
-    /*     */{
-      /* 88 */return new String(rawdata, 0, len - offset, charset);
-    } catch (UnsupportedEncodingException e) {
-      /*     */}
-    /* 90 */return new String(rawdata, 0, len - offset);
-    /*     */}
-
-  /*     */
-  /*     */public static final byte[] readBytes(InputStream in) throws IOException
-  /*     */{
-    /* 95 */ByteArrayOutputStream buf = new ByteArrayOutputStream();
-    /*     */int ch;
-    /* 97 */while ((ch = in.read()) >= 0)
-    /*     */{
-      /* 98 */buf.write(ch);
-      /* 99 */if (ch == 10) {
-        /*     */break;
-        /*     */}
-      /*     */}
-    /* 103 */if (buf.size() == 0) {
-      /* 104 */return null;
-      /*     */}
-    /* 106 */return buf.toByteArray();
-    /*     */}
-
-  /*     */
-  /*     */public static final String readRawLine(InputStream in)
-    throws IOException {
-    /* 110 */ByteArrayOutputStream buf = new ByteArrayOutputStream();
-    /*     */
-    /* 112 */int lastCh = -1;
-    /* 113 */boolean inQuote = false;
-    /*     */int ch;
-    /* 114 */while ((ch = in.read()) >= 0)
-    /*     */{
-      /* 116 */buf.write(ch);
-      /* 117 */if (ch == 34) {
-        /* 118 */inQuote = !inQuote;
-        /*     */}
-      /* 120 */if ((ch == 10) && (lastCh == 59) && (!inQuote))
-        /*     */break;
-      /* 122 */lastCh = ch;
-      /*     */}
-    /* 124 */if (buf.size() == 0)
-      /* 125 */return null;
-    /*     */try
-    /*     */{
-      /* 128 */return new String(buf.toByteArray(), "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      /*     */}
-    /* 130 */return new String(buf.toByteArray());
-    /*     */}
-
-  /*     */
-  /*     */protected static final String encode(String paramValue)
-  /*     */{
-    /*     */try
-    /*     */{
-      /* 142 */return URLEncoder.encode(paramValue, "UTF-8");
-      /*     */} catch (UnsupportedEncodingException e) {
-      /* 144 */e.printStackTrace();
-      /*     */}
-    /* 146 */return paramValue;
-    /*     */}
-
-  /*     */
-  /*     */protected static final String encode(Object[] paramValue)
-  /*     */{
-    /* 157 */StringBuffer res = new StringBuffer();
-    /* 158 */int max = paramValue.length - 1;
-    /* 159 */for (int i = 0; i < paramValue.length; ++i) {
-      /* 160 */res.append(encode(paramValue[i].toString()));
-      /* 161 */if (i < max)
-        /* 162 */res.append(":");
-      /*     */}
-    /* 164 */return res.toString();
-    /*     */}
-
-  /*     */
-  /*     */public static final String[][] parse(String response, char delim)
-  /*     */{
-    /* 176 */String[] lines = lineEnd.split(response, 0);
-    /* 177 */String[][] res = new String[lines.length][];
-    /* 178 */for (int i = 0; i < lines.length; ++i)
-    /*     */{
-      /* 180 */lines[i] = (lines[i] + ";");
-      /* 181 */res[i] = parseLine(lines[i], delim);
-      /*     */}
-    /*     */
-    /* 184 */return res;
-    /*     */}
-
-  /*     */
-  /*     */public static final synchronized String[] parseLine(String str,
-    char delim)
-  /*     */{
-    /* 194 */ArrayList entries = new ArrayList();
-    /* 195 */StringBuffer entry = new StringBuffer();
-    /* 196 */char current = ' ';
-    /*     */
-    /* 198 */boolean inQuotes = false;
-    /* 199 */boolean inField = true;
-    /* 200 */boolean inTag = false;
-    /* 201 */boolean readAmpersand = false;
-    /* 202 */str = str.trim();
-    /* 203 */int i = 0;
-    for (int n = str.length(); i < n; ++i) {
-      /* 204 */current = str.charAt(i);
-      /* 205 */char next = (i + 1 < n) ? str.charAt(i + 1) : ' ';
-      /*     */
-      /* 207 */if (inField) {
-        /* 208 */if (current == '"') {
-          /* 209 */if (!inTag)
-          /*     */{
-            /* 211 */if (!inQuotes)
-            /*     */{
-              /* 213 */inQuotes = true;
-              /* 214 */} else if (next == '"')
-            /*     */{
-              /* 216 */entry.append('"');
-              /* 217 */++i;
-              /*     */}
-            /*     */else {
-              /* 220 */inQuotes = false;
-              /*     */}
-            /*     */}
-          /*     */else
-            /* 224 */entry.append('"');
-          /*     */}
-        /* 226 */else if ((current == '<') && (!inQuotes)) {
-          /* 227 */if (!inTag) {
-            /* 228 */inTag = true;
-            /* 229 */entry.append('<');
-            /*     */}
-          /* 231 */} else if ((current == '>') && (!inQuotes)) {
-          /* 232 */if (inTag) {
-            /* 233 */inTag = false;
-            /* 234 */entry.append('>');
-            /*     */}
-          /* 236 */} else if ((current == '&') && (!inQuotes)) {
-          /* 237 */readAmpersand = true;
-          /* 238 */entry.append('&');
-          /* 239 */} else if ((current == ';') && (readAmpersand)) {
-          /* 240 */readAmpersand = false;
-          /* 241 */entry.append(';');
-          /*     */}
-        /* 244 */else if ((current == delim) && (!inQuotes) && (!inTag))
-        /*     */{
-          /* 247 */entries.add(entry.toString());
-          /* 248 */entry.delete(0, entry.length());
-          /*     */}
-        /*     */else {
-          /* 251 */entry.append(current);
-          /*     */}
-        /*     */
-        /*     */}
-      /* 256 */else if (current == delim) {
-        /* 257 */inField = true;
-        /*     */}
-      /*     */}
-    /* 260 */if (entry.length() > 0) {
-      /* 261 */entries.add(entry.toString());
-      /*     */}
-    /* 263 */return (String[]) entries.toArray(new String[entries.size()]);
-    /*     */}
-
-  /*     */
-  /*     */public static final void checkResponse(String[] response)
-  /*     */{
-    /* 273 */if (response.length < 1)
-      /* 274 */throw new PaloException("No response from server!!");
-    /* 275 */if (response[0].startsWith("ERROR")) {
-      /* 276 */response[0] = response[0].substring(5);
-      /* 277 */String errCode = response[0];
-      /* 278 */if ((!PaloErrorCodes.contains(errCode)) ||
-      /* 279 */(response.length < 3))
-        return;
-      /* 280 */String errMsg = response[1];
-      /* 281 */String errReason = response[2];
-      /*     */
-      /* 283 */if (isString(errMsg))
-        /* 284 */throw new PaloException(errCode, errMsg, errReason);
-      /*     */}
-    /*     */}
-
-  /*     */
-  /*     */private static final boolean isString(String str)
-  /*     */{
-    /* 291 */return !Character.isDigit(str.trim().charAt(0));
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file HttpParser.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author ArndHouben
+*
+* @version $Id: HttpParser.java,v 1.9 2010/02/17 14:32:19 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
- * Qualified Name: com.tensegrity.palojava.http.HttpParser JD-Core Version:
- * 0.5.4
+ * (c) 2007 Tensegrity Software GmbH
+ * All rights reserved
  */
+package com.tensegrity.palojava.http;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+
+import com.tensegrity.palojava.PaloException;
+
+/**
+ * <code></code>
+ * TODO DOCUMENT ME
+ * 
+ * @author ArndHouben
+ * @version $Id: HttpParser.java,v 1.9 2010/02/17 14:32:19 PhilippBouillon Exp $
+ */
+public class HttpParser {
+
+  public static final String DEFAULT_CHARACTER_ENCODING = "UTF-8";
+
+  private static final char QUOTE = '"';
+
+  private static final char TAG_START = '<';
+
+  private static final char TAG_END = '>';
+
+  private static final char AMPERSAND = '&'; //XML ENTITY IN RESPONSE!!
+
+  private static final char SEMICOLON = ';';
+
+  private static final Pattern lineEnd = Pattern.compile(";[\r\n]");
+
+  public static final String readLine(InputStream in) throws IOException {
+    return readLine(in, DEFAULT_CHARACTER_ENCODING);
+  }
+
+  public static final String readLine(InputStream in, String charset)
+    throws IOException {
+    byte[] rawdata = readBytes(in);
+    if (rawdata == null) {
+      return null;
+    }
+    // strip CR and LF from the end
+    int len = rawdata.length;
+    int offset = 0;
+    if (len > 0) {
+      if (rawdata[len - 1] == '\n') {
+        offset++;
+        if (len > 1) {
+          if (rawdata[len - 2] == '\r') {
+            offset++;
+          }
+        }
+      }
+    }
+    try {
+      return new String(rawdata, 0, len - offset, charset);
+    } catch (UnsupportedEncodingException e) {
+      return new String(rawdata, 0, len - offset);
+    }
+  }
+
+  public static final byte[] readBytes(InputStream in) throws IOException {
+    ByteArrayOutputStream buf = new ByteArrayOutputStream();
+    int ch;
+    while ((ch = in.read()) >= 0) {
+      buf.write(ch);
+      if (ch == '\n') { // be tolerant (RFC-2616 Section 19.3)
+        break;
+      }
+    }
+    if (buf.size() == 0) {
+      return null;
+    }
+    return buf.toByteArray();
+  }
+
+  public static final String readRawLine(InputStream in) throws IOException {
+    ByteArrayOutputStream buf = new ByteArrayOutputStream();
+    int ch;
+    int lastCh = -1;
+    boolean inQuote = false;
+    while ((ch = in.read()) >= 0) {
+      //        	System.err.print((char)ch);
+      buf.write(ch);
+      if (ch == '"') {
+        inQuote = !inQuote;
+      }
+      if (ch == '\n' && lastCh == ';' && !inQuote)
+        break;
+      lastCh = ch;
+    }
+    if (buf.size() == 0) {
+      return null;
+    }
+    try {
+      return new String(buf.toByteArray(), DEFAULT_CHARACTER_ENCODING);
+    } catch (UnsupportedEncodingException e) {
+      return new String(buf.toByteArray());
+    }
+  }
+
+  /**
+   * Encodes the given parameter value as csv . A numeric value is represented 
+   * as string and a string value is quoted.
+   * @param paramValue the parameter value to encode
+   * @return the csv encoded parameter value string
+   */
+  protected static final String encode(String paramValue) {
+    try {
+      return URLEncoder.encode(paramValue, DEFAULT_CHARACTER_ENCODING);
+    } catch (UnsupportedEncodingException e) {
+      e.printStackTrace();
+    }
+    return paramValue;
+  }
+
+  /**
+   * Encodes the given values. The result is a colon separated list of url 
+   * encoded values
+   * @param paramValue
+   * @return
+   */
+  protected static final String encode(Object[] paramValue) {
+    StringBuffer res = new StringBuffer();
+    int max = paramValue.length - 1;
+    for (int i = 0; i < paramValue.length; i++) {
+      res.append(encode(paramValue[i].toString())); //,true));
+      if (i < max)
+        res.append(":");
+    }
+    return res.toString();
+  }
+
+  /**
+   * Parses the given string. The given string can contain more the one line.
+   * The regular expression ';[\r\n]' is used to determine the line end. 
+   * @param response the response string from the palo server
+   * @param delim the values delimiter
+   * @return the decoded values
+   */
+  public static final String[][] parse(String response, char delim) {
+    //		String[] lines = response.split(";[\r\n]");
+    String[] lines = lineEnd.split(response, 0);
+    String[][] res = new String[lines.length][];
+    for (int i = 0; i < lines.length; i++) {
+      //line termination check:
+      lines[i] = lines[i] + ";";
+      res[i] = parseLine(lines[i], delim);
+      //			checkResponse(res[i]);
+    }
+    return res;
+  }
+
+  /**
+   * Parses the given csv line. 
+   * @param str the csv line
+   * @param delim the values delimiter
+   * @return the decoded values
+   */
+  public static synchronized final String[] parseLine(String str, char delim) {
+    ArrayList entries = new ArrayList();
+    StringBuffer entry = new StringBuffer();
+    char current = ' ';
+    char next; // look ahead
+    boolean inQuotes = false; //are we inside a quote, i.e. string value
+    boolean inField = true; //are we inside a value entry
+    boolean inTag = false; //are we inside a xml/html tag <...>
+    boolean readAmpersand = false; //did we read an ampersand?
+    str = str.trim();
+    for (int i = 0, n = str.length(); i < n; i++) {
+      current = str.charAt(i);
+      next = (i + 1) < n ? str.charAt(i + 1) : ' ';
+
+      if (inField) {
+        if (current == QUOTE) { //handle quote...
+          if (!inTag) {
+            // read in a quote:
+            if (!inQuotes) {
+              // now we're in the quote
+              inQuotes = true;
+            } else if (next == QUOTE) {
+              // replace double quote with one
+              entry.append(QUOTE);
+              i++; // skip one quote!!
+            } else {
+              // end quote
+              inQuotes = false;
+              // inField = false;
+            }
+          } else {
+            entry.append(QUOTE); //simply append it...
+          }
+        } else if (current == TAG_START && !inQuotes) {
+          if (!inTag) {
+            inTag = true;
+            entry.append(TAG_START);
+          }
+        } else if (current == TAG_END && !inQuotes) {
+          if (inTag) {
+            inTag = false;
+            entry.append(TAG_END);
+          }
+        } else if (current == AMPERSAND && !inQuotes) {
+          readAmpersand = true;
+          entry.append(AMPERSAND);
+        } else if (current == SEMICOLON && readAmpersand) {
+          readAmpersand = false;
+          entry.append(SEMICOLON);
+        } else {
+          // not a quote
+          if (current == delim && !inQuotes && !inTag) {
+            // we've got a separator and we're not in quotes
+            // so this entry is done
+            entries.add(entry.toString());
+            entry.delete(0, entry.length());
+          } else {
+            // normal character:
+            entry.append(current);
+          }
+        }
+      } else {
+        // read until we reach next field
+        if (current == delim)
+          inField = true;
+      }
+    }
+    if (entry.length() > 0)
+      entries.add(entry.toString());
+
+    return (String[]) entries.toArray(new String[entries.size()]);
+  }
+
+  /**
+   * Checks the given server response contains an error. Errors are
+   * defined as <code>HttpErrorCode</code> objects, see {@link PaloErrorCodes}
+   * In case of an error a <code>PaloException</code> is thrown  
+   * @param responseLine
+   */
+  public static final void checkResponse(String[] response) {
+    if (response.length < 1)
+      throw new PaloException("No response from server!!");
+    if (response[0].startsWith("ERROR")) {
+      response[0] = response[0].substring(5);
+      String errCode = response[0];
+      if (PaloErrorCodes.contains(errCode)) {
+        if (response.length >= 3) {
+          String errMsg = response[1];
+          String errReason = response[2];
+          // errMsg must be a string...
+          if (isString(errMsg))
+            throw new PaloException(errCode, errMsg, errReason);
+        }
+      }
+    }
+  }
+
+  private static final boolean isString(String str) {
+    return !Character.isDigit(str.trim().charAt(0));
+  }
+}

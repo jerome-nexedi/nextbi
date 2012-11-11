@@ -1,140 +1,183 @@
-/*     */package com.tensegrity.palojava.http;
-
-/*     */
-/*     */import com.tensegrity.palojava.ConnectionInfo; /*     */
-import com.tensegrity.palojava.http.handlers.HeaderHandler; /*     */
-import java.io.BufferedInputStream; /*     */
-import java.io.BufferedOutputStream; /*     */
-import java.io.IOException; /*     */
-import java.io.InterruptedIOException; /*     */
-import java.net.ConnectException; /*     */
-import java.net.Socket; /*     */
-import java.net.SocketException; /*     */
-import java.net.UnknownHostException; /*     */
-import java.util.ArrayList;
-
-/*     */
-/*     */public class HttpClient
-/*     */{
-  /* 62 */private static final byte[] CRLF = { 13, 10 };
-
-  /*     */private final HttpConnection httpConnection;
-
-  /*     */private Socket srvConnection;
-
-  /*     */private BufferedOutputStream toServer;
-
-  /*     */private BufferedInputStream fromServer;
-
-  /*     */
-  /*     */public HttpClient(HttpConnection httpConnection)
-  /*     */{
-    /* 83 */this.httpConnection = httpConnection;
-    /*     */}
-
-  /*     */
-  /*     */final synchronized void reconnect(int timeout)
-  /*     */throws UnknownHostException, IOException
-  /*     */{
-    /* 90 */ConnectionInfo connInfo = this.httpConnection.getInfo();
-    /* 91 */int port = 0;
-    /*     */try {
-      /* 93 */port = Integer.parseInt(connInfo.getPort());
-      /*     */} catch (NumberFormatException e) {
-      /* 95 */throw new UnknownHostException(
-        "Could not connect to Palo Server. Either no port, or a wrong port format, is specified.");
-      /*     */}
-    /* 97 */this.srvConnection = new Socket(connInfo.getHost(), port);
-    /* 98 */this.srvConnection.setSoTimeout(timeout);
-    /* 99 */int outSize = Math.min(this.srvConnection.getSendBufferSize(), 2048);
-    /* 100 */int inSize = Math.min(this.srvConnection.getReceiveBufferSize(), 2048);
-    /* 101 */this.toServer =
-    /* 102 */new BufferedOutputStream(this.srvConnection.getOutputStream(),
-    /* 102 */outSize);
-    /* 103 */this.fromServer =
-    /* 104 */new BufferedInputStream(this.srvConnection.getInputStream(),
-    /* 104 */inSize);
-    /*     */}
-
-  /*     */
-  /*     */final synchronized boolean isConnected()
-  /*     */{
-    /* 114 */return (this.srvConnection != null) &&
-    /* 113 */(this.srvConnection.isConnected()) &&
-    /* 114 */(!this.srvConnection.isClosed());
-    /*     */}
-
-  /*     */
-  /*     */final synchronized void disconnect()
-  /*     */throws IOException
-  /*     */{
-    /* 122 */if (this.srvConnection == null)
-      /* 123 */return;
-    /* 124 */this.srvConnection.close();
-    /* 125 */this.srvConnection = null;
-    /*     */}
-
-  /*     */
-  /*     */protected final synchronized String[] send(String request)
-  /*     */throws ConnectException, IOException
-  /*     */{
-    /* 137 */BoundedInputStream in = null;
-    /*     */try
-    /*     */{
-      /* 140 */this.toServer.write(
-      /* 141 */request.getBytes("UTF-8"));
-      /* 142 */this.toServer.write(CRLF);
-      /* 143 */this.toServer.flush();
-      /*     */
-      /* 145 */HeaderHandler headerHandler =
-      /* 146 */HeaderHandler.getInstance(this.httpConnection);
-      /* 147 */headerHandler.parse(this.fromServer);
-      /* 148 */int contentLength = headerHandler.getContentLength();
-      /* 149 */if (contentLength == -1) {
-        /* 150 */throw new ConnectException("No response from palo server!!");
-        /*     */}
-      /*     */
-      /* 153 */in = new BoundedInputStream(this.fromServer, contentLength);
-      /* 154 */ArrayList respLines = new ArrayList();
-      /*     */while (true) {
-        /* 156 */String response = HttpParser.readRawLine(in);
-        /* 157 */if (response == null)
-          break;
-        if (response.trim().length() < 1) {
-          /*     */break;
-          /*     */}
-        /* 160 */respLines.add(response);
-        /*     */}
-      /*     */String[] arrayOfString1;
-      /* 162 */if (headerHandler.getErrorCode() != 200) {
-        /* 163 */String[] result = (String[]) respLines
-          .toArray(new String[respLines.size()]);
-        /* 164 */if ((result != null) && (result.length > 0)) {
-          /* 165 */result[0] = ("ERROR" + result[0]);
-          /*     */}
-        /* 167 */arrayOfString1 = result;
-        /*     */return arrayOfString1;
-        /*     */}
-
-      /* 171 */return (String[]) respLines.toArray(new String[respLines.size()]);
-      /*     */} catch (SocketException se) {
-      /* 173 */this.httpConnection.serverDown();
-      /* 174 */
-      /*     */}
-    /*     */catch (InterruptedIOException ie) {
-      /*     */}
-    /*     */finally {
-      /* 179 */if (in != null)
-        /* 180 */in.close();
-      /*     */}
-    return null;
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file HttpClient.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author ArndHouben
+*
+* @version $Id$
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
- * Qualified Name: com.tensegrity.palojava.http.HttpClient JD-Core Version:
- * 0.5.4
+ * (c) 2007 Tensegrity Software GmbH
  */
+package com.tensegrity.palojava.http;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.ConnectException;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+
+import com.tensegrity.palojava.ConnectionInfo;
+import com.tensegrity.palojava.PaloException;
+import com.tensegrity.palojava.http.handlers.HeaderHandler;
+
+/**
+ * <code></code>
+ * TODO DOCUMENT ME
+ * Performs a communication to the palo server!
+ * 
+ * @author ArndHouben
+ * @version $Id$
+ */
+public class HttpClient {
+
+  /** a cr and lf.*/
+  private static final byte[] CRLF = new byte[] { (byte) 13, (byte) 10 };
+
+  private final HttpConnection httpConnection;
+
+  private Socket srvConnection;
+
+  //for communication:
+  private BufferedOutputStream toServer;
+
+  private BufferedInputStream fromServer;
+
+  /**
+   * Creates a new <code>HttpClient</code> instance and connects to the
+   * palo server specified by the given <code>ConnectionHttp</code> instance. 
+   * 
+   * @param paloConn a <code>ConnectionHttp</code> object containing 
+   * information about palo server
+   * @throws UnknownHostException if the IP address of the host could not be 
+   * determined
+   * @throws IOException if an I/O exception occurs on establishing the 
+   * connection
+   */
+  public HttpClient(HttpConnection httpConnection) {
+    this.httpConnection = httpConnection;
+  }
+
+  //	final synchronized void reconnect() throws UnknownHostException, IOException {
+  //		this.reconnect(TIMEOUT);
+  //	}
+  final synchronized void reconnect(int timeout) throws UnknownHostException,
+    IOException {
+    ConnectionInfo connInfo = httpConnection.getInfo();
+    int port = 0;
+    try {
+      port = Integer.parseInt(connInfo.getPort());
+    } catch (NumberFormatException e) {
+      throw new UnknownHostException(
+        "Could not connect to Palo Server. Either no port, or a wrong port format, is specified.");
+    }
+    srvConnection = new Socket(connInfo.getHost(), port);
+    srvConnection.setSoTimeout(timeout);
+    int outSize = Math.min(srvConnection.getSendBufferSize(), 2048);
+    int inSize = Math.min(srvConnection.getReceiveBufferSize(), 2048);
+    toServer = new BufferedOutputStream(srvConnection.getOutputStream(), outSize);
+    fromServer = new BufferedInputStream(srvConnection.getInputStream(), inSize);
+  }
+
+  /**
+   * Checks if the connection to the server is still established
+   * @return true if there is a connection to the server, false otherwise
+   */
+  final synchronized boolean isConnected() {
+    return (srvConnection != null && srvConnection.isConnected() && !srvConnection
+      .isClosed());
+  }
+
+  /**
+   * Disconnects this client from the palo server
+   * @throws IOException if an I/O exception occurs 
+   */
+  final synchronized void disconnect() throws IOException {
+    if (srvConnection == null)
+      return;
+    srvConnection.close();
+    srvConnection = null;
+  }
+
+  /**
+   * Sends the given request string to the server. Note that all parameters
+   * have to be csv encoded
+   * @param request a request
+   * @return the answer string from the server 
+   * @throws IOException if an I/O exception occurs
+   */
+  protected final synchronized String[] send(String request)
+    throws ConnectException, IOException {
+    BoundedInputStream in = null;
+    try {
+      // printwriter has problems under linux!!!
+      toServer.write(request.getBytes(HttpParser.DEFAULT_CHARACTER_ENCODING));
+      toServer.write(CRLF);
+      toServer.flush();
+      // get response:
+      HeaderHandler headerHandler = HeaderHandler.getInstance(httpConnection);
+      headerHandler.parse(fromServer);
+      int contentLength = headerHandler.getContentLength();
+      if (contentLength == -1) // && headerHandler.isLegacyServer())
+        throw new ConnectException("No response from palo server!!");
+
+      // read content
+      in = new BoundedInputStream(fromServer, contentLength);
+      ArrayList respLines = new ArrayList();
+      for (;;) {
+        String response = HttpParser.readRawLine(in);
+        if ((response == null) || (response.trim().length() < 1)) {
+          break;
+        }
+        respLines.add(response);
+      }
+      if (headerHandler.getErrorCode() != 200) {
+        String[] result = (String[]) respLines.toArray(new String[respLines.size()]);
+        if (result != null && result.length > 0) {
+          result[0] = "ERROR" + result[0];
+        }
+        return result;
+      }
+
+      //in.close();
+      return (String[]) respLines.toArray(new String[respLines.size()]);
+    } catch (SocketException se) {
+      httpConnection.serverDown();
+      return null;
+    } catch (InterruptedIOException ie) {
+      //timeout exception:
+      throw new PaloException("Palo Server not responding.", ie);
+    } finally {
+      if (in != null)
+        in.close();
+    }
+  }
+
+}

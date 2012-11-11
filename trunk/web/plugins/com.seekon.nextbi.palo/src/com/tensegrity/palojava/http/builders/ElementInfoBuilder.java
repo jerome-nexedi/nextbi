@@ -1,94 +1,111 @@
-/*     */package com.tensegrity.palojava.http.builders;
+/*
+*
+* @file ElementInfoBuilder.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Michael Raue <Michael.Raue@tensegrity-software.com>
+*
+* @version $Id: ElementInfoBuilder.java,v 1.5 2009/04/29 10:35:49 PhilippBouillon Exp $
+*
+*/
 
-/*     */
-/*     */import com.tensegrity.palojava.DimensionInfo; /*     */
-import com.tensegrity.palojava.ElementInfo; /*     */
-import com.tensegrity.palojava.PaloException; /*     */
-import com.tensegrity.palojava.PaloInfo; /*     */
+package com.tensegrity.palojava.http.builders;
+
+import com.tensegrity.palojava.DimensionInfo;
+import com.tensegrity.palojava.ElementInfo;
+import com.tensegrity.palojava.PaloException;
+import com.tensegrity.palojava.PaloInfo;
 import com.tensegrity.palojava.impl.ElementInfoImpl;
 
-/*     */
-/*     */public class ElementInfoBuilder
-/*     */{
-  /*     */public final ElementInfo create(PaloInfo parent, String[] response)
-  /*     */{
-    /* 48 */if (response.length < 12)
-      /* 49 */throw new PaloException(
-      /* 50 */getExceptionMessage("Not enough information to create ElementInfo",
-        response));
-    /*     */try
-    /*     */{
-      /* 53 */String id = response[0];
-      /*     */
-      /* 55 */ElementInfoImpl info =
-      /* 56 */new ElementInfoImpl((DimensionInfo) parent, id);
-      /* 57 */update(info, response);
-      /* 58 */return info;
-      /*     */} catch (RuntimeException e) {
-      /* 60 */throw new PaloException(e.getLocalizedMessage(), e);
-      /*     */}
-    /*     */}
+public class ElementInfoBuilder {
 
-  /*     */
-  /*     */public final void update(ElementInfoImpl element, String[] response) {
-    /* 65 */if (response.length < 12) {
-      /* 66 */throw new PaloException(
-      /* 67 */getExceptionMessage("Not enough information to update ElementInfo",
-        response));
-      /*     */}
-    /*     */
-    /* 70 */String name = response[1];
-    /* 71 */int position = Integer.parseInt(response[2]);
-    /* 72 */int level = Integer.parseInt(response[3]);
-    /* 73 */int indent = Integer.parseInt(response[4]);
-    /* 74 */int depth = Integer.parseInt(response[5]);
-    /* 75 */int type = Integer.parseInt(response[6]);
-    /*     */
-    /* 77 */String[] parentIds = BuilderUtils.getIDs(response[8]);
-    /* 78 */int childrenCount = Integer.parseInt(response[9]);
-    /*     */double[] weights;
-    /*     */String[] childrenIds;
+  ElementInfoBuilder() {
+    //package visibility only...
+  }
 
-    /* 81 */if (childrenCount == 0) {
-      /* 82 */childrenIds = new String[0];
-      /* 83 */weights = new double[0];
-      /*     */} else {
-      /* 85 */childrenIds = BuilderUtils.getIDs(response[10]);
-      /* 86 */weights = BuilderUtils.getWeights(response[11]);
-      /*     */}
-    /* 88 */element.setName(name);
-    /* 89 */element.setType(type);
-    /* 90 */element.setPosition(position);
-    /* 91 */element.setLevel(level);
-    /* 92 */element.setIndent(indent);
-    /* 93 */element.setDepth(depth);
-    /*     */
-    /* 95 */element.setParents(parentIds);
-    /*     */
-    /* 97 */element.setChildren(childrenIds, weights);
-    /*     */}
+  public final ElementInfo create(PaloInfo parent, String[] response) {
+    if (response.length < 12) {
+      throw new PaloException(getExceptionMessage(
+        "Not enough information to create ElementInfo", response));
+    }
+    try {
+      String id = response[0];
 
-  /*     */
-  /*     */private final String getExceptionMessage(String message,
-    String[] response) {
-    /* 101 */StringBuffer msg = new StringBuffer();
-    /* 102 */msg.append(message);
-    /* 103 */if (response.length >= 2) {
-      /* 104 */msg.append(" '");
-      /* 105 */msg.append(response[1]);
-      /* 106 */msg.append("' (id: ");
-      /* 107 */msg.append(response[0]);
-      /* 108 */msg.append(")");
-      /*     */}
-    /* 110 */msg.append("!!");
-    /* 111 */return msg.toString();
-    /*     */}
-  /*     */
+      ElementInfoImpl info = new ElementInfoImpl((DimensionInfo) parent, id);
+      update(info, response);
+      return info;
+    } catch (RuntimeException e) {
+      throw new PaloException(e.getLocalizedMessage(), e);
+    }
+  }
+
+  public final void update(ElementInfoImpl element, String[] response) {
+    if (response.length < 12) {
+      throw new PaloException(getExceptionMessage(
+        "Not enough information to update ElementInfo", response));
+    }
+
+    String name = response[1];
+    int position = Integer.parseInt(response[2]);
+    int level = Integer.parseInt(response[3]);
+    int indent = Integer.parseInt(response[4]);
+    int depth = Integer.parseInt(response[5]);
+    int type = Integer.parseInt(response[6]);
+    //		int parentCount = Integer.parseInt(response[7]);
+    String[] parentIds = BuilderUtils.getIDs(response[8]);
+    int childrenCount = Integer.parseInt(response[9]);
+    String[] childrenIds;
+    double[] weights;
+    if (childrenCount == 0) {
+      childrenIds = new String[0];
+      weights = new double[0];
+    } else {
+      childrenIds = BuilderUtils.getIDs(response[10]);
+      weights = BuilderUtils.getWeights(response[11]);
+    }
+    element.setName(name);
+    element.setType(type);
+    element.setPosition(position);
+    element.setLevel(level);
+    element.setIndent(indent);
+    element.setDepth(depth);
+    //		element.setParentCount(parentCount);
+    element.setParents(parentIds);
+    //		element.setChildrenCount(childrenCount);
+    element.setChildren(childrenIds, weights);
+  }
+
+  private final String getExceptionMessage(String message, String[] response) {
+    StringBuffer msg = new StringBuffer();
+    msg.append(message);
+    if (response.length >= 2) {
+      msg.append(" '");
+      msg.append(response[1]);
+      msg.append("' (id: ");
+      msg.append(response[0]);
+      msg.append(")");
+    }
+    msg.append("!!");
+    return msg.toString();
+  }
 }
-
-/*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
- * Qualified Name: com.tensegrity.palojava.http.builders.ElementInfoBuilder
- * JD-Core Version: 0.5.4
- */

@@ -1,170 +1,255 @@
-/*     */package com.tensegrity.palojava.http.handlers;
-
-/*     */
-/*     */import com.tensegrity.palojava.DatabaseInfo; /*     */
-import com.tensegrity.palojava.PaloException; /*     */
-import com.tensegrity.palojava.ServerInfo; /*     */
-import com.tensegrity.palojava.http.HttpConnection; /*     */
-import com.tensegrity.palojava.http.builders.DatabaseInfoBuilder; /*     */
-import com.tensegrity.palojava.http.builders.InfoBuilderRegistry; /*     */
-import com.tensegrity.palojava.http.builders.ServerInfoBuilder; /*     */
-import java.io.IOException;
-
-/*     */
-/*     */public class ServerHandler extends HttpHandler
-/*     */{
-  /*     */private static final String LOAD = "/server/load?-";
-
-  /*     */private static final String LIST_NORMAL_DATABASES = "/server/databases?show_normal=1&show_system=0&show_user_info=0";
-
-  /*     */private static final String LIST_SYSTEM_DATABASES = "/server/databases?show_normal=0&show_system=1&show_user_info=0";
-
-  /*     */private static final String LIST_USER_INFO_DATABASES = "/server/databases?show_normal=0&show_system=0&show_user_info=1";
-
-  /*     */private static final String LIST_ALL_DATABASES = "/server/databases?show_normal=1&show_system=1&show_user_info=1";
-
-  /*     */private static final String INFO = "/server/info?-";
-
-  /*     */private static final String SAVE = "/server/save?-";
-
-  /*     */private static final String SHUTDOWN = "/server/shutdown?-";
-
-  /*     */private static final String LOGIN = "/server/login?user=";
-
-  /*     */private static final String LOGOUT = "/server/logout?-";
-
-  /* 73 */private static final ServerHandler instance = new ServerHandler();
-
-  /*     */private final InfoBuilderRegistry builderReg;
-
-  /*     */
-  /*     */static final ServerHandler getInstance(HttpConnection connection)
-  /*     */{
-    /* 75 */instance.use(connection);
-    /* 76 */return instance;
-    /*     */}
-
-  /*     */
-  /*     */private ServerHandler()
-  /*     */{
-    /* 84 */this.builderReg = InfoBuilderRegistry.getInstance();
-    /*     */}
-
-  /*     */
-  /*     */public final DatabaseInfo[] getDatabases() throws IOException
-  /*     */{
-    /* 89 */String[][] response = request("/server/databases?show_normal=1&show_system=1&show_user_info=1");
-    /* 90 */DatabaseInfo[] databases = new DatabaseInfo[response.length];
-    /*     */
-    /* 96 */DatabaseInfoBuilder databaseBuilder =
-    /* 97 */this.builderReg.getDatabaseBuilder();
-    /* 98 */for (int i = 0; i < databases.length; ++i) {
-      /* 99 */databases[i] = databaseBuilder.create(null, response[i]);
-      /*     */}
-    /*     */
-    /* 102 */return databases;
-    /*     */}
-
-  /*     */public final DatabaseInfo[] getSystemDatabases() throws IOException {
-    /* 105 */String[][] response = request("/server/databases?show_normal=0&show_system=1&show_user_info=0");
-    /* 106 */DatabaseInfo[] databases = new DatabaseInfo[response.length];
-    /*     */
-    /* 112 */DatabaseInfoBuilder databaseBuilder =
-    /* 113 */this.builderReg.getDatabaseBuilder();
-    /* 114 */for (int i = 0; i < databases.length; ++i) {
-      /* 115 */databases[i] = databaseBuilder.create(null, response[i]);
-      /*     */}
-    /*     */
-    /* 118 */return databases;
-    /*     */}
-
-  /*     */
-  /*     */public final DatabaseInfo[] getUserInfoDatabases() throws IOException {
-    /* 122 */String[][] response = request("/server/databases?show_normal=0&show_system=0&show_user_info=1");
-    /* 123 */DatabaseInfo[] databases = new DatabaseInfo[response.length];
-    /* 124 */DatabaseInfoBuilder databaseBuilder =
-    /* 125 */this.builderReg.getDatabaseBuilder();
-    /* 126 */for (int i = 0; i < databases.length; ++i) {
-      /* 127 */databases[i] = databaseBuilder.create(null, response[i]);
-      /*     */}
-    /*     */
-    /* 130 */return databases;
-    /*     */}
-
-  /*     */
-  /*     */public final DatabaseInfo[] getNormalDatabases() throws IOException {
-    /* 134 */String[][] response = request("/server/databases?show_normal=1&show_system=0&show_user_info=0");
-    /* 135 */DatabaseInfo[] databases = new DatabaseInfo[response.length];
-    /*     */
-    /* 141 */DatabaseInfoBuilder databaseBuilder =
-    /* 142 */this.builderReg.getDatabaseBuilder();
-    /* 143 */for (int i = 0; i < databases.length; ++i) {
-      /* 144 */databases[i] = databaseBuilder.create(null, response[i]);
-      /*     */}
-    /*     */
-    /* 147 */return databases;
-    /*     */}
-
-  /*     */
-  /*     */public final ServerInfo getInfo()
-  /*     */throws IOException
-  /*     */{
-    /* 153 */String[][] response = request("/server/info?-", false, true);
-    /* 154 */if (response.length == 0)
-      /* 155 */response = new String[][] { { "" } };
-    /* 156 */ServerInfoBuilder srvBuilder = this.builderReg.getServerBuilder();
-    /* 157 */return srvBuilder.create(null, response[0]);
-    /*     */}
-
-  /*     */
-  /*     */public final boolean load() throws IOException
-  /*     */{
-    /* 162 */String[][] response = request("/server/load?-");
-    /* 163 */return response[0][0].equals("1");
-    /*     */}
-
-  /*     */
-  /*     */public final String[] login(String user, String password)
-    throws IOException
-  /*     */{
-    /* 168 */StringBuffer query = new StringBuffer();
-    /* 169 */query.append("/server/login?user=");
-    /* 170 */query.append(user);
-    /* 171 */query.append("&password=");
-    /* 172 */query.append(password);
-    /* 173 */String[][] response = request(query.toString(), false, true);
-    /* 174 */if (response.length == 0)
-      /* 175 */throw new PaloException("Unknown palo server!");
-    /* 176 */return response[0];
-    /*     */}
-
-  /*     */
-  /*     */public final boolean logout() throws IOException
-  /*     */{
-    /* 181 */String[][] response = request("/server/logout?-");
-    /* 182 */return response[0][0].equals("1");
-    /*     */}
-
-  /*     */
-  /*     */public final boolean save()
-  /*     */throws IOException
-  /*     */{
-    /* 231 */String[][] response = request("/server/save?-");
-    /* 232 */return response[0][0].equals("1");
-    /*     */}
-
-  /*     */
-  /*     */public final boolean shutdown() throws IOException
-  /*     */{
-    /* 237 */String[][] response = request("/server/shutdown?-");
-    /* 238 */return response[0][0].equals("1");
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file ServerHandler.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author ArndHouben
+*
+* @version $Id: ServerHandler.java,v 1.8 2010/07/13 09:21:05 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.paloapi\lib\palo.jar
- * Qualified Name: com.tensegrity.palojava.http.handlers.ServerHandler JD-Core
- * Version: 0.5.4
+ * (c) 2007 Tensegrity Software GmbH
  */
+package com.tensegrity.palojava.http.handlers;
+
+import java.io.IOException;
+
+import com.tensegrity.palojava.DatabaseInfo;
+import com.tensegrity.palojava.PaloException;
+import com.tensegrity.palojava.ServerInfo;
+import com.tensegrity.palojava.http.HttpConnection;
+import com.tensegrity.palojava.http.builders.DatabaseInfoBuilder;
+import com.tensegrity.palojava.http.builders.InfoBuilderRegistry;
+import com.tensegrity.palojava.http.builders.ServerInfoBuilder;
+
+/**
+ * <code></code>
+ * TODO DOCUMENT ME
+ * 
+ * @author ArndHouben
+ * @version $Id: ServerHandler.java,v 1.8 2010/07/13 09:21:05 PhilippBouillon Exp $
+ */
+public class ServerHandler extends HttpHandler {
+
+  private static final String LOAD = "/server/load?-";
+
+  private static final String LIST_NORMAL_DATABASES = "/server/databases?show_normal=1&show_system=0&show_user_info=0";
+
+  private static final String LIST_SYSTEM_DATABASES = "/server/databases?show_normal=0&show_system=1&show_user_info=0";
+
+  private static final String LIST_USER_INFO_DATABASES = "/server/databases?show_normal=0&show_system=0&show_user_info=1";
+
+  private static final String LIST_ALL_DATABASES = "/server/databases?show_normal=1&show_system=1&show_user_info=1";
+
+  private static final String INFO = "/server/info?-";
+
+  private static final String SAVE = "/server/save?-";
+
+  private static final String SHUTDOWN = "/server/shutdown?-";
+
+  private static final String LOGIN = "/server/login?user=";
+
+  private static final String LOGOUT = "/server/logout?-";
+
+  private static final String LICENSE = "/server/license";
+
+  //	private static final String LOCK_BEGIN = "/event/begin?";
+  //	private static final String LOCK_END = "/event/end?";
+
+  //--------------------------------------------------------------------------
+  // FACTORY
+  //
+  private static final ServerHandler instance = new ServerHandler();
+
+  static final ServerHandler getInstance(HttpConnection connection) {
+    instance.use(connection);
+    return instance;
+  }
+
+  //--------------------------------------------------------------------------
+  // INSTANCE
+  //
+  private final InfoBuilderRegistry builderReg;
+
+  private ServerHandler() {
+    builderReg = InfoBuilderRegistry.getInstance();
+  }
+
+  //	/server/databases  	Shows the list of databases.  	server	
+  public final DatabaseInfo[] getDatabases() throws IOException {
+    String[][] response = request(LIST_ALL_DATABASES);
+    DatabaseInfo[] databases = new DatabaseInfo[response.length];
+    //		PaloInfoBuilderFactory builder = PaloInfoBuilderFactory.getInstance();
+    //		for (int i = 0; i < databases.length; ++i) {
+    //			databases[i] = (DatabaseInfo) builder.create(
+    //					DatabaseInfo.class,null, response[i]);
+    //		}
+    DatabaseInfoBuilder databaseBuilder = builderReg.getDatabaseBuilder();
+    for (int i = 0; i < databases.length; ++i) {
+      databases[i] = databaseBuilder.create(null, response[i]);
+    }
+
+    return databases;
+  }
+
+  public final DatabaseInfo[] getSystemDatabases() throws IOException {
+    String[][] response = request(LIST_SYSTEM_DATABASES);
+    DatabaseInfo[] databases = new DatabaseInfo[response.length];
+    //		PaloInfoBuilderFactory builder = PaloInfoBuilderFactory.getInstance();
+    //		for (int i = 0; i < databases.length; ++i) {
+    //			databases[i] = (DatabaseInfo) builder.create(
+    //					DatabaseInfo.class,null, response[i]);
+    //		}
+    DatabaseInfoBuilder databaseBuilder = builderReg.getDatabaseBuilder();
+    for (int i = 0; i < databases.length; ++i) {
+      databases[i] = databaseBuilder.create(null, response[i]);
+    }
+
+    return databases;
+  }
+
+  public final DatabaseInfo[] getUserInfoDatabases() throws IOException {
+    String[][] response = request(LIST_USER_INFO_DATABASES);
+    DatabaseInfo[] databases = new DatabaseInfo[response.length];
+    DatabaseInfoBuilder databaseBuilder = builderReg.getDatabaseBuilder();
+    for (int i = 0; i < databases.length; ++i) {
+      databases[i] = databaseBuilder.create(null, response[i]);
+    }
+
+    return databases;
+  }
+
+  public final DatabaseInfo[] getNormalDatabases() throws IOException {
+    String[][] response = request(LIST_NORMAL_DATABASES);
+    DatabaseInfo[] databases = new DatabaseInfo[response.length];
+    //		PaloInfoBuilderFactory builder = PaloInfoBuilderFactory.getInstance();
+    //		for (int i = 0; i < databases.length; ++i) {
+    //			databases[i] = (DatabaseInfo) builder.create(
+    //					DatabaseInfo.class,null, response[i]);
+    //		}
+    DatabaseInfoBuilder databaseBuilder = builderReg.getDatabaseBuilder();
+    for (int i = 0; i < databases.length; ++i) {
+      databases[i] = databaseBuilder.create(null, response[i]);
+    }
+
+    return databases;
+  }
+
+  //	/server/info 	Shows information about the server. 	server	
+  public final ServerInfo getInfo() throws IOException {
+    String[][] response = request(INFO, false, true);
+    if (response.length == 0)
+      response = new String[][] { new String[] { "" } };
+    ServerInfoBuilder srvBuilder = builderReg.getServerBuilder();
+    return srvBuilder.create(null, response[0]);
+  }
+
+  //	/server/load 	Loads the server data (does not load database or cube data). 	server	
+  public final boolean load() throws IOException {
+    String[][] response = request(LOAD);
+    return response[0][0].equals(OK);
+  }
+
+  //	/server/login 	Login to server by user name and password. 	server	
+  public final String[] login(String user, String password) throws IOException {
+    StringBuffer query = new StringBuffer();
+    query.append(LOGIN);
+    query.append(user);
+    query.append("&password=");
+    query.append(password);
+    String[][] response = request(query.toString(), false, true);
+    if (response.length == 0)
+      throw new PaloException("Unknown palo server!");
+    return response[0];
+  }
+
+  public final String[] license() throws IOException {
+    String[][] response = request(LICENSE, false, true);
+    if (response.length == 0)
+      throw new PaloException("Unknown palo server!");
+    return response[0];
+  }
+
+  //	/server/logout 	Logout the current user 	server
+  public final boolean logout() throws IOException {
+    String[][] response = request(LOGOUT);
+    return response[0][0].equals(OK);
+  }
+
+  /*
+   * WE CURRENTLY DON'T SUPPORT GLOBAL SERVER LOCKS, BECAUSE:
+   *  - what happens if application crashes after lock request?
+   *  	=> will lock release iteself? and if so when?
+   *  - what happens if application needs a lock longer than its sid is valid?
+   *  - during the lock other request are blocked => timeout exception => not nice 
+   */
+  //	/**
+  //	 * Requests a server lock. The given string message is used for logging, 
+  //	 * i.e. all requests between the lock request and lock release 
+  //	 * are logged by the palo server with this string as event. 
+  //	 * @param msg the log message or <code>null</code> if none should be logged
+  //	 * @return <code>true</code> if requesting the lock was successful, 
+  //	 * <code>false</code> otherwise
+  //	 * @throws IOException
+  //	 */
+  //	public final boolean requestLock(String msg) throws IOException {
+  //		StringBuffer query = new StringBuffer();
+  //		query.append(LOCK_BEGIN);
+  //		query.append("source=");
+  //		query.append(connection.getSID());
+  //		if(msg != null) {
+  //			query.append("&event=");
+  ////			query.append(printQuoted(msg));
+  //			query.append(encode(msg));
+  //		} 
+  //		String[][] response = request(query.toString());
+  //		return response[0][0].equals(OK);
+  //	}
+  //
+  //	public final boolean releaseLock() throws IOException {
+  //		try {
+  //			StringBuffer query = new StringBuffer();
+  //			query.append(LOCK_END);
+  //			query.append("sid=");
+  //			query.append(connection.getSID());
+  //			String[][] response = request(query.toString(), false, true);
+  //			return response[0][0].equals(OK);
+  //		} catch (PaloException pex) {
+  //			return false;
+  //		}
+  //	}
+
+  //	/server/save 	Saves the server data (does not save database or cube data). 	server
+  public final boolean save() throws IOException {
+    String[][] response = request(SAVE);
+    return response[0][0].equals(OK);
+  }
+
+  //	/server/shutdown 	Shuts down server (does not save database or cube data). 	-
+  public final boolean shutdown() throws IOException {
+    String[][] response = request(SHUTDOWN);
+    return response[0][0].equals(OK);
+  }
+}
