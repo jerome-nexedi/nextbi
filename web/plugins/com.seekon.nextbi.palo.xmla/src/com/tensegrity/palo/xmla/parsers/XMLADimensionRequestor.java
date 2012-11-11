@@ -1,4 +1,41 @@
+/*
+*
+* @file XMLADimensionRequestor.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Michael Raue <Michael.Raue@tensegrity-software.com>
+*
+* @version $Id: XMLADimensionRequestor.java,v 1.4 2009/04/29 10:35:37 PhilippBouillon Exp $
+*
+*/
+
 package com.tensegrity.palo.xmla.parsers;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import com.tensegrity.palo.xmla.XMLAClient;
 import com.tensegrity.palo.xmla.XMLAConnection;
@@ -8,13 +45,7 @@ import com.tensegrity.palo.xmla.XMLADimensionInfo;
 import com.tensegrity.palo.xmla.XMLAHierarchyInfo;
 import com.tensegrity.palo.xmla.XMLAProperties;
 import com.tensegrity.palo.xmla.XMLARestrictions;
-import com.tensegrity.palo.xmla.XMLAServerInfo;
-import com.tensegrity.palojava.DatabaseInfo;
 import com.tensegrity.palojava.HierarchyInfo;
-import java.util.ArrayList;
-import java.util.HashMap;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 public class XMLADimensionRequestor extends AbstractXMLARequestor {
   public static String ITEM_CATALOG_NAME = "CATALOG_NAME";
@@ -65,14 +96,13 @@ public class XMLADimensionRequestor extends AbstractXMLARequestor {
 
   private String restrictionDimensionVisibility;
 
-  private final ArrayList<XMLADimensionInfo> dimensionInfos = new ArrayList();
+  private final ArrayList<XMLADimensionInfo> dimensionInfos = new ArrayList<XMLADimensionInfo>();
 
   private final XMLACubeInfo cube;
 
   private final XMLAConnection connection;
 
-  public XMLADimensionRequestor(XMLACubeInfo paramXMLACubeInfo,
-    XMLAConnection paramXMLAConnection) {
+  public XMLADimensionRequestor(XMLACubeInfo cube, XMLAConnection con) {
     activateItem(ITEM_CATALOG_NAME);
     activateItem(ITEM_SCHEMA_NAME);
     activateItem(ITEM_CUBE_NAME);
@@ -90,116 +120,113 @@ public class XMLADimensionRequestor extends AbstractXMLARequestor {
     activateItem(ITEM_DIMENSION_UNIQUE_SETTINGS);
     activateItem(ITEM_DIMENSION_MASTER_UNIQUE_NAME);
     activateItem(ITEM_DIMENSION_IS_VISIBLE);
-    this.cube = paramXMLACubeInfo;
-    this.connection = paramXMLAConnection;
+    this.cube = cube;
+    this.connection = con;
   }
 
-  public void setCatalogNameRestriction(String paramString) {
-    this.restrictionCatalog = paramString;
+  public void setCatalogNameRestriction(String catalogName) {
+    restrictionCatalog = catalogName;
   }
 
-  public void setSchemaNameRestriction(String paramString) {
-    this.restrictionSchema = paramString;
+  public void setSchemaNameRestriction(String schemaName) {
+    restrictionSchema = schemaName;
   }
 
-  public void setCubeNameRestriction(String paramString) {
-    this.restrictionCube = paramString;
+  public void setCubeNameRestriction(String cubeName) {
+    restrictionCube = cubeName;
   }
 
-  public void setDimensionNameRestriction(String paramString) {
-    this.restrictionDimensionName = paramString;
+  public void setDimensionNameRestriction(String dimName) {
+    restrictionDimensionName = dimName;
   }
 
-  public void setDimensionUniqueNameRestriction(String paramString) {
-    this.restrictionDimensionUniqueName = paramString;
+  public void setDimensionUniqueNameRestriction(String dimName) {
+    restrictionDimensionUniqueName = dimName;
   }
 
-  public void setCubeSourceRestriction(String paramString) {
-    this.restrictionCubeSource = paramString;
+  public void setCubeSourceRestriction(String cubeName) {
+    restrictionCubeSource = cubeName;
   }
 
-  public void setDimensionVisibilityRestriction(String paramString) {
-    this.restrictionDimensionVisibility = paramString;
+  public void setDimensionVisibilityRestriction(String dimVisibility) {
+    restrictionDimensionVisibility = dimVisibility;
   }
 
   private final XMLARestrictions setRestrictions() {
-    XMLARestrictions localXMLARestrictions = new XMLARestrictions();
-    localXMLARestrictions.setCatalog(this.restrictionCatalog);
-    localXMLARestrictions.setSchema(this.restrictionSchema);
-    localXMLARestrictions.setCubeName(this.restrictionCube);
-    localXMLARestrictions.setDimensionName(this.restrictionDimensionName);
-    localXMLARestrictions
-      .setDimensionUniqueName(this.restrictionDimensionUniqueName);
-    localXMLARestrictions.setCubeSource(this.restrictionCubeSource);
-    localXMLARestrictions
-      .setDimensionVisibility(this.restrictionDimensionVisibility);
-    return localXMLARestrictions;
+    XMLARestrictions rest = new XMLARestrictions();
+
+    rest.setCatalog(restrictionCatalog);
+    rest.setSchema(restrictionSchema);
+    rest.setCubeName(restrictionCube);
+    rest.setDimensionName(restrictionDimensionName);
+    rest.setDimensionUniqueName(restrictionDimensionUniqueName);
+    rest.setCubeSource(restrictionCubeSource);
+    rest.setDimensionVisibility(restrictionDimensionVisibility);
+
+    return rest;
   }
 
-  public XMLADimensionInfo[] requestDimensions(XMLAClient paramXMLAClient) {
-    this.dimensionInfos.clear();
+  public XMLADimensionInfo[] requestDimensions(XMLAClient xmlaClient) {
+    dimensionInfos.clear();
+
     try {
-      XMLARestrictions localXMLARestrictions = setRestrictions();
-      XMLAProperties localXMLAProperties = new XMLAProperties();
-      String str = paramXMLAClient.getConnections()[0].getName();
-      localXMLAProperties.setDataSourceInfo(str);
-      localXMLAProperties.setCatalog(this.cube.getDatabase().getId());
-      Document localDocument = paramXMLAClient.getDimensionList(
-        localXMLARestrictions, localXMLAProperties);
-      NodeList localNodeList = localDocument.getElementsByTagName("row");
-      if ((localNodeList == null) || (localNodeList.getLength() == 0))
+      XMLARestrictions rest = setRestrictions();
+      XMLAProperties prop = new XMLAProperties();
+
+      String connectionName = xmlaClient.getConnections()[0].getName();
+      prop.setDataSourceInfo(connectionName);
+      prop.setCatalog(cube.getDatabase().getId());
+
+      Document result = xmlaClient.getDimensionList(rest, prop);
+      NodeList nl = result.getElementsByTagName("row");
+
+      if (nl == null || nl.getLength() == 0) {
         return new XMLADimensionInfo[0];
-      parseXMLANodeList(localNodeList, str, paramXMLAClient);
-    } catch (Exception localException) {
-      localException.printStackTrace();
+      }
+      parseXMLANodeList(nl, connectionName, xmlaClient);
+    } catch (Exception e) {
+      e.printStackTrace();
       return new XMLADimensionInfo[0];
     }
-    return (XMLADimensionInfo[]) this.dimensionInfos
-      .toArray(new XMLADimensionInfo[0]);
+
+    return dimensionInfos.toArray(new XMLADimensionInfo[0]);
   }
 
-  protected void parseResult(HashMap<String, String> paramHashMap,
-    String paramString, XMLAClient paramXMLAClient) {
-    String str1 = (String) paramHashMap.get(ITEM_DIMENSION_CAPTION);
-    String str2 = (String) paramHashMap.get(ITEM_DIMENSION_UNIQUE_NAME);
-    XMLADimensionInfo localXMLADimensionInfo = new XMLADimensionInfo(
-      paramXMLAClient, str1, str2, (XMLADatabaseInfo) this.cube.getDatabase(),
-      this.cube.getId(), this.connection);
-    localXMLADimensionInfo.setDimensionUniqueName(str2);
+  protected void parseResult(HashMap<String, String> result, String connectionName,
+    XMLAClient xmlaClient) {
+    String name = result.get(ITEM_DIMENSION_CAPTION);
+    String id = result.get(ITEM_DIMENSION_UNIQUE_NAME);
+    XMLADimensionInfo dimInfo = new XMLADimensionInfo(xmlaClient, name, id,
+      (XMLADatabaseInfo) cube.getDatabase(), cube.getId(), connection);
+    dimInfo.setDimensionUniqueName(id);
     try {
-      localXMLADimensionInfo.setElementCount(Integer.parseInt((String) paramHashMap
+      dimInfo.setElementCount(Integer.parseInt(result
         .get(ITEM_DIMENSION_CARDINALITY)));
-    } catch (Exception localException1) {
+    } catch (Exception e) {
     }
     try {
-      int i = Integer.parseInt((String) paramHashMap.get(ITEM_DIMENSION_TYPE));
-      localXMLADimensionInfo.setXmlaType((i == 2) ? 1 : 0);
-    } catch (Exception localException2) {
+      int type = Integer.parseInt(result.get(ITEM_DIMENSION_TYPE));
+      dimInfo.setXmlaType(type == 2 ? XMLADimensionInfo.XMLA_TYPE_MEASURES
+        : XMLADimensionInfo.XMLA_TYPE_NORMAL);
+    } catch (Exception e) {
     }
-    String str3 = XMLADimensionInfo.getIDString((String) paramHashMap
-      .get(ITEM_DEFAULT_HIERARCHY), this.cube.getId());
-    Object localObject = this.connection.getHierarchy(localXMLADimensionInfo, str3);
-    if (localObject == null) {
-      HierarchyInfo[] arrayOfHierarchyInfo1 = this.connection
-        .getHierarchies(localXMLADimensionInfo);
-      if (arrayOfHierarchyInfo1 != null)
-        for (HierarchyInfo localHierarchyInfo : arrayOfHierarchyInfo1) {
-          if (localHierarchyInfo == null)
-            continue;
-          localObject = localHierarchyInfo;
-          break;
+
+    String ourId = XMLADimensionInfo.getIDString(result.get(ITEM_DEFAULT_HIERARCHY),
+      cube.getId());
+    HierarchyInfo hierarchy = connection.getHierarchy(dimInfo, ourId);
+    if (hierarchy == null) {
+      HierarchyInfo[] allHierarchies = connection.getHierarchies(dimInfo);
+      if (allHierarchies != null) {
+        for (HierarchyInfo hier : allHierarchies) {
+          if (hier != null) {
+            hierarchy = hier;
+            break;
+          }
         }
+      }
     }
-    localXMLADimensionInfo.setDefaultHierarchy((XMLAHierarchyInfo) localObject);
-    localXMLADimensionInfo.setHierarchyUniqueName(((HierarchyInfo) localObject)
-      .getId());
-    this.dimensionInfos.add(localXMLADimensionInfo);
+    dimInfo.setDefaultHierarchy((XMLAHierarchyInfo) hierarchy);
+    dimInfo.setHierarchyUniqueName(hierarchy.getId());
+    dimensionInfos.add(dimInfo);
   }
 }
-
-/*
- * Location:
- * D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
- * Qualified Name: com.tensegrity.palo.xmla.parsers.XMLADimensionRequestor
- * JD-Core Version: 0.5.4
- */

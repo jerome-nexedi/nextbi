@@ -1,3 +1,34 @@
+/*
+*
+* @file XMLAProperties.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Michael Raue <Michael.Raue@tensegrity-software.com>
+*
+* @version $Id: XMLAProperties.java,v 1.4 2009/04/29 10:35:37 PhilippBouillon Exp $
+*
+*/
+
 package com.tensegrity.palo.xmla;
 
 public class XMLAProperties {
@@ -11,114 +42,137 @@ public class XMLAProperties {
 
   private String content;
 
-  private int compatibility = 0;
+  private int compatibility;
 
-  private int beginRange = this.endRange = -1;
+  private int beginRange;
 
   private int endRange;
 
   public XMLAProperties() {
+    compatibility = 0;
+    beginRange = endRange = -1;
     setFormat("Tabular");
     setContent("SchemaData");
   }
 
   public String getDataSourceInfo() {
-    return this.dataSourceInfo;
+    return dataSourceInfo;
   }
 
-  public void setDataSourceInfo(String paramString) {
-    this.dataSourceInfo = paramString;
+  public void setDataSourceInfo(String s) {
+    dataSourceInfo = s;
   }
 
   public String getCatalog() {
-    return this.catalog;
+    return catalog;
   }
 
-  public void setCatalog(String paramString) {
-    this.catalog = paramString;
+  public void setCatalog(String s) {
+    catalog = s;
   }
 
   public int getBeginRange() {
-    return this.beginRange;
+    return beginRange;
   }
 
-  public void setBeginRange(int paramInt) {
-    this.beginRange = paramInt;
+  public void setBeginRange(int br) {
+    beginRange = br;
   }
 
   public int getEndRange() {
-    return this.endRange;
+    return endRange;
   }
 
-  public void setEndRange(int paramInt) {
-    this.endRange = paramInt;
+  public void setEndRange(int er) {
+    endRange = er;
   }
 
   public String getFormat() {
-    return this.format;
+    return format;
   }
 
-  public void setFormat(String paramString) {
-    this.format = paramString;
+  public void setFormat(String s) {
+    format = s;
   }
 
   public String getContent() {
-    return this.content;
+    return content;
   }
 
-  public void setContent(String paramString) {
-    this.content = paramString;
+  public void setContent(String s) {
+    content = s;
   }
 
-  public void setCompatibility(int paramInt) {
-    this.compatibility = paramInt;
+  public void setCompatibility(int i) {
+    compatibility = i;
   }
 
   public int getCompatibility() {
-    return this.compatibility;
+    return compatibility;
   }
 
-  protected String getPropertyListXML(String paramString) {
-    StringBuffer localStringBuffer = new StringBuffer("\n" + paramString
-      + "<PropertyList>");
-    if ((this.dataSourceInfo != null) && (this.dataSourceInfo.trim().length() > 0))
-      localStringBuffer.append("\n" + paramString + elementIndent
-        + "<DataSourceInfo>" + this.dataSourceInfo.trim() + "</DataSourceInfo>");
-    if (this.compatibility > 0)
-      localStringBuffer.append("\n" + paramString + elementIndent
-        + "<DbpropMsmdMDXCompatibility>" + this.compatibility
-        + "</DbpropMsmdMDXCompatibility>");
-    if ((this.catalog != null) && (this.catalog.trim().length() > 0))
-      localStringBuffer.append("\n" + paramString + elementIndent + "<Catalog>"
-        + this.catalog.trim() + "</Catalog>");
-    if ((this.format != null) && (this.format.trim().length() > 0))
-      localStringBuffer.append("\n" + paramString + elementIndent + "<Format>"
-        + this.format.trim() + "</Format>");
-    if ((this.content != null) && (this.content.trim().length() > 0))
-      localStringBuffer.append("\n" + paramString + elementIndent + "<Content>"
-        + this.content.trim() + "</Content>");
-    if (this.beginRange >= 0)
-      localStringBuffer.append("\n" + paramString + elementIndent + "<BeginRange>"
-        + this.beginRange + "</BeginRange>");
-    if (this.endRange >= 0)
-      localStringBuffer.append("\n" + paramString + elementIndent + "<EndRange>"
-        + this.endRange + "</EndRange>");
-    localStringBuffer.append("\n" + paramString + "</PropertyList>");
-    return localStringBuffer.toString();
+  protected String getPropertyListXML(String indent) {
+    /*
+     <Properties>
+     <PropertyList>
+     <ns1:DataSourceInfo>Local Analysis Server</ns1:DataSourceInfo>
+     <ns1:Catalog>FoodMart 2000</ns1:Catalog>
+     <ns1:BeginRange>0</ns1:BeginRange>
+     <ns1:EndRange>0</ns1:EndRange>
+     <Format>Tabular</Format>
+     <Content>SchemaData</Content>
+     </PropertyList>
+     */
+    StringBuffer sb = new StringBuffer("\n" + indent + "<PropertyList>");
+
+    if (dataSourceInfo != null && dataSourceInfo.trim().length() > 0)
+      sb.append("\n" + indent + elementIndent + "<DataSourceInfo>"
+        + dataSourceInfo.trim() + "</DataSourceInfo>");
+
+    if (compatibility > 0)
+      sb.append("\n" + indent + elementIndent + "<DbpropMsmdMDXCompatibility>"
+        + compatibility + "</DbpropMsmdMDXCompatibility>");
+
+    if (catalog != null && catalog.trim().length() > 0)
+      sb.append("\n" + indent + elementIndent + "<Catalog>" + catalog.trim()
+        + "</Catalog>");
+
+    if (format != null && format.trim().length() > 0)
+      sb.append("\n" + indent + elementIndent + "<Format>" + format.trim()
+        + "</Format>");
+
+    if (content != null && content.trim().length() > 0)
+      sb.append("\n" + indent + elementIndent + "<Content>" + content.trim()
+        + "</Content>");
+
+    if (beginRange >= 0)
+      sb.append("\n" + indent + elementIndent + "<BeginRange>" + beginRange
+        + "</BeginRange>");
+
+    if (endRange >= 0)
+      sb.append("\n" + indent + elementIndent + "<EndRange>" + endRange
+        + "</EndRange>");
+
+    sb.append("\n" + indent + "</PropertyList>");
+    return sb.toString();
+
   }
 
-  public String getXML(String paramString) {
-    return "\n"
-      + paramString
-      + "<Properties>"
-      + getPropertyListXML(new StringBuilder().append(paramString).append(
-        elementIndent).toString()) + "\n" + paramString + "</Properties>";
+  public String getXML(String indent) {
+    /*
+     <Properties>
+     <PropertyList>
+     <ns1:DataSourceInfo>Local Analysis Server</ns1:DataSourceInfo>
+     <ns1:Catalog>FoodMart 2000</ns1:Catalog>
+     <ns1:BeginRange>0</ns1:BeginRange>
+     <ns1:EndRange>0</ns1:EndRange>
+     <Format>Tabular</Format>
+     <Content>SchemaData</Content>
+     </PropertyList>
+     
+     */
+    return "\n" + indent + "<Properties>"
+      + getPropertyListXML(indent + elementIndent) + "\n" + indent + "</Properties>";
+
   }
 }
-
-/*
- * Location:
- * D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
- * Qualified Name: com.tensegrity.palo.xmla.XMLAProperties JD-Core Version:
- * 0.5.4
- */

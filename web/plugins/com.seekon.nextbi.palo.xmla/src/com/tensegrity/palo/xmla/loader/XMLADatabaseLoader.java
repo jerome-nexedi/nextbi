@@ -1,114 +1,145 @@
+/*
+*
+* @file XMLADatabaseLoader.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Michael Raue <Michael.Raue@tensegrity-software.com>
+*
+* @version $Id: XMLADatabaseLoader.java,v 1.6 2009/06/04 14:01:59 PhilippBouillon Exp $
+*
+*/
+
 package com.tensegrity.palo.xmla.loader;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.tensegrity.palo.xmla.XMLAClient;
 import com.tensegrity.palo.xmla.XMLAConnection;
 import com.tensegrity.palo.xmla.XMLADatabaseInfo;
 import com.tensegrity.palo.xmla.XMLAProperties;
 import com.tensegrity.palo.xmla.XMLARestrictions;
-import com.tensegrity.palo.xmla.XMLAServerInfo;
 import com.tensegrity.palo.xmla.builders.BuilderRegistry;
-import com.tensegrity.palo.xmla.builders.DatabaseInfoBuilder;
 import com.tensegrity.palojava.DatabaseInfo;
 import com.tensegrity.palojava.PaloInfo;
 import com.tensegrity.palojava.loader.DatabaseLoader;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public class XMLADatabaseLoader extends DatabaseLoader {
   private Set<String> databaseIds = null;
 
   private final XMLAClient xmlaClient;
 
-  public XMLADatabaseLoader(XMLAConnection paramXMLAConnection,
-    XMLAClient paramXMLAClient) {
-    super(paramXMLAConnection);
-    this.xmlaClient = paramXMLAClient;
+  public XMLADatabaseLoader(XMLAConnection xmlaConnection, XMLAClient xmlaClient) {
+    super(xmlaConnection);
+    this.xmlaClient = xmlaClient;
   }
 
   public int getDatabaseCount() {
-    if (this.databaseIds == null)
+    if (databaseIds == null) {
       loadAllDatabaseIds();
-    return this.databaseIds.size();
+    }
+    return databaseIds.size();
   }
 
   public final String[] getAllDatabaseIds() {
-    if (this.databaseIds == null)
+    if (databaseIds == null) {
       loadAllDatabaseIds();
-    return (String[]) this.databaseIds.toArray(new String[0]);
+    }
+    return databaseIds.toArray(new String[0]);
   }
 
-  public DatabaseInfo loadByName(String paramString) {
-    DatabaseInfo localDatabaseInfo = findDatabase(paramString);
-    if (localDatabaseInfo == null)
-      return loadDatabase(paramString);
-    return localDatabaseInfo;
+  public DatabaseInfo loadByName(String name) {
+    //first check if we have it loaded already
+    DatabaseInfo dbInfo = findDatabase(name);
+    if (dbInfo == null) {
+      //if not, we have to ask server...
+      return loadDatabase(name);
+    }
+    return dbInfo;
   }
 
   protected void reload() {
     System.out.println("XMLA Database Loader::reload");
   }
 
-  private final DatabaseInfo findDatabase(String paramString) {
-    Collection localCollection = getLoaded();
-    Iterator localIterator = localCollection.iterator();
-    while (localIterator.hasNext()) {
-      PaloInfo localPaloInfo = (PaloInfo) localIterator.next();
-      if (localPaloInfo instanceof DatabaseInfo) {
-        DatabaseInfo localDatabaseInfo = (DatabaseInfo) localPaloInfo;
-        if (localDatabaseInfo.getId().equals(paramString))
-          return localDatabaseInfo;
+  private final DatabaseInfo findDatabase(String name) {
+    Collection<PaloInfo> infos = getLoaded();
+    for (PaloInfo info : infos) {
+      if (info instanceof DatabaseInfo) {
+        DatabaseInfo dbInfo = (DatabaseInfo) info;
+        if (dbInfo.getId().equals(name))
+          return dbInfo;
       }
     }
     return null;
   }
 
   private final void loadAllDatabaseIds() {
-    this.databaseIds = new LinkedHashSet();
-    String str1 = this.xmlaClient.getConnections()[0].getName();
+    databaseIds = new LinkedHashSet<String>();
+    String connectionName = xmlaClient.getConnections()[0].getName();
+
     try {
-      XMLARestrictions localXMLARestrictions = new XMLARestrictions();
-      XMLAProperties localXMLAProperties = new XMLAProperties();
-      localXMLAProperties.setDataSourceInfo(str1);
-      Document localDocument = this.xmlaClient.getCatalogList(localXMLARestrictions,
-        localXMLAProperties);
-      NodeList localNodeList1 = localDocument.getElementsByTagName("row");
-      if ((localNodeList1 == null) || (localNodeList1.getLength() == 0))
+      XMLARestrictions rest = new XMLARestrictions();
+      XMLAProperties prop = new XMLAProperties();
+
+      prop.setDataSourceInfo(connectionName);
+      Document catalogResult = xmlaClient.getCatalogList(rest, prop);
+      NodeList catalogList = catalogResult.getElementsByTagName("row");
+
+      if (catalogList == null || catalogList.getLength() == 0) {
         return;
-      for (int i = 0; i < localNodeList1.getLength(); ++i) {
-        NodeList localNodeList2 = localNodeList1.item(i).getChildNodes();
-        for (int j = 0; j < localNodeList2.getLength(); ++j) {
-          if ((localNodeList2.item(j).getNodeType() != 1)
-            || (!localNodeList2.item(j).getNodeName().equals("CATALOG_NAME")))
-            continue;
-          String str2 = XMLAClient.getTextFromDOMElement(localNodeList2.item(j));
-          this.databaseIds.add(str2);
+      }
+
+      for (int i = 0; i < catalogList.getLength(); i++) {
+        NodeList nlRow = catalogList.item(i).getChildNodes();
+
+        for (int j = 0; j < nlRow.getLength(); j++) {
+          if (nlRow.item(j).getNodeType() == Node.ELEMENT_NODE) {
+            if (nlRow.item(j).getNodeName().equals("CATALOG_NAME")) {
+              String text = XMLAClient.getTextFromDOMElement(nlRow.item(j));
+              //							if (xmlaClient.isSAP() && text.equals("$INFOCUBE")) {
+              //								continue;
+              //							}
+              databaseIds.add(text);
+            }
+          }
         }
       }
-    } catch (IOException localIOException) {
-      localIOException.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 
-  private final XMLADatabaseInfo loadDatabase(String paramString) {
-    XMLADatabaseInfo localXMLADatabaseInfo = BuilderRegistry.getInstance()
-      .getDatabaseInfoBuilder().getDatabaseInfo(
-        (XMLAConnection) this.paloConnection, this.xmlaClient, paramString);
-    this.loadedInfo.put(paramString, localXMLADatabaseInfo);
-    return localXMLADatabaseInfo;
+  private final XMLADatabaseInfo loadDatabase(String name) {
+    XMLADatabaseInfo dbInfo = BuilderRegistry.getInstance().getDatabaseInfoBuilder()
+      .getDatabaseInfo((XMLAConnection) paloConnection, xmlaClient, name);
+    loadedInfo.put(name, dbInfo);
+    return dbInfo;
   }
 }
-
-/*
- * Location:
- * D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
- * Qualified Name: com.tensegrity.palo.xmla.loader.XMLADatabaseLoader JD-Core
- * Version: 0.5.4
- */

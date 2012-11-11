@@ -1,3 +1,34 @@
+/*
+*
+* @file ElementInfoBuilder.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Michael Raue <Michael.Raue@tensegrity-software.com>
+*
+* @version $Id: ElementInfoBuilder.java,v 1.37 2009/04/29 10:35:37 PhilippBouillon Exp $
+*
+*/
+
 package com.tensegrity.palo.xmla.builders;
 
 import java.io.IOException;
@@ -21,6 +52,7 @@ import com.tensegrity.palo.xmla.XMLAHierarchyInfo;
 import com.tensegrity.palo.xmla.XMLAProperties;
 import com.tensegrity.palo.xmla.XMLARestrictions;
 import com.tensegrity.palojava.CubeInfo;
+import com.tensegrity.palojava.ElementInfo;
 import com.tensegrity.palojava.impl.RuleImpl;
 
 public class ElementInfoBuilder {
@@ -32,7 +64,7 @@ public class ElementInfoBuilder {
 
   private String connectionName;
 
-  private long totalTime = 0L;
+  private long totalTime;
 
   private int maxDepth;
 
@@ -42,539 +74,555 @@ public class ElementInfoBuilder {
 
   private XMLAHierarchyInfo hierarchy;
 
-  public void getElementsTest(XMLAConnection paramXMLAConnection,
-    XMLAClient paramXMLAClient, String paramString1, String paramString2,
-    String paramString3) {
+  ElementInfoBuilder() {
+    totalTime = 0;
+  }
+
+  public void getElementsTest(XMLAConnection con, XMLAClient client,
+    String databaseId, String dimensionId, String hierarchyId) {
     XMLAClient.setVerbose(true);
-    XMLAExecuteProperties localXMLAExecuteProperties = new XMLAExecuteProperties();
-    String str1 = paramXMLAClient.getConnections()[0].getName();
-    localXMLAExecuteProperties.setDataSourceInfo(str1);
-    localXMLAExecuteProperties.setCatalog(paramString1);
+    XMLAExecuteProperties prop = new XMLAExecuteProperties();
+    String conName = client.getConnections()[0].getName();
+    prop.setDataSourceInfo(conName);
+    prop.setCatalog(databaseId);
+
     try {
-      StringBuffer localStringBuffer = new StringBuffer("SELECT ");
-      localStringBuffer.append(paramString3);
-      localStringBuffer.append(".Levels(0) ON 0 FROM $" + paramString2);
-      System.out.println("Query == " + localStringBuffer);
-      Document localDocument = paramXMLAClient.execute(localStringBuffer.toString(),
-        localXMLAExecuteProperties);
-      if (localDocument == null) {
+      StringBuffer sb = new StringBuffer("SELECT ");
+      sb.append(hierarchyId);
+      sb.append(".Levels(0) ON 0 FROM $" + dimensionId);
+      System.out.println("Query == " + sb);
+      Document result = client.execute(sb.toString(), prop);
+      if (result == null) {
         System.out.println("Whoops: Document == null");
         return;
       }
-      NodeList localNodeList1 = localDocument.getElementsByTagName("Tuple");
-      if ((localNodeList1 == null) || (localNodeList1.getLength() == 0)) {
+      NodeList nl = result.getElementsByTagName("Tuple");
+      if (nl == null || nl.getLength() == 0) {
         System.out.println("Null result...");
         return;
       }
-      for (int i = 0; i < localNodeList1.getLength(); ++i) {
+      for (int i = 0; i < nl.getLength(); i++) {
         try {
-          String str2 = localNodeList1.item(i).getParentNode().getParentNode()
+          String axisName = nl.item(i).getParentNode().getParentNode()
             .getAttributes().getNamedItem("name").getNodeValue();
-          if (!str2.equalsIgnoreCase("axis0")) {
-            System.out.println(XMLAClient.getTextFromDOMElement(localNodeList1
-              .item(i)));
-            return;
+          if (!axisName.equalsIgnoreCase("axis0")) {
+            continue;
           }
-        } catch (Exception localException) {
-          System.out.println(XMLAClient
-            .getTextFromDOMElement(localNodeList1.item(i)));
-          return;
+        } catch (Exception e) {
+          continue;
         }
-        NodeList localNodeList2 = localNodeList1.item(i).getChildNodes().item(0)
-          .getChildNodes();
-        for (int j = 0; j < localNodeList2.getLength(); ++j) {
-          if (localNodeList2.item(j).getNodeType() != 1)
-            continue;
-          Node localNode = localNodeList2.item(j);
-          String str3 = localNode.getNodeName();
-          if (!str3.equals("UName"))
-            continue;
-
+        NodeList nlRow = nl.item(i).getChildNodes().item(0).getChildNodes();
+        for (int j = 0; j < nlRow.getLength(); j++) {
+          if (nlRow.item(j).getNodeType() == Node.ELEMENT_NODE) {
+            Node currentItem = nlRow.item(j);
+            String nodeName = currentItem.getNodeName();
+            if (nodeName.equals("UName")) {
+              System.out.println(XMLAClient.getTextFromDOMElement(currentItem));
+            }
+          }
         }
       }
-    } catch (IOException localIOException) {
-      localIOException.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
     XMLAClient.setVerbose(false);
   }
 
-  public XMLAElementInfo[] getElements(XMLAConnection paramXMLAConnection,
-    XMLAClient paramXMLAClient, String paramString,
-    XMLADimensionInfo paramXMLADimensionInfo) {
-    this.xmlaClient = paramXMLAClient;
-    this.connectionName = paramXMLAClient.getConnections()[0].getName();
-    this.dimension = paramXMLADimensionInfo;
+  public XMLAElementInfo[] getElements(XMLAConnection con, XMLAClient client,
+    String cubeId, XMLADimensionInfo dimension) {
+    xmlaClient = client;
+    connectionName = client.getConnections()[0].getName();
+    this.dimension = dimension;
     this.hierarchy = null;
-    this.cubeId = paramString;
-    this.xmlaConnection = paramXMLAConnection;
+    this.cubeId = cubeId;
+    this.xmlaConnection = con;
     return requestElements(null);
   }
 
-  public XMLAElementInfo[] getElements(XMLAConnection paramXMLAConnection,
-    XMLAClient paramXMLAClient, String paramString,
-    XMLAHierarchyInfo paramXMLAHierarchyInfo) {
-    this.xmlaClient = paramXMLAClient;
-    this.connectionName = paramXMLAClient.getConnections()[0].getName();
-    this.dimension = ((XMLADimensionInfo) paramXMLAHierarchyInfo.getDimension());
-    this.hierarchy = paramXMLAHierarchyInfo;
-    this.cubeId = paramString;
-    this.xmlaConnection = paramXMLAConnection;
+  public XMLAElementInfo[] getElements(XMLAConnection con, XMLAClient client,
+    String cubeId, XMLAHierarchyInfo hierarchy) {
+    xmlaClient = client;
+    connectionName = client.getConnections()[0].getName();
+    this.dimension = (XMLADimensionInfo) hierarchy.getDimension();
+    this.hierarchy = hierarchy;
+    this.cubeId = cubeId;
+    this.xmlaConnection = con;
     return requestElements(null);
   }
 
-  public XMLAElementInfo[] getElements(XMLAConnection paramXMLAConnection,
-    XMLAClient paramXMLAClient, String paramString,
-    XMLADimensionInfo paramXMLADimensionInfo, int paramInt) {
-    this.xmlaClient = paramXMLAClient;
-    this.connectionName = paramXMLAClient.getConnections()[0].getName();
-    this.dimension = paramXMLADimensionInfo;
-    this.cubeId = paramString;
-    this.xmlaConnection = paramXMLAConnection;
-    return requestElementsAtLevel(null, paramInt);
+  public XMLAElementInfo[] getElements(XMLAConnection con, XMLAClient client,
+    String cubeId, XMLADimensionInfo dimension, int level) {
+    xmlaClient = client;
+    connectionName = client.getConnections()[0].getName();
+    this.dimension = dimension;
+    this.cubeId = cubeId;
+    this.xmlaConnection = con;
+
+    return requestElementsAtLevel(null, level);
   }
 
-  public XMLAElementInfo[] getElements(XMLAConnection paramXMLAConnection,
-    XMLAClient paramXMLAClient, String paramString,
-    XMLAHierarchyInfo paramXMLAHierarchyInfo, int paramInt) {
-    this.xmlaClient = paramXMLAClient;
-    this.connectionName = paramXMLAClient.getConnections()[0].getName();
-    this.dimension = ((XMLADimensionInfo) paramXMLAHierarchyInfo.getDimension());
-    this.hierarchy = paramXMLAHierarchyInfo;
-    this.cubeId = paramString;
-    this.xmlaConnection = paramXMLAConnection;
-    return requestElementsAtLevel(null, paramInt);
+  public XMLAElementInfo[] getElements(XMLAConnection con, XMLAClient client,
+    String cubeId, XMLAHierarchyInfo hierarchy, int level) {
+    xmlaClient = client;
+    connectionName = client.getConnections()[0].getName();
+    this.dimension = (XMLADimensionInfo) hierarchy.getDimension();
+    this.hierarchy = hierarchy;
+    this.cubeId = cubeId;
+    this.xmlaConnection = con;
+
+    return requestElementsAtLevel(null, level);
   }
 
-  public XMLAElementInfo[] getChildren(XMLAConnection paramXMLAConnection,
-    XMLAClient paramXMLAClient, String paramString,
-    XMLAElementInfo paramXMLAElementInfo) {
-    this.xmlaClient = paramXMLAClient;
-    this.connectionName = paramXMLAClient.getConnections()[0].getName();
-    this.dimension = ((XMLADimensionInfo) paramXMLAElementInfo.getDimension());
-    this.hierarchy = ((XMLAHierarchyInfo) paramXMLAElementInfo.getHierarchy());
-    this.cubeId = paramString;
-    this.xmlaConnection = paramXMLAConnection;
-    return requestElements(paramXMLAElementInfo);
+  public XMLAElementInfo[] getChildren(XMLAConnection con, XMLAClient client,
+    String cubeId, XMLAElementInfo parent) {
+    xmlaClient = client;
+    connectionName = client.getConnections()[0].getName();
+    this.dimension = (XMLADimensionInfo) parent.getDimension();
+    this.hierarchy = (XMLAHierarchyInfo) parent.getHierarchy();
+    this.cubeId = cubeId;
+    this.xmlaConnection = con;
+    return requestElements(parent);
   }
 
-  public XMLAElementInfo getElementInfo(XMLAConnection paramXMLAConnection,
-    XMLAClient paramXMLAClient, XMLADimensionInfo paramXMLADimensionInfo,
-    String paramString) {
-    this.xmlaClient = paramXMLAClient;
-    this.connectionName = paramXMLAClient.getConnections()[0].getName();
-    this.dimension = paramXMLADimensionInfo;
-    this.xmlaConnection = paramXMLAConnection;
-    return requestElement(paramString);
+  public XMLAElementInfo getElementInfo(XMLAConnection con, XMLAClient client,
+    XMLADimensionInfo dimension, String id) {
+    xmlaClient = client;
+    connectionName = client.getConnections()[0].getName();
+    this.dimension = dimension;
+    this.xmlaConnection = con;
+
+    return requestElement(id);
   }
 
-  public XMLAElementInfo getElementInfo(XMLAConnection paramXMLAConnection,
-    XMLAClient paramXMLAClient, XMLAHierarchyInfo paramXMLAHierarchyInfo,
-    String paramString) {
-    this.xmlaClient = paramXMLAClient;
-    this.connectionName = paramXMLAClient.getConnections()[0].getName();
-    this.dimension = ((XMLADimensionInfo) paramXMLAHierarchyInfo.getDimension());
-    this.hierarchy = paramXMLAHierarchyInfo;
-    this.xmlaConnection = paramXMLAConnection;
-    return requestElement(paramString);
+  public XMLAElementInfo getElementInfo(XMLAConnection con, XMLAClient client,
+    XMLAHierarchyInfo hierarchy, String id) {
+    xmlaClient = client;
+    connectionName = client.getConnections()[0].getName();
+    this.dimension = (XMLADimensionInfo) hierarchy.getDimension();
+    this.hierarchy = hierarchy;
+    this.xmlaConnection = con;
+
+    return requestElement(id);
   }
 
-  private XMLAElementInfo requestElement(String paramString) {
+  private XMLAElementInfo requestElement(String id) {
     try {
-      paramString = XMLADimensionInfo.transformId(paramString);
-      paramString = paramString.replaceAll("&", "&amp;");
-      XMLARestrictions localXMLARestrictions = new XMLARestrictions();
-      XMLAProperties localXMLAProperties = new XMLAProperties();
-      localXMLAProperties.setDataSourceInfo(this.connectionName);
-      localXMLAProperties.setCatalog(this.dimension.getDatabase().getId());
-      localXMLARestrictions.setCatalog(this.dimension.getDatabase().getId());
-      localXMLARestrictions.setMemberUniqueName(paramString);
-      localXMLARestrictions.setCubeName(this.dimension.getCubeId());
-      Document localDocument = this.xmlaClient.getMemberList(localXMLARestrictions,
-        localXMLAProperties);
-      NodeList localNodeList1 = localDocument.getElementsByTagName("row");
-      if ((localNodeList1 == null) || (localNodeList1.getLength() == 0))
+      id = XMLADimensionInfo.transformId(id);
+      id = id.replaceAll("&", "&amp;");
+      XMLARestrictions rest = new XMLARestrictions();
+      XMLAProperties prop = new XMLAProperties();
+      prop.setDataSourceInfo(connectionName);
+      prop.setCatalog(dimension.getDatabase().getId());
+      rest.setCatalog(dimension.getDatabase().getId());
+      rest.setMemberUniqueName(id);
+      rest.setCubeName(dimension.getCubeId());
+      Document result = xmlaClient.getMemberList(rest, prop);
+      NodeList nl = result.getElementsByTagName("row");
+      if (nl == null || nl.getLength() == 0) {
         return null;
-      NodeList localNodeList2 = localNodeList1.item(0).getChildNodes();
-      XMLAElementInfo localXMLAElementInfo1 = null;
-      String str1 = "<not initialized>";
-      for (int i = 0; i < localNodeList2.getLength(); ++i) {
-        if (localNodeList2.item(i).getNodeType() != 1)
-          continue;
-        Node localNode = localNodeList2.item(i);
-        String str2 = localNode.getNodeName();
-        String str3;
-        if (str2.equals("MEMBER_UNIQUE_NAME")) {
-          str3 = XMLAClient.getTextFromDOMElement(localNode);
-          localXMLAElementInfo1 = this.dimension.getMemberInternal(str3);
-          if (localXMLAElementInfo1 == null) {
-            localXMLAElementInfo1 = new XMLAElementInfo(this.hierarchy,
-              this.dimension, this.xmlaClient, this.xmlaConnection);
-            localXMLAElementInfo1.setName(str3);
-            localXMLAElementInfo1.setUniqueName(str3);
-            localXMLAElementInfo1.setId(str3);
-            this.dimension.addMemberInternal(localXMLAElementInfo1);
+      }
+
+      NodeList nlRow = nl.item(0).getChildNodes();
+      XMLAElementInfo currentMember = null;
+      String currentMemberOrdinal = "<not initialized>";
+      for (int j = 0; j < nlRow.getLength(); j++) {
+        if (nlRow.item(j).getNodeType() == Node.ELEMENT_NODE) {
+          Node currentItem = nlRow.item(j);
+          String nodeName = currentItem.getNodeName();
+          if (nodeName.equals("MEMBER_UNIQUE_NAME")) {
+            String text = XMLAClient.getTextFromDOMElement(currentItem);
+            currentMember = ((XMLADimensionInfo) dimension).getMemberInternal(text);
+            if (currentMember == null) {
+              currentMember = new XMLAElementInfo(hierarchy, dimension, xmlaClient,
+                xmlaConnection);
+              currentMember.setName(text);
+              currentMember.setUniqueName(text);
+              currentMember.setId(text); //"" + currentMemberUniqueName.hashCode());
+              ((XMLADimensionInfo) dimension).addMemberInternal(currentMember);
+            }
+          } else if (nodeName.equals("MEMBER_TYPE")) {
+            String text = XMLAClient.getTextFromDOMElement(nlRow.item(j));
+            try {
+              int typeNumber = Integer.parseInt(text);
+              if (typeNumber == 1 || typeNumber == 3) {
+                currentMember.setType(ElementInfo.TYPE_NUMERIC);
+              } else {
+                currentMember.setType(ElementInfo.TYPE_STRING);
+              }
+            } catch (NumberFormatException e) {
+              currentMember.setType(ElementInfo.TYPE_STRING);
+            }
+          } else if (nodeName.equals("PARENT_UNIQUE_NAME")) {
+            String text = XMLAClient.getTextFromDOMElement(currentItem);
+            XMLAElementInfo parent = ((XMLADimensionInfo) dimension)
+              .getMemberInternal(text);
+            if (parent == null) {
+              parent = new XMLAElementInfo(hierarchy, dimension, xmlaClient,
+                xmlaConnection);
+              parent.setUniqueName(text);
+              parent.setId(text); //"" + text.hashCode());
+            }
+            parent.addChildInternal(currentMember);
+            parent.addChild(currentMember);
+            ((XMLADimensionInfo) dimension).addMemberInternal(parent);
+            currentMember.setParentInternal(new XMLAElementInfo[] { parent });
+            currentMember.setParents(new String[] { parent.getId() });
+          } else if (nlRow.item(j).getNodeName().equals("MEMBER_CAPTION")) {
+            String text = XMLAClient.getTextFromDOMElement(nlRow.item(j));
+            currentMember.setName(text);
+          } else if (nlRow.item(j).getNodeName().equals("MEMBER_ORDINAL")) {
+            currentMemberOrdinal = XMLAClient.getTextFromDOMElement(nlRow.item(j));
+          } else if (nlRow.item(j).getNodeName().equals("CHILDREN_CARDINALITY")) {
+            String text = XMLAClient.getTextFromDOMElement(nlRow.item(j));
+            int estimatedChildCount = Integer.parseInt(text);
+            currentMember.setHasChildren(estimatedChildCount > 0);
+            currentMember.setEstimatedChildCount(estimatedChildCount);
           }
-        } else if (str2.equals("MEMBER_TYPE")) {
-          str3 = XMLAClient.getTextFromDOMElement(localNodeList2.item(i));
-          try {
-            int j = Integer.parseInt(str3);
-            if ((j == 1) || (j == 3))
-              localXMLAElementInfo1.setType(1);
-            else
-              localXMLAElementInfo1.setType(2);
-          } catch (NumberFormatException localNumberFormatException2) {
-            localXMLAElementInfo1.setType(2);
-          }
-        } else if (str2.equals("PARENT_UNIQUE_NAME")) {
-          str3 = XMLAClient.getTextFromDOMElement(localNode);
-          XMLAElementInfo localXMLAElementInfo2 = this.dimension
-            .getMemberInternal(str3);
-          if (localXMLAElementInfo2 == null) {
-            localXMLAElementInfo2 = new XMLAElementInfo(this.hierarchy,
-              this.dimension, this.xmlaClient, this.xmlaConnection);
-            localXMLAElementInfo2.setUniqueName(str3);
-            localXMLAElementInfo2.setId(str3);
-          }
-          localXMLAElementInfo2.addChildInternal(localXMLAElementInfo1);
-          localXMLAElementInfo2.addChild(localXMLAElementInfo1);
-          this.dimension.addMemberInternal(localXMLAElementInfo2);
-          localXMLAElementInfo1
-            .setParentInternal(new XMLAElementInfo[] { localXMLAElementInfo2 });
-          localXMLAElementInfo1.setParents(new String[] { localXMLAElementInfo2
-            .getId() });
-        } else if (localNodeList2.item(i).getNodeName().equals("MEMBER_CAPTION")) {
-          str3 = XMLAClient.getTextFromDOMElement(localNodeList2.item(i));
-          localXMLAElementInfo1.setName(str3);
-        } else if (localNodeList2.item(i).getNodeName().equals("MEMBER_ORDINAL")) {
-          str1 = XMLAClient.getTextFromDOMElement(localNodeList2.item(i));
-        } else {
-          if (!localNodeList2.item(i).getNodeName().equals("CHILDREN_CARDINALITY"))
-            continue;
-          str3 = XMLAClient.getTextFromDOMElement(localNodeList2.item(i));
-          int k = Integer.parseInt(str3);
-          localXMLAElementInfo1.setHasChildren(k > 0);
-          localXMLAElementInfo1.setEstimatedChildCount(k);
         }
       }
       try {
-        localXMLAElementInfo1.setPosition(Integer.parseInt(str1));
-      } catch (NumberFormatException localNumberFormatException1) {
-        localXMLAElementInfo1.setPosition(2147483647);
+        currentMember.setPosition(Integer.parseInt(currentMemberOrdinal));
+      } catch (NumberFormatException e) {
+        currentMember.setPosition(Integer.MAX_VALUE);
       }
-      return localXMLAElementInfo1;
-    } catch (IOException localIOException) {
-      localIOException.printStackTrace();
+      return currentMember;
+    } catch (IOException e) {
+      e.printStackTrace();
     }
     return null;
   }
 
-  private XMLAElementInfo[] requestElements(XMLAElementInfo paramXMLAElementInfo) {
+  private XMLAElementInfo[] requestElements(XMLAElementInfo parent) {
     try {
-      XMLARestrictions localXMLARestrictions = new XMLARestrictions();
-      XMLAProperties localXMLAProperties = new XMLAProperties();
-      localXMLAProperties.setDataSourceInfo(this.connectionName);
-      localXMLAProperties.setCatalog(this.dimension.getDatabase().getId());
-      localXMLARestrictions.setCatalog(this.dimension.getDatabase().getId());
-      if (this.cubeId != null)
-        localXMLARestrictions.setCubeName(this.cubeId);
-      if (paramXMLAElementInfo == null) {
-        if (this.hierarchy == null)
-          localXMLARestrictions.setHierarchyUniqueName(this.dimension
-            .getHierarchyUniqueName());
-        else
-          localXMLARestrictions.setHierarchyUniqueName(XMLADimensionInfo
-            .transformId(XMLADimensionInfo.getDimIdFromId(this.hierarchy.getId())));
-      } else {
-        localXMLARestrictions.setTreeOp(1);
-        if (this.hierarchy == null)
-          localXMLARestrictions.setHierarchyUniqueName(this.dimension
-            .getHierarchyUniqueName());
-        else
-          localXMLARestrictions.setHierarchyUniqueName(XMLADimensionInfo
-            .transformId(XMLADimensionInfo.getDimIdFromId(this.hierarchy.getId())));
-        String localObject = paramXMLAElementInfo.getUniqueName().replaceAll("&",
-          "&amp;");
-        localXMLARestrictions.setMemberUniqueName((String) localObject);
+      XMLARestrictions rest = new XMLARestrictions();
+      XMLAProperties prop = new XMLAProperties();
+      prop.setDataSourceInfo(connectionName);
+      prop.setCatalog(dimension.getDatabase().getId());
+      rest.setCatalog(dimension.getDatabase().getId());
+      if (cubeId != null) {
+        rest.setCubeName(cubeId);
       }
-      Object localObject = this.xmlaClient.getMemberList(localXMLARestrictions,
-        localXMLAProperties);
-      NodeList localNodeList = ((Document) localObject).getElementsByTagName("row");
-      if ((((localNodeList == null) || (localNodeList.getLength() == 0)))
-        && (paramXMLAElementInfo == null))
-        this.dimension.setElementCount(0);
-      return buildStructure(localNodeList, (XMLADatabaseInfo) this.dimension
-        .getDatabase(), this.cubeId, this.dimension, this.hierarchy);
-    } catch (IOException localIOException) {
-      localIOException.printStackTrace();
-    }
-    return new XMLAElementInfo[0];
-  }
-
-  private XMLAElementInfo[] requestElementsAtLevel(
-    XMLAElementInfo paramXMLAElementInfo, int paramInt) {
-    try {
-      XMLARestrictions localXMLARestrictions = new XMLARestrictions();
-      XMLAProperties localXMLAProperties = new XMLAProperties();
-      localXMLAProperties.setDataSourceInfo(this.connectionName);
-      localXMLAProperties.setCatalog(this.dimension.getDatabase().getId());
-      localXMLARestrictions.setCatalog(this.dimension.getDatabase().getId());
-      localXMLARestrictions.setLevelNumber("" + paramInt);
-      if (this.cubeId != null)
-        localXMLARestrictions.setCubeName(this.cubeId);
-      if (this.hierarchy == null)
-        localXMLARestrictions.setHierarchyUniqueName(this.dimension
-          .getHierarchyUniqueName());
-      else
-        localXMLARestrictions.setHierarchyUniqueName(XMLADimensionInfo
-          .transformId(XMLADimensionInfo.getDimIdFromId(this.hierarchy.getId())));
-      Document localDocument = this.xmlaClient.getMemberList(localXMLARestrictions,
-        localXMLAProperties);
-      NodeList localNodeList = localDocument.getElementsByTagName("row");
-      if ((((localNodeList == null) || (localNodeList.getLength() == 0)))
-        && (((localNodeList == null) || (localNodeList.getLength() == 0)))
-        && (paramXMLAElementInfo == null))
-        this.dimension.setElementCount(0);
-      XMLAElementInfo[] arrayOfXMLAElementInfo = buildStructure(localNodeList,
-        (XMLADatabaseInfo) this.dimension.getDatabase(), this.cubeId,
-        this.dimension, this.hierarchy);
-      return arrayOfXMLAElementInfo;
-    } catch (IOException localIOException) {
-      localIOException.printStackTrace();
-    }
-    return new XMLAElementInfo[0];
-  }
-
-  private XMLAElementInfo[] buildStructure(NodeList paramNodeList,
-    XMLADatabaseInfo paramXMLADatabaseInfo, String paramString,
-    XMLADimensionInfo paramXMLADimensionInfo,
-    XMLAHierarchyInfo paramXMLAHierarchyInfo) {
-    if ((paramNodeList == null) || (paramNodeList.getLength() == 0))
-      return new XMLAElementInfo[0];
-    ArrayList localArrayList = new ArrayList();
-    Object localObject1;
-    for (int i = 0; i < paramNodeList.getLength(); ++i) {
-      localObject1 = paramNodeList.item(i).getChildNodes();
-      XMLAElementInfo localXMLAElementInfo = null;
-      String str1 = "";
-      String str2 = "";
-      for (int j = 0; j < ((NodeList) localObject1).getLength(); ++j) {
-        if (((NodeList) localObject1).item(j).getNodeType() != 1)
-          continue;
-        Node localNode = ((NodeList) localObject1).item(j);
-        String str3 = localNode.getNodeName();
-        if (str3.equals("MEMBER_NAME")) {
-          str1 = XMLAClient.getTextFromDOMElement(localNode);
-        } else if (str3.equals("MEMBER_UNIQUE_NAME")) {
-          str2 = XMLAClient.getTextFromDOMElement(localNode);
-          localXMLAElementInfo = paramXMLADimensionInfo.getMemberInternal(str2);
-          if (localXMLAElementInfo != null)
-            continue;
-          localXMLAElementInfo = new XMLAElementInfo(paramXMLAHierarchyInfo,
-            this.dimension, this.xmlaClient, this.xmlaConnection);
-          if (str1.length() != 0)
-            localXMLAElementInfo.setName(str1);
-          else
-            localXMLAElementInfo.setName(str2);
-          localXMLAElementInfo.setUniqueName(str2);
-          localXMLAElementInfo.setId(str2);
-          localXMLAElementInfo.setPosition(paramXMLADimensionInfo
-            .getMemberCountInternal());
-          paramXMLADimensionInfo.addMemberInternal(localXMLAElementInfo);
+      if (parent == null) {
+        if (hierarchy == null) {
+          rest.setHierarchyUniqueName(dimension.getHierarchyUniqueName());
         } else {
-          String str4;
-          if (str3.equals("MEMBER_TYPE")) {
-            str4 = XMLAClient.getTextFromDOMElement(((NodeList) localObject1)
-              .item(j));
-            if (str2.indexOf("Avg Salary") != -1)
-              System.err.println("Member Type: " + str4 + " for " + str2 + ", "
-                + str1);
-            try {
-              int k = Integer.parseInt(str4);
-              if ((k == 1) || (k == 3))
-                localXMLAElementInfo.setType(1);
-              else
-                localXMLAElementInfo.setType(2);
-            } catch (NumberFormatException localNumberFormatException) {
-              localXMLAElementInfo.setType(2);
-            }
-          } else {
+          rest.setHierarchyUniqueName(XMLADimensionInfo
+            .transformId(XMLADimensionInfo.getDimIdFromId(hierarchy.getId())));
+        }
+      } else {
+        rest.setTreeOp(1);
+        if (hierarchy == null) {
+          rest.setHierarchyUniqueName(dimension.getHierarchyUniqueName());
+        } else {
+          rest.setHierarchyUniqueName(XMLADimensionInfo
+            .transformId(XMLADimensionInfo.getDimIdFromId(hierarchy.getId())));
+        }
+        String modified = parent.getUniqueName().replaceAll("&", "&amp;");
+        rest.setMemberUniqueName(modified);
+      }
+      Document result = xmlaClient.getMemberList(rest, prop);
+      NodeList nl = result.getElementsByTagName("row");
 
-            if (str3.equals("PARENT_UNIQUE_NAME")) {
-              XMLAElementInfo localObject2;
-              str4 = XMLAClient.getTextFromDOMElement(localNode);
-              localObject2 = paramXMLADimensionInfo.getMemberInternal(str4);
-              if (localObject2 == null) {
-                localObject2 = new XMLAElementInfo(paramXMLAHierarchyInfo,
-                  this.dimension, this.xmlaClient, this.xmlaConnection);
-                ((XMLAElementInfo) localObject2).setUniqueName(str4);
-                ((XMLAElementInfo) localObject2).setId(str4);
-              }
-              ((XMLAElementInfo) localObject2)
-                .addChildInternal(localXMLAElementInfo);
-              ((XMLAElementInfo) localObject2).addChild(localXMLAElementInfo);
-              paramXMLADimensionInfo
-                .addMemberInternal((XMLAElementInfo) localObject2);
-              localXMLAElementInfo
-                .setParentInternal(new XMLAElementInfo[] { localObject2 });
-              localXMLAElementInfo
-                .setParents(new String[] { ((XMLAElementInfo) localObject2).getId() });
-            } else if (((NodeList) localObject1).item(j).getNodeName().equals(
-              "MEMBER_CAPTION")) {
-              str4 = XMLAClient.getTextFromDOMElement(((NodeList) localObject1)
-                .item(j));
-              localXMLAElementInfo.setName(str4);
-            } else if (((NodeList) localObject1).item(j).getNodeName().equals(
-              "EXPRESSION")) {
-              str4 = XMLAClient.getTextFromDOMElement(((NodeList) localObject1)
-                .item(j));
-              if (str4.trim().length() != 0) {
-                localXMLAElementInfo.setCalculated(true);
-                CubeInfo localObject2 = this.xmlaConnection.getCubeLoader(
-                  paramXMLADimensionInfo.getDatabase()).load(paramString);
-                RuleImpl localRuleImpl = new RuleImpl((XMLACubeInfo) localObject2,
-                  str4.trim());
-                localRuleImpl.setComment("Rule comment");
-                localRuleImpl.setExternalIdentifier(str4.trim());
-                localRuleImpl.setDefinition(str4.trim());
-                localRuleImpl.setTimestamp(new Date().getTime());
-                localXMLAElementInfo.setRule(localRuleImpl);
-              }
-            } else {
-              if (!((NodeList) localObject1).item(j).getNodeName().equals(
-                "CHILDREN_CARDINALITY"))
-                continue;
-              str4 = XMLAClient.getTextFromDOMElement(((NodeList) localObject1)
-                .item(j));
-              int l = Integer.parseInt(str4);
-              localXMLAElementInfo.setHasChildren(l > 0);
-              localXMLAElementInfo.setEstimatedChildCount(l);
-            }
+      if (nl == null || nl.getLength() == 0) {
+        if (parent == null) {
+          dimension.setElementCount(0);
+        }
+      }
+      return buildStructure(nl, (XMLADatabaseInfo) dimension.getDatabase(), cubeId,
+        dimension, hierarchy);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return new XMLAElementInfo[0];
+  }
+
+  //	private XMLAElementInfo [] requestCalculatedMembers() {
+  //    	try {
+  //    	    XMLARestrictions rest = new XMLARestrictions();
+  //    	    XMLAProperties   prop = new XMLAProperties();
+  //   	        prop.setDataSourceInfo(connectionName);
+  //   	        prop.setCatalog(dimension.getDatabase().getId());    	    	
+  //   	    	rest.setCatalog(dimension.getDatabase().getId());
+  //   	    	rest.setMemberType(4);   	    	
+  //    	    if (cubeId != null) {
+  //    	    	rest.setCubeName(cubeId);
+  //    	    }
+  //   	    	if (hierarchy == null) {
+  //   	    		rest.setHierarchyUniqueName(dimension.getHierarchyUniqueName());
+  //   	    	} else {
+  //   	    		rest.setHierarchyUniqueName(XMLADimensionInfo.transformId(
+  //   	    				XMLADimensionInfo.getDimIdFromId(hierarchy.getId())));
+  //   	    	}   	    	   	    	   	    	
+  //   	    	Document result = xmlaClient.getMemberList(rest, prop);
+  //	        NodeList nl  = result.getElementsByTagName("row");
+  //	        
+  //	        XMLAElementInfo[] infos = buildStructure(nl, (XMLADatabaseInfo) dimension.getDatabase(),
+  //	        				   cubeId,
+  //	        				   dimension, hierarchy);
+  //	        if (infos != null) {
+  //	        	System.out.println("CalcMem == " + infos.length);
+  //	        } else {
+  //	        	System.out.println("CalcMem == <null>");
+  //	        }
+  //	        return infos;	         
+  //		} catch (IOException e) {
+  //			e.printStackTrace();
+  //		}
+  //		return new XMLAElementInfo[0];		
+  //	}
+
+  private XMLAElementInfo[] requestElementsAtLevel(XMLAElementInfo parent, int level) {
+    try {
+      XMLARestrictions rest = new XMLARestrictions();
+      XMLAProperties prop = new XMLAProperties();
+      prop.setDataSourceInfo(connectionName);
+      prop.setCatalog(dimension.getDatabase().getId());
+      rest.setCatalog(dimension.getDatabase().getId());
+      //   	    	ArrayList <XMLAElementInfo> calcMembers = new ArrayList<XMLAElementInfo>();
+      //   	    	if (level == 0) {
+      //   	    		for (XMLAElementInfo i: requestCalculatedMembers()) {
+      //   	    			calcMembers.add(i);	
+      //   	    		}
+      //   	    	}
+      rest.setLevelNumber("" + level);
+      if (cubeId != null) {
+        rest.setCubeName(cubeId);
+      }
+      if (hierarchy == null) {
+        rest.setHierarchyUniqueName(dimension.getHierarchyUniqueName());
+      } else {
+        rest.setHierarchyUniqueName(XMLADimensionInfo.transformId(XMLADimensionInfo
+          .getDimIdFromId(hierarchy.getId())));
+      }
+      Document result = xmlaClient.getMemberList(rest, prop);
+      NodeList nl = result.getElementsByTagName("row");
+
+      if (nl == null || nl.getLength() == 0) {
+        if (nl == null || nl.getLength() == 0) {
+          if (parent == null) {
+            dimension.setElementCount(0);
           }
         }
       }
-      if ((paramXMLADimensionInfo != null) && (localXMLAElementInfo != null)) {
-        if (str2.length() != 0) {
-          localXMLAElementInfo.setUniqueName(str2);
-          localXMLAElementInfo.setId(str2);
+      XMLAElementInfo[] infos = buildStructure(nl, (XMLADatabaseInfo) dimension
+        .getDatabase(), cubeId, dimension, hierarchy);
+      //	        if (!calcMembers.isEmpty()) {
+      //	        	XMLAElementInfo [] ret = new XMLAElementInfo[infos.length + calcMembers.size()];
+      //	        	System.arraycopy(infos, 0, ret, 0, infos.length);
+      //	        	int offset = infos.length;
+      //	        	for (XMLAElementInfo i: calcMembers) {
+      //	        		ret[offset++] = i;
+      //	        	}
+      //	        	return ret;
+      //	        }
+      return infos;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return new XMLAElementInfo[0];
+  }
+
+  private XMLAElementInfo[] buildStructure(NodeList nl,
+    XMLADatabaseInfo currentDatabase, String cubeId,
+    XMLADimensionInfo currentDimension, XMLAHierarchyInfo hierarchy) {
+
+    if (nl == null || nl.getLength() == 0) {
+      return new XMLAElementInfo[0];
+    }
+    XMLAElementInfo currentMember;
+    String currentMemberName;
+    String currentMemberUniqueName;
+    ArrayList<XMLAElementInfo> response = new ArrayList<XMLAElementInfo>();
+
+    for (int i = 0; i < nl.getLength(); i++) {
+      NodeList nlRow = nl.item(i).getChildNodes();
+
+      currentMember = null;
+      currentMemberName = "";
+      currentMemberUniqueName = "";
+      for (int j = 0; j < nlRow.getLength(); j++) {
+        if (nlRow.item(j).getNodeType() == Node.ELEMENT_NODE) {
+          Node currentItem = nlRow.item(j);
+          String nodeName = currentItem.getNodeName();
+          if (nodeName.equals("MEMBER_NAME")) {
+            currentMemberName = XMLAClient.getTextFromDOMElement(currentItem);
+          } else if (nodeName.equals("MEMBER_UNIQUE_NAME")) {
+            currentMemberUniqueName = XMLAClient.getTextFromDOMElement(currentItem);
+            currentMember = currentDimension
+              .getMemberInternal(currentMemberUniqueName);
+            if (currentMember == null) {
+              currentMember = new XMLAElementInfo(hierarchy, dimension, xmlaClient,
+                xmlaConnection);
+              if (currentMemberName.length() != 0) {
+                currentMember.setName(currentMemberName);
+              } else {
+                currentMember.setName(currentMemberUniqueName);
+              }
+              currentMember.setUniqueName(currentMemberUniqueName);
+              currentMember.setId(currentMemberUniqueName); //"" + currentMemberUniqueName.hashCode());
+              currentMember.setPosition(currentDimension.getMemberCountInternal());
+              currentDimension.addMemberInternal(currentMember);
+            }
+          } else if (nodeName.equals("MEMBER_TYPE")) {
+            String text = XMLAClient.getTextFromDOMElement(nlRow.item(j));
+            if (currentMemberUniqueName.indexOf("Avg Salary") != -1) {
+              System.err.println("Member Type: " + text + " for "
+                + currentMemberUniqueName + ", " + currentMemberName);
+            }
+            //						if ("4".equals(text)) {
+            //							System.err.println("Formula: ";
+            //						}
+            try {
+              int typeNumber = Integer.parseInt(text);
+              if (typeNumber == 1 || typeNumber == 3) {
+                currentMember.setType(ElementInfo.TYPE_NUMERIC);
+              } else {
+                currentMember.setType(ElementInfo.TYPE_STRING);
+              }
+            } catch (NumberFormatException e) {
+              currentMember.setType(ElementInfo.TYPE_STRING);
+            }
+          } else if (nodeName.equals("PARENT_UNIQUE_NAME")) {
+            String text = XMLAClient.getTextFromDOMElement(currentItem);
+            XMLAElementInfo parent = currentDimension.getMemberInternal(text);
+            if (parent == null) {
+              parent = new XMLAElementInfo(hierarchy, dimension, xmlaClient,
+                xmlaConnection);
+              parent.setUniqueName(text);
+              parent.setId(text);
+            }
+            parent.addChildInternal(currentMember);
+            parent.addChild(currentMember);
+            currentDimension.addMemberInternal(parent);
+            currentMember.setParentInternal(new XMLAElementInfo[] { parent });
+            currentMember.setParents(new String[] { parent.getId() });
+          } else if (nlRow.item(j).getNodeName().equals("MEMBER_CAPTION")) {
+            String text = XMLAClient.getTextFromDOMElement(nlRow.item(j));
+            currentMember.setName(text);
+          } else if (nlRow.item(j).getNodeName().equals("EXPRESSION")) {
+            String text = XMLAClient.getTextFromDOMElement(nlRow.item(j));
+            if (text.trim().length() != 0) {
+              currentMember.setCalculated(true);
+              CubeInfo cubeInfo = xmlaConnection.getCubeLoader(
+                currentDimension.getDatabase()).load(cubeId);
+              RuleImpl rule = new RuleImpl((XMLACubeInfo) cubeInfo, text.trim());
+              rule.setComment("Rule comment");
+              rule.setExternalIdentifier(text.trim());
+              rule.setDefinition(text.trim());
+              rule.setTimestamp(new Date().getTime());
+              currentMember.setRule(rule);
+            }
+          } else if (nlRow.item(j).getNodeName().equals("CHILDREN_CARDINALITY")) {
+            String text = XMLAClient.getTextFromDOMElement(nlRow.item(j));
+            int estimatedChildCount = Integer.parseInt(text);
+            currentMember.setHasChildren(estimatedChildCount > 0);
+            currentMember.setEstimatedChildCount(estimatedChildCount);
+          }
         }
-        paramXMLADimensionInfo.addMemberInternal(localXMLAElementInfo);
-        localArrayList.add(localXMLAElementInfo);
       }
-      paramXMLADimensionInfo.setElementCount(paramXMLADimensionInfo
-        .getMemberCountInternal());
+      if (currentDimension != null && currentMember != null) {
+        if (currentMemberUniqueName.length() != 0) {
+          currentMember.setUniqueName(currentMemberUniqueName);
+          currentMember.setId(currentMemberUniqueName);
+        }
+        currentDimension.addMemberInternal(currentMember);
+        response.add(currentMember);
+      }
+      currentDimension.setElementCount(currentDimension.getMemberCountInternal());
     }
-    if (!this.xmlaConnection.usedByWPalo()) {
-      XMLAElementInfo[] arrayOfXMLAElementInfo = (XMLAElementInfo[]) localArrayList
-        .toArray(new XMLAElementInfo[0]);
-      return traverseDimension(paramXMLADimensionInfo, arrayOfXMLAElementInfo);
+
+    if (!xmlaConnection.usedByWPalo()) {
+      XMLAElementInfo[] responseArray = response.toArray(new XMLAElementInfo[0]);
+      XMLAElementInfo[] infos = traverseDimension(currentDimension, responseArray);
+      return infos;
     }
-    return (XMLAElementInfo[]) localArrayList.toArray(new XMLAElementInfo[0]);
+    return response.toArray(new XMLAElementInfo[0]);
   }
 
-  private int setDepth(XMLADimensionInfo paramXMLADimensionInfo,
-    XMLAElementInfo paramXMLAElementInfo, int paramInt1,
-    LinkedHashSet paramLinkedHashSet, int paramInt2) {
-    if ((paramXMLAElementInfo == null) || (paramXMLADimensionInfo == null))
-      return paramInt2;
-    if (paramInt1 > paramXMLAElementInfo.getDepth()) {
-      paramXMLAElementInfo.setDepth(paramInt1);
+  private int setDepth(XMLADimensionInfo dim, XMLAElementInfo element, int depth,
+    LinkedHashSet elementSet, int positionCounter) {
+    if (element == null || dim == null) {
+      return positionCounter;
+    }
+
+    if (depth > element.getDepth()) {
+      element.setDepth(depth);
     } else {
-      paramLinkedHashSet.add(paramXMLAElementInfo);
-      return paramInt2;
+      elementSet.add(element);
+      return positionCounter;
     }
-    if (paramInt1 > this.maxDepth)
-      this.maxDepth = paramInt1;
-    paramXMLAElementInfo.setPosition(paramInt2);
-    paramLinkedHashSet.add(paramXMLAElementInfo);
-    String[] arrayOfString = paramXMLAElementInfo.getChildren();
-    int i = 0;
-    int j = arrayOfString.length;
-    while (i < j) {
-      XMLAElementInfo localXMLAElementInfo = paramXMLADimensionInfo
-        .getMemberByIdInternal(arrayOfString[i]);
-      paramInt2 = setDepth(paramXMLADimensionInfo, localXMLAElementInfo,
-        paramInt1 + 1, paramLinkedHashSet, paramInt2 + 1);
-      ++i;
+    if (depth > maxDepth) {
+      maxDepth = depth;
     }
-    return paramInt2;
+    element.setPosition(positionCounter);
+    elementSet.add(element);
+    String[] kidIds = element.getChildren();
+    for (int i = 0, n = kidIds.length; i < n; i++) {
+      XMLAElementInfo kid = dim.getMemberByIdInternal(kidIds[i]);
+      positionCounter = setDepth(dim, kid, depth + 1, elementSet,
+        positionCounter + 1);
+    }
+    return positionCounter;
   }
 
-  private void setLevel(XMLADimensionInfo paramXMLADimensionInfo,
-    XMLAElementInfo paramXMLAElementInfo, int paramInt,
-    LinkedHashSet paramLinkedHashSet) {
-    if ((paramXMLAElementInfo == null) || (paramXMLADimensionInfo == null))
+  private void setLevel(XMLADimensionInfo dim, XMLAElementInfo element, int level,
+    LinkedHashSet elementSet) {
+    if (element == null || dim == null) {
       return;
-    if (paramInt > paramXMLAElementInfo.getLevel()) {
-      paramXMLAElementInfo.setLevel(paramInt);
+    }
+
+    if (level > element.getLevel()) {
+      element.setLevel(level);
     } else {
-      paramLinkedHashSet.add(paramXMLAElementInfo);
+      elementSet.add(element);
       return;
     }
-    paramLinkedHashSet.add(paramXMLAElementInfo);
-    if (paramInt > this.maxLevel)
-      this.maxLevel = paramInt;
-    String[] arrayOfString = paramXMLAElementInfo.getParents();
-    int i = 0;
-    int j = arrayOfString.length;
-    while (i < j) {
-      XMLAElementInfo localXMLAElementInfo = paramXMLADimensionInfo
-        .getMemberByIdInternal(arrayOfString[i]);
-      setLevel(paramXMLADimensionInfo, localXMLAElementInfo, paramInt + 1,
-        paramLinkedHashSet);
-      ++i;
+    elementSet.add(element);
+    if (level > maxLevel) {
+      maxLevel = level;
+    }
+
+    String[] parIds = element.getParents();
+    for (int i = 0, n = parIds.length; i < n; i++) {
+      XMLAElementInfo par = dim.getMemberByIdInternal(parIds[i]);
+      setLevel(dim, par, level + 1, elementSet);
     }
   }
 
-  private XMLAElementInfo[] traverseDimension(
-    XMLADimensionInfo paramXMLADimensionInfo,
-    XMLAElementInfo[] paramArrayOfXMLAElementInfo) {
-    this.maxLevel = 0;
-    this.maxDepth = 0;
-    ArrayList localArrayList1 = new ArrayList();
-    ArrayList localArrayList2 = new ArrayList();
-    int i = 0;
-    int j = paramArrayOfXMLAElementInfo.length;
-    while (i < j) {
-      if (paramArrayOfXMLAElementInfo[i].getParentCount() == 0)
-        localArrayList1.add(paramArrayOfXMLAElementInfo[i]);
-      if (paramArrayOfXMLAElementInfo[i].getChildrenCount() == 0)
-        localArrayList2.add(paramArrayOfXMLAElementInfo[i]);
-      ++i;
+  private XMLAElementInfo[] traverseDimension(XMLADimensionInfo dim,
+    XMLAElementInfo[] elements) {
+    maxLevel = 0;
+    maxDepth = 0;
+    ;
+
+    List rootElements = new ArrayList();
+    List baseElements = new ArrayList();
+    for (int i = 0, n = elements.length; i < n; i++) {
+      if (elements[i].getParentCount() == 0) {
+        rootElements.add(elements[i]);
+      }
+      if (elements[i].getChildrenCount() == 0) {
+        baseElements.add(elements[i]);
+      }
     }
-    LinkedHashSet localLinkedHashSet = new LinkedHashSet();
-    j = 0;
-    int k = 0;
-    int l = localArrayList1.size();
-    XMLAElementInfo localXMLAElementInfo;
-    while (k < l) {
-      localXMLAElementInfo = (XMLAElementInfo) localArrayList1.get(k);
-      j = setDepth(paramXMLADimensionInfo, localXMLAElementInfo, 0,
-        localLinkedHashSet, j);
-      ++k;
+    LinkedHashSet elementSet = new LinkedHashSet();
+    int positionCounter = 0;
+    for (int i = 0, n = rootElements.size(); i < n; i++) {
+      XMLAElementInfo element = (XMLAElementInfo) rootElements.get(i);
+      positionCounter = setDepth(dim, element, 0, elementSet, positionCounter);
     }
-    k = 0;
-    l = localArrayList2.size();
-    while (k < l) {
-      localXMLAElementInfo = (XMLAElementInfo) localArrayList2.get(k);
-      setLevel(paramXMLADimensionInfo, localXMLAElementInfo, 0, localLinkedHashSet);
-      ++k;
+    for (int i = 0, n = baseElements.size(); i < n; i++) {
+      XMLAElementInfo element = (XMLAElementInfo) baseElements.get(i);
+      setLevel(dim, element, 0, elementSet);
     }
     BuilderRegistry.getInstance().getDimensionInfoBuilder().updateMaxLevelAndDepth(
-      paramXMLADimensionInfo, this.maxDepth, this.maxLevel);
-    XMLAElementInfo[] arrayOfXMLAElementInfo = (XMLAElementInfo[]) (XMLAElementInfo[]) localLinkedHashSet
+      dim, maxDepth, maxLevel);
+    XMLAElementInfo[] infos = (XMLAElementInfo[]) elementSet
       .toArray(new XMLAElementInfo[0]);
-    return paramArrayOfXMLAElementInfo;
+    return elements;
   }
 
-  public void setElementListInternal(String paramString,
-    XMLADimensionInfo paramXMLADimensionInfo, List paramList) {
+  public void setElementListInternal(String id, XMLADimensionInfo dim, List elements) {
     throw new RuntimeException("No longer supported.");
   }
 }
-
-/*
- * Location:
- * D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
- * Qualified Name: com.tensegrity.palo.xmla.builders.ElementInfoBuilder JD-Core
- * Version: 0.5.4
- */

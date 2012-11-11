@@ -1,3 +1,34 @@
+/*
+*
+* @file XMLAServer.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Michael Raue <Michael.Raue@tensegrity-software.com>
+*
+* @version $Id: XMLAServer.java,v 1.3 2010/06/16 11:07:13 PhilippBouillon Exp $
+*
+*/
+
 package com.tensegrity.palo.xmla;
 
 import com.tensegrity.palojava.DbConnection;
@@ -8,32 +39,25 @@ import com.tensegrity.palojava.ServerInfo;
 public class XMLAServer implements PaloServer {
   private final XMLAConnection connection;
 
-  public XMLAServer(String paramString1, String paramString2, String paramString3,
-    String paramString4) {
-    this.connection = new XMLAConnection(paramString1, paramString2, paramString3,
-      paramString4);
+  public XMLAServer(String host, String port, String user, String pass, int timeout) {
+    connection = new XMLAConnection(host, port, user, pass, timeout);
   }
 
   public DbConnection connect() {
-    return this.connection;
+    return connection;
   }
 
   public void disconnect() {
-    this.connection.disconnect();
+    connection.disconnect();
   }
 
   public ServerInfo getInfo() {
-    if (!this.connection.isConnected())
+    if (!connection.isConnected()) {
       throw new PaloException("XMLA Server is not connected.");
-    return this.connection.getServerInfo();
+    }
+    return connection.getServerInfo();
   }
 
   public void ping() throws PaloException {
   }
 }
-
-/*
- * Location:
- * D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
- * Qualified Name: com.tensegrity.palo.xmla.XMLAServer JD-Core Version: 0.5.4
- */

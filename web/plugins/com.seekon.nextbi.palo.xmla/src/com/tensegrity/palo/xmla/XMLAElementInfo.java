@@ -1,21 +1,50 @@
+/*
+*
+* @file XMLAElementInfo.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Michael Raue <Michael.Raue@tensegrity-software.com>
+*
+* @version $Id: XMLAElementInfo.java,v 1.26 2010/02/26 10:10:00 PhilippBouillon Exp $
+*
+*/
+
 package com.tensegrity.palo.xmla;
 
-import com.tensegrity.palo.xmla.builders.BuilderRegistry;
-import com.tensegrity.palo.xmla.builders.ElementInfoBuilder;
-import com.tensegrity.palojava.DbConnection;
-import com.tensegrity.palojava.DimensionInfo;
-import com.tensegrity.palojava.ElementInfo;
-import com.tensegrity.palojava.HierarchyInfo;
-import com.tensegrity.palojava.PaloInfo;
-import com.tensegrity.palojava.PropertyInfo;
-import com.tensegrity.palojava.RuleInfo;
-import com.tensegrity.palojava.loader.ElementLoader;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+
+import com.tensegrity.palo.xmla.builders.BuilderRegistry;
+import com.tensegrity.palojava.DbConnection;
+import com.tensegrity.palojava.DimensionInfo;
+import com.tensegrity.palojava.ElementInfo;
+import com.tensegrity.palojava.HierarchyInfo;
+import com.tensegrity.palojava.PropertyInfo;
+import com.tensegrity.palojava.RuleInfo;
+import com.tensegrity.palojava.loader.ElementLoader;
 
 public class XMLAElementInfo implements ElementInfo, XMLAPaloInfo {
   private String id;
@@ -62,192 +91,205 @@ public class XMLAElementInfo implements ElementInfo, XMLAPaloInfo {
 
   private final XMLAConnection xmlaConnection;
 
-  public XMLAElementInfo(XMLAHierarchyInfo paramXMLAHierarchyInfo,
-    XMLADimensionInfo paramXMLADimensionInfo, XMLAClient paramXMLAClient,
-    XMLAConnection paramXMLAConnection) {
-    this.hierarchy = paramXMLAHierarchyInfo;
-    this.dimension = paramXMLADimensionInfo;
-    this.children = new LinkedHashSet();
-    this.kids = new LinkedHashMap();
-    this.calculated = false;
-    this.xmlaClient = paramXMLAClient;
-    this.xmlaConnection = paramXMLAConnection;
+  public XMLAElementInfo(XMLAHierarchyInfo hierarchy, XMLADimensionInfo dimension,
+    XMLAClient client, XMLAConnection xmlaCon) {
+    this.hierarchy = hierarchy;
+    this.dimension = dimension;
+    //		children = new ArrayList();
+    children = new LinkedHashSet<XMLAElementInfo>();
+    kids = new LinkedHashMap();
+    calculated = false;
+    xmlaClient = client;
+    xmlaConnection = xmlaCon;
   }
 
   public String getHierarchyUniqueName() {
-    return this.hierarchyUniqueName;
+    return hierarchyUniqueName;
   }
 
-  public void addChild(XMLAElementInfo paramXMLAElementInfo) {
-    this.children.add(paramXMLAElementInfo);
+  public void addChild(XMLAElementInfo kid) {
+    children.add(kid);
   }
 
   public void clearChildren() {
-    this.children.clear();
+    children.clear();
   }
 
-  public void setChildren(XMLAElementInfo[] paramArrayOfXMLAElementInfo) {
+  public void setChildren(XMLAElementInfo[] kids) {
     clearChildren();
-    this.children.addAll(Arrays.asList(paramArrayOfXMLAElementInfo));
+    children.addAll(Arrays.asList(kids));
   }
 
-  public void setId(String paramString) {
-    String str = paramString.replaceAll("\\[", "((");
-    str = str.replaceAll("\\]", "))");
-    str = str.replaceAll(":", "**");
-    str = str.replaceAll(",", "(comma)");
-    this.id = str;
+  public void setId(String id) {
+    String cleanedText = id.replaceAll("\\[", "((");
+    cleanedText = cleanedText.replaceAll("\\]", "))");
+    cleanedText = cleanedText.replaceAll(":", "**");
+    cleanedText = cleanedText.replaceAll(",", "(comma)");
+    this.id = cleanedText;
   }
 
-  public void setName(String paramString) {
-    this.name = paramString;
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public void setInternalName(String paramString) {
-    this.internalName = paramString;
+  public void setInternalName(String internalName) {
+    this.internalName = internalName;
   }
 
   public String getInternalName() {
-    return this.internalName;
+    return internalName;
   }
 
-  public void setUniqueName(String paramString) {
-    this.uniqueName = paramString;
+  public void setUniqueName(String uniqueName) {
+    this.uniqueName = uniqueName;
   }
 
-  public void setHierarchyUniqueName(String paramString) {
-    this.hierarchyUniqueName = paramString;
+  public void setHierarchyUniqueName(String hierarchyUniqueName) {
+    this.hierarchyUniqueName = hierarchyUniqueName;
   }
 
-  public void setParentCount(int paramInt) {
-    this.parentCount = paramInt;
+  public void setParentCount(int parentCount) {
+    this.parentCount = parentCount;
   }
 
-  public void setType(int paramInt) {
-    this.type = paramInt;
+  public void setType(int type) {
+    this.type = type;
   }
 
   public String[] getChildren() {
-    if (this.hierarchy == null)
-      this.hierarchy = this.dimension.getDefaultHierarchy();
-    ElementLoader localElementLoader;
-    if (this.hierarchy != null)
-      localElementLoader = this.xmlaConnection.getElementLoader(this.hierarchy);
-    else
-      localElementLoader = this.xmlaConnection.getElementLoader(this.dimension);
-    PaloInfo[] localObject1;
-    if ((this.children.isEmpty()) && (getChildrenCount() > 0)) {
-      localObject1 = BuilderRegistry.getInstance().getElementInfoBuilder()
-        .getChildren(this.xmlaConnection, this.xmlaClient,
-          ((XMLADimensionInfo) this.hierarchy.getDimension()).getCubeId(), this);
-      for (PaloInfo localPaloInfo : localObject1) {
-        this.children.add((XMLAElementInfo) localPaloInfo);
-        localElementLoader.loaded(localPaloInfo);
+    ElementInfo[] info;
+    ElementLoader loader;
+    if (hierarchy == null) {
+      hierarchy = (XMLAHierarchyInfo) dimension.getDefaultHierarchy();
+    }
+    if (hierarchy != null) {
+      loader = xmlaConnection.getElementLoader(hierarchy);
+    } else {
+      loader = xmlaConnection.getElementLoader(dimension);
+    }
+    if ((children.isEmpty() && getChildrenCount() > 0)) {
+      info = BuilderRegistry.getInstance().getElementInfoBuilder().getChildren(
+        xmlaConnection, xmlaClient,
+        ((XMLADimensionInfo) hierarchy.getDimension()).getCubeId(), this);
+      for (ElementInfo _info : info) {
+        children.add((XMLAElementInfo) _info);
+        loader.loaded(_info);
       }
     } else {
-      localObject1 = (ElementInfo[]) this.children.toArray(new XMLAElementInfo[0]);
+      info = children.toArray(new XMLAElementInfo[0]);
     }
-    String[] localObject1String = new String[localObject1.length];
-    for (int i = 0; i < localObject1.length; ++i)
-      localObject1String[i] = localObject1[i].getId();
-    return localObject1String;
+    String[] ids = new String[info.length];
+    for (int i = 0; i < info.length; i++) {
+      ids[i] = info[i].getId();
+    }
+    return ids;
   }
 
   public int getChildrenCount() {
-    if (this.children.isEmpty())
-      return this.estimatedChildCount;
-    return this.children.size();
+    if (children.isEmpty()) {
+      return estimatedChildCount;
+    }
+    return children.size();
   }
 
   public boolean hasChildren() {
-    return this.hasChildren;
+    return hasChildren;
   }
 
-  public void setHasChildren(boolean paramBoolean) {
-    this.hasChildren = paramBoolean;
+  public void setHasChildren(boolean hasChildren) {
+    this.hasChildren = hasChildren;
   }
 
-  public final void setEstimatedChildCount(int paramInt) {
-    this.estimatedChildCount = paramInt;
+  public final void setEstimatedChildCount(int estimatedChildCount) {
+    this.estimatedChildCount = estimatedChildCount;
   }
 
   public int getDepth() {
-    return this.depth;
+    return depth;
   }
 
-  public void setDepth(int paramInt) {
-    this.depth = paramInt;
+  public void setDepth(int newDepth) {
+    depth = newDepth;
   }
 
   public DimensionInfo getDimension() {
-    if (this.hierarchy == null)
-      return this.dimension;
-    return this.hierarchy.getDimension();
+    if (hierarchy == null) {
+      return dimension;
+    }
+    return hierarchy.getDimension();
   }
 
   public HierarchyInfo getHierarchy() {
-    return this.hierarchy;
+    return hierarchy;
   }
 
   public int getIndent() {
+    // TODO Auto-generated method stub
     return 0;
   }
 
   public int getLevel() {
-    return this.level;
+    return level;
   }
 
-  public void setLevel(int paramInt) {
-    this.level = paramInt;
+  public void setLevel(int newLevel) {
+    level = newLevel;
   }
 
   public String getName() {
-    if ((this.name == null) || (this.name.trim().length() == 0))
+    if (name == null || name.trim().length() == 0) {
       return " ";
-    return this.name;
+    }
+    return name;
   }
 
   public int getParentCount() {
-    return this.parentCount;
+    return parentCount;
   }
 
   public String[] getParents() {
-    if (this.parents == null)
+    if (parents == null) {
       return new String[0];
-    return this.parents;
+    }
+    return parents;
   }
 
   public int getPosition() {
-    return this.position;
+    return position;
   }
 
-  public void setPosition(int paramInt) {
-    this.position = paramInt;
+  public void setPosition(int position) {
+    this.position = position;
   }
 
   public double[] getWeights() {
-    int i = getChildrenCount();
-    if (i == 0)
+    int n = getChildrenCount();
+    if (n == 0) {
       return new double[0];
-    double[] arrayOfDouble = new double[i];
-    double d = 1.0D;
-    for (int j = 0; j < i; ++j)
-      arrayOfDouble[j] = d;
-    return arrayOfDouble;
+    }
+    double[] weights = new double[n];
+    double wValue = 1.0;// / n;
+    for (int i = 0; i < n; i++) {
+      weights[i] = wValue;
+    }
+    return weights;
   }
 
-  public void setParents(String[] paramArrayOfString) {
-    this.parents = paramArrayOfString;
+  public void setParents(String[] parents) {
+    this.parents = parents;
   }
 
   public String getId() {
-    return this.id;
+    return id;
   }
 
   public int getType() {
-    if ((getChildrenCount() > 0) || (this.estimatedChildCount > 0))
-      return 4;
-    return this.type;
+    //		if(getName().equals("Corvallis"))
+    //			return ElementInfo.TYPE_CONSOLIDATED;
+    if (getChildrenCount() > 0 || estimatedChildCount > 0) {
+      return ElementInfo.TYPE_CONSOLIDATED;
+    }
+    return type;
   }
 
   public String toString() {
@@ -256,56 +298,55 @@ public class XMLAElementInfo implements ElementInfo, XMLAPaloInfo {
   }
 
   public String getUniqueName() {
-    return this.uniqueName;
+    return uniqueName;
   }
 
-  public void addChildInternal(XMLAElementInfo paramXMLAElementInfo) {
-    this.kids.put(Integer.valueOf(paramXMLAElementInfo.getUniqueName().hashCode()),
-      paramXMLAElementInfo);
+  public void addChildInternal(XMLAElementInfo kid) {
+    kids.put(kid.getUniqueName().hashCode(), kid);
   }
 
-  public XMLAElementInfo getChildInternal(String paramString) {
-    return (XMLAElementInfo) this.kids.get(paramString);
+  public XMLAElementInfo getChildInternal(String elementName) {
+    return (XMLAElementInfo) kids.get(elementName);
   }
 
   public XMLAElementInfo[] getChildrenInternal() {
-    return (XMLAElementInfo[]) (XMLAElementInfo[]) this.kids.values().toArray(
-      new XMLAElementInfo[0]);
+    return (XMLAElementInfo[]) kids.values().toArray(new XMLAElementInfo[0]);
   }
 
-  public void setParentInternal(XMLAElementInfo[] paramArrayOfXMLAElementInfo) {
-    this.parents = new String[paramArrayOfXMLAElementInfo.length];
-    for (int i = 0; i < paramArrayOfXMLAElementInfo.length; ++i)
-      this.parents[i] = paramArrayOfXMLAElementInfo[i].getId();
-    setParentCount(paramArrayOfXMLAElementInfo.length);
-    this.internalParents = paramArrayOfXMLAElementInfo;
+  public void setParentInternal(XMLAElementInfo[] pars) {
+    this.parents = new String[pars.length];
+    for (int i = 0; i < pars.length; i++) {
+      parents[i] = pars[i].getId();
+    }
+    setParentCount(pars.length);
+    internalParents = pars;
   }
 
   public XMLAElementInfo[] getParentsInternal() {
-    return this.internalParents;
+    return internalParents;
   }
 
   public boolean isCalculated() {
-    return this.calculated;
+    return calculated;
   }
 
   public RuleInfo getRule() {
-    return this.rule;
+    return rule;
   }
 
-  public void setRule(RuleInfo paramRuleInfo) {
-    this.rule = paramRuleInfo;
+  public void setRule(RuleInfo rule) {
+    this.rule = rule;
   }
 
-  public void setCalculated(boolean paramBoolean) {
-    this.calculated = paramBoolean;
+  public void setCalculated(boolean newCalculated) {
+    calculated = newCalculated;
   }
 
-  public String[] getAllKnownPropertyIds(DbConnection paramDbConnection) {
+  public String[] getAllKnownPropertyIds(DbConnection con) {
     return new String[0];
   }
 
-  public PropertyInfo getProperty(DbConnection paramDbConnection, String paramString) {
+  public PropertyInfo getProperty(DbConnection con, String id) {
     return null;
   }
 
@@ -317,13 +358,8 @@ public class XMLAElementInfo implements ElementInfo, XMLAPaloInfo {
     return false;
   }
 
-  public void update(String[] paramArrayOfString) {
+  public void update(String[] children) {
+    // TODO Auto-generated method stub
+
   }
 }
-
-/*
- * Location:
- * D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
- * Qualified Name: com.tensegrity.palo.xmla.XMLAElementInfo JD-Core Version:
- * 0.5.4
- */

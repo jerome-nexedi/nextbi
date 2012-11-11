@@ -1,4 +1,41 @@
+/*
+*
+* @file XMLAHierarchyRequestor.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Michael Raue <Michael.Raue@tensegrity-software.com>
+*
+* @version $Id: XMLAHierarchyRequestor.java,v 1.3 2009/04/29 10:35:37 PhilippBouillon Exp $
+*
+*/
+
 package com.tensegrity.palo.xmla.parsers;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import com.tensegrity.palo.xmla.XMLAClient;
 import com.tensegrity.palo.xmla.XMLAConnection;
@@ -7,11 +44,6 @@ import com.tensegrity.palo.xmla.XMLADimensionInfo;
 import com.tensegrity.palo.xmla.XMLAHierarchyInfo;
 import com.tensegrity.palo.xmla.XMLAProperties;
 import com.tensegrity.palo.xmla.XMLARestrictions;
-import com.tensegrity.palo.xmla.XMLAServerInfo;
-import java.util.ArrayList;
-import java.util.HashMap;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 public class XMLAHierarchyRequestor extends AbstractXMLARequestor {
   public static String ITEM_CATALOG_NAME = "CATALOG_NAME";
@@ -82,7 +114,7 @@ public class XMLAHierarchyRequestor extends AbstractXMLARequestor {
 
   private String restrictionHierarchyVisibility;
 
-  private final ArrayList<XMLAHierarchyInfo> hierarchyInfos = new ArrayList();
+  private final ArrayList<XMLAHierarchyInfo> hierarchyInfos = new ArrayList<XMLAHierarchyInfo>();
 
   private final XMLADatabaseInfo database;
 
@@ -90,8 +122,8 @@ public class XMLAHierarchyRequestor extends AbstractXMLARequestor {
 
   private final XMLAConnection connection;
 
-  public XMLAHierarchyRequestor(XMLADimensionInfo paramXMLADimensionInfo,
-    XMLADatabaseInfo paramXMLADatabaseInfo, XMLAConnection paramXMLAConnection) {
+  public XMLAHierarchyRequestor(XMLADimensionInfo dimension,
+    XMLADatabaseInfo database, XMLAConnection connection) {
     activateItem(ITEM_CATALOG_NAME);
     activateItem(ITEM_SCHEMA_NAME);
     activateItem(ITEM_CUBE_NAME);
@@ -117,103 +149,99 @@ public class XMLAHierarchyRequestor extends AbstractXMLARequestor {
     activateItem(ITEM_HIERARCHY_ORIGIN);
     activateItem(ITEM_HIERARCHY_DISPLAY_FOLDER);
     activateItem(ITEM_INSTANCE_SELECTION);
-    this.database = paramXMLADatabaseInfo;
-    this.dimension = paramXMLADimensionInfo;
-    this.connection = paramXMLAConnection;
+    this.database = database;
+    this.dimension = dimension;
+    this.connection = connection;
   }
 
-  public void setCatalogNameRestriction(String paramString) {
-    this.restrictionCatalog = paramString;
+  public void setCatalogNameRestriction(String catalogName) {
+    restrictionCatalog = catalogName;
   }
 
-  public void setSchemaNameRestriction(String paramString) {
-    this.restrictionSchema = paramString;
+  public void setSchemaNameRestriction(String schemaName) {
+    restrictionSchema = schemaName;
   }
 
-  public void setCubeNameRestriction(String paramString) {
-    this.restrictionCube = paramString;
+  public void setCubeNameRestriction(String cubeName) {
+    restrictionCube = cubeName;
   }
 
-  public void setDimensionUniqueNameRestriction(String paramString) {
-    this.restrictionDimensionUniqueName = paramString;
+  public void setDimensionUniqueNameRestriction(String dimName) {
+    restrictionDimensionUniqueName = dimName;
   }
 
-  public void setHierarchyNameRestriction(String paramString) {
-    this.restrictionHierarchyName = paramString;
+  public void setHierarchyNameRestriction(String hierName) {
+    restrictionHierarchyName = hierName;
   }
 
-  public void setHierarchyUniqueNameRestriction(String paramString) {
-    this.restrictionHierarchyUniqueName = paramString;
+  public void setHierarchyUniqueNameRestriction(String hierName) {
+    restrictionHierarchyUniqueName = hierName;
   }
 
-  public void setHierarchyOriginRestriction(String paramString) {
-    this.restrictionHierarchyOrigin = paramString;
+  public void setHierarchyOriginRestriction(String hierOrigin) {
+    restrictionHierarchyOrigin = hierOrigin;
   }
 
-  public void setCubeSourceRestriction(String paramString) {
-    this.restrictionCubeSource = paramString;
+  public void setCubeSourceRestriction(String cubeName) {
+    restrictionCubeSource = cubeName;
   }
 
-  public void setHierarchyVisibilityRestriction(String paramString) {
-    this.restrictionHierarchyVisibility = paramString;
+  public void setHierarchyVisibilityRestriction(String hierVisibility) {
+    restrictionHierarchyVisibility = hierVisibility;
   }
 
   private final XMLARestrictions setRestrictions() {
-    XMLARestrictions localXMLARestrictions = new XMLARestrictions();
-    localXMLARestrictions.setCatalog(this.restrictionCatalog);
-    localXMLARestrictions.setSchema(this.restrictionSchema);
-    localXMLARestrictions.setCubeName(this.restrictionCube);
-    localXMLARestrictions
-      .setDimensionUniqueName(this.restrictionDimensionUniqueName);
-    localXMLARestrictions.setHierarchyName(this.restrictionHierarchyName);
-    localXMLARestrictions
-      .setHierarchyUniqueName(this.restrictionHierarchyUniqueName);
-    localXMLARestrictions.setHierarchyOrigin(this.restrictionHierarchyOrigin);
-    localXMLARestrictions.setCubeSource(this.restrictionCubeSource);
-    localXMLARestrictions
-      .setHierarchyVisibility(this.restrictionHierarchyVisibility);
-    return localXMLARestrictions;
+    XMLARestrictions rest = new XMLARestrictions();
+
+    rest.setCatalog(restrictionCatalog);
+    rest.setSchema(restrictionSchema);
+    rest.setCubeName(restrictionCube);
+    rest.setDimensionUniqueName(restrictionDimensionUniqueName);
+    rest.setHierarchyName(restrictionHierarchyName);
+    rest.setHierarchyUniqueName(restrictionHierarchyUniqueName);
+    rest.setHierarchyOrigin(restrictionHierarchyOrigin);
+    rest.setCubeSource(restrictionCubeSource);
+    rest.setHierarchyVisibility(restrictionHierarchyVisibility);
+
+    return rest;
   }
 
-  public XMLAHierarchyInfo[] requestHierarchies(XMLAClient paramXMLAClient) {
-    this.hierarchyInfos.clear();
+  public XMLAHierarchyInfo[] requestHierarchies(XMLAClient xmlaClient) {
+    hierarchyInfos.clear();
+
     try {
-      XMLARestrictions localXMLARestrictions = setRestrictions();
-      XMLAProperties localXMLAProperties = new XMLAProperties();
-      String str = paramXMLAClient.getConnections()[0].getName();
-      localXMLAProperties.setDataSourceInfo(str);
-      localXMLAProperties.setCatalog(this.database.getId());
-      Document localDocument = paramXMLAClient.getHierarchyList(
-        localXMLARestrictions, localXMLAProperties);
-      NodeList localNodeList = localDocument.getElementsByTagName("row");
-      if ((localNodeList == null) || (localNodeList.getLength() == 0))
+      XMLARestrictions rest = setRestrictions();
+      XMLAProperties prop = new XMLAProperties();
+
+      String connectionName = xmlaClient.getConnections()[0].getName();
+      prop.setDataSourceInfo(connectionName);
+      prop.setCatalog(database.getId());
+
+      Document result = xmlaClient.getHierarchyList(rest, prop);
+      NodeList nl = result.getElementsByTagName("row");
+
+      if (nl == null || nl.getLength() == 0) {
         return new XMLAHierarchyInfo[0];
-      parseXMLANodeList(localNodeList, str, paramXMLAClient);
-    } catch (Exception localException) {
-      localException.printStackTrace();
+      }
+      parseXMLANodeList(nl, connectionName, xmlaClient);
+    } catch (Exception e) {
+      e.printStackTrace();
       return new XMLAHierarchyInfo[0];
     }
-    this.dimension.setHierarchyCount(this.hierarchyInfos.size());
-    return (XMLAHierarchyInfo[]) this.hierarchyInfos
-      .toArray(new XMLAHierarchyInfo[0]);
+
+    dimension.setHierarchyCount(hierarchyInfos.size());
+    return hierarchyInfos.toArray(new XMLAHierarchyInfo[0]);
   }
 
-  protected void parseResult(HashMap<String, String> paramHashMap,
-    String paramString, XMLAClient paramXMLAClient) {
-    String str1 = XMLADimensionInfo.getIDString((String) paramHashMap
-      .get(ITEM_HIERARCHY_UNIQUE_NAME), this.dimension.getCubeId());
-    String str2 = (String) paramHashMap.get(ITEM_HIERARCHY_CAPTION);
-    XMLAHierarchyInfo localXMLAHierarchyInfo = new XMLAHierarchyInfo(this.dimension,
-      str2, str1);
-    localXMLAHierarchyInfo.setCardinality((String) paramHashMap
-      .get(ITEM_HIERARCHY_CARDINALITY));
-    this.hierarchyInfos.add(localXMLAHierarchyInfo);
+  protected void parseResult(HashMap<String, String> result, String connectionName,
+    XMLAClient xmlaClient) {
+
+    String hun = XMLADimensionInfo.getIDString(result
+      .get(ITEM_HIERARCHY_UNIQUE_NAME), dimension.getCubeId());
+    String name = result.get(ITEM_HIERARCHY_CAPTION);
+    XMLAHierarchyInfo info;
+    info = new XMLAHierarchyInfo(dimension, name, hun);
+    info.setCardinality(result.get(ITEM_HIERARCHY_CARDINALITY));
+    hierarchyInfos.add(info);
   }
 }
-
-/*
- * Location:
- * D:\server\apache-tomcat-5.5.20\webapps\Palo-Pivot\WEB-INF\lib\paloxmla.jar
- * Qualified Name: com.tensegrity.palo.xmla.parsers.XMLAHierarchyRequestor
- * JD-Core Version: 0.5.4
- */
