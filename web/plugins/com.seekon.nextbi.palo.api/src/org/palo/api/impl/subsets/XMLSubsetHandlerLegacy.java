@@ -1,235 +1,212 @@
-/*     */package org.palo.api.impl.subsets;
-
-/*     */
-/*     */import org.palo.api.Database; /*     */
-import org.palo.api.Dimension; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.Hierarchy; /*     */
-import org.palo.api.PaloAPIException; /*     */
-import org.palo.api.SubsetState; /*     */
-import org.palo.api.impl.xml.IPaloEndHandler; /*     */
-import org.palo.api.impl.xml.IPaloStartHandler; /*     */
-import org.xml.sax.Attributes;
-
-/*     */
-/*     */public class XMLSubsetHandlerLegacy extends XMLSubsetHandler
-/*     */{
-  /*     */private final String key;
-
-  /*     */
-  /*     */XMLSubsetHandlerLegacy(Database db, String key)
-  /*     */{
-    /* 62 */super(db);
-    /* 63 */this.key = key;
-    /*     */}
-
-  /*     */
-  /*     */IPaloStartHandler[] getStartHandlers(final Database database) {
-    /* 67 */return new IPaloStartHandler[] { new IPaloStartHandler() {
-      /*     */public String getPath() {
-        /* 69 */return "subset";
-        /*     */}
-
-      /*     */
-      /*     */public void startElement(String uri, String localName, String qName,
-        Attributes attributes)
-      /*     */{
-        /* 74 */XMLSubsetHandlerLegacy.this.subsetBuilder = new SubsetBuilder();
-        /* 75 */XMLSubsetHandlerLegacy.this.subsetBuilder
-          .setId(XMLSubsetHandlerLegacy.this.key);
-        /* 76 */String name = attributes.getValue("name");
-        /* 77 */XMLSubsetHandlerLegacy.this.subsetBuilder.setName(name);
-        /* 78 */XMLSubsetHandlerLegacy.this.subsetBuilder
-        /* 79 */.setDescription(attributes.getValue("description"));
-        /* 80 */XMLSubsetHandlerLegacy.this.subsetBuilder.setActiveState(
-        /* 81 */attributes.getValue("activestrategy"));
-        /* 82 */String srcDimId = attributes.getValue("sourceDimensionName");
-        /* 83 */Dimension srcDim = database.getDimensionByName(srcDimId);
-        /* 84 */if (srcDim == null)
-          /* 85 */throw new PaloAPIException("Cannot find source dimension '" +
-          /* 86 */srcDimId + "'!!");
-        /* 87 */XMLSubsetHandlerLegacy.this.subsetBuilder.setSourceHierarchy(srcDim
-          .getDefaultHierarchy());
-        /*     */}
-      /*     */
-    }
-    /*     */, new IPaloStartHandler() {
-      /*     */public String getPath() {
-        /* 91 */return "subset/state";
-        /*     */}
-
-      /*     */
-      /*     */public void startElement(String uri, String localName, String qName,
-        Attributes attributes)
-      /*     */{
-        /* 97 */XMLSubsetHandlerLegacy.this.stateBuilder = new SubsetStateBuilder();
-        /* 98 */XMLSubsetHandlerLegacy.this.stateBuilder.setId(attributes
-          .getValue("id"));
-        /* 99 */XMLSubsetHandlerLegacy.this.stateBuilder.setName(attributes
-          .getValue("name"));
-        /*     */}
-      /*     */
-    }
-    /*     */, new IPaloStartHandler() {
-      /*     */public String getPath() {
-        /* 103 */return "subset/regularexpression";
-        /*     */}
-
-      /*     */
-      /*     */public void startElement(String uri, String localName, String qName,
-        Attributes attributes)
-      /*     */{
-        /* 109 */XMLSubsetHandlerLegacy.this.stateBuilder = new SubsetStateBuilder();
-        /* 110 */XMLSubsetHandlerLegacy.this.stateBuilder
-          .setId("regularexpression");
-        /* 111 */XMLSubsetHandlerLegacy.this.stateBuilder
-          .setName("Regular Expression");
-        /* 112 */XMLSubsetHandlerLegacy.this.stateBuilder.setExpression(attributes
-          .getValue("expression"));
-        /*     */}
-      /*     */
-    }
-    /*     */, new IPaloStartHandler() {
-      /*     */public String getPath() {
-        /* 116 */return "subset/flat";
-        /*     */}
-
-      /*     */
-      /*     */public void startElement(String uri, String localName, String qName,
-        Attributes attributes)
-      /*     */{
-        /* 122 */XMLSubsetHandlerLegacy.this.stateBuilder = new SubsetStateBuilder();
-        /* 123 */XMLSubsetHandlerLegacy.this.stateBuilder.setId("flat");
-        /* 124 */XMLSubsetHandlerLegacy.this.stateBuilder.setName("Flat");
-        /*     */}
-      /*     */
-    }
-    /*     */, new IPaloStartHandler() {
-      /*     */public String getPath() {
-        /* 128 */return "subset/flat/element";
-        /*     */}
-
-      /*     */
-      /*     */public void startElement(String uri, String localName, String qName,
-        Attributes attributes)
-      /*     */{
-        /* 133 */if ((XMLSubsetHandlerLegacy.this.stateBuilder == null)
-          || (XMLSubsetHandlerLegacy.this.subsetBuilder == null)) {
-          /* 134 */throw new PaloAPIException(
-          /* 135 */"Cannot add elements to flat subset state!!");
-          /*     */}
-        /* 137 */String elementName = attributes.getValue("name");
-        /* 138 */Hierarchy srcHier = XMLSubsetHandlerLegacy.this.subsetBuilder
-          .getSourceHierarchy();
-        /* 139 */Element element = srcHier.getElementByName(elementName);
-        /* 140 */XMLSubsetHandlerLegacy.this.stateBuilder.addElement(element);
-        /*     */}
-      /*     */
-    }
-    /*     */, new IPaloStartHandler() {
-      /*     */public String getPath() {
-        /* 144 */return "subset/hierarchical";
-        /*     */}
-
-      /*     */
-      /*     */public void startElement(String uri, String localName, String qName,
-        Attributes attributes)
-      /*     */{
-        /* 150 */XMLSubsetHandlerLegacy.this.stateBuilder = new SubsetStateBuilder();
-        /* 151 */XMLSubsetHandlerLegacy.this.stateBuilder.setId("hierarchical");
-        /* 152 */XMLSubsetHandlerLegacy.this.stateBuilder.setName("Hierarchical");
-        /*     */}
-      /*     */
-    }
-    /*     */, new IPaloStartHandler() {
-      /*     */public String getPath() {
-        /* 156 */return "subset/hierarchical/element";
-        /*     */}
-
-      /*     */
-      /*     */public void startElement(String uri, String localName, String qName,
-        Attributes attributes)
-      /*     */{
-        /* 161 */if ((XMLSubsetHandlerLegacy.this.stateBuilder == null)
-          || (XMLSubsetHandlerLegacy.this.subsetBuilder == null)) {
-          /* 162 */throw new PaloAPIException(
-          /* 163 */"Cannot add elements to hierarchical subset state!!");
-          /*     */}
-        /* 165 */String elementName = attributes.getValue("name");
-        /* 166 */Hierarchy srcHier = XMLSubsetHandlerLegacy.this.subsetBuilder
-          .getSourceHierarchy();
-        /* 167 */Element element = srcHier.getElementByName(elementName);
-        /* 168 */XMLSubsetHandlerLegacy.this.stateBuilder.addElement(element);
-        /*     */}
-      /*     */
-    }
-    /*     */};
-    /*     */}
-
-  /*     */
-  /*     */IPaloEndHandler[] getEndHandlers(Database database) {
-    /* 174 */return new IPaloEndHandler[] { new IPaloEndHandler() {
-      /*     */public String getPath() {
-        /* 176 */return "subset/regularexpression";
-        /*     */}
-
-      /*     */
-      /*     */public void endElement(String uri, String localName, String qName) {
-        /* 180 */if ((XMLSubsetHandlerLegacy.this.subsetBuilder == null)
-          || (XMLSubsetHandlerLegacy.this.stateBuilder == null)) {
-          /* 181 */throw new PaloAPIException("Cannot create subset state!!");
-          /*     */}
-        /* 183 */SubsetState state = XMLSubsetHandlerLegacy.this.stateBuilder
-          .createState();
-        /* 184 */XMLSubsetHandlerLegacy.this.subsetBuilder.addState(state);
-        /* 185 */XMLSubsetHandlerLegacy.this.stateBuilder = null;
-        /*     */}
-      /*     */
-    }
-    /*     */, new IPaloEndHandler() {
-      /*     */public String getPath() {
-        /* 189 */return "subset/flat";
-        /*     */}
-
-      /*     */
-      /*     */public void endElement(String uri, String localName, String qName) {
-        /* 193 */if ((XMLSubsetHandlerLegacy.this.subsetBuilder == null)
-          || (XMLSubsetHandlerLegacy.this.stateBuilder == null)) {
-          /* 194 */throw new PaloAPIException("Cannot create subset state!!");
-          /*     */}
-        /* 196 */SubsetState state = XMLSubsetHandlerLegacy.this.stateBuilder
-          .createState();
-        /* 197 */XMLSubsetHandlerLegacy.this.subsetBuilder.addState(state);
-        /* 198 */XMLSubsetHandlerLegacy.this.stateBuilder = null;
-        /*     */}
-      /*     */
-    }
-    /*     */, new IPaloEndHandler() {
-      /*     */public String getPath() {
-        /* 202 */return "subset/hierarchical";
-        /*     */}
-
-      /*     */
-      /*     */public void endElement(String uri, String localName, String qName) {
-        /* 206 */if ((XMLSubsetHandlerLegacy.this.subsetBuilder == null)
-          || (XMLSubsetHandlerLegacy.this.stateBuilder == null)) {
-          /* 207 */throw new PaloAPIException("Cannot create subset state!!");
-          /*     */}
-        /* 209 */SubsetState state = XMLSubsetHandlerLegacy.this.stateBuilder
-          .createState();
-        /* 210 */XMLSubsetHandlerLegacy.this.subsetBuilder.addState(state);
-        /* 211 */XMLSubsetHandlerLegacy.this.stateBuilder = null;
-        /*     */}
-      /*     */
-    }
-    /*     */};
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file XMLSubsetHandlerLegacy.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author ArndHouben
+*
+* @version $Id: XMLSubsetHandlerLegacy.java,v 1.3 2009/04/29 10:21:57 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.impl.subsets.XMLSubsetHandlerLegacy JD-Core
- * Version: 0.5.4
+ * (c) Tensegrity Software 2007
+ * All rights reserved
  */
+package org.palo.api.impl.subsets;
+
+import org.palo.api.Database;
+import org.palo.api.Dimension;
+import org.palo.api.Element;
+import org.palo.api.Hierarchy;
+import org.palo.api.PaloAPIException;
+import org.palo.api.SubsetState;
+import org.palo.api.impl.xml.IPaloEndHandler;
+import org.palo.api.impl.xml.IPaloStartHandler;
+import org.xml.sax.Attributes;
+
+/**
+ * <code>XMLSubsetHandlerLegacy</code>
+ * Defines <code>{@link IPaloEndHandler}</code>s and 
+ * <code>{@link IPaloEndHandler}</code>s to read subsets which are stored using
+ * legacy version 
+ *
+ * @author ArndHouben
+ * @version $Id: XMLSubsetHandlerLegacy.java,v 1.3 2009/04/29 10:21:57 PhilippBouillon Exp $
+ **/
+public class XMLSubsetHandlerLegacy extends XMLSubsetHandler {
+
+  private final String key;
+
+  XMLSubsetHandlerLegacy(Database db, final String key) {
+    super(db);
+    this.key = key;
+  }
+
+  IPaloStartHandler[] getStartHandlers(final Database database) {
+    return new IPaloStartHandler[] { new IPaloStartHandler() {
+      public String getPath() {
+        return "subset";
+      }
+
+      public void startElement(String uri, String localName, String qName,
+        Attributes attributes) {
+        subsetBuilder = new SubsetBuilder();
+        subsetBuilder.setId(key);
+        String name = attributes.getValue("name");
+        subsetBuilder.setName(name);
+        subsetBuilder.setDescription(attributes.getValue("description"));
+        subsetBuilder.setActiveState(attributes.getValue("activestrategy"));
+        String srcDimId = attributes.getValue("sourceDimensionName"); //$NON-NLS-1$
+        Dimension srcDim = database.getDimensionByName(srcDimId);
+        if (srcDim == null)
+          throw new PaloAPIException("Cannot find source dimension '" + srcDimId
+            + "'!!");
+        subsetBuilder.setSourceHierarchy(srcDim.getDefaultHierarchy());
+      }
+    }, new IPaloStartHandler() {
+      public String getPath() {
+        return "subset/state";
+      }
+
+      public void startElement(String uri, String localName, String qName,
+        Attributes attributes) {
+        // get a fresh builder
+        stateBuilder = new SubsetStateBuilder();
+        stateBuilder.setId(attributes.getValue("id"));
+        stateBuilder.setName(attributes.getValue("name"));
+      }
+    }, new IPaloStartHandler() {
+      public String getPath() {
+        return "subset/regularexpression";
+      }
+
+      public void startElement(String uri, String localName, String qName,
+        Attributes attributes) {
+        // get a fresh builder
+        stateBuilder = new SubsetStateBuilder();
+        stateBuilder.setId("regularexpression");
+        stateBuilder.setName("Regular Expression");
+        stateBuilder.setExpression(attributes.getValue("expression"));
+      }
+    }, new IPaloStartHandler() {
+      public String getPath() {
+        return "subset/flat";
+      }
+
+      public void startElement(String uri, String localName, String qName,
+        Attributes attributes) {
+        // get a fresh builder
+        stateBuilder = new SubsetStateBuilder();
+        stateBuilder.setId("flat");
+        stateBuilder.setName("Flat");
+      }
+    }, new IPaloStartHandler() {
+      public String getPath() {
+        return "subset/flat/element";
+      }
+
+      public void startElement(String uri, String localName, String qName,
+        Attributes attributes) {
+        if (stateBuilder == null || subsetBuilder == null) {
+          throw new PaloAPIException("Cannot add elements to flat subset state!!");
+        }
+        String elementName = attributes.getValue("name");
+        Hierarchy srcHier = subsetBuilder.getSourceHierarchy();
+        Element element = srcHier.getElementByName(elementName);
+        stateBuilder.addElement(element);
+      }
+    }, new IPaloStartHandler() {
+      public String getPath() {
+        return "subset/hierarchical";
+      }
+
+      public void startElement(String uri, String localName, String qName,
+        Attributes attributes) {
+        // get a fresh builder
+        stateBuilder = new SubsetStateBuilder();
+        stateBuilder.setId("hierarchical");
+        stateBuilder.setName("Hierarchical");
+      }
+    }, new IPaloStartHandler() {
+      public String getPath() {
+        return "subset/hierarchical/element";
+      }
+
+      public void startElement(String uri, String localName, String qName,
+        Attributes attributes) {
+        if (stateBuilder == null || subsetBuilder == null) {
+          throw new PaloAPIException(
+            "Cannot add elements to hierarchical subset state!!");
+        }
+        String elementName = attributes.getValue("name");
+        Hierarchy srcHier = subsetBuilder.getSourceHierarchy();
+        Element element = srcHier.getElementByName(elementName);
+        stateBuilder.addElement(element);
+      }
+    } };
+  }
+
+  IPaloEndHandler[] getEndHandlers(Database database) {
+    return new IPaloEndHandler[] { new IPaloEndHandler() {
+      public String getPath() {
+        return "subset/regularexpression";
+      }
+
+      public void endElement(String uri, String localName, String qName) {
+        if (subsetBuilder == null || stateBuilder == null) {
+          throw new PaloAPIException("Cannot create subset state!!");
+        }
+        SubsetState state = stateBuilder.createState();
+        subsetBuilder.addState(state);
+        stateBuilder = null;
+      }
+    }, new IPaloEndHandler() {
+      public String getPath() {
+        return "subset/flat";
+      }
+
+      public void endElement(String uri, String localName, String qName) {
+        if (subsetBuilder == null || stateBuilder == null) {
+          throw new PaloAPIException("Cannot create subset state!!");
+        }
+        SubsetState state = stateBuilder.createState();
+        subsetBuilder.addState(state);
+        stateBuilder = null;
+      }
+    }, new IPaloEndHandler() {
+      public String getPath() {
+        return "subset/hierarchical";
+      }
+
+      public void endElement(String uri, String localName, String qName) {
+        if (subsetBuilder == null || stateBuilder == null) {
+          throw new PaloAPIException("Cannot create subset state!!");
+        }
+        SubsetState state = stateBuilder.createState();
+        subsetBuilder.addState(state);
+        stateBuilder = null;
+      }
+    } };
+  }
+}

@@ -1,221 +1,262 @@
-/*     */package org.palo.api.impl;
+/*
+*
+* @file AttributeImpl.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Michael Raue <Michael.Raue@tensegrity-software.com>
+*
+* @version $Id: AttributeImpl.java,v 1.19 2009/09/22 09:43:17 PhilippBouillon Exp $
+*
+*/
 
-/*     */
-/*     */import java.util.ArrayList; /*     */
-import java.util.Arrays; /*     */
-import java.util.List; /*     */
-import org.palo.api.Attribute; /*     */
-import org.palo.api.ConnectionEvent; /*     */
-import org.palo.api.Consolidation; /*     */
-import org.palo.api.Cube; /*     */
-import org.palo.api.Database; /*     */
-import org.palo.api.Dimension; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.Hierarchy; /*     */
+package org.palo.api.impl;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.palo.api.Attribute;
+import org.palo.api.ConnectionEvent;
+import org.palo.api.Consolidation;
+import org.palo.api.Cube;
+import org.palo.api.Dimension;
+import org.palo.api.Element;
+import org.palo.api.Hierarchy;
 import org.palo.api.PaloAPIException;
 
-/*     */
-/*     */class AttributeImpl
-/*     */implements Attribute
-/*     */{
-  /*     */private final Cube attrCube;
+class AttributeImpl implements Attribute {
 
-  /* 74 */private final Element[] coordinates = new Element[2];
+  //-------------------------------------------------------------------------
+  // FACTORY
+  //
+  //    static Attribute getInstance(
+  //    		ConnectionImpl connection, 
+  //    		Element attrElement, 
+  //    		Cube attrCube) {
+  //		Map cache = connection.getCache(AttributeImpl.class);
+  //
+  //		AttributeImpl attribute = new AttributeImpl(attrElement,attrCube);
+  //		CompoundKey k = attribute.createKey();
+  //		AttributeImpl cached;
+  //		if ((cached = (AttributeImpl) cache.get(k)) != null) {
+  //			return cached;
+  //		}
+  //		cache.put(k, attribute);
+  //		return attribute;
+  //	}
+  final static Attribute create(Element attrElement, Cube attrCube) {
+    return new AttributeImpl(attrElement, attrCube);
+  }
 
-  /*     */
-  /*     */static final Attribute create(Element attrElement, Cube attrCube)
-  /*     */{
-    /* 69 */return new AttributeImpl(attrElement, attrCube);
-    /*     */}
+  //	private final String id;
+  private final Cube attrCube;
 
-  /*     */
-  /*     */private AttributeImpl(Element attrElement, Cube attrCube)
-  /*     */{
-    /* 78 */this.attrCube = attrCube;
-    /* 79 */this.coordinates[0] = attrElement;
-    /*     */}
+  private final Element[] coordinates = new Element[2];
 
-  /*     */
-  /*     */final Element getAttributeElement()
-  /*     */{
-    /* 89 */return this.coordinates[0];
-    /*     */}
+  private AttributeImpl(Element attrElement, Cube attrCube) {
+    //		this.id = id;
+    this.attrCube = attrCube;
+    coordinates[0] = attrElement;
+    //        //workaround for attributes 'til we have IDs
+    //		if(attrElement instanceof ElementImpl)
+    //			((ElementImpl)attrElement).setId(id);
+  }
 
-  /*     */
-  /*     */public final void setChildren(Attribute[] attributes)
-  /*     */{
-    /* 96 */if (attributes == null) {
-      /* 97 */attributes = new Attribute[0];
-      /*     */}
-    /*     */
-    /* 100 */Element attrElement = this.coordinates[0];
-    /* 101 */Hierarchy attrHier = attrElement.getHierarchy();
-    /* 102 */Consolidation[] consolidations = new Consolidation[attributes.length];
-    /* 103 */for (int i = 0; i < consolidations.length; ++i) {
-      /* 104 */Element attrChild =
-      /* 105 */((AttributeImpl) attributes[i]).getAttributeElement();
-      /* 106 */consolidations[i] =
-      /* 107 */attrHier.newConsolidation(attrChild, attrElement, 1.0D);
-      /*     */}
-    /* 109 */attrElement.updateConsolidations(consolidations);
-    /* 110 */attrElement.getDimension().reload(false);
-    /*     */}
+  //--------------------------------------------------------------------------
+  // INTERNAL API
+  //
+  final Element getAttributeElement() {
+    return coordinates[0];
+  }
 
-  /*     */
-  /*     */public final void removeChildren(Attribute[] attributes) {
-    /* 114 */if (attributes == null)
-      /* 115 */return;
-    /* 116 */List removeChildren = new ArrayList(Arrays.asList(attributes));
-    /* 117 */List children = new ArrayList(Arrays.asList(getChildren()));
-    /* 118 */if (children.removeAll(removeChildren)) {
-      /* 119 */Attribute[] newChildren =
-      /* 120 */(Attribute[]) children.toArray(new Attribute[children.size()]);
-      /* 121 */setChildren(newChildren);
-      /*     */}
-    /*     */}
-
-  /*     */
-  /*     */public final Attribute[] getChildren()
-  /*     */{
-    /* 127 */Element attrElement = this.coordinates[0];
-    /*     */
-    /* 129 */HierarchyImpl attrHier = (HierarchyImpl) attrElement.getHierarchy();
-    /*     */
-    /* 132 */HierarchyImpl srcHier = (HierarchyImpl) attrHier
-      .getAttributeHierarchy();
-    /* 133 */if (srcHier == null)
-      /* 134 */return new Attribute[0];
-    /* 135 */Element[] childElements = attrElement.getChildren();
-    /* 136 */Attribute[] attrChildren = new Attribute[childElements.length];
-    /* 137 */for (int i = 0; i < childElements.length; ++i) {
-      /* 138 */attrChildren[i] = srcHier.getAttribute(childElements[i]);
-      /*     */}
-    /*     */
-    /* 141 */return attrChildren;
-    /*     */}
-
-  /*     */
-  /*     */public final String getId() {
-    /* 145 */return this.coordinates[0].getId();
-    /*     */}
-
-  /*     */
-  /*     */public final String getName() {
-    /* 149 */return getAttributeElement().getName();
-    /*     */}
-
-  /*     */
-  /*     */public final void setName(String name) {
-    /* 153 */((ElementImpl) getAttributeElement()).renameInternal(name, false);
-    /*     */
-    /* 155 */ConnectionImpl connection = (ConnectionImpl) this.attrCube
-      .getDatabase()
-      /* 156 */.getConnection();
-    /* 157 */connection.fireEvent(
-    /* 159 */new ConnectionEvent(connection,
-    /* 158 */this, 17,
-    /* 159 */new Attribute[] { this }));
-    /*     */}
-
-  /*     */
-  /*     */public final Attribute[] getParents() {
-    /* 163 */DimensionImpl sysDim = (DimensionImpl) this.coordinates[0]
-      .getDimension();
-    /* 164 */String srcDim = PaloObjects.getLeafName(sysDim.getName());
-    /* 165 */Dimension attrDim =
-    /* 166 */(DimensionImpl) sysDim.getDatabase().getDimensionByName(srcDim);
-    /* 167 */HierarchyImpl attrHier = (HierarchyImpl) attrDim.getDefaultHierarchy();
-    /* 168 */Element[] parents = this.coordinates[0].getParents();
-    /* 169 */int parentCount = (parents == null) ? 0 : parents.length;
-    /* 170 */Attribute[] attrParents = new Attribute[parentCount];
-    /* 171 */for (int i = 0; i < parentCount; ++i) {
-      /* 172 */attrParents[i] = attrHier.getAttribute(parents[i]);
-      /*     */}
-    /* 174 */return attrParents;
-    /*     */}
-
-  /*     */
-  /*     */public final Object getValue(Element element)
-  /*     */{
-    /* 191 */this.coordinates[1] = element;
-    /* 192 */return this.attrCube.getData(this.coordinates);
-    /*     */}
-
-  /*     */
-  /*     */public final boolean hasChildren() {
-    /* 196 */return this.coordinates[0].getChildCount() > 0;
-    /*     */}
-
-  /*     */
-  /*     */public final void setValue(Element element, Object value) {
-    /* 200 */this.coordinates[1] = element;
-    /* 201 */this.attrCube.setData(this.coordinates, value);
-    /*     */
-    /* 203 */ConnectionImpl connection =
-    /* 204 */(ConnectionImpl) this.attrCube.getDatabase().getConnection();
-    /* 205 */connection.fireEvent(
-    /* 208 */new ConnectionEvent(connection, this,
-    /* 207 */17,
-    /* 208 */new Attribute[] { this }));
-    /*     */}
-
-  /*     */
-  /*     */public final void setValues(Element[] elements, Object[] values) {
-    /* 212 */if (elements.length != values.length)
-      /* 213 */throw new PaloAPIException(
-        "The number of elements and values has to be equal!");
-    /* 214 */Element[][] coords = new Element[elements.length][];
-    /* 215 */for (int i = 0; i < coords.length; ++i) {
-      /* 216 */coords[i] = new Element[2];
-      /* 217 */coords[i][0] = this.coordinates[0];
-      /* 218 */coords[i][1] = elements[i];
-      /*     */}
-    /* 220 */this.attrCube.setDataArray(coords, values, 0);
-    /*     */
-    /* 222 */ConnectionImpl connection =
-    /* 223 */(ConnectionImpl) this.attrCube.getDatabase().getConnection();
-    /* 224 */connection.fireEvent(
-    /* 227 */new ConnectionEvent(connection, this,
-    /* 226 */17,
-    /* 227 */new Attribute[] { this }));
-    /*     */}
-
-  /*     */
-  /*     */public final Object[] getValues(Element[] elements) {
-    /* 231 */Element[][] coords = new Element[elements.length][];
-    /* 232 */for (int i = 0; i < coords.length; ++i) {
-      /* 233 */coords[i] = new Element[2];
-      /* 234 */coords[i][0] = this.coordinates[0];
-      /* 235 */coords[i][1] = elements[i];
-      /*     */}
-    /* 237 */return ((CubeImpl) this.attrCube).getDataBulk(coords);
-    /*     */}
-
-  /*     */
-  /*     */public final int getType() {
-    /* 241 */int attrElType = this.coordinates[0].getType();
-    /* 242 */switch (attrElType)
-    /*     */{
-    /*     */case 0:
-      /* 243 */
-      return 0;
-      /*     */case 1:
-      /* 244 */
-      return 1;
-      /*     */
+  //--------------------------------------------------------------------------
+  // PUBLIC API
+  //
+  public final void setChildren(Attribute[] attributes) {
+    if (attributes == null) {
+      attributes = new Attribute[0];
     }
-    /* 246 */return -1;
-    /*     */}
+    //create the consolidation hierarchy:
+    Element attrElement = coordinates[0];
+    Hierarchy attrHier = attrElement.getHierarchy();
+    Consolidation[] consolidations = new Consolidation[attributes.length];
+    for (int i = 0; i < consolidations.length; ++i) {
+      Element attrChild = ((AttributeImpl) attributes[i]).getAttributeElement();
+      consolidations[i] = attrHier.newConsolidation(attrChild, attrElement, 1);
+    }
+    attrElement.updateConsolidations(consolidations);
+    attrElement.getDimension().reload(false);
+  }
 
-  /*     */
-  /*     */public final void setType(int type) {
-    /* 250 */this.coordinates[0].setType(type);
-    /*     */}
-  /*     */
+  public final void removeChildren(Attribute[] attributes) {
+    if (attributes == null)
+      return;
+    List removeChildren = new ArrayList(Arrays.asList(attributes));
+    List children = new ArrayList(Arrays.asList(getChildren()));
+    if (children.removeAll(removeChildren)) {
+      Attribute[] newChildren = (Attribute[]) children
+        .toArray(new Attribute[children.size()]);
+      setChildren(newChildren);
+    }
+  }
+
+  public final Attribute[] getChildren() {
+    Element attrElement = coordinates[0];
+    //get attribute hierarchy
+    HierarchyImpl attrHier = (HierarchyImpl) attrElement.getHierarchy();
+    //get corresponding source hierarchy 
+    //(note: this is the attribute hierarchy of the attribute hierarchy ;) ):
+    HierarchyImpl srcHier = (HierarchyImpl) attrHier.getAttributeHierarchy();
+    if (srcHier == null)
+      return new Attribute[0];
+    Element[] childElements = attrElement.getChildren();
+    Attribute[] attrChildren = new Attribute[childElements.length];
+    for (int i = 0; i < childElements.length; ++i) {
+      attrChildren[i] = srcHier.getAttribute(childElements[i]);
+    }
+    //TODO should we clone here?
+    return attrChildren;
+  }
+
+  public final String getId() {
+    return coordinates[0].getId();
+  }
+
+  public final String getName() {
+    return getAttributeElement().getName();
+  }
+
+  public final void setName(String name) {
+    ((ElementImpl) getAttributeElement()).renameInternal(name, false);
+    // event:
+    ConnectionImpl connection = (ConnectionImpl) attrCube.getDatabase()
+      .getConnection();
+    ((ConnectionImpl) connection)
+      .fireEvent(new ConnectionEvent(connection, this,
+        ConnectionEvent.CONNECTION_EVENT_ATTRIBUTES_CHANGED,
+        new Attribute[] { this }));
+  }
+
+  public final Attribute[] getParents() {
+    DimensionImpl sysDim = (DimensionImpl) coordinates[0].getDimension();
+    String srcDim = PaloObjects.getLeafName(sysDim.getName());
+    Dimension attrDim = (DimensionImpl) sysDim.getDatabase().getDimensionByName(
+      srcDim);
+    HierarchyImpl attrHier = (HierarchyImpl) attrDim.getDefaultHierarchy();
+    Element[] parents = coordinates[0].getParents();
+    int parentCount = parents == null ? 0 : parents.length;
+    Attribute[] attrParents = new Attribute[parentCount];
+    for (int i = 0; i < parentCount; ++i) {
+      attrParents[i] = attrHier.getAttribute(parents[i]);
+    }
+    return attrParents;
+    //
+    //		HierarchyImpl sysHier = (HierarchyImpl)coordinates[0].getHierarchy();
+    //		String srcHier = PaloObjects.getLeafName(sysHier.getName());
+    //		HierarchyImpl attrHier = (HierarchyImpl) sysHier.getDimension().
+    //			getHierarchyByName(srcHier);
+    //		Element[] parents = coordinates[0].getParents();
+    //		int parentCount = parents == null ? 0 : parents.length;
+    //		Attribute[] attrParents = new Attribute[parentCount]; 
+    //		for(int i=0;i<parentCount;++i) {
+    //			attrParents[i] = attrHier.getAttribute(parents[i]);
+    //		}
+    //		return attrParents;
+  }
+
+  public final Object getValue(Element element) {
+    //TODO we can cache the value: init()-> read value, setValue()->store new value		
+    coordinates[1] = element;
+    return attrCube.getData(coordinates);
+  }
+
+  public final boolean hasChildren() {
+    return coordinates[0].getChildCount() > 0;
+  }
+
+  public final void setValue(Element element, Object value) {
+    coordinates[1] = element;
+    attrCube.setData(coordinates, value);
+    //event:
+    ConnectionImpl connection = (ConnectionImpl) attrCube.getDatabase()
+      .getConnection();
+    ((ConnectionImpl) connection)
+      .fireEvent(new ConnectionEvent(connection, this,
+        ConnectionEvent.CONNECTION_EVENT_ATTRIBUTES_CHANGED,
+        new Attribute[] { this }));
+  }
+
+  public final void setValues(Element[] elements, Object[] values) {
+    if (elements.length != values.length)
+      throw new PaloAPIException(
+        "The number of elements and values has to be equal!");
+    Element[][] coords = new Element[elements.length][];
+    for (int i = 0; i < coords.length; ++i) {
+      coords[i] = new Element[2];
+      coords[i][0] = coordinates[0];
+      coords[i][1] = elements[i];
+    }
+    attrCube.setDataArray(coords, values, Cube.SPLASHMODE_DISABLED);
+    //event:
+    ConnectionImpl connection = (ConnectionImpl) attrCube.getDatabase()
+      .getConnection();
+    ((ConnectionImpl) connection)
+      .fireEvent(new ConnectionEvent(connection, this,
+        ConnectionEvent.CONNECTION_EVENT_ATTRIBUTES_CHANGED,
+        new Attribute[] { this }));
+  }
+
+  public final Object[] getValues(Element[] elements) {
+    Element[][] coords = new Element[elements.length][];
+    for (int i = 0; i < coords.length; ++i) {
+      coords[i] = new Element[2];
+      coords[i][0] = coordinates[0];
+      coords[i][1] = elements[i];
+    }
+    return ((CubeImpl) attrCube).getDataBulk(coords);
+  }
+
+  public final int getType() {
+    int attrElType = coordinates[0].getType();
+    switch (attrElType) {
+    case Element.ELEMENTTYPE_NUMERIC:
+      return TYPE_NUMERIC;
+    case Element.ELEMENTTYPE_STRING:
+      return TYPE_STRING;
+    }
+    return -1;
+  }
+
+  public final void setType(int type) {
+    coordinates[0].setType(type);
+  }
+
+  //    private final CompoundKey createKey() {
+  //		return new CompoundKey(new Object[] { 
+  //				AttributeImpl.class,
+  //				this.getId(), 
+  //				this.getName(),
+  //				this.getAttributeElement().getDimension().getName() });
+  //	}
+  //
 }
-
-/*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.impl.AttributeImpl JD-Core Version: 0.5.4
- */

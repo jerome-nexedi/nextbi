@@ -1,557 +1,527 @@
-/*     */package org.palo.api.impl;
-
-/*     */
-/*     */import com.tensegrity.palojava.CubeInfo; /*     */
-import java.math.BigInteger; /*     */
-import java.text.NumberFormat; /*     */
-import java.util.HashMap; /*     */
-import java.util.Map; /*     */
-import org.palo.api.Cell; /*     */
-import org.palo.api.Cube; /*     */
-import org.palo.api.CubeView; /*     */
-import org.palo.api.Database; /*     */
-import org.palo.api.Dimension; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.ExportContext; /*     */
-import org.palo.api.ExportDataset; /*     */
-import org.palo.api.Lock; /*     */
-import org.palo.api.Property; /*     */
-import org.palo.api.Property2; /*     */
-import org.palo.api.Rule; /*     */
-import org.palo.api.VirtualCubeDefinition; /*     */
-import org.palo.api.VirtualDimensionDefinition; /*     */
-import org.palo.api.VirtualObject; /*     */
-import org.palo.api.persistence.PersistenceObserver;
-
-/*     */
-/*     */class VirtualCubeImpl
-/*     */implements Cube, VirtualObject
-/*     */{
-  /*     */private final VirtualCubeDefinition definition;
-
-  /*     */private final VirtualDimensionImpl[] vdims;
-
-  /*     */private final Map dim2vdim;
-
-  /*     */private final CompoundKey key;
-
-  /*     */
-  /*     */VirtualCubeImpl(VirtualCubeDefinition definition)
-  /*     */{
-    /* 82 */this.definition = definition;
-    /*     */
-    /* 84 */VirtualDimensionDefinition[] vdimdefs =
-    /* 85 */definition.getVirtualDimensionDefinitions();
-    /* 86 */this.vdims = new VirtualDimensionImpl[vdimdefs.length];
-    /* 87 */for (int i = 0; i < this.vdims.length; ++i)
-    /*     */{
-      /* 90 */VirtualDimensionImpl vdim = new VirtualDimensionImpl(
-      /* 91 */vdimdefs[i].getSourceDimension(),
-      /* 92 */vdimdefs[i].getElements(),
-      /* 93 */vdimdefs[i].getRootElements(),
-      /* 94 */vdimdefs[i].isFlat(),
-      /* 95 */vdimdefs[i].getActiveHierarchy());
-      /* 96 */this.vdims[i] = vdim;
-      /* 97 */vdim.setVirtualDefinition(vdimdefs[i]);
-      /*     */}
-    /*     */
-    /* 109 */this.dim2vdim = new HashMap();
-    /*     */
-    /* 111 */for (int i = 0; i < this.vdims.length; ++i)
-    /*     */{
-      /* 113 */VirtualDimensionImpl vdim = this.vdims[i];
-      /* 114 */Dimension dim = vdim.getSourceDimension();
-      /*     */
-      /* 116 */this.dim2vdim.put(dim, vdim);
-      /*     */}
-    /*     */
-    /* 119 */this.key = createKey();
-    /*     */}
-
-  /*     */
-  /*     */private final CompoundKey createKey()
-  /*     */{
-    /* 139 */return new CompoundKey(new Object[] {
-    /* 140 */VirtualCubeImpl.class,
-    /* 141 */this.definition.getSourceCube().getName(),
-    /* 142 */this.definition.getSourceCube().getDatabase().getName(),
-    /* 143 */getName() });
-    /*     */}
-
-  /*     */
-  /*     */public int getExtendedType()
-  /*     */{
-    /* 148 */return 1;
-    /*     */}
-
-  /*     */
-  /*     */public final String getId() {
-    /* 152 */return this.definition.getSourceCube().getId() + "@@" +
-    /* 153 */Integer.toHexString(System.identityHashCode(this));
-    /*     */}
-
-  /*     */
-  /*     */public final String getName()
-  /*     */{
-    /* 158 */String postfix = this.definition.getName();
-    /* 159 */if (postfix == null)
-      /* 160 */postfix = Integer.toHexString(System.identityHashCode(this));
-    /* 161 */return this.definition.getSourceCube().getName() + "@@" + postfix;
-    /*     */}
-
-  /*     */
-  /*     */public Database getDatabase()
-  /*     */{
-    /* 166 */return this.definition.getSourceCube().getDatabase();
-    /*     */}
-
-  /*     */
-  /*     */public int getDimensionCount()
-  /*     */{
-    /* 171 */return this.definition.getSourceCube().getDimensionCount();
-    /*     */}
-
-  /*     */
-  /*     */public Dimension getDimensionAt(int index)
-  /*     */{
-    /* 176 */Dimension dim = this.definition.getSourceCube().getDimensionAt(index);
-    /* 177 */Dimension vdim = (Dimension) this.dim2vdim.get(dim);
-    /* 178 */return (vdim == null) ? dim : vdim;
-    /*     */}
-
-  /*     */
-  /*     */public Dimension[] getDimensions()
-  /*     */{
-    /* 183 */Dimension[] dims = this.definition.getSourceCube().getDimensions();
-    /* 184 */if (dims == null)
-      /* 185 */return null;
-    /* 186 */for (int i = 0; i < dims.length; ++i)
-    /*     */{
-      /* 188 */Dimension dim = dims[i];
-      /* 189 */Dimension vdim = (Dimension) this.dim2vdim.get(dim);
-      /* 190 */if (vdim == null)
-        /*     */continue;
-      /* 192 */dims[i] = vdim;
-      /*     */}
-    /* 194 */return dims;
-    /*     */}
-
-  /*     */
-  /*     */public Dimension getDimensionByName(String name)
-  /*     */{
-    /* 199 */if (name == null) {
-      /* 200 */return null;
-      /*     */}
-    /* 202 */for (int i = 0; i < this.vdims.length; ++i)
-    /*     */{
-      /* 204 */VirtualDimensionImpl vdim = this.vdims[i];
-      /* 205 */if ((vdim != null) && (vdim.getName().equalsIgnoreCase(name))) {
-        /* 206 */return vdim;
-        /*     */}
-      /*     */}
-    /* 209 */return this.definition.getSourceCube().getDimensionByName(name);
-    /*     */}
-
-  /*     */
-  /*     */public final Dimension getDimensionById(String id) {
-    /* 213 */for (int i = 0; i < this.vdims.length; ++i) {
-      /* 214 */if (this.vdims[i].getId().equals(id))
-        /* 215 */return this.vdims[i];
-      /*     */}
-    /* 217 */return this.definition.getSourceCube().getDimensionById(id);
-    /*     */}
-
-  /*     */
-  /*     */public void commitLog()
-  /*     */{
-    /* 222 */this.definition.getSourceCube().commitLog();
-    /*     */}
-
-  /*     */
-  /*     */public Object getData(String[] coordinates)
-  /*     */{
-    /* 227 */return this.definition.getSourceCube().getData(coordinates);
-    /*     */}
-
-  /*     */
-  /*     */public Object[] getDataArray(String[][] elements)
-  /*     */{
-    /* 232 */return this.definition.getSourceCube().getDataArray(elements);
-    /*     */}
-
-  /*     */
-  /*     */public void convert(int type) {
-    /* 236 */this.definition.getSourceCube().convert(type);
-    /*     */}
-
-  /*     */
-  /*     */public Object getData(Element[] coordinates)
-  /*     */{
-    /* 246 */return this.definition.getSourceCube().getData(coordinates);
-    /*     */}
-
-  /*     */
-  /*     */public Object[] getDataArray(Element[][] elements)
-  /*     */{
-    /* 251 */return this.definition.getSourceCube().getDataArray(elements);
-    /*     */}
-
-  /*     */
-  /*     */public Object[] getDataBulk(Element[][] elements)
-  /*     */{
-    /* 256 */return this.definition.getSourceCube().getDataBulk(elements);
-    /*     */}
-
-  /*     */
-  /*     */public void setData(String[] coordinates, Object value)
-  /*     */{
-    /* 261 */this.definition.getSourceCube().setData(coordinates, value);
-    /*     */}
-
-  /*     */
-  /*     */public void setData(Element[] coordinates, Object value)
-  /*     */{
-    /* 266 */this.definition.getSourceCube().setData(coordinates, value);
-    /*     */}
-
-  /*     */
-  /*     */public void setData(Element[] coordinates, Object value,
-    NumberFormat formatter)
-  /*     */{
-    /* 271 */this.definition.getSourceCube().setData(coordinates, value);
-    /*     */}
-
-  /*     */
-  /*     */public void setDataSplashed(Element[] coordinate, Object value) {
-    /* 275 */this.definition.getSourceCube().setDataSplashed(coordinate, value);
-    /*     */}
-
-  /*     */
-  /*     */public void setDataSplashed(Element[] coordinate, Object value,
-    NumberFormat formatter) {
-    /* 279 */this.definition.getSourceCube().setDataSplashed(coordinate, value,
-      formatter);
-    /*     */}
-
-  /*     */
-  /*     */public void setDataSplashed(String[] coordinates, Object value,
-    int splashMode)
-  /*     */{
-    /* 284 */this.definition.getSourceCube().setDataSplashed(coordinates, value,
-      splashMode);
-    /*     */}
-
-  /*     */
-  /*     */public void setDataSplashed(Element[] coordinates, Object value,
-    int splashMode)
-  /*     */{
-    /* 289 */this.definition.getSourceCube().setDataSplashed(coordinates, value,
-      splashMode);
-    /*     */}
-
-  /*     */
-  /*     */public void setDataArray(Element[][] coordinates, Object[] values,
-    int splashMode) {
-    /* 293 */this.definition.getSourceCube().setDataArray(coordinates, values,
-      splashMode);
-    /*     */}
-
-  /*     */
-  /*     */public boolean isAttributeCube()
-  /*     */{
-    /* 298 */return false;
-    /*     */}
-
-  /*     */
-  /*     */public boolean isSubsetCube()
-  /*     */{
-    /* 303 */return false;
-    /*     */}
-
-  /*     */
-  /*     */public boolean isViewCube() {
-    /* 307 */return false;
-    /*     */}
-
-  /*     */
-  /*     */public CubeView addCubeView(String name, Property[] properties)
-  /*     */{
-    /* 312 */return null;
-    /*     */}
-
-  /*     */
-  /*     */public CubeView addCubeView(String id, String name, Property[] properties)
-  /*     */{
-    /* 317 */return null;
-    /*     */}
-
-  /*     */
-  /*     */public CubeView[] getCubeViews() {
-    /* 321 */return new CubeView[0];
-    /*     */}
-
-  /*     */
-  /*     */public final int getCubeViewCount() {
-    /* 325 */return 0;
-    /*     */}
-
-  /*     */
-  /*     */public void removeCubeView(CubeView view) {
-    /*     */}
-
-  /*     */
-  /*     */public CubeView getCubeView(String id) {
-    /* 332 */return null;
-    /*     */}
-
-  /*     */public final String[] getCubeViewIds() {
-    /* 335 */return new String[0];
-    /*     */}
-
-  /*     */
-  /*     */public String getCubeViewName(String id) {
-    /* 339 */return null;
-    /*     */}
-
-  /*     */
-  /*     */public void getCubeViews(PersistenceObserver observer)
-  /*     */{
-    /*     */}
-
-  /*     */
-  /*     */public boolean equals(Object o)
-  /*     */{
-    /* 348 */if (!(o instanceof VirtualCubeImpl))
-      /* 349 */return false;
-    /* 350 */VirtualCubeImpl other = (VirtualCubeImpl) o;
-    /*     */
-    /* 354 */return this.key.equals(other.key);
-    /*     */}
-
-  /*     */
-  /*     */public int hashCode() {
-    /* 358 */int result = 17;
-    /* 359 */result = 37 * result * this.key.hashCode();
-    /* 360 */return result;
-    /*     */}
-
-  /*     */
-  /*     */public ExportDataset getDataExport(ExportContext context)
-  /*     */{
-    /* 368 */return this.definition.getSourceCube().getDataExport(context);
-    /*     */}
-
-  /*     */
-  /*     */public ExportContext getExportContext() {
-    /* 372 */return this.definition.getSourceCube().getExportContext();
-    /*     */}
-
-  /*     */
-  /*     */public ExportContext getExportContext(Element[][] area) {
-    /* 376 */return this.definition.getSourceCube().getExportContext(area);
-    /*     */}
-
-  /*     */
-  /*     */public boolean isSystemCube() {
-    /* 380 */return this.definition.getSourceCube().isSystemCube();
-    /*     */}
-
-  /*     */
-  /*     */public Rule addRule(String definition) {
-    /* 384 */return this.definition.getSourceCube().addRule(definition);
-    /*     */}
-
-  /*     */
-  /*     */public Rule addRule(String definition, String externalIdentifier,
-    boolean useIt, String comment)
-  /*     */{
-    /* 389 */return this.definition.getSourceCube().addRule(definition,
-    /* 390 */externalIdentifier, useIt, comment);
-    /*     */}
-
-  /*     */
-  /*     */public Rule addRule(String definition, String externalIdentifier,
-    boolean useIt, String comment, boolean activate)
-  /*     */{
-    /* 395 */return this.definition.getSourceCube().addRule(definition,
-    /* 396 */externalIdentifier, useIt, comment, activate);
-    /*     */}
-
-  /*     */
-  /*     */public Rule[] getRules()
-  /*     */{
-    /* 401 */return this.definition.getSourceCube().getRules();
-    /*     */}
-
-  /*     */
-  /*     */public Rule getRule(Element[] coordinate) {
-    /* 405 */return this.definition.getSourceCube().getRule(coordinate);
-    /*     */}
-
-  /*     */
-  /*     */public boolean removeRule(Rule rule) {
-    /* 409 */return this.definition.getSourceCube().removeRule(rule);
-    /*     */}
-
-  /*     */public boolean removeRule(String ruleId) {
-    /* 412 */return this.definition.getSourceCube().removeRule(ruleId);
-    /*     */}
-
-  /*     */
-  /*     */public void setDataArray(Element[][] coordinates, Object[] values,
-    boolean add, int splashMode, boolean notifyEventProcessors)
-  /*     */{
-    /* 417 */this.definition.getSourceCube().setDataArray(coordinates, values, add,
-    /* 418 */splashMode, notifyEventProcessors);
-    /*     */}
-
-  /*     */
-  /*     */public void addDataArray(Element[][] coordinates, Object[] values,
-    int splashMode)
-  /*     */{
-    /* 423 */this.definition.getSourceCube().addDataArray(coordinates, values,
-      splashMode);
-    /*     */}
-
-  /*     */
-  /*     */public CubeView addCubeView(String id, String name, boolean hideEmpty) {
-    /* 427 */return null;
-    /*     */}
-
-  /*     */
-  /*     */public CubeView addCubeView(String name, boolean hideEmpty) {
-    /* 431 */return null;
-    /*     */}
-
-  /*     */
-  /*     */public void registerViewObserver(PersistenceObserver cubeViewObserver)
-  /*     */{
-    /*     */}
-
-  /*     */
-  /*     */public void unregisterViewObserver(PersistenceObserver cubeViewObserver)
-  /*     */{
-    /*     */}
-
-  /*     */
-  /*     */public final Object getVirtualDefinition()
-  /*     */{
-    /* 445 */return this.definition;
-    /*     */}
-
-  /*     */
-  /*     */public final void rename(String newName) {
-    /* 449 */Util.noopWarning();
-    /*     */}
-
-  /*     */
-  /*     */public void addProperty(Property2 property) {
-    /* 453 */this.definition.getSourceCube().addProperty(property);
-    /*     */}
-
-  /*     */
-  /*     */public String[] getAllPropertyIds() {
-    /* 457 */return this.definition.getSourceCube().getAllPropertyIds();
-    /*     */}
-
-  /*     */
-  /*     */public Property2 getProperty(String id) {
-    /* 461 */return this.definition.getSourceCube().getProperty(id);
-    /*     */}
-
-  /*     */
-  /*     */public void removeProperty(String id) {
-    /* 465 */this.definition.getSourceCube().removeProperty(id);
-    /*     */}
-
-  /*     */
-  /*     */public final void clear() {
-    /* 469 */this.definition.getSourceCube().clear();
-    /*     */}
-
-  /*     */
-  /*     */public final void clear(Element[][] area) {
-    /* 473 */this.definition.getSourceCube().clear(area);
-    /*     */}
-
-  /*     */
-  /*     */public boolean canBeModified() {
-    /* 477 */return true;
-    /*     */}
-
-  /*     */
-  /*     */public boolean canCreateChildren() {
-    /* 481 */return true;
-    /*     */}
-
-  /*     */
-  /*     */public Cell getCell(Element[] coordinate) {
-    /* 485 */return this.definition.getSourceCube().getCell(coordinate);
-    /*     */}
-
-  /*     */
-  /*     */public Cell[] getCellArea(Element[][] coordinates) {
-    /* 489 */return this.definition.getSourceCube().getCellArea(coordinates);
-    /*     */}
-
-  /*     */
-  /*     */public Cell[] getCells(Element[][] coordinates) {
-    /* 493 */return this.definition.getSourceCube().getCells(coordinates);
-    /*     */}
-
-  /*     */
-  /*     */public Cell[] getCells(Element[][] coordinates, boolean hideEmpty) {
-    /* 497 */return this.definition.getSourceCube()
-      .getCells(coordinates, hideEmpty);
-    /*     */}
-
-  /*     */
-  /*     */public boolean isUserInfoCube() {
-    /* 501 */return this.definition.getSourceCube().isUserInfoCube();
-    /*     */}
-
-  /*     */
-  /*     */public int getType() {
-    /* 505 */return 0;
-    /*     */}
-
-  /*     */
-  /*     */public final Lock requestLock(Element[][] area) {
-    /* 509 */return ((CubeImpl) this.definition.getSourceCube()).requestLock(area);
-    /*     */}
-
-  /*     */public final Lock[] getLocks() {
-    /* 512 */return ((CubeImpl) this.definition.getSourceCube()).getLocks();
-    /*     */}
-
-  /*     */public final boolean commit(Lock lock) {
-    /* 515 */return ((CubeImpl) this.definition.getSourceCube()).commit(lock);
-    /*     */}
-
-  /*     */public final boolean rollback(Lock lock, int steps) {
-    /* 518 */return ((CubeImpl) this.definition.getSourceCube()).rollback(lock,
-      steps);
-    /*     */}
-
-  /*     */public final CubeInfo getInfo() {
-    /* 521 */return ((CubeImpl) this.definition.getSourceCube()).getInfo();
-    /*     */}
-
-  /*     */
-  /*     */public final BigInteger getCellCount() {
-    /* 525 */return ((CubeImpl) this.definition.getSourceCube()).getCellCount();
-    /*     */}
-
-  /*     */
-  /*     */public final BigInteger getFilledCellCount() {
-    /* 529 */return ((CubeImpl) this.definition.getSourceCube())
-      .getFilledCellCount();
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file VirtualCubeImpl.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Stepan Rutz
+*
+* @version $Id$
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.impl.VirtualCubeImpl JD-Core Version: 0.5.4
+ * (c) Tensegrity Software 2005. All rights reserved.
  */
+package org.palo.api.impl;
+
+import java.math.BigInteger;
+import java.text.NumberFormat;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.palo.api.Cell;
+import org.palo.api.Cube;
+import org.palo.api.CubeView;
+import org.palo.api.Database;
+import org.palo.api.Dimension;
+import org.palo.api.Element;
+import org.palo.api.ExportContext;
+import org.palo.api.ExportDataset;
+import org.palo.api.Lock;
+import org.palo.api.Property;
+import org.palo.api.Property2;
+import org.palo.api.Rule;
+import org.palo.api.VirtualCubeDefinition;
+import org.palo.api.VirtualDimensionDefinition;
+import org.palo.api.VirtualObject;
+import org.palo.api.persistence.PersistenceObserver;
+
+import com.tensegrity.palojava.CubeInfo;
+
+/**
+ * <code>VirtualCubeImpl</code>
+ *
+ * @author Stepan Rutz
+ * @version $ID$
+ */
+class VirtualCubeImpl implements Cube, VirtualObject {
+  private final VirtualCubeDefinition definition;
+
+  private final VirtualDimensionImpl vdims[];
+
+  //    private final Map vdim2dim;
+  private final Map dim2vdim;
+
+  private final CompoundKey key;
+
+  VirtualCubeImpl(VirtualCubeDefinition definition) {
+    this.definition = definition;
+
+    VirtualDimensionDefinition[] vdimdefs = definition
+      .getVirtualDimensionDefinitions();
+    this.vdims = new VirtualDimensionImpl[vdimdefs.length];
+    for (int i = 0; i < vdims.length; ++i) {
+      //        	if (vdimdefs[i].getFilter() == null) {
+      VirtualDimensionImpl vdim = new VirtualDimensionImpl(vdimdefs[i]
+        .getSourceDimension(), vdimdefs[i].getElements(), vdimdefs[i]
+        .getRootElements(), vdimdefs[i].isFlat(), vdimdefs[i].getActiveHierarchy());
+      vdims[i] = vdim;
+      vdim.setVirtualDefinition(vdimdefs[i]);
+      //
+      //			} else {
+      //				VirtualDimensionImpl vdim = new VirtualDimensionImpl(
+      //						vdimdefs[i].getSourceDimension(), vdimdefs[i]
+      //								.getFilter());
+      //				vdims[i] = vdim;
+      //			}
+    }
+
+    //        this.vdim2dim = new HashMap();
+    this.dim2vdim = new HashMap();
+
+    for (int i = 0; i < vdims.length; ++i) {
+      VirtualDimensionImpl vdim = vdims[i];
+      Dimension dim = vdim.getSourceDimension();
+      //            vdim2dim.put(vdim, dim);
+      dim2vdim.put(dim, vdim);
+    }
+
+    this.key = this.createKey();
+  }
+
+  //    private final void dump(Dimension vdim) {
+  //    	if(vdim == null) {
+  //    		System.out.println("dimension = null");
+  //    		return;
+  //    	}    		
+  //    	ElementNode[] tree = vdim.getElementsTree();
+  //    	dump(tree);
+  //    }
+  //    private final void dump(ElementNode[] tree) {
+  //    	for(ElementNode node : tree) {
+  //    		System.out.println("node: "+node.getElement().getName()+ " - "+node.getChildren().length);
+  //    		dump(node.getChildren());
+  //    	}
+  //    }
+
+  private final CompoundKey createKey() {
+    return new CompoundKey(new Object[] { VirtualCubeImpl.class,
+      definition.getSourceCube().getName(),
+      definition.getSourceCube().getDatabase().getName(), getName() });
+  }
+
+  public int getExtendedType() {
+    return CUBEEXTENDEDTYPE_VIRTUAL;
+  }
+
+  public final String getId() {
+    return definition.getSourceCube().getId() + "@@"
+      + Integer.toHexString(System.identityHashCode(this));
+  }
+
+  public final String getName() {
+    String postfix = definition.getName();
+    if (postfix == null)
+      postfix = Integer.toHexString(System.identityHashCode(this));
+    return definition.getSourceCube().getName() + "@@" + postfix;
+  }
+
+  public Database getDatabase() {
+    return definition.getSourceCube().getDatabase();
+  }
+
+  public int getDimensionCount() {
+    return definition.getSourceCube().getDimensionCount();
+  }
+
+  public Dimension getDimensionAt(int index) {
+    Dimension dim = definition.getSourceCube().getDimensionAt(index);
+    Dimension vdim = (Dimension) dim2vdim.get(dim);
+    return vdim == null ? dim : vdim;
+  }
+
+  public Dimension[] getDimensions() {
+    Dimension dims[] = definition.getSourceCube().getDimensions();
+    if (dims == null)
+      return null;
+    for (int i = 0; i < dims.length; ++i) {
+      Dimension dim = dims[i];
+      Dimension vdim = (Dimension) dim2vdim.get(dim);
+      if (vdim == null)
+        continue;
+      dims[i] = vdim;
+    }
+    return dims;
+  }
+
+  public Dimension getDimensionByName(String name) {
+    if (name == null)
+      return null;
+
+    for (int i = 0; i < vdims.length; ++i) {
+      VirtualDimensionImpl vdim = vdims[i];
+      if (vdim != null && vdim.getName().equalsIgnoreCase(name))
+        return vdim;
+    }
+
+    return definition.getSourceCube().getDimensionByName(name);
+  }
+
+  public final Dimension getDimensionById(String id) {
+    for (int i = 0; i < vdims.length; ++i) {
+      if (vdims[i].getId().equals(id))
+        return vdims[i];
+    }
+    return definition.getSourceCube().getDimensionById(id);
+  }
+
+  public void commitLog() {
+    definition.getSourceCube().commitLog();
+  }
+
+  public Object getData(String coordinates[]) {
+    return definition.getSourceCube().getData(coordinates);
+  }
+
+  public Object[] getDataArray(String elements[][]) {
+    return definition.getSourceCube().getDataArray(elements);
+  }
+
+  public void convert(int type) {
+    definition.getSourceCube().convert(type);
+  }
+
+  //    public ExportDataset getDataExport(ExportContext context)
+  //    {
+  //        return definition.getSourceCube().getDataExport(context);
+  //    }
+
+  public Object getData(Element coordinates[]) {
+    return definition.getSourceCube().getData(coordinates);
+  }
+
+  public Object[] getDataArray(Element elements[][]) {
+    return definition.getSourceCube().getDataArray(elements);
+  }
+
+  public Object[] getDataBulk(Element elements[][]) {
+    return definition.getSourceCube().getDataBulk(elements);
+  }
+
+  public Object[] getDataBulk(String[][] coords) {
+    return definition.getSourceCube().getDataBulk(coords);
+  }
+
+  public Object[] getDataBulkIgnoreMissing(String[][] coords, boolean showZero) {
+    return definition.getSourceCube().getDataBulkIgnoreMissing(coords, showZero);
+  }
+
+  public Object[] getDataBulkIgnoreMissing(Element[][] coords, boolean showZero) {
+    return definition.getSourceCube().getDataBulkIgnoreMissing(coords, showZero);
+  }
+
+  public void setData(String coordinates[], Object value) {
+    definition.getSourceCube().setData(coordinates, value);
+  }
+
+  public void setData(Element coordinates[], Object value) {
+    definition.getSourceCube().setData(coordinates, value);
+  }
+
+  public void setData(Element coordinates[], Object value, NumberFormat formatter) {
+    definition.getSourceCube().setData(coordinates, value);
+  }
+
+  public void setDataSplashed(Element[] coordinate, Object value) {
+    definition.getSourceCube().setDataSplashed(coordinate, value);
+  }
+
+  public void setDataSplashed(Element[] coordinate, Object value,
+    NumberFormat formatter) {
+    definition.getSourceCube().setDataSplashed(coordinate, value, formatter);
+  }
+
+  public void setDataSplashed(String coordinates[], Object value, int splashMode) {
+    definition.getSourceCube().setDataSplashed(coordinates, value, splashMode);
+  }
+
+  public void setDataSplashed(Element coordinates[], Object value, int splashMode) {
+    definition.getSourceCube().setDataSplashed(coordinates, value, splashMode);
+  }
+
+  public void setDataArray(Element[][] coordinates, Object[] values, int splashMode) {
+    definition.getSourceCube().setDataArray(coordinates, values, splashMode);
+  }
+
+  public boolean isAttributeCube() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  public boolean isSubsetCube() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  public boolean isViewCube() {
+    return false;
+  }
+
+  public CubeView addCubeView(String name, Property[] properties) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public CubeView addCubeView(String id, String name, Property[] properties) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public CubeView[] getCubeViews() {
+    return new CubeView[0];
+  }
+
+  public final int getCubeViewCount() {
+    return 0;
+  }
+
+  public void removeCubeView(CubeView view) {
+  }
+
+  public CubeView getCubeView(String id) {
+    return null;
+  }
+
+  public final String[] getCubeViewIds() {
+    return new String[0];
+  }
+
+  public String getCubeViewName(String id) {
+    return null;
+  }
+
+  public void getCubeViews(PersistenceObserver observer) {
+  }
+
+  public boolean equals(Object o) {
+    if (!(o instanceof VirtualCubeImpl))
+      return false;
+    VirtualCubeImpl other = (VirtualCubeImpl) o;
+    //TODO check: the key is not quite right here. do we want to leave the virtual
+    //		dimensions outside? or take them into account for equality... 
+    //		(and check against PR 6567)
+    return key.equals(other.key);
+  }
+
+  public int hashCode() {
+    int result = 17;
+    result = 37 * result * key.hashCode();
+    return result;
+  }
+
+  //	public ExportDataset getDataExport() {
+  //		return definition.getSourceCube().getDataExport();
+  //	}
+
+  public ExportDataset getDataExport(ExportContext context) {
+    return definition.getSourceCube().getDataExport(context);
+  }
+
+  public ExportContext getExportContext() {
+    return definition.getSourceCube().getExportContext();
+  }
+
+  public ExportContext getExportContext(Element[][] area) {
+    return definition.getSourceCube().getExportContext(area);
+  }
+
+  public boolean isSystemCube() {
+    return definition.getSourceCube().isSystemCube();
+  }
+
+  public Rule addRule(String definition) {
+    return this.definition.getSourceCube().addRule(definition);
+  }
+
+  public Rule addRule(String definition, String externalIdentifier, boolean useIt,
+    String comment) {
+    return this.definition.getSourceCube().addRule(definition, externalIdentifier,
+      useIt, comment);
+  }
+
+  public Rule addRule(String definition, String externalIdentifier, boolean useIt,
+    String comment, boolean activate) {
+    return this.definition.getSourceCube().addRule(definition, externalIdentifier,
+      useIt, comment, activate);
+  }
+
+  public Rule[] getRules() {
+    return definition.getSourceCube().getRules();
+  }
+
+  public Rule getRule(Element[] coordinate) {
+    return definition.getSourceCube().getRule(coordinate);
+  }
+
+  public boolean removeRule(Rule rule) {
+    return definition.getSourceCube().removeRule(rule);
+  }
+
+  public boolean removeRule(String ruleId) {
+    return definition.getSourceCube().removeRule(ruleId);
+  }
+
+  public void setDataArray(Element[][] coordinates, Object[] values, boolean add,
+    int splashMode, boolean notifyEventProcessors) {
+    definition.getSourceCube().setDataArray(coordinates, values, add, splashMode,
+      notifyEventProcessors);
+  }
+
+  public void addDataArray(Element[][] coordinates, Object[] values, int splashMode) {
+    definition.getSourceCube().addDataArray(coordinates, values, splashMode);
+  }
+
+  public CubeView addCubeView(String id, String name, boolean hideEmpty) {
+    return null;
+  }
+
+  public CubeView addCubeView(String name, boolean hideEmpty) {
+    return null;
+  }
+
+  public void registerViewObserver(PersistenceObserver cubeViewObserver) {
+    // TODO Auto-generated method stub
+
+  }
+
+  public void unregisterViewObserver(PersistenceObserver cubeViewObserver) {
+    // TODO Auto-generated method stub
+
+  }
+
+  public final Object getVirtualDefinition() {
+    return definition;
+  }
+
+  public final void rename(String newName) {
+    Util.noopWarning();
+  }
+
+  public void addProperty(Property2 property) {
+    definition.getSourceCube().addProperty(property);
+  }
+
+  public String[] getAllPropertyIds() {
+    return definition.getSourceCube().getAllPropertyIds();
+  }
+
+  public Property2 getProperty(String id) {
+    return definition.getSourceCube().getProperty(id);
+  }
+
+  public void removeProperty(String id) {
+    definition.getSourceCube().removeProperty(id);
+  }
+
+  public final void clear() {
+    definition.getSourceCube().clear();
+  }
+
+  public final void clear(Element[][] area) {
+    definition.getSourceCube().clear(area);
+  }
+
+  public boolean canBeModified() {
+    return true;
+  }
+
+  public boolean canCreateChildren() {
+    return true;
+  }
+
+  public Cell getCell(Element[] coordinate) {
+    return definition.getSourceCube().getCell(coordinate);
+  }
+
+  public Cell[] getCellArea(Element[][] coordinates) {
+    return definition.getSourceCube().getCellArea(coordinates);
+  }
+
+  public Cell[] getCells(Element[][] coordinates) {
+    return definition.getSourceCube().getCells(coordinates);
+  }
+
+  public boolean isUserInfoCube() {
+    return definition.getSourceCube().isUserInfoCube();
+  }
+
+  public int getType() {
+    return 0;
+  }
+
+  public final Lock requestLock(Element[][] area) {
+    return ((CubeImpl) definition.getSourceCube()).requestLock(area);
+  }
+
+  public final Lock[] getLocks() {
+    return ((CubeImpl) definition.getSourceCube()).getLocks();
+  }
+
+  public final boolean commit(Lock lock) {
+    return ((CubeImpl) definition.getSourceCube()).commit(lock);
+  }
+
+  public final boolean rollback(Lock lock, int steps) {
+    return ((CubeImpl) definition.getSourceCube()).rollback(lock, steps);
+  }
+
+  public final CubeInfo getInfo() {
+    return ((CubeImpl) definition.getSourceCube()).getInfo();
+  }
+
+  public final BigInteger getCellCount() {
+    return ((CubeImpl) definition.getSourceCube()).getCellCount();
+  }
+
+  public final BigInteger getFilledCellCount() {
+    return ((CubeImpl) definition.getSourceCube()).getFilledCellCount();
+  }
+
+  public boolean copyCell(Element[] source, Element[] target) {
+    return ((CubeImpl) definition.getSourceCube()).copyCell(source, target);
+  }
+
+  public boolean copyCell(Element[] source, Element[] target, double value) {
+    return ((CubeImpl) definition.getSourceCube()).copyCell(source, target, value);
+  }
+
+  public boolean setInput(Element[] coordinate, Object input,
+    char thousandSeparator, char decimalPoint) {
+    return ((CubeImpl) definition.getSourceCube()).setInput(coordinate, input,
+      thousandSeparator, decimalPoint);
+  }
+
+  public boolean setInput(Element[] coordinate, Object input) {
+    return ((CubeImpl) definition.getSourceCube()).setInput(coordinate, input);
+  }
+}

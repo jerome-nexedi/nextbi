@@ -1,317 +1,440 @@
-/*     */package org.palo.api.subsets.filter.settings;
-
-/*     */
-/*     */import org.palo.api.subsets.Subset2;
-
-/*     */
-/*     */public class SortingFilterSetting extends AbstractFilterSettings
-/*     */{
-  /*     */public static final int HIERARCHICAL_MODE_DISABLED = 0;
-
-  /*     */public static final int HIERARCHICAL_MODE_SHOW_CHILDREN = 1;
-
-  /*     */public static final int HIERARCHICAL_MODE_HIDE_CHILDREN = 2;
-
-  /*     */public static final int SORT_TYPE_DISABLED = 0;
-
-  /*     */public static final int SORT_TYPE_LEAFS_ONLY = 1;
-
-  /*     */public static final int SORT_TYPE_CONSOLIDATIONS_ONLY = 2;
-
-  /*     */public static final int ORDER_MODE_REVERSE_DISABLED = 0;
-
-  /*     */public static final int ORDER_MODE_REVERSE_TOTAL = 1;
-
-  /*     */public static final int ORDER_MODE_REVERSE_PER_LEVEL = 2;
-
-  /*     */public static final int SORT_CRITERIA_DEFINITION = 0;
-
-  /*     */public static final int SORT_CRITERIA_DATA = 1;
-
-  /*     */public static final int SORT_CRITERIA_LEXICAL = 2;
-
-  /*     */public static final int SORT_CRITERIA_ALIAS = 3;
-
-  /*     */private IntegerParameter sortCriteria;
-
-  /*     */private IntegerParameter orderMode;
-
-  /*     */private IntegerParameter sortTypeMode;
-
-  /*     */private IntegerParameter hierarchicalMode;
-
-  /*     */private IntegerParameter sortLevel;
-
-  /*     */private IntegerParameter showDuplicates;
-
-  /*     */
-  /*     *//** @deprecated */
-  /*     */private StringParameter sortLevelElementId;
-
-  /*     */private StringParameter sortAttribute;
-
-  /*     */
-  /*     */public SortingFilterSetting()
-  /*     */{
-    /* 86 */this.sortCriteria = new IntegerParameter();
-    /* 87 */this.orderMode = new IntegerParameter();
-    /* 88 */this.sortTypeMode = new IntegerParameter();
-    /* 89 */this.hierarchicalMode = new IntegerParameter();
-    /* 90 */this.sortLevelElementId = new StringParameter();
-    /* 91 */this.sortAttribute = new StringParameter();
-    /* 92 */this.showDuplicates = new IntegerParameter();
-    /* 93 */this.sortLevel = new IntegerParameter();
-    /*     */
-    /* 96 */reset();
-    /*     */}
-
-  /*     */
-  /*     */public final IntegerParameter getShowDuplicates()
-  /*     */{
-    /* 107 */return this.showDuplicates;
-    /*     */}
-
-  /*     */
-  /*     */public final void setShowDuplicates(int showDuplicates)
-  /*     */{
-    /* 116 */this.showDuplicates.setValue(showDuplicates);
-    /*     */}
-
-  /*     */
-  /*     */public final void setShowDuplicates(IntegerParameter showDuplicates)
-  /*     */{
-    /* 125 */this.showDuplicates = showDuplicates;
-    /*     */}
-
-  /*     */
-  /*     */public final IntegerParameter getSortCriteria()
-  /*     */{
-    /* 134 */return this.sortCriteria;
-    /*     */}
-
-  /*     */
-  /*     */public final void setSortCriteria(int sortCriteria)
-  /*     */{
-    /* 143 */this.sortCriteria.setValue(sortCriteria);
-    /*     */}
-
-  /*     */
-  /*     */public final void setSortCriteria(IntegerParameter sortCriteria)
-  /*     */{
-    /* 152 */this.sortCriteria = sortCriteria;
-    /* 153 */this.sortCriteria.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     */public final boolean doReverseOrder()
-  /*     */{
-    /* 163 */return this.orderMode.getValue().intValue() != 0;
-    /*     */}
-
-  /*     */
-  /*     */public final IntegerParameter getOrderMode()
-  /*     */{
-    /* 171 */return this.orderMode;
-    /*     */}
-
-  /*     */
-  /*     */public final void setOrderMode(int orderMode)
-  /*     */{
-    /* 179 */this.orderMode.setValue(orderMode);
-    /*     */}
-
-  /*     */
-  /*     */public final void setOrderMode(IntegerParameter orderMode)
-  /*     */{
-    /* 188 */this.orderMode = orderMode;
-    /* 189 */this.orderMode.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     */public final boolean doSortByType()
-  /*     */{
-    /* 199 */return this.sortTypeMode.getValue().intValue() != 0;
-    /*     */}
-
-  /*     */
-  /*     */public final IntegerParameter getSortTypeMode()
-  /*     */{
-    /* 208 */return this.sortTypeMode;
-    /*     */}
-
-  /*     */
-  /*     */public final void setSortTypeMode(int sortTypeMode)
-  /*     */{
-    /* 216 */this.sortTypeMode.setValue(sortTypeMode);
-    /*     */}
-
-  /*     */
-  /*     */public final void setSortTypeMode(IntegerParameter sortTypeMode)
-  /*     */{
-    /* 225 */this.sortTypeMode = sortTypeMode;
-    /* 226 */this.sortTypeMode.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     */public final boolean doHierarchy()
-  /*     */{
-    /* 235 */return this.hierarchicalMode.getValue().intValue() != 0;
-    /*     */}
-
-  /*     */
-  /*     */public final IntegerParameter getHierarchicalMode()
-  /*     */{
-    /* 244 */return this.hierarchicalMode;
-    /*     */}
-
-  /*     */
-  /*     */public final void setHierarchicalMode(int hierarchicalMode)
-  /*     */{
-    /* 252 */this.hierarchicalMode.setValue(hierarchicalMode);
-    /*     */}
-
-  /*     */
-  /*     */public final void setHierarchicalMode(IntegerParameter hierarchicalMode)
-  /*     */{
-    /* 261 */this.hierarchicalMode = hierarchicalMode;
-    /* 262 */this.hierarchicalMode.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     */public final boolean doSortPerLevel()
-  /*     */{
-    /* 272 */return (this.sortLevelElementId.getValue() != null)
-      || (this.sortLevel.getValue().intValue() > -1);
-    /*     */}
-
-  /*     */
-  /*     */public final IntegerParameter getSortLevel()
-  /*     */{
-    /* 280 */return this.sortLevel;
-    /*     */}
-
-  /*     */
-  /*     */public final void setSortLevel(int level)
-  /*     */{
-    /* 288 */this.sortLevel.setValue(level);
-    /*     */}
-
-  /*     */
-  /*     */public final void setSortLevel(IntegerParameter sortLevel)
-  /*     */{
-    /* 296 */this.sortLevel.unbind();
-    /* 297 */this.sortLevel = sortLevel;
-    /* 298 */this.sortLevel.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     *//** @deprecated */
-  /*     */public final StringParameter getSortLevelElement()
-  /*     */{
-    /* 308 */return this.sortLevelElementId;
-    /*     */}
-
-  /*     */
-  /*     *//** @deprecated */
-  /*     */public final void setSortLevelElement(String sortLevelElementId)
-  /*     */{
-    /* 316 */this.sortLevelElementId.setValue(sortLevelElementId);
-    /*     */}
-
-  /*     */
-  /*     *//** @deprecated */
-  /*     */public final void setSortLevelElement(StringParameter sortLevelElement)
-  /*     */{
-    /* 326 */this.sortLevelElementId = sortLevelElement;
-    /* 327 */sortLevelElement.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     */public final boolean doSortByAttribute()
-  /*     */{
-    /* 336 */return this.sortAttribute.getValue() != null;
-    /*     */}
-
-  /*     */
-  /*     */public final StringParameter getSortAttribute()
-  /*     */{
-    /* 343 */return this.sortAttribute;
-    /*     */}
-
-  /*     */
-  /*     */public final void setSortAttribute(String attributeId)
-  /*     */{
-    /* 350 */this.sortAttribute.setValue(attributeId);
-    /*     */}
-
-  /*     */
-  /*     */public final void setSortAttribute(StringParameter sortAttribute)
-  /*     */{
-    /* 359 */this.sortAttribute = sortAttribute;
-    /* 360 */sortAttribute.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     */public final void reset()
-  /*     */{
-    /* 366 */this.sortCriteria.setValue(0);
-    /* 367 */this.orderMode.setValue(0);
-    /* 368 */this.sortTypeMode.setValue(0);
-    /* 369 */this.hierarchicalMode.setValue(0);
-    /* 370 */this.sortLevelElementId.setValue(null);
-    /* 371 */this.sortAttribute.setValue(null);
-    /* 372 */this.showDuplicates.setValue(1);
-    /* 373 */this.sortLevel.setValue(-1);
-    /*     */}
-
-  /*     */
-  /*     */public final void bind(Subset2 subset) {
-    /* 377 */super.bind(subset);
-    /*     */
-    /* 379 */this.sortCriteria.bind(subset);
-    /* 380 */this.orderMode.bind(subset);
-    /* 381 */this.sortTypeMode.bind(subset);
-    /* 382 */this.hierarchicalMode.bind(subset);
-    /* 383 */this.sortLevelElementId.bind(subset);
-    /* 384 */this.sortAttribute.bind(subset);
-    /* 385 */this.showDuplicates.bind(subset);
-    /* 386 */this.sortLevel.bind(subset);
-    /*     */}
-
-  /*     */public final void unbind() {
-    /* 389 */super.unbind();
-    /*     */
-    /* 391 */this.sortCriteria.unbind();
-    /* 392 */this.orderMode.unbind();
-    /* 393 */this.sortTypeMode.unbind();
-    /* 394 */this.hierarchicalMode.unbind();
-    /* 395 */this.sortLevelElementId.unbind();
-    /* 396 */this.sortAttribute.unbind();
-    /* 397 */this.showDuplicates.unbind();
-    /*     */}
-
-  /*     */
-  /*     */public final void adapt(FilterSetting from) {
-    /* 401 */if (!(from instanceof SortingFilterSetting))
-      /* 402 */return;
-    /* 403 */SortingFilterSetting setting = (SortingFilterSetting) from;
-    /* 404 */reset();
-    /* 405 */setSortCriteria(setting.getSortCriteria().getValue().intValue());
-    /* 406 */setOrderMode(setting.getOrderMode().getValue().intValue());
-    /* 407 */setSortTypeMode(setting.getSortTypeMode().getValue().intValue());
-    /* 408 */setHierarchicalMode(setting.getHierarchicalMode().getValue()
-      .intValue());
-    /* 409 */setSortLevelElement(setting.getSortLevelElement().getValue());
-    /* 410 */setSortLevel(setting.getSortLevel().getValue().intValue());
-    /* 411 */setSortAttribute(setting.getSortAttribute().getValue());
-    /* 412 */setShowDuplicates(setting.getShowDuplicates().getValue().intValue());
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file SortingFilterSetting.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author ArndHouben
+*
+* @version $Id: SortingFilterSetting.java,v 1.12 2009/04/29 10:21:57 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.subsets.filter.settings.SortingFilterSetting
- * JD-Core Version: 0.5.4
+ * (c) Tensegrity Software 2007
+ * All rights reserved
  */
+package org.palo.api.subsets.filter.settings;
+
+import org.palo.api.Element;
+import org.palo.api.subsets.Subset2;
+import org.palo.api.subsets.filter.SortingFilter;
+
+/**
+ * <code>SortingFilterSetting</code>
+ * <p>
+ * Manages the settings for the {@link SortingFilter}.
+ * </p>
+ *
+ * @author ArndHouben
+ * @version $Id: SortingFilterSetting.java,v 1.12 2009/04/29 10:21:57 PhilippBouillon Exp $
+ **/
+public class SortingFilterSetting extends AbstractFilterSettings {
+
+  public static final int HIERARCHICAL_MODE_DISABLED = 0;
+
+  public static final int HIERARCHICAL_MODE_SHOW_CHILDREN = 1;
+
+  public static final int HIERARCHICAL_MODE_HIDE_CHILDREN = 2;
+
+  public static final int SORT_TYPE_DISABLED = 0;
+
+  public static final int SORT_TYPE_LEAFS_ONLY = 1;
+
+  public static final int SORT_TYPE_CONSOLIDATIONS_ONLY = 2;
+
+  public static final int ORDER_MODE_REVERSE_DISABLED = 0;
+
+  public static final int ORDER_MODE_REVERSE_TOTAL = 1;
+
+  public static final int ORDER_MODE_REVERSE_PER_LEVEL = 2;
+
+  //	public static final int ORDER_MODE_REVERSE_HIERARCHY = 3;
+
+  public static final int SORT_CRITERIA_DEFINITION = 0;
+
+  public static final int SORT_CRITERIA_DATA = 1;
+
+  public static final int SORT_CRITERIA_LEXICAL = 2;
+
+  public static final int SORT_CRITERIA_ALIAS = 3;
+
+  //SETTINGS:
+  private IntegerParameter sortCriteria;
+
+  private IntegerParameter orderMode;
+
+  private IntegerParameter sortTypeMode;
+
+  private IntegerParameter hierarchicalMode;
+
+  private IntegerParameter sortLevel;
+
+  private IntegerParameter showDuplicates;
+
+  /** @deprecated */
+  private StringParameter sortLevelElementId;
+
+  private StringParameter sortAttribute;
+
+  public SortingFilterSetting() {
+    sortCriteria = new IntegerParameter();
+    orderMode = new IntegerParameter();
+    sortTypeMode = new IntegerParameter();
+    hierarchicalMode = new IntegerParameter();
+    sortLevelElementId = new StringParameter();
+    sortAttribute = new StringParameter();
+    showDuplicates = new IntegerParameter();
+    sortLevel = new IntegerParameter();
+
+    //default settings...
+    reset();
+  }
+
+  /**
+   * Returns whether duplicate {@link Element}s should be shown or not, i.e.
+   * if duplicates should be displayed the value of the returned 
+   * <code>IntegerParameter</code> is <code>1</code>, otherwise <code>0</code>.
+   * @return the show duplicates setting
+   */
+  public final IntegerParameter getShowDuplicates() {
+    return showDuplicates;
+  }
+
+  /**
+   * Specifies whether duplicate {@link Element}s should be shown or not.
+   * @param showDuplicates pass <code>1</code> to show duplicate elements,
+   * pass <code>0</code> to hide duplicates
+   */
+  public final void setShowDuplicates(int showDuplicates) {
+    this.showDuplicates.setValue(showDuplicates);
+  }
+
+  /**
+   * Specifies whether duplicate {@link Element}s should be shown or not.
+   * @param showDuplicates to show duplicate elements the value of the passed 
+   * <code>IntegerParameter</code> must be <code>1</code>. To hide duplicates
+   * the value must be <code>0</code>.
+   */
+  public final void setShowDuplicates(IntegerParameter showDuplicates) {
+    this.showDuplicates = showDuplicates;
+  }
+
+  /**
+   * Returns the currently set sorting criteria, i.e. one of the predefined
+   * sort criteria constants
+   * @return the set sorting criteria
+   */
+  public final IntegerParameter getSortCriteria() {
+    return sortCriteria;
+  }
+
+  /**
+   * Sets the sorting criteria, i.e. one of the predefined sort criteria 
+   * constants.
+   * @param sortCriteria should be one of the predefined sort criteria 
+   * constants
+   */
+  public final void setSortCriteria(int sortCriteria) {
+    this.sortCriteria.setValue(sortCriteria);
+  }
+
+  /**
+   * Sets the sorting criteria, i.e. the parameter value should be one of the 
+   * predefined sort criteria constants.
+   * @param sortCriteria the new <code>IntegerParameter</code> to use for the
+   * sorting criteria
+   */
+  public final void setSortCriteria(IntegerParameter sortCriteria) {
+    this.sortCriteria = sortCriteria;
+    this.sortCriteria.bind(subset);
+  }
+
+  /**
+   * Checks if the reverse order mode is active 
+   * @return <code>true</code> if reverse order mode should be used, 
+   * <code>false</code> otherwise
+   */
+  public final boolean doReverseOrder() {
+    return orderMode.getValue() != ORDER_MODE_REVERSE_DISABLED;
+  }
+
+  /**
+   * Returns the reverse order mode
+   * @return the reverse order mode, i.e. one of the predefined order mode
+   * constants
+   */
+  public final IntegerParameter getOrderMode() {
+    return orderMode;
+  }
+
+  /**
+   * Sets the reverse order mode. One of the predefined order mode constants
+   * should be used
+   * @param orderMode the new order mode
+   */
+  public final void setOrderMode(int orderMode) {
+    this.orderMode.setValue(orderMode);
+  }
+
+  /**
+   * Sets the reverse order mode, i.e. the parameter value should be one of 
+   * the predefined order mode constants.
+   * @param orderMode the new <code>IntegerParameter</code> to use for the
+   * order mode
+   */
+  public final void setOrderMode(IntegerParameter orderMode) {
+    this.orderMode = orderMode;
+    this.orderMode.bind(subset);
+  }
+
+  /**
+   * Checks if the sort by type mode is active 
+   * @return <code>true</code> if sort by type mode should be used, 
+   * <code>false</code> otherwise
+   */
+  public final boolean doSortByType() {
+    return sortTypeMode.getValue() != SORT_TYPE_DISABLED;
+  }
+
+  /**
+   * Returns the sort by type mode
+   * @return the sort by type mode, i.e. one of the predefined sort by type
+   * mode constants
+   */
+  public final IntegerParameter getSortTypeMode() {
+    return sortTypeMode;
+  }
+
+  /**
+   * Sets the sort by type mode. One of the predefined sort by type mode 
+   * constants should be used
+   * @param sortTypeMode the new sort by type mode
+   */
+  public final void setSortTypeMode(int sortTypeMode) {
+    this.sortTypeMode.setValue(sortTypeMode);
+  }
+
+  /**
+   * Sets the sort by type mode, i.e. the parameter value should be one of the 
+   * predefined sort by type mode constants.
+   * @param sortTypeMode the new <code>IntegerParameter</code> to use for the
+   * sort by type mode
+   */
+  public final void setSortTypeMode(IntegerParameter sortTypeMode) {
+    this.sortTypeMode = sortTypeMode;
+    this.sortTypeMode.bind(subset);
+  }
+
+  /**
+   * Checks if a hierarchy should be created
+   * @return <code>true</code> if a hierarchy mode is active, 
+   * <code>false</code> otherwise
+   */
+  public final boolean doHierarchy() {
+    return hierarchicalMode.getValue() != HIERARCHICAL_MODE_DISABLED;
+  }
+
+  /**
+   * Returns the hierarchical mode
+   * @return the hierarchical mode, i.e. one of the predefined hierarchical 
+   * mode constants
+   */
+  public final IntegerParameter getHierarchicalMode() {
+    return hierarchicalMode;
+  }
+
+  /**
+   * Sets the hierarchical mode. One of the predefined hierarchical mode 
+   * constants should be used
+   * @param hierarchicalMode the new hierarchical mode
+   */
+  public final void setHierarchicalMode(int hierarchicalMode) {
+    this.hierarchicalMode.setValue(hierarchicalMode);
+  }
+
+  /**
+   * Sets the hierarchical mode. The parameter value should be one of the 
+   * predefined hierarchical mode constants.
+   * @param hierarchicalMode the new <code>IntegerParameter</code> to use for 
+   * the hierarchical mode
+   */
+  public final void setHierarchicalMode(IntegerParameter hierarchicalMode) {
+    this.hierarchicalMode = hierarchicalMode;
+    this.hierarchicalMode.bind(subset);
+  }
+
+  /**
+   * Checks if the sort per level mode is active 
+   * @return <code>true</code> if sort per level mode should be used, 
+   * <code>false</code> otherwise
+   */
+  public final boolean doSortPerLevel() {
+    return sortLevelElementId.getValue() != null || sortLevel.getValue() > -1;
+  }
+
+  /** 
+   * Returns the level at which the elements should be sorted
+   * @return the sort level 
+   */
+  public final IntegerParameter getSortLevel() {
+    return sortLevel;
+  }
+
+  /**
+   * Sets the level to sort the elements at
+   * @param level the sort level
+   */
+  public final void setSortLevel(int level) {
+    sortLevel.setValue(level);
+  }
+
+  /**
+   * Sets the level to sort the elements at as {@link IntegerParameter}
+   * @param sortLevel the sort level
+   */
+  public final void setSortLevel(IntegerParameter sortLevel) {
+    this.sortLevel.unbind();
+    this.sortLevel = sortLevel;
+    this.sortLevel.bind(subset);
+
+  }
+
+  /**
+   * Returns the identifier of the reference element for sort per level mode
+   * @return the sort per level reference element id
+   * @deprecated use {@link #getSortLevel()}
+   */
+  public final StringParameter getSortLevelElement() {
+    return sortLevelElementId;
+  }
+
+  /**
+   * Sets the identifier of the reference element for sort per level mode 
+   * @param sortLevelElementId the sort per level reference element id
+   * @deprecated please use {@link #setSortLevel(int)}
+   */
+  public final void setSortLevelElement(String sortLevelElementId) {
+    this.sortLevelElementId.setValue(sortLevelElementId);
+  }
+
+  /**
+   * Sets the identifier of the sort per level element, i.e. the parameter 
+   * value should contain the id of the reference element. 
+   * @param sortLevelElementId the new <code>StringParameter</code> to use for 
+   * the sort per level mode
+   * @deprecated please use {@link #setSortLevel(IntegerParameter)}
+   */
+  public final void setSortLevelElement(StringParameter sortLevelElement) {
+    this.sortLevelElementId = sortLevelElement;
+    sortLevelElement.bind(subset);
+  }
+
+  /**
+   * Checks if the sort by attribute mode is active 
+   * @return <code>true</code> if sort by attribute mode should be used, 
+   * <code>false</code> otherwise
+   */
+  public final boolean doSortByAttribute() {
+    return sortAttribute.getValue() != null;
+  }
+
+  /**
+   * Returns the attribute identifier to sort after
+   * @return
+   */
+  public final StringParameter getSortAttribute() {
+    return sortAttribute;
+  }
+
+  /**
+   * Sets the attribute id to sort after 
+   * @param sortAttribute
+   */
+  public final void setSortAttribute(String attributeId) {
+    this.sortAttribute.setValue(attributeId);
+  }
+
+  /**
+   * Sets the identifier of attribute to sort after, i.e. the parameter 
+   * value should contain the id of the attribute. 
+   * @param sortAttribute the new <code>StringParameter</code> to use for 
+   * the sort by attribute mode
+   */
+  public final void setSortAttribute(StringParameter sortAttribute) {
+    this.sortAttribute = sortAttribute;
+    sortAttribute.bind(subset);
+  }
+
+  public final void reset() {
+    sortCriteria.setValue(SORT_CRITERIA_DEFINITION);
+    orderMode.setValue(ORDER_MODE_REVERSE_DISABLED);
+    sortTypeMode.setValue(SORT_TYPE_DISABLED);
+    hierarchicalMode.setValue(HIERARCHICAL_MODE_DISABLED);
+    sortLevelElementId.setValue(null);
+    sortAttribute.setValue(null);
+    showDuplicates.setValue(1); //we show duplicates by default
+    sortLevel.setValue(-1); //by default no sort level defined	
+  }
+
+  public final void bind(Subset2 subset) {
+    super.bind(subset);
+    //bind internal:
+    sortCriteria.bind(subset);
+    orderMode.bind(subset);
+    sortTypeMode.bind(subset);
+    hierarchicalMode.bind(subset);
+    sortLevelElementId.bind(subset);
+    sortAttribute.bind(subset);
+    showDuplicates.bind(subset);
+    sortLevel.bind(subset);
+  }
+
+  public final void unbind() {
+    super.unbind();
+    //unbind internal:
+    sortCriteria.unbind();
+    orderMode.unbind();
+    sortTypeMode.unbind();
+    hierarchicalMode.unbind();
+    sortLevelElementId.unbind();
+    sortAttribute.unbind();
+    showDuplicates.unbind();
+  }
+
+  public final void adapt(FilterSetting from) {
+    if (!(from instanceof SortingFilterSetting))
+      return;
+    SortingFilterSetting setting = (SortingFilterSetting) from;
+    reset();
+    setSortCriteria(setting.getSortCriteria().getValue());
+    setOrderMode(setting.getOrderMode().getValue());
+    setSortTypeMode(setting.getSortTypeMode().getValue());
+    setHierarchicalMode(setting.getHierarchicalMode().getValue());
+    setSortLevelElement(setting.getSortLevelElement().getValue());
+    setSortLevel(setting.getSortLevel().getValue());
+    setSortAttribute(setting.getSortAttribute().getValue());
+    setShowDuplicates(setting.getShowDuplicates().getValue());
+
+  }
+
+}

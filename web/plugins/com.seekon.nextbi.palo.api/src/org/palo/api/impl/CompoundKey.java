@@ -1,52 +1,81 @@
-/*    */package org.palo.api.impl;
-
-/*    */
-/*    */public class CompoundKey
-/*    */{
-  /*    */private final Object[] objs;
-
-  /*    */
-  /*    */public CompoundKey(Object[] objs)
-  /*    */{
-    /* 47 */this.objs = objs;
-    /*    */}
-
-  /*    */
-  /*    */public final int hashCode()
-  /*    */{
-    /* 54 */int hc = 23;
-    /* 55 */for (int i = 0; i < this.objs.length; ++i) {
-      /* 56 */if (this.objs[i] != null)
-        /* 57 */hc += 37 * this.objs[i].hashCode();
-      /*    */}
-    /* 59 */return hc;
-    /*    */}
-
-  /*    */
-  /*    */public final boolean equals(Object obj) {
-    /* 63 */if (!(obj instanceof CompoundKey)) {
-      /* 64 */return false;
-      /*    */}
-    /* 66 */CompoundKey other = (CompoundKey) obj;
-    /*    */
-    /* 68 */if (this.objs.length != other.objs.length) {
-      /* 69 */return false;
-      /*    */}
-    /* 71 */for (int i = 0; i < this.objs.length; ++i) {
-      /* 72 */if ((this.objs[i] == null) && (other.objs[i] != null)) {
-        /* 73 */return false;
-        /*    */}
-      /* 75 */if (!this.objs[i].equals(other.objs[i])) {
-        /* 76 */return false;
-        /*    */}
-      /*    */}
-    /* 79 */return true;
-    /*    */}
-  /*    */
-}
+/*
+*
+* @file CompoundKey.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Stepan Rutz
+*
+* @version $Id: CompoundKey.java,v 1.5 2009/04/29 10:21:57 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.impl.CompoundKey JD-Core Version: 0.5.4
+ * (c) Tensegrity Software 2005. All rights reserved.
  */
+package org.palo.api.impl;
+
+/**
+ * <code>CompoundKey</code>
+ *
+ * @author Stepan Rutz
+ * @version $Id: CompoundKey.java,v 1.5 2009/04/29 10:21:57 PhilippBouillon Exp $
+ */
+public class CompoundKey {
+  private final Object objs[];
+
+  public CompoundKey(Object objs[]) {
+    this.objs = objs;
+  }
+
+  //-------------------------------------------------------------------------
+  // overrides
+
+  public final int hashCode() {
+    int hc = 23;
+    for (int i = 0; i < objs.length; ++i) {
+      if (objs[i] != null)
+        hc += 37 * objs[i].hashCode();
+    }
+    return hc;
+  }
+
+  public final boolean equals(Object obj) {
+    if (!(obj instanceof CompoundKey))
+      return false;
+
+    CompoundKey other = (CompoundKey) obj;
+
+    if (objs.length != other.objs.length)
+      return false;
+
+    for (int i = 0; i < objs.length; ++i) {
+      if (objs[i] == null && other.objs[i] != null)
+        return false;
+
+      if (!objs[i].equals(other.objs[i]))
+        return false;
+    }
+
+    return true;
+  }
+}

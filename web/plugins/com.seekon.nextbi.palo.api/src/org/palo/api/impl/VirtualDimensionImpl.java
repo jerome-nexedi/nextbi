@@ -1,540 +1,729 @@
-/*     */package org.palo.api.impl;
-
-/*     */
-/*     */import com.tensegrity.palojava.DimensionInfo; /*     */
-import java.util.ArrayList; /*     */
-import java.util.HashMap; /*     */
-import java.util.LinkedHashMap; /*     */
-import java.util.List; /*     */
-import java.util.Map; /*     */
-import org.palo.api.Attribute; /*     */
-import org.palo.api.Consolidation; /*     */
-import org.palo.api.Cube; /*     */
-import org.palo.api.Database; /*     */
-import org.palo.api.Dimension; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.ElementNode; /*     */
-import org.palo.api.ElementNodeVisitor; /*     */
-import org.palo.api.Hierarchy; /*     */
-import org.palo.api.Subset; /*     */
-import org.palo.api.VirtualObject; /*     */
-import org.palo.api.subsets.SubsetHandler;
-
-/*     */
-/*     */class VirtualDimensionImpl
-/*     */implements Dimension, VirtualObject
-/*     */{
-  /*     */private final Dimension sourceDimension;
-
-  /*     */private LinkedHashMap velements2elements;
-
-  /*     */private LinkedHashMap elements2velements;
-
-  /*     */private Map name2element;
-
-  /*     */private Map id2element;
-
-  /* 72 */private final ArrayList rootNodes = new ArrayList();
-
-  /*     */private Element[] elements;
-
-  /*     */private Hierarchy activeHierarchy;
-
-  /*     */private Hierarchy hierarchy;
-
-  /*     */private Object virtualDefinition;
-
-  /*     */
-  /*     */VirtualDimensionImpl(Dimension sourceDimension, Element[] elements,
-    ElementNode[] rootNodes, boolean isFlat, Hierarchy activeHierarchy)
-  /*     */{
-    /* 91 */this.sourceDimension = sourceDimension;
-    /* 92 */this.activeHierarchy = activeHierarchy;
-    /* 93 */initElements(elements, rootNodes, isFlat);
-    /*     */}
-
-  /*     */
-  /*     */public final String getId() {
-    /* 97 */return this.sourceDimension.getId() + "@@"
-      + Integer.toHexString(System.identityHashCode(this));
-    /*     */}
-
-  /*     */
-  /*     */public Dimension getSourceDimension()
-  /*     */{
-    /* 102 */return this.sourceDimension;
-    /*     */}
-
-  /*     */
-  /*     */public int getExtendedType()
-  /*     */{
-    /* 107 */return 1;
-    /*     */}
-
-  /*     */
-  /*     */public String getName()
-  /*     */{
-    /* 112 */return this.sourceDimension.getName() + "@@"
-      + Integer.toHexString(System.identityHashCode(this));
-    /*     */}
-
-  /*     */
-  /*     */public Database getDatabase()
-  /*     */{
-    /* 117 */return this.sourceDimension.getDatabase();
-    /*     */}
-
-  /*     */
-  /*     */public final Cube[] getCubes() {
-    /* 121 */DatabaseImpl database = (DatabaseImpl) this.sourceDimension
-      .getDatabase();
-    /* 122 */return database.getCubes(this.sourceDimension);
-    /*     */}
-
-  /*     */
-  /*     */public int getElementCount()
-  /*     */{
-    /* 133 */return this.elements.length;
-    /*     */}
-
-  /*     */
-  /*     */public Element getElementAt(int index)
-  /*     */{
-    /* 139 */return this.elements[index];
-    /*     */}
-
-  /*     */
-  /*     */public Element[] getElements()
-  /*     */{
-    /* 145 */return (Element[]) this.elements.clone();
-    /*     */}
-
-  /*     */
-  /*     */public String[] getElementNames()
-  /*     */{
-    /* 151 */if (this.elements == null)
-      /* 152 */return new String[0];
-    /* 153 */String[] names = new String[this.elements.length];
-    /* 154 */for (int i = 0; i < names.length; ++i)
-    /*     */{
-      /* 156 */names[i] = this.elements[i].getName();
-      /*     */}
-    /* 158 */return names;
-    /*     */}
-
-  /*     */
-  /*     */public Element getElementByName(String name)
-  /*     */{
-    /* 164 */return (Element) this.name2element.get(name);
-    /*     */}
-
-  /*     */
-  /*     */public Element getElementById(String id)
-  /*     */{
-    /* 169 */return (Element) this.id2element.get(id);
-    /*     */}
-
-  /*     */
-  /*     */public void rename(String name)
-  /*     */{
-    /* 174 */Util.noopWarning();
-    /*     */}
-
-  /*     */
-  /*     */public void addElements(String[] names, int[] types)
-  /*     */{
-    /* 179 */Util.noopWarning();
-    /*     */}
-
-  /*     */
-  /*     */public void updateConsolidations(Consolidation[] cons) {
-    /* 183 */Util.noopWarning();
-    /*     */}
-
-  /*     */
-  /*     */public void removeConsolidations(Element[] elements) {
-    /* 187 */Util.noopWarning();
-    /*     */}
-
-  /*     */
-  /*     */public Element[] getRootElements()
-  /*     */{
-    /* 195 */ArrayList out = new ArrayList();
-    /* 196 */int i = 0;
-    for (int n = this.rootNodes.size(); i < n; ++i) {
-      /* 197 */ElementNode node = (ElementNode) this.rootNodes.get(i);
-      /* 198 */out.add(node.getElement());
-      /*     */}
-    /* 200 */return (Element[]) out.toArray(new Element[0]);
-    /*     */}
-
-  /*     */
-  /*     */public Element[] getElementsInOrder()
-  /*     */{
-    /* 267 */final ArrayList result = new ArrayList();
-    /*     */
-    /* 277 */ElementNodeVisitor visitor = new ElementNodeVisitor() {
-      /*     */public void visit(ElementNode elementNode, ElementNode parent) {
-        /* 279 */result.add(elementNode.getElement());
-        /*     */}
-      /*     */
-    };
-    /* 282 */visitElementTree(visitor);
-    /* 283 */return (Element[]) result.toArray(new Element[0]);
-    /*     */}
-
-  /*     */
-  /*     */public ElementNode[] getElementsTree()
-  /*     */{
-    /* 289 */return (ElementNode[]) this.rootNodes
-      .toArray(new ElementNode[this.rootNodes.size()]);
-    /*     */}
-
-  /*     */
-  /*     */public void visitElementTree(ElementNodeVisitor visitor)
-  /*     */{
-    /* 296 */int i = 0;
-    for (int n = this.rootNodes.size(); i < n; ++i) {
-      /* 297 */ElementNode rootNode = (ElementNode) this.rootNodes.get(i);
-      /* 298 */traverse(rootNode, null, visitor);
-      /*     */}
-    /*     */}
-
-  /*     */
-  /*     */public ElementNode[] getAllElementNodes()
-  /*     */{
-    /* 331 */final ArrayList allnodes = new ArrayList();
-    /* 332 */ElementNodeVisitor visitor = new ElementNodeVisitor()
-    /*     */{
-      /*     */public void visit(ElementNode node, ElementNode parent) {
-        /* 335 */allnodes.add(node);
-        /*     */}
-      /*     */
-    };
-    /* 338 */Element[] roots = getRootElements();
-    /* 339 */for (int i = 0; i < roots.length; ++i)
-    /*     */{
-      /* 341 */ElementNode rootNode = new ElementNode(roots[i], null);
-      /* 342 */DimensionUtil.traverse(rootNode, visitor);
-      /*     */}
-    /* 344 */return (ElementNode[]) allnodes.toArray(new ElementNode[0]);
-    /*     */}
-
-  /*     */
-  /*     */public void dumpElementsTree()
-  /*     */{
-    /* 349 */Util.noopWarning();
-    /*     */}
-
-  /*     */
-  /*     */public Element addElement(String name, int type)
-  /*     */{
-    /* 357 */Util.noopWarning();
-    /* 358 */return null;
-    /*     */}
-
-  /*     */
-  /*     */public void removeElement(Element element)
-  /*     */{
-    /* 363 */Util.noopWarning();
-    /*     */}
-
-  /*     */
-  /*     */public void removeElements(Element[] elements) {
-    /* 367 */Util.noopWarning();
-    /*     */}
-
-  /*     */
-  /*     */public void renameElement(Element element, String name)
-  /*     */{
-    /* 372 */Util.noopWarning();
-    /*     */}
-
-  /*     */
-  /*     */public Consolidation newConsolidation(Element element, Element parent,
-    double weight)
-  /*     */{
-    /* 382 */Util.noopWarning();
-    /* 383 */return null;
-    /*     */}
-
-  /*     */
-  /*     */public Attribute addAttribute(String name)
-  /*     */{
-    /* 508 */return this.sourceDimension.addAttribute(name);
-    /*     */}
-
-  /*     */
-  /*     */public void removeAttribute(Attribute attribute) {
-    /* 512 */this.sourceDimension.removeAttribute(attribute);
-    /*     */}
-
-  /*     */
-  /*     */public void removeAllAttributes() {
-    /* 516 */this.sourceDimension.removeAllAttributes();
-    /*     */}
-
-  /*     */
-  /*     */public Dimension getAttributeDimension()
-  /*     */{
-    /* 521 */return this.sourceDimension.getAttributeDimension();
-    /*     */}
-
-  /*     */
-  /*     */public Cube getAttributeCube() {
-    /* 525 */return this.sourceDimension.getAttributeCube();
-    /*     */}
-
-  /*     */
-  /*     */public Attribute[] getAttributes() {
-    /* 529 */return this.sourceDimension.getAttributes();
-    /*     */}
-
-  /*     */
-  /*     */public Attribute getAttribute(String id) {
-    /* 533 */return this.sourceDimension.getAttribute(id);
-    /*     */}
-
-  /*     */
-  /*     */public Attribute getAttributeByName(String name) {
-    /* 537 */return this.sourceDimension.getAttributeByName(name);
-    /*     */}
-
-  /*     */
-  /*     */public boolean isAttributeDimension() {
-    /* 541 */return false;
-    /*     */}
-
-  /*     */
-  /*     */public Object[] getAttributeValues(Attribute[] attributes,
-    Element[] elements)
-  /*     */{
-    /* 546 */return this.sourceDimension.getAttributeValues(attributes, elements);
-    /*     */}
-
-  /*     */
-  /*     */public void setAttributeValues(Attribute[] attributes,
-    Element[] elements, Object[] values)
-  /*     */{
-    /* 551 */this.sourceDimension.setAttributeValues(attributes, elements, values);
-    /*     */}
-
-  /*     */
-  /*     */public Subset getSubset(String id) {
-    /* 555 */return this.sourceDimension.getSubset(id);
-    /*     */}
-
-  /*     */
-  /*     */public Subset[] getSubsets() {
-    /* 559 */return this.sourceDimension.getSubsets();
-    /*     */}
-
-  /*     */
-  /*     */public boolean isSubsetDimension() {
-    /* 563 */return false;
-    /*     */}
-
-  /*     */
-  /*     */public void removeSubset(Subset subset)
-  /*     */{
-    /* 568 */this.sourceDimension.removeSubset(subset);
-    /*     */}
-
-  /*     */
-  /*     */public Subset addSubset(String name) {
-    /* 572 */return this.sourceDimension.addSubset(name);
-    /*     */}
-
-  /*     */
-  /*     */public int getMaxDepth()
-  /*     */{
-    /* 580 */return this.sourceDimension.getMaxDepth();
-    /*     */}
-
-  /*     */
-  /*     */public int getMaxLevel()
-  /*     */{
-    /* 588 */return this.sourceDimension.getMaxLevel();
-    /*     */}
-
-  /*     */
-  /*     */private final void initElements(Element[] newElements,
-    ElementNode[] elNodes, boolean isFlat)
-  /*     */{
-    /* 594 */this.elements = new Element[newElements.length];
-    /* 595 */this.name2element = new HashMap();
-    /* 596 */this.id2element = new HashMap();
-    /*     */
-    /* 598 */this.velements2elements = new LinkedHashMap();
-    /* 599 */this.elements2velements = new LinkedHashMap();
-    /* 600 */for (int i = 0; i < newElements.length; ++i) {
-      /* 601 */VirtualElementImpl velement = new VirtualElementImpl(this, isFlat,
-      /* 602 */newElements[i]);
-      /* 603 */this.elements[i] = velement;
-      /* 604 */this.velements2elements.put(velement, newElements[i]);
-      /* 605 */this.elements2velements.put(newElements[i], velement);
-      /* 606 */this.name2element.put(this.elements[i].getName(), this.elements[i]);
-      /* 607 */this.id2element.put(this.elements[i].getId(), this.elements[i]);
-      /*     */}
-    /* 609 */for (int i = 0; i < elNodes.length; ++i)
-      /* 610 */checkNode(elNodes[i], null, new LinkedHashMap(), this.rootNodes,
-        isFlat);
-    /*     */}
-
-  /*     */
-  /*     */private final void checkNode(ElementNode node, ElementNode parent,
-    Map elNodes2velNodes, List rootNodes, boolean isFlat)
-  /*     */{
-    /* 621 */Element element = node.getElement();
-    /* 622 */Element vElement = (Element) this.elements2velements.get(element);
-    /* 623 */if (vElement != null) {
-      /* 624 */if (isFlat) {
-        /* 625 */ElementNode velementNode = new ElementNode(vElement, null);
-        /* 626 */rootNodes.add(velementNode);
-        /*     */} else {
-        /* 628 */Consolidation vconsolidation = node.getConsolidation();
-        /* 629 */if (vconsolidation != null) {
-          /* 630 */VirtualElementImpl vparent =
-          /* 631 */(VirtualElementImpl) this.elements2velements
-          /* 631 */.get(vconsolidation.getParent());
-          /*     */
-          /* 633 */if (vparent != null) {
-            /* 634 */Element vchild =
-            /* 635 */(Element) this.elements2velements
-            /* 635 */.get(vconsolidation.getChild());
-            /* 636 */vconsolidation = new VirtualConsolidationImpl(vparent,
-            /* 637 */vchild, vconsolidation.getWeight());
-            /* 638 */vparent.addConsolidation(vconsolidation);
-            /*     */} else {
-            /* 640 */vconsolidation = null;
-            /*     */}
-          /*     */}
-        /* 642 */ElementNode velNode = new ElementNode(vElement, vconsolidation);
-        /* 643 */elNodes2velNodes.put(node, velNode);
-        /*     */ElementNode vparent;
-        /* 645 */if ((vparent = (ElementNode) elNodes2velNodes.get(parent)) != null) {
-          /* 646 */vparent.forceAddChild(velNode);
-          /* 647 */velNode.setParent(vparent);
-          /*     */} else {
-          /* 649 */rootNodes.add(velNode);
-          /*     */}
-        /*     */}
-      /*     */}
-    /*     */
-    /* 654 */ElementNode[] children = node.getChildren();
-    /* 655 */for (int i = 0; i < children.length; ++i)
-      /* 656 */checkNode(children[i], node, elNodes2velNodes, rootNodes, isFlat);
-    /*     */}
-
-  /*     */
-  /*     */public boolean isSystemDimension() {
-    /* 660 */return this.sourceDimension.isSystemDimension();
-    /*     */}
-
-  /*     */
-  /*     */public boolean isUserInfoDimension() {
-    /* 664 */return this.sourceDimension.isUserInfoDimension();
-    /*     */}
-
-  /*     */
-  /*     */public final void setVirtualDefinition(Object virtualDefinition) {
-    /* 668 */this.virtualDefinition = virtualDefinition;
-    /*     */}
-
-  /*     */public final Object getVirtualDefinition() {
-    /* 671 */return this.virtualDefinition;
-    /*     */}
-
-  /*     */
-  /*     */private final void traverse(ElementNode node, ElementNode parent,
-    ElementNodeVisitor visitor) {
-    /* 675 */visitor.visit(node, parent);
-    /* 676 */ElementNode[] children = node.getChildren();
-    /* 677 */for (ElementNode child : children)
-      /* 678 */traverse(child, node, visitor);
-    /*     */}
-
-  /*     */
-  /*     */public SubsetHandler getSubsetHandler() {
-    /* 682 */return this.sourceDimension.getSubsetHandler();
-    /*     */}
-
-  /*     */
-  /*     */public boolean canBeModified() {
-    /* 686 */return true;
-    /*     */}
-
-  /*     */
-  /*     */public boolean canCreateChildren() {
-    /* 690 */return true;
-    /*     */}
-
-  /*     */
-  /*     */public int getType() {
-    /* 694 */return 0;
-    /*     */}
-
-  /*     */
-  /*     */public Hierarchy[] getHierarchies() {
-    /* 698 */return this.sourceDimension.getHierarchies();
-    /*     */}
-
-  /*     */
-  /*     */public String[] getHierarchiesIds() {
-    /* 702 */return this.sourceDimension.getHierarchiesIds();
-    /*     */}
-
-  /*     */
-  /*     */public Hierarchy getHierarchyAt(int index) {
-    /* 706 */return this.sourceDimension.getHierarchyAt(index);
-    /*     */}
-
-  /*     */
-  /*     */public Hierarchy getHierarchyById(String id) {
-    /* 710 */return this.sourceDimension.getHierarchyById(id);
-    /*     */}
-
-  /*     */
-  /*     */public int getHierarchyCount() {
-    /* 714 */return this.sourceDimension.getHierarchyCount();
-    /*     */}
-
-  /*     */
-  /*     */public Hierarchy getDefaultHierarchy() {
-    /* 718 */return this.sourceDimension.getDefaultHierarchy();
-    /*     */}
-
-  /*     */
-  /*     */public Hierarchy getHierarchyByName(String name) {
-    /* 722 */return this.sourceDimension.getHierarchyByName(name);
-    /*     */}
-
-  /*     */
-  /*     */public final void reload(boolean doEvents) {
-    /* 726 */this.sourceDimension.reload(doEvents);
-    /*     */}
-
-  /*     */
-  /*     */public final DimensionInfo getInfo() {
-    /* 730 */return this.sourceDimension.getInfo();
-    /*     */}
-
-  /*     */
-  /*     */public void addElements(String[] names, int type, Element[][] children,
-    double[][] weights)
-  /*     */{
-    /*     */}
-
-  /*     */
-  /*     */public void addElements(String[] names, int[] types,
-    Element[][] children, double[][] weights)
-  /*     */{
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file VirtualDimensionImpl.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Stepan Rutz
+*
+* @version $Id$
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.impl.VirtualDimensionImpl JD-Core Version: 0.5.4
+ * (c) Tensegrity Software 2005. All rights reserved.
  */
+package org.palo.api.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.palo.api.Attribute;
+import org.palo.api.Consolidation;
+import org.palo.api.Cube;
+import org.palo.api.Database;
+import org.palo.api.Dimension;
+import org.palo.api.Element;
+import org.palo.api.ElementNode;
+import org.palo.api.ElementNodeVisitor;
+import org.palo.api.Hierarchy;
+import org.palo.api.Subset;
+import org.palo.api.VirtualObject;
+import org.palo.api.subsets.SubsetHandler;
+
+import com.tensegrity.palojava.DimensionInfo;
+
+/**
+ * <code></code>
+ *
+ * @author Stepan Rutz
+ * @version $ID$
+ */
+class VirtualDimensionImpl implements Dimension, VirtualObject {
+  private final Dimension sourceDimension;
+
+  private LinkedHashMap velements2elements;
+
+  private LinkedHashMap elements2velements;
+
+  private Map name2element;
+
+  private Map id2element;
+
+  private final ArrayList rootNodes = new ArrayList();
+
+  private Element elements[];
+
+  private Hierarchy activeHierarchy;
+
+  private Hierarchy hierarchy;
+
+  //    private boolean hasCustomRootNodes;
+  private Object virtualDefinition;
+
+  //    VirtualDimensionImpl(Dimension sourceDimension, DimensionFilter filter)
+  //    {
+  //        if (sourceDimension == null)
+  //            throw new IllegalArgumentException("sourceDimension cannot be null");
+  //        this.sourceDimension = sourceDimension;
+  //        
+  //        filter.init(this);
+  //        initElements(filter);
+  //    }
+  //    
+  //alternative constructor...
+  VirtualDimensionImpl(Dimension sourceDimension, Element[] elements,
+    ElementNode[] rootNodes, boolean isFlat, Hierarchy activeHierarchy) {
+    this.sourceDimension = sourceDimension;
+    this.activeHierarchy = activeHierarchy;
+    initElements(elements, rootNodes, isFlat);
+  }
+
+  public final String getId() {
+    return sourceDimension.getId() + "@@"
+      + Integer.toHexString(System.identityHashCode(this));
+  }
+
+  public Dimension getSourceDimension() {
+    return sourceDimension;
+  }
+
+  public int getExtendedType() {
+    return DIMENSIONEXTENDEDTYPE_VIRTUAL;
+  }
+
+  public String getName() {
+    return sourceDimension.getName() + "@@"
+      + Integer.toHexString(System.identityHashCode(this));
+  }
+
+  public Database getDatabase() {
+    return sourceDimension.getDatabase();
+  }
+
+  public final Cube[] getCubes() {
+    DatabaseImpl database = (DatabaseImpl) sourceDimension.getDatabase();
+    return database.getCubes(sourceDimension);
+  }
+
+  //	public final Cube[] getCubes(int type) {
+  //		DatabaseImpl database = (DatabaseImpl)sourceDimension.getDatabase();
+  //		return database.getCubes(sourceDimension,type);
+  //	}
+
+  public int getElementCount() {
+    //return sourceDimension.getElementCount();
+    return elements.length;
+  }
+
+  public Element getElementAt(int index) {
+    //return sourceDimension.getElementAt(index);
+    return elements[index];
+  }
+
+  public Element[] getElements() {
+    //return sourceDimension.getElements();
+    return (Element[]) elements.clone();
+  }
+
+  public String[] getElementNames() {
+    //return sourceDimension.getElementNames();
+    if (elements == null)
+      return new String[0];
+    String names[] = new String[elements.length];
+    for (int i = 0; i < names.length; ++i) {
+      names[i] = elements[i].getName();
+    }
+    return names;
+  }
+
+  public Element getElementByName(String name) {
+    //return sourceDimension.getElementByName(name);
+    return (Element) name2element.get(name);
+  }
+
+  public Element getElementById(String id) {
+    return (Element) id2element.get(id);
+  }
+
+  public void rename(String name) {
+    Util.noopWarning();
+  }
+
+  public void addElements(String names[], int types[]) {
+    Util.noopWarning();
+  }
+
+  public void updateConsolidations(Consolidation[] cons) {
+    Util.noopWarning();
+  }
+
+  public void removeConsolidations(Element[] elements) {
+    Util.noopWarning();
+  }
+
+  //-------------------------------------------------------------------------
+  // Element/Consolidation Hierarchies
+
+  public Element[] getRootElements() {
+    ArrayList out = new ArrayList();
+    for (int i = 0, n = rootNodes.size(); i < n; ++i) {
+      ElementNode node = (ElementNode) rootNodes.get(i);
+      out.add(node.getElement());
+    }
+    return (Element[]) out.toArray(new Element[0]);
+
+    // if (hasCustomRootNodes)
+    // {
+    // ArrayList out = new ArrayList();
+    //            for (int i = 0; i < rootNodes.size(); ++i)
+    //            {
+    //                ElementNode node = (ElementNode) rootNodes.get(i);
+    //                out.add(node.getElement());
+    //            }
+    //            return (Element[]) out.toArray(new Element[0]);
+    //        }
+    //        
+    //        //return sourceDimension.getRootElements();
+    //        ArrayList roots = new ArrayList();
+    //        if (elements != null)
+    //        {
+    //            for (int i = 0; i < elements.length; ++i)
+    //            {
+    //                Element element = elements[i];
+    //                if (element.getParentCount() == 0)
+    //                    roots.add(element);
+    //                
+    //                else
+    //                {
+    //                    int realParentCount = 0;
+    //                    Element parents[] = element.getParents();
+    //                    for (int j = 0; j < parents.length; ++j)
+    //                    {
+    //                        if (velements2elements.containsKey(parents[j]))
+    //                            ++realParentCount;
+    //                    }
+    //                    
+    //                    if (realParentCount == 0)
+    //                        roots.add(element);
+    //                }
+    //            }
+    //        }
+    //        
+    //        final Map sourceelement2index = new HashMap();
+    //        ElementNode sources[] = sourceDimension.getAllElementNodes();
+    //        for (int i = 0; i < sources.length; ++i)
+    //        {
+    //            Element source = sources[i].getElement();
+    //            // use first occurence of element for sorting
+    //            if (!sourceelement2index.containsKey(source))
+    //                sourceelement2index.put(source, new Integer(i));
+    //        }
+    //        Collections.sort(roots, new Comparator() {
+    //            public int compare(Object o1, Object o2)
+    //            {
+    //                VirtualElementImpl target1 = (VirtualElementImpl) o1;
+    //                VirtualElementImpl target2 = (VirtualElementImpl) o2;
+    //                Integer index1 = (Integer) sourceelement2index.get(target1.getSourceElement());
+    //                Integer index2 = (Integer) sourceelement2index.get(target2.getSourceElement());
+    //                if (index1 == null || index2 == null)
+    //                    return 0;
+    //                return index1.intValue() - index2.intValue();
+    //            }
+    //        });
+    //        
+    //        return (Element[]) roots.toArray(new Element[0]);
+  }
+
+  public Element[] getElementsInOrder() {
+    //return sourceDimension.getElementsInOrder();
+    final ArrayList result = new ArrayList();
+    //        DimensionUtil.ElementVisitor visitor = new DimensionUtil.ElementVisitor() {
+    //            public void visit(Element element, Element parent)
+    //            {
+    //                result.add(element);
+    //            }
+    //        };        
+    //        Element roots[] = getRootElements();
+    //        for (int i = 0; i < roots.length; ++i)
+    //            DimensionUtil.traverse(roots[i], visitor);
+    ElementNodeVisitor visitor = new ElementNodeVisitor() {
+      public void visit(ElementNode elementNode, ElementNode parent) {
+        result.add(elementNode.getElement());
+      }
+    };
+    visitElementTree(visitor);
+    return (Element[]) result.toArray(new Element[0]);
+  }
+
+  public ElementNode[] getElementsTree() {
+    //return sourceDimension.getElementsTree();
+    return (ElementNode[]) rootNodes.toArray(new ElementNode[rootNodes.size()]);
+  }
+
+  public void visitElementTree(ElementNodeVisitor visitor) {
+
+    // ArrayList out = new ArrayList();
+    for (int i = 0, n = rootNodes.size(); i < n; ++i) {
+      ElementNode rootNode = (ElementNode) rootNodes.get(i);
+      traverse(rootNode, null, visitor);
+      //			rootNode.removeChildren();
+
+      //PR 6772 since traverse will add children to node again, we go with fresh nodes here...
+      //			ElementNode newRootNode = new ElementNode(rootNode.getElement(),null);
+      //			DimensionUtil.traverse(newRootNode,visitor); //rootNode, visitor);
+    }
+    return;
+
+    // sourceDimension.visitElementTree(visitor);
+
+    //        if (hasCustomRootNodes)
+    //        {
+    //            //ArrayList out = new ArrayList();
+    //            for (int i = 0; i < rootNodes.size(); ++i)
+    //            {
+    //                ElementNode rootNode = (ElementNode) rootNodes.get(i);
+    //                DimensionUtil.traverse(rootNode, visitor);
+    //            }
+    //            return;
+    //        }
+    //        
+    //        Element roots[] = getRootElements();
+    //        for (int i = 0; i < roots.length; ++i)
+    //        {
+    //            ElementNode rootNode = new ElementNode(roots[i], null);
+    //            DimensionUtil.traverse(rootNode, visitor);
+    //        }
+  }
+
+  public ElementNode[] getAllElementNodes() {
+    //return sourceDimension.getAllElementNodes();
+    final ArrayList allnodes = new ArrayList();
+    ElementNodeVisitor visitor = new ElementNodeVisitor() {
+      public void visit(ElementNode node, ElementNode parent) {
+        allnodes.add(node);
+      }
+    };
+    Element roots[] = getRootElements();
+    for (int i = 0; i < roots.length; ++i) {
+      ElementNode rootNode = new ElementNode(roots[i], null);
+      DimensionUtil.traverse(rootNode, visitor);
+    }
+    return (ElementNode[]) allnodes.toArray(new ElementNode[0]);
+  }
+
+  public void dumpElementsTree() {
+    Util.noopWarning();
+    //sourceDimension.dumpElementsTree();
+  }
+
+  //-------------------------------------------------------------------------
+  // Admin
+  public Element addElement(String name, int type) {
+    Util.noopWarning();
+    return null;
+  }
+
+  public void removeElement(Element element) {
+    Util.noopWarning();
+  }
+
+  public void removeElements(Element[] elements) {
+    Util.noopWarning();
+  }
+
+  public void renameElement(Element element, String name) {
+    Util.noopWarning();
+    //    	//adjust hash look up 
+    //    	name2element.remove(element.getName());
+    //    	name2element.put(name,element);
+    //    	//rename element afterwards
+    //    	element.rename(name);
+  }
+
+  public Consolidation newConsolidation(Element element, Element parent,
+    double weight) {
+    Util.noopWarning();
+    return null;
+  }
+
+  //-------------------------------------------------------------------------
+  // Init elements
+  //    private void initElements(final DimensionFilter filter)
+  //    {
+  //        
+  //        velements2elements = new LinkedHashMap();
+  //        elements2velements = new LinkedHashMap();
+  //        
+  //        final boolean isFlat = filter != null && filter.isFlat();
+  //        
+  //        Element sourceElements[] = sourceDimension.getElements();
+  //        if (sourceElements == null)
+  //            sourceElements = new Element[0];
+  //        for (int i = 0; i < sourceElements.length; ++i)
+  //        {
+  //            Element element = sourceElements[i];
+  //            if (filter != null && !filter.acceptElement(element))
+  //                continue;
+  //            VirtualElementImpl velement = new VirtualElementImpl(this, isFlat, element);
+  //            velements2elements.put(velement, element);
+  //            elements2velements.put(element, velement);
+  //        }
+  //        
+  //        rootNodes = new ArrayList();
+  ////        final LinkedHashMap velementNodes2elementNodes = new LinkedHashMap();
+  //        final LinkedHashMap elementNodes2velementNodes = new LinkedHashMap();
+  //        sourceDimension.visitElementTree(new ElementNodeVisitor() {
+  //            public void visit(ElementNode elementNode, ElementNode parent)
+  //            {
+  //                Element element = elementNode.getElement();
+  //                Element velement = (Element) elements2velements.get(element);
+  //                
+  //                if (velement == null)
+  //                {
+  //                    return;
+  //                }
+  //                else if (isFlat)
+  //                {
+  //                    ElementNode velementNode = new ElementNode(velement, null);
+  //                    rootNodes.add(velementNode);
+  //                }
+  //                else
+  //                {
+  //                    Consolidation vconsolidation = null;
+  //                    if (elementNode.getConsolidation() != null)
+  //                    {
+  //                        Consolidation consolidation = elementNode.getConsolidation();
+  //                        Element vparent = (Element) elements2velements.get(consolidation.getParent());
+  //                        Element vchild = (Element) elements2velements.get(consolidation.getChild());
+  //                        vconsolidation = new VirtualConsolidationImpl(
+  //                            vparent, vchild, consolidation.getWeight());
+  //                    }
+  //                        
+  //                    ElementNode velementNode = new ElementNode(velement, vconsolidation);
+  ////                    velementNodes2elementNodes.put(velementNode, elementNode);
+  //                    elementNodes2velementNodes.put(elementNode, velementNode);
+  //                    
+  //                    ElementNode vparent;
+  //                    if ((vparent = (ElementNode) elementNodes2velementNodes.get(parent)) != null)
+  //                    {
+  //                        vparent.addChild(velementNode);
+  //                        velementNode.setParent(vparent);
+  //                    }
+  //                    else
+  //                    {
+  //                        rootNodes.add(velementNode);
+  //                    }
+  //                }
+  //            }
+  //        });
+  //        
+  //        this.elements = (Element[]) velements2elements.keySet().toArray(new Element[0]);
+  //        
+  //        name2element = new HashMap();
+  //        id2element = new HashMap();
+  //        for (int i = 0; i < elements.length; ++i)
+  //        {
+  //            Element element = elements[i];
+  //            name2element.put(element.getName(), element);
+  //            id2element.put(element.getId(),element);
+  //        }
+  //        
+  //        if (filter != null && filter.isFlat())
+  //        {
+  //            ElementNode result[] = filter.postprocessRootNodes(
+  //                (ElementNode[])rootNodes.toArray(new ElementNode[0]));
+  //            if (result != null)
+  //            {
+  //                rootNodes.clear();
+  //                rootNodes.addAll(Arrays.asList(result));
+  //                hasCustomRootNodes = true;
+  //            }
+  //        }
+  //        
+  //        final boolean DUMP_TREE = false;
+  //        if (DUMP_TREE)
+  //        {
+  //            visitElementTree(new ElementNodeVisitor() {
+  //                
+  //                private int getDepth(ElementNode node)
+  //                {
+  //                    return (node.getParent() == null) ? 0 : 1 + getDepth(node.getParent());
+  //                }
+  //                
+  //                public void visit(ElementNode elementNode, ElementNode parent)
+  //                {
+  //                    int depth = getDepth(elementNode);
+  //                    for (int i = 0; i < depth * 2; ++i)
+  //                        System.err.print(' ');
+  //                    System.err.println (elementNode + "   parent => " + parent);
+  //                }
+  //            });
+  //        }
+  //    }
+
+  //    Element lookupVirtualElement(Element element)
+  //    {
+  //        return (Element) elements2velements.get(element);
+  //    }
+
+  public Attribute addAttribute(String name) {
+    return sourceDimension.addAttribute(name);
+  }
+
+  public void removeAttribute(Attribute attribute) {
+    sourceDimension.removeAttribute(attribute);
+  }
+
+  public void removeAllAttributes() {
+    sourceDimension.removeAllAttributes();
+  }
+
+  public Dimension getAttributeDimension() {
+    return sourceDimension.getAttributeDimension();
+  }
+
+  public Cube getAttributeCube() {
+    return sourceDimension.getAttributeCube();
+  }
+
+  public Attribute[] getAttributes() {
+    return sourceDimension.getAttributes();
+  }
+
+  public Attribute getAttribute(String id) {
+    return sourceDimension.getAttribute(id);
+  }
+
+  public Attribute getAttributeByName(String name) {
+    return sourceDimension.getAttributeByName(name);
+  }
+
+  public boolean isAttributeDimension() {
+    return false;
+  }
+
+  public Object[] getAttributeValues(Attribute[] attributes, Element[] elements) {
+    return sourceDimension.getAttributeValues(attributes, elements);
+  }
+
+  public void setAttributeValues(Attribute[] attributes, Element[] elements,
+    Object[] values) {
+    sourceDimension.setAttributeValues(attributes, elements, values);
+  }
+
+  public Subset getSubset(String id) {
+    return sourceDimension.getSubset(id);
+  }
+
+  public Subset[] getSubsets() {
+    return sourceDimension.getSubsets();
+  }
+
+  public boolean isSubsetDimension() {
+    return false;
+  }
+
+  //TODO should we support add/removeSubset() ????
+  public void removeSubset(Subset subset) {
+    sourceDimension.removeSubset(subset);
+  }
+
+  public Subset addSubset(String name) {
+    return sourceDimension.addSubset(name);
+  }
+
+  //	public Subset addSubset(String id, String name) {
+  //		return sourceDimension.addSubset(id, name);
+  //	}
+
+  public int getMaxDepth() {
+    return sourceDimension.getMaxDepth();
+  }
+
+  /*public int getMaxIndent() {
+  	return sourceDimension.getMaxIndent();
+  }*/
+
+  public int getMaxLevel() {
+    return sourceDimension.getMaxLevel();
+  }
+
+  private final void initElements(Element[] newElements, ElementNode[] elNodes,
+    boolean isFlat) {
+    //		rootNodes.clear(); // = new ArrayList();
+    elements = new Element[newElements.length];
+    name2element = new HashMap();
+    id2element = new HashMap();
+
+    velements2elements = new LinkedHashMap();
+    elements2velements = new LinkedHashMap();
+    for (int i = 0; i < newElements.length; ++i) {
+      VirtualElementImpl velement = new VirtualElementImpl(this, isFlat,
+        newElements[i]);
+      elements[i] = velement;
+      velements2elements.put(velement, newElements[i]);
+      elements2velements.put(newElements[i], velement);
+      name2element.put(elements[i].getName(), elements[i]);
+      id2element.put(elements[i].getId(), elements[i]);
+    }
+    for (int i = 0; i < elNodes.length; ++i) {
+      checkNode(elNodes[i], null, new LinkedHashMap(), rootNodes, isFlat);
+    }
+    //PR 6663: do we still need hasCustomRootNodes ?? 
+    //Yes!! It is used for flat filters => see PR 6733
+    //        if (isFlat)
+    //        	hasCustomRootNodes=true;
+
+  }
+
+  private final void checkNode(ElementNode node, ElementNode parent,
+    Map elNodes2velNodes, List rootNodes, boolean isFlat) {
+    Element element = node.getElement();
+    Element vElement = (Element) elements2velements.get(element);
+    if (vElement != null) {
+      if (isFlat) {
+        ElementNode velementNode = new ElementNode(vElement, null);
+        rootNodes.add(velementNode);
+      } else {
+        Consolidation vconsolidation = node.getConsolidation();
+        if (vconsolidation != null) {
+          VirtualElementImpl vparent = (VirtualElementImpl) elements2velements
+            .get(vconsolidation.getParent());
+          //WAS IST WENN VPARENT == NULL ? => DANN KEINE KONSOLIDIERUNG!!!????!!!
+          if (vparent != null) {
+            Element vchild = (Element) elements2velements.get(vconsolidation
+              .getChild());
+            vconsolidation = new VirtualConsolidationImpl(vparent, vchild,
+              vconsolidation.getWeight());
+            vparent.addConsolidation(vconsolidation);
+          } else
+            vconsolidation = null;
+        }
+        ElementNode velNode = new ElementNode(vElement, vconsolidation);
+        elNodes2velNodes.put(node, velNode);
+        ElementNode vparent;
+        if ((vparent = (ElementNode) elNodes2velNodes.get(parent)) != null) {
+          vparent.forceAddChild(velNode);
+          velNode.setParent(vparent);
+        } else {
+          rootNodes.add(velNode);
+        }
+      }
+    }
+    // check children:
+    ElementNode[] children = node.getChildren();
+    for (int i = 0; i < children.length; ++i)
+      checkNode(children[i], node, elNodes2velNodes, rootNodes, isFlat);
+  }
+
+  public boolean isSystemDimension() {
+    return sourceDimension.isSystemDimension();
+  }
+
+  public boolean isUserInfoDimension() {
+    return sourceDimension.isUserInfoDimension();
+  }
+
+  public final void setVirtualDefinition(Object virtualDefinition) {
+    this.virtualDefinition = virtualDefinition;
+  }
+
+  public final Object getVirtualDefinition() {
+    return virtualDefinition;
+  }
+
+  private final void traverse(ElementNode node, ElementNode parent,
+    ElementNodeVisitor visitor) {
+    visitor.visit(node, parent);
+    ElementNode[] children = node.getChildren();
+    for (ElementNode child : children)
+      traverse(child, node, visitor);
+  }
+
+  public SubsetHandler getSubsetHandler() {
+    return sourceDimension.getSubsetHandler();
+  }
+
+  public boolean canBeModified() {
+    return true;
+  }
+
+  public boolean canCreateChildren() {
+    return true;
+  }
+
+  public int getType() {
+    return 0;
+  }
+
+  public Hierarchy[] getHierarchies() {
+    return sourceDimension.getHierarchies();
+  }
+
+  public String[] getHierarchiesIds() {
+    return sourceDimension.getHierarchiesIds();
+  }
+
+  public Hierarchy getHierarchyAt(int index) {
+    return sourceDimension.getHierarchyAt(index);
+  }
+
+  public Hierarchy getHierarchyById(String id) {
+    return sourceDimension.getHierarchyById(id);
+  }
+
+  public int getHierarchyCount() {
+    return sourceDimension.getHierarchyCount();
+  }
+
+  public Hierarchy getDefaultHierarchy() {
+    return sourceDimension.getDefaultHierarchy();
+  }
+
+  public Hierarchy getHierarchyByName(String name) {
+    return sourceDimension.getHierarchyByName(name);
+  }
+
+  public final void reload(boolean doEvents) {
+    sourceDimension.reload(doEvents);
+  }
+
+  public final DimensionInfo getInfo() {
+    return sourceDimension.getInfo();
+  }
+
+  public void addElements(String[] names, int type, Element[][] children,
+    double[][] weights) {
+    // TODO Auto-generated method stub
+
+  }
+
+  public void addElements(String[] names, int[] types, Element[][] children,
+    double[][] weights) {
+    // TODO Auto-generated method stub
+
+  }
+}

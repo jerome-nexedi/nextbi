@@ -1,272 +1,251 @@
-/*     */package org.palo.api;
+/*
+*
+* @file MyTest.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Michael Raue <Michael.Raue@tensegrity-software.com>
+*
+* @version $Id: MyTest.java,v 1.2 2010/02/09 11:44:57 PhilippBouillon Exp $
+*
+*/
 
-/*     */
-/*     */import java.util.ArrayList; /*     */
+package org.palo.api;
+
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
-/*     */
-/*     */public class MyTest
-/*     */{
-  /*     */Element[] e;
+public class MyTest {
+  interface ElementNodeVisitor {
+    void visit(ElementNode elementNode, ElementNode parent);
+  }
 
-  /*     */
-  /*     */public final ElementNode[] getElementsTree()
-  /*     */{
-    /* 168 */Element[] roots = { this.e[0], this.e[1], this.e[2], this.e[3] };
-    /*     */
-    /* 170 */final ArrayList rootnodes = new ArrayList();
-    /* 171 */ElementNodeVisitor visitor = new ElementNodeVisitor() {
-      /*     */public void visit(MyTest.ElementNode node, MyTest.ElementNode parent) {
-        /* 173 */if (parent == null)
-          /* 174 */rootnodes.add(node);
-        /*     */}
-      /*     */
+  public static interface ElementVisitor {
+    void visit(Element element, Element parent);
+  }
+
+  class Element {
+    private final Object[] objs;
+
+    private ArrayList<Element> kids;
+
+    Element(String con, String db, String dim, String id) {
+      objs = new Object[] { Element.class, con, db, dim, id };
+      kids = new ArrayList<Element>();
+    }
+
+    public String getId() {
+      return (String) objs[4];
+    }
+
+    public int hashCode() {
+      int hc = 23;
+      for (int i = 0; i < objs.length; ++i) {
+        if (objs[i] != null)
+          hc += 37 * objs[i].hashCode();
+      }
+      return hc;
+    }
+
+    public Element[] getChildren() {
+      return kids.toArray(new Element[0]);
+    }
+
+    public final boolean equals(Object other) {
+      if (other instanceof Element) {
+        Element e = (Element) other;
+        if (objs.length == e.objs.length) {
+          for (int i = 0; i < objs.length; i++) {
+            if (!objs[i].equals(e.objs[i])) {
+              return false;
+            }
+          }
+          return true;
+        }
+      }
+      return false;
+    }
+
+    public void addChild(Element e) {
+      kids.add(e);
+    }
+  }
+
+  class ElementNode {
+    private ElementNode parent;
+
+    private final Element element;
+
+    private final LinkedHashSet<ElementNode> children;
+
+    ElementNode(Element element) {
+      this.element = element;
+      children = new LinkedHashSet<ElementNode>();
+    }
+
+    public Element getElement() {
+      return element;
+    }
+
+    ElementNode getParent() {
+      return parent;
+    }
+
+    public void setParent(ElementNode newParent) {
+      parent = newParent;
+    }
+
+    public final synchronized void addChild(ElementNode child) {
+      if (!children.contains(child)) {
+        child.setParent(this);
+        children.add(child);
+      }
+    }
+
+    public ElementNode[] getChildren() {
+      return children.toArray(new ElementNode[0]);
+    }
+
+    public final synchronized void removeChild(ElementNode child) {
+      if (children.remove(child)) {
+        child.setParent(null);
+      }
+    }
+
+    public final boolean equals(Object obj) {
+      if (!(obj instanceof ElementNode))
+        return false;
+
+      ElementNode other = (ElementNode) obj;
+
+      boolean eq = element.equals(other.getElement());
+      if (parent != null && other.getParent() != null) {
+        eq &= parent.getElement().equals(other.getParent().getElement());
+      } else {
+        eq &= parent == null && other.getParent() == null;
+      }
+
+      return eq;
+    }
+
+    public final int hashCode() {
+      int hc = 3;
+      hc += 3 * element.hashCode();
+      if (parent != null)
+        hc += 3 * parent.hashCode();
+
+      return hc;
+    }
+  }
+
+  Element[] e;
+
+  public final ElementNode[] getElementsTree() {
+    Element[] roots = new Element[] { e[0], e[1], e[2], e[3] };
+
+    final ArrayList rootnodes = new ArrayList();
+    ElementNodeVisitor visitor = new ElementNodeVisitor() {
+      public void visit(ElementNode node, ElementNode parent) {
+        if (parent == null)
+          rootnodes.add(node);
+      }
     };
-    /* 177 */if (roots != null) {
-      /* 178 */for (int i = 0; i < roots.length; ++i) {
-        /* 179 */ElementNode rootNode = new ElementNode(roots[i]);
-        /* 180 */traverse(rootNode, visitor);
-        /*     */}
-      /*     */}
-    /* 183 */return (ElementNode[]) rootnodes.toArray(new ElementNode[0]);
-    /*     */}
-
-  /*     */
-  /*     */public void traverse(Element e, ElementVisitor v) {
-    /* 187 */traverse(e, null, v);
-    /*     */}
-
-  /*     */
-  /*     */void traverse(Element e, Element p, ElementVisitor v) {
-    /* 191 */v.visit(e, p);
-    /* 192 */Element[] children = e.getChildren();
-    /* 193 */if (children == null)
-      /* 194 */return;
-    /* 195 */for (int i = 0; i < children.length; ++i)
-      /* 196 */traverse(children[i], e, v);
-    /*     */}
-
-  /*     */
-  /*     */public void traverse(ElementNode n, ElementNodeVisitor v)
-  /*     */{
-    /* 203 */traverse(n, null, v);
-    /*     */}
-
-  /*     */
-  /*     */void traverse(ElementNode n, ElementNode p, ElementNodeVisitor v)
-  /*     */{
-    /* 208 */v.visit(n, p);
-    /* 209 */Element[] children = n.getElement().getChildren();
-    /* 210 */if (children == null)
-      /* 211 */return;
-    /* 212 */for (int i = 0; i < children.length; ++i)
-    /*     */{
-      /* 214 */if (children[i] == null)
-        /*     */continue;
-      /* 216 */ElementNode child = new ElementNode(children[i]);
-      /* 217 */n.addChild(child);
-      /* 218 */traverse(child, n, v);
-      /*     */}
-    /*     */}
-
-  /*     */
-  /*     */private void trav(ElementNode[] nodes) {
-    /* 223 */if (nodes == null) {
-      /* 224 */return;
-      /*     */}
-    /* 226 */for (ElementNode n : nodes) {
-      /* 227 */if (n.getElement().getId().equals("e3")) {
-        /* 228 */for (ElementNode nn : n.getChildren()) {
-          /* 229 */n.removeChild(nn);
-          /*     */}
-        /*     */}
-      /* 232 */trav(n.getChildren());
-      /*     */}
-    /*     */}
-
-  /*     */
-  /*     */MyTest() {
-    /* 237 */this.e = new Element[4];
-    /*     */
-    /* 239 */for (int i = 0; i < 4; ++i) {
-      /* 240 */this.e[i] = new Element("localhost", "palo", "d1", "e" + i);
-      /*     */}
-    /* 242 */this.e[3].addChild(this.e[1]);
-    /* 243 */this.e[3].addChild(this.e[2]);
-    /* 244 */ElementNode[] nodes = getElementsTree();
-    /* 245 */for (ElementNode n : nodes)
-      /* 246 */if (n.getElement().getId().equals("e3"))
-        /* 247 */for (ElementNode nn : n.getChildren())
-          /* 248 */n.removeChild(nn);
-    /*     */}
-
-  /*     */
-  /*     */public static void main(String[] args)
-  /*     */{
-    /* 256 */new MyTest();
-    /*     */}
-
-  /*     */
-  /*     */class Element
-  /*     */{
-    /*     */private final Object[] objs;
-
-    /*     */private ArrayList<Element> kids;
-
-    /*     */
-    /*     */Element(String con, String db, String dim, String id)
-    /*     */{
-      /* 53 */this.objs = new Object[] { Element.class, con, db, dim, id };
-      /* 54 */this.kids = new ArrayList();
-      /*     */}
-
-    /*     */
-    /*     */public String getId() {
-      /* 58 */return (String) this.objs[4];
-      /*     */}
-
-    /*     */
-    /*     */public int hashCode() {
-      /* 62 */int hc = 23;
-      /* 63 */for (int i = 0; i < this.objs.length; ++i) {
-        /* 64 */if (this.objs[i] != null)
-          /* 65 */hc += 37 * this.objs[i].hashCode();
-        /*     */}
-      /* 67 */return hc;
-      /*     */}
-
-    /*     */
-    /*     */public Element[] getChildren() {
-      /* 71 */return (Element[]) this.kids.toArray(new Element[0]);
-      /*     */}
-
-    /*     */
-    /*     */public final boolean equals(Object other) {
-      /* 75 */if (other instanceof Element) {
-        /* 76 */Element e = (Element) other;
-        /* 77 */if (this.objs.length == e.objs.length) {
-          /* 78 */for (int i = 0; i < this.objs.length; ++i) {
-            /* 79 */if (!this.objs[i].equals(e.objs[i])) {
-              /* 80 */return false;
-              /*     */}
-            /*     */}
-          /* 83 */return true;
-          /*     */}
-        /*     */}
-      /* 86 */return false;
-      /*     */}
-
-    /*     */
-    /*     */public void addChild(Element e) {
-      /* 90 */this.kids.add(e);
-      /*     */}
-    /*     */
+    if (roots != null) {
+      for (int i = 0; i < roots.length; ++i) {
+        ElementNode rootNode = new ElementNode(roots[i]);
+        traverse(rootNode, visitor);
+      }
+    }
+    return (ElementNode[]) rootnodes.toArray(new ElementNode[0]);
   }
 
-  /*     */
-  /*     */class ElementNode {
-    /*     */private ElementNode parent;
-
-    /*     */private final MyTest.Element element;
-
-    /*     */private final LinkedHashSet<ElementNode> children;
-
-    /*     */
-    /*     */ElementNode(MyTest.Element element) {
-      /* 100 */this.element = element;
-      /* 101 */this.children = new LinkedHashSet();
-      /*     */}
-
-    /*     */
-    /*     */public MyTest.Element getElement() {
-      /* 105 */return this.element;
-      /*     */}
-
-    /*     */
-    /*     */ElementNode getParent() {
-      /* 109 */return this.parent;
-      /*     */}
-
-    /*     */
-    /*     */public void setParent(ElementNode newParent) {
-      /* 113 */this.parent = newParent;
-      /*     */}
-
-    /*     */
-    /*     */public final synchronized void addChild(ElementNode child)
-    /*     */{
-      /* 118 */if (!this.children.contains(child)) {
-        /* 119 */child.setParent(this);
-        /* 120 */this.children.add(child);
-        /*     */}
-      /*     */}
-
-    /*     */
-    /*     */public ElementNode[] getChildren() {
-      /* 125 */return (ElementNode[]) this.children.toArray(new ElementNode[0]);
-      /*     */}
-
-    /*     */
-    /*     */public final synchronized void removeChild(ElementNode child)
-    /*     */{
-      /* 130 */if (this.children.remove(child))
-        /* 131 */child.setParent(null);
-      /*     */}
-
-    /*     */
-    /*     */public final boolean equals(Object obj)
-    /*     */{
-      /* 137 */if (!(obj instanceof ElementNode)) {
-        /* 138 */return false;
-        /*     */}
-      /* 140 */ElementNode other = (ElementNode) obj;
-      /*     */
-      /* 142 */boolean eq = this.element.equals(other.getElement());
-      /* 143 */if ((this.parent != null) && (other.getParent() != null))
-      /*     */{
-        /* 145 */eq &= this.parent.getElement().equals(
-          other.getParent().getElement());
-        /*     */}
-      /*     */else
-      /*     */{
-        /* 149 */eq &= ((this.parent == null) && (other.getParent() == null));
-        /*     */}
-      /*     */
-      /* 152 */return eq;
-      /*     */}
-
-    /*     */
-    /*     */public final int hashCode() {
-      /* 156 */int hc = 3;
-      /* 157 */hc += 3 * this.element.hashCode();
-      /* 158 */if (this.parent != null) {
-        /* 159 */hc += 3 * this.parent.hashCode();
-        /*     */}
-      /* 161 */return hc;
-      /*     */}
-    /*     */
+  public void traverse(Element e, ElementVisitor v) {
+    traverse(e, null, v);
   }
 
-  /*     */
-  /*     */static abstract interface ElementNodeVisitor
-  /*     */{
-    /*     */public abstract void visit(MyTest.ElementNode paramElementNode1,
-      MyTest.ElementNode paramElementNode2);
-    /*     */
+  void traverse(Element e, Element p, ElementVisitor v) {
+    v.visit(e, p);
+    Element children[] = e.getChildren();
+    if (children == null)
+      return;
+    for (int i = 0; i < children.length; ++i) {
+      traverse(children[i], e, v);
+    }
   }
 
-  /*     */
-  /*     */public static abstract interface ElementVisitor
-  /*     */{
-    /*     */public abstract void visit(MyTest.Element paramElement1,
-      MyTest.Element paramElement2);
-    /*     */
+  //-------------------------------------------------------------------------
+
+  public void traverse(ElementNode n, ElementNodeVisitor v) {
+    traverse(n, null, v);
   }
-  /*     */
+
+  void traverse(ElementNode n, ElementNode p, ElementNodeVisitor v) {
+    v.visit(n, p);
+    Element children[] = n.getElement().getChildren();
+    if (children == null)
+      return;
+    for (int i = 0; i < children.length; ++i) {
+      if (children[i] == null)
+        continue;
+      ElementNode child = new ElementNode(children[i]);
+      n.addChild(child);
+      traverse(child, n, v);
+    }
+  }
+
+  private void trav(ElementNode[] nodes) {
+    if (nodes == null) {
+      return;
+    }
+    for (ElementNode n : nodes) {
+      if (n.getElement().getId().equals("e3")) {
+        for (ElementNode nn : n.getChildren()) {
+          n.removeChild(nn);
+        }
+      }
+      trav(n.getChildren());
+    }
+  }
+
+  MyTest() {
+    e = new Element[4];
+
+    for (int i = 0; i < 4; i++) {
+      e[i] = new Element("localhost", "palo", "d1", "e" + i);
+    }
+    e[3].addChild(e[1]);
+    e[3].addChild(e[2]);
+    ElementNode[] nodes = getElementsTree();
+    for (ElementNode n : nodes) {
+      if (n.getElement().getId().equals("e3")) {
+        for (ElementNode nn : n.getChildren()) {
+          n.removeChild(nn);
+        }
+      }
+    }
+    //trav(nodes);
+  }
+
+  public static void main(String... args) {
+    new MyTest();
+  }
 }
-
-/*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.MyTest JD-Core Version: 0.5.4
- */

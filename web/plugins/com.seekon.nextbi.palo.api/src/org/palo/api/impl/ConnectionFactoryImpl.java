@@ -1,153 +1,172 @@
-/*     */package org.palo.api.impl;
-
-/*     */
-/*     */import com.tensegrity.palo.xmla.XMLAServer; /*     */
-import com.tensegrity.palojava.PaloException; /*     */
-import com.tensegrity.palojava.PaloFactory; /*     */
-import com.tensegrity.palojava.PaloServer; /*     */
-import java.util.HashSet; /*     */
-import java.util.Set; /*     */
-import org.palo.api.Connection; /*     */
-import org.palo.api.ConnectionConfiguration; /*     */
-import org.palo.api.ConnectionFactory; /*     */
-import org.palo.api.PaloAPIException;
-
-/*     */
-/*     */public class ConnectionFactoryImpl extends ConnectionFactory
-/*     */{
-  /* 63 */private final Set activePaloConnections = new HashSet();
-
-  /*     */
-  /*     *//** @deprecated */
-  /*     */public final Connection newConnection(String server, String service,
-    String user, String pass)
-  /*     */{
-    /* 70 */return newConnection(server, service, user, pass, false, 2);
-    /*     */}
-
-  /*     */
-  /*     *//** @deprecated */
-  /*     */public final Connection newConnection(String server, String service,
-    String user, String pass, boolean doLoadOnDemand, int type)
-  /*     */{
-    /*     */PaloServer paloSrv;
-    ConnectionImpl connection;
-    /* 79 */if ((type == 2) || (type == 1)) {
-      /* 80 */paloSrv =
-      /* 81 */PaloFactory.getInstance().createServerConnection(server, service,
-        type, 30000);
-      /*     */}
-    /*     */else
-    /*     */{
-      /* 82 */if (type == 3)
-        /* 83 */paloSrv = new XMLAServer(server, service, user, pass);
-      /*     */else
-        /* 85 */throw new PaloAPIException("Unknown connection type specified: " +
-        /* 86 */type + "!!");
-      /*     */}
-
-    /*     */try
-    /*     */{
-      /* 90 */connection = new ConnectionImpl(paloSrv);
-      /* 91 */if (connection.login(user, pass)) {
-        /* 92 */if (!doLoadOnDemand) {
-          /* 93 */connection.reload();
-          /*     */}
-        /*     */
-        /*     */}
-      /*     */else
-      /*     */{
-        /* 99 */throw new PaloAPIException("Could not login to palo server '" +
-        /* 100 */server + "' as user '" + user + "'!!");
-        /*     */}
-      /*     */} catch (PaloException e) {
-      /* 103 */throw new PaloAPIException(e.getMessage());
-      /*     */}
-    /* 105 */if ((connection.supportsRules()) && (type != 3)) {
-      /* 106 */this.activePaloConnections.add(connection);
-      /*     */}
-    /* 108 */return connection;
-    /*     */}
-
-  /*     */
-  /*     */public final ConnectionConfiguration getConfiguration(String host,
-    String service)
-  /*     */{
-    /* 118 */return getConfiguration(host, service, null, null);
-    /*     */}
-
-  /*     */
-  /*     */public final ConnectionConfiguration getConfiguration(String host,
-    String service, String user, String password) {
-    /* 122 */ConnectionConfiguration cfg = new ConnectionConfiguration(host,
-      service);
-    /*     */
-    /* 124 */cfg.setUser(user);
-    /* 125 */cfg.setPassword(password);
-    /* 126 */return cfg;
-    /*     */}
-
-  /*     */
-  /*     */public final Connection newConnection(ConnectionConfiguration cfg)
-  /*     */{
-    /* 131 */int type = cfg.getType();
-    /*     */PaloServer paloSrv;
-    /* 132 */if ((type == 2) || (type == 1)) {
-      /* 133 */paloSrv = PaloFactory.getInstance().createServerConnection(
-      /* 134 */cfg.getHost(), cfg.getPort(), type, cfg.getTimeout());
-      /*     */}
-    /*     */else
-    /*     */{
-      /* 135 */if (type == 3)
-        /* 136 */paloSrv = new XMLAServer(cfg.getHost(), cfg.getPort(),
-        /* 137 */cfg.getUser(), cfg.getPassword());
-      /*     */else
-        /* 139 */throw new PaloAPIException("Unknown connection type specified: " +
-        /* 140 */type + "!!");
-      /*     */}
-    /* 142 */ConnectionImpl connection = new ConnectionImpl(paloSrv);
-    /* 143 */if (connection.login(cfg.getUser(), cfg.getPassword())) {
-      /* 144 */if (!cfg.doLoadOnDemand()) {
-        /* 145 */connection.reload();
-        /*     */}
-      /*     */
-      /*     */}
-    /*     */else
-    /*     */{
-      /* 151 */throw new PaloAPIException("Could not login to palo server '" +
-      /* 152 */cfg.getHost() + "' as user '" + cfg.getUser() +
-      /* 153 */"'!!");
-      /* 154 */}
-    if ((connection.supportsRules()) && (type != 3)) {
-      /* 155 */this.activePaloConnections.add(connection);
-      /*     */}
-    /* 157 */return connection;
-    /*     */}
-
-  /*     */
-  /*     */final Connection[] getActiveConnections() {
-    /* 161 */Connection[] cons =
-    /* 162 */(Connection[]) this.activePaloConnections.toArray(new Connection[0]);
-    /* 163 */int i = 0;
-    for (int n = cons.length; i < n; ++i) {
-      /* 164 */if (!cons[i].isConnected()) {
-        /* 165 */this.activePaloConnections.remove(cons[i]);
-        /*     */}
-      /*     */}
-    /* 168 */return (Connection[]) this.activePaloConnections
-      .toArray(new Connection[0]);
-    /*     */}
-
-  /*     */
-  /*     */final void removePaloConnection(Connection con) {
-    /* 172 */this.activePaloConnections.remove(con);
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file ConnectionFactoryImpl.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Arnd Houben
+*
+* @version $Id: ConnectionFactoryImpl.java,v 1.22 2010/06/16 11:07:13 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.impl.ConnectionFactoryImpl JD-Core Version:
- * 0.5.4
+ * (c) Tensegrity Software 2007
+ * All rights reserved
  */
+package org.palo.api.impl;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.palo.api.Connection;
+import org.palo.api.ConnectionConfiguration;
+import org.palo.api.ConnectionFactory;
+import org.palo.api.PaloAPIException;
+
+import com.tensegrity.palo.xmla.XMLAServer;
+import com.tensegrity.palojava.PaloException;
+import com.tensegrity.palojava.PaloFactory;
+import com.tensegrity.palojava.PaloServer;
+
+/**
+ * <code>ConnectionFactoryImpl</code>
+ * 
+ * @author Arnd Houben
+ * @author Stepan Rutz
+ * @version $Id: ConnectionFactoryImpl.java,v 1.22 2010/06/16 11:07:13 PhilippBouillon Exp $
+ */
+public class ConnectionFactoryImpl extends ConnectionFactory {
+  /**
+   * Stores a list of all Palo connections that have been created with this
+   * factory, and which support rules.
+   */
+  private final Set activePaloConnections = new HashSet();
+
+  /**
+   * @deprecated please use @{link {@link #newConnection(ConnectionConfiguration)}
+   */
+  public final Connection newConnection(String server, String service, String user,
+    String pass) {
+    return newConnection(server, service, user, pass, false, Connection.TYPE_HTTP);
+  }
+
+  /**
+   * @deprecated please use @{link {@link #newConnection(ConnectionConfiguration)}
+   */
+  public final Connection newConnection(String server, String service, String user,
+    String pass, boolean doLoadOnDemand, int type) {
+    PaloServer paloSrv;
+    if (type == Connection.TYPE_HTTP || type == Connection.TYPE_LEGACY) {
+      paloSrv = PaloFactory.getInstance().createServerConnection(server, service,
+        type, Connection.DEFAULT_TIMEOUT);
+    } else if (type == Connection.TYPE_XMLA) {
+      paloSrv = new XMLAServer(server, service, user, pass,
+        Connection.DEFAULT_TIMEOUT);
+    } else {
+      throw new PaloAPIException("Unknown connection type specified: " + type + "!!");
+    }
+    ConnectionImpl connection;
+    try {
+      connection = new ConnectionImpl(paloSrv);
+      if (connection.login(user, pass)) {
+        if (!doLoadOnDemand)
+          connection.reload();
+        //					connection.reloadAlllDatabases(true);
+        //					connection.loadDatabaseInfos();
+        //				else
+        //					connection.initDatabases(true);
+      } else {
+        throw new PaloAPIException("Could not login to palo server '" + server
+          + "' as user '" + user + "'!!");
+      }
+    } catch (PaloException e) {
+      throw new PaloAPIException(e.getMessage());
+    }
+    if (connection.supportsRules() && type != Connection.TYPE_XMLA) {
+      activePaloConnections.add(connection);
+    }
+    return connection;
+  }
+
+  /**
+   * Returns a default {@link ConnectionConfiguration} instance. The type is
+   * {@link Connection#TYPE_HTTP}, load on demand is disabled and timeout
+   * is set to {@link #CONNECTION_TIMEOUT}.
+   */
+  public final ConnectionConfiguration getConfiguration(String host, String service) {
+    return getConfiguration(host, service, null, null);
+  }
+
+  public final ConnectionConfiguration getConfiguration(String host, String service,
+    String user, String password) {
+    ConnectionConfiguration cfg = new ConnectionConfiguration(host, service);
+    //configure:
+    cfg.setUser(user);
+    cfg.setPassword(password);
+    return cfg;
+  }
+
+  public final Connection newConnection(ConnectionConfiguration cfg) {
+    PaloServer paloSrv;
+    int type = cfg.getType();
+    if (type == Connection.TYPE_HTTP || type == Connection.TYPE_LEGACY) {
+      paloSrv = PaloFactory.getInstance().createServerConnection(cfg.getHost(),
+        cfg.getPort(), type, cfg.getTimeout());
+    } else if (type == Connection.TYPE_XMLA) {
+      paloSrv = new XMLAServer(cfg.getHost(), cfg.getPort(), cfg.getUser(), cfg
+        .getPassword(), cfg.getTimeout());
+    } else {
+      throw new PaloAPIException("Unknown connection type specified: " + type + "!!");
+    }
+    ConnectionImpl connection = new ConnectionImpl(paloSrv);
+    if (connection.login(cfg.getUser(), cfg.getPassword())) {
+      if (!cfg.doLoadOnDemand())
+        connection.reload();
+      //				connection.reloadAlllDatabases(true);
+      //				connection.loadDatabaseInfos();
+      //			else
+      //				connection.initDatabases(true);
+    } else
+      throw new PaloAPIException("Could not login to palo server '" + cfg.getHost()
+        + "' as user '" + cfg.getUser() + "'!!");
+    if (connection.supportsRules() && type != Connection.TYPE_XMLA) {
+      activePaloConnections.add(connection);
+    }
+    return connection;
+  }
+
+  final Connection[] getActiveConnections() {
+    Connection[] cons = (Connection[]) activePaloConnections
+      .toArray(new Connection[0]);
+    for (int i = 0, n = cons.length; i < n; i++) {
+      if (!cons[i].isConnected()) {
+        activePaloConnections.remove(cons[i]);
+      }
+    }
+    return (Connection[]) activePaloConnections.toArray(new Connection[0]);
+  }
+
+  final void removePaloConnection(Connection con) {
+    activePaloConnections.remove(con);
+  }
+}

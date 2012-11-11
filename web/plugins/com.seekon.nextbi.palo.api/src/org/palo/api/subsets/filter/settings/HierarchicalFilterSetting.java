@@ -1,394 +1,539 @@
-/*     */package org.palo.api.subsets.filter.settings;
-
-/*     */
-/*     */import org.palo.api.subsets.Subset2;
-
-/*     */
-/*     */public class HierarchicalFilterSetting extends AbstractFilterSettings
-/*     */{
-  /*     */public static final int HIDE_MODE_DISABLED = 0;
-
-  /*     */public static final int HIDE_MODE_LEAFS = 1;
-
-  /*     */public static final int HIDE_MODE_CONSOLIDATIONS = 2;
-
-  /*     */public static final int REVOLVE_ADD_DISABLED = 0;
-
-  /*     */public static final int REVOLVE_ADD_BELOW = 1;
-
-  /*     */public static final int REVOLVE_ADD_ABOVE = 2;
-
-  /*     */private StringParameter refElementId;
-
-  /*     */private BooleanParameter exclusive;
-
-  /*     */private BooleanParameter above;
-
-  /*     */private IntegerParameter hideMode;
-
-  /*     */
-  /*     *//** @deprecated */
-  /*     */private StringParameter startElementId;
-
-  /*     */
-  /*     *//** @deprecated */
-  /*     */private StringParameter endElementId;
-
-  /*     */private IntegerParameter startLevel;
-
-  /*     */private IntegerParameter endLevel;
-
-  /*     */private StringParameter revolveElementId;
-
-  /*     */private IntegerParameter revolveElementsCount;
-
-  /*     */private IntegerParameter revolveMode;
-
-  /*     */
-  /*     */public HierarchicalFilterSetting()
-  /*     */{
-    /* 84 */this.refElementId = new StringParameter();
-    /* 85 */this.exclusive = new BooleanParameter();
-    /* 86 */this.above = new BooleanParameter();
-    /*     */
-    /* 89 */this.hideMode = new IntegerParameter();
-    /*     */
-    /* 92 */this.startElementId = new StringParameter();
-    /* 93 */this.endElementId = new StringParameter();
-    /* 94 */this.startLevel = new IntegerParameter();
-    /* 95 */this.endLevel = new IntegerParameter();
-    /*     */
-    /* 98 */this.revolveElementId = new StringParameter();
-    /* 99 */this.revolveElementsCount = new IntegerParameter();
-    /* 100 */this.revolveMode = new IntegerParameter();
-    /*     */
-    /* 103 */reset();
-    /*     */}
-
-  /*     */
-  /*     */public final void reset()
-  /*     */{
-    /* 108 */this.refElementId.setValue(null);
-    /* 109 */this.above.setValue(false);
-    /* 110 */this.exclusive.setValue(false);
-    /*     */
-    /* 113 */this.hideMode.setValue(0);
-    /*     */
-    /* 116 */this.startLevel.setValue(-1);
-    /* 117 */this.endLevel.setValue(-1);
-    /* 118 */this.startElementId.setValue(null);
-    /* 119 */this.endElementId.setValue(null);
-    /* 120 */this.refElementId.setValue(null);
-    /*     */
-    /* 123 */this.revolveElementId.setValue(null);
-    /* 124 */this.revolveElementsCount.setValue(0);
-    /* 125 */this.revolveMode.setValue(0);
-    /*     */}
-
-  /*     */
-  /*     */public final boolean doAboveBelowSelection()
-  /*     */{
-    /* 134 */return this.refElementId.getValue() != null;
-    /*     */}
-
-  /*     */
-  /*     */public final boolean doLevelSelection()
-  /*     */{
-    /* 145 */return (this.startElementId.getValue() != null) ||
-    /* 143 */(this.endElementId.getValue() != null) ||
-    /* 144 */(this.startLevel.getValue().intValue() > -1) ||
-    /* 145 */(this.endLevel.getValue().intValue() > -1);
-    /*     */}
-
-  /*     */
-  /*     */public final boolean doHide()
-  /*     */{
-    /* 153 */return this.hideMode.getValue().intValue() != 0;
-    /*     */}
-
-  /*     */
-  /*     */public final boolean doRevolve()
-  /*     */{
-    /* 161 */return this.revolveElementId.getValue() != null;
-    /*     */}
-
-  /*     */
-  /*     */public final StringParameter getRefElement()
-  /*     */{
-    /* 169 */return this.refElementId;
-    /*     */}
-
-  /*     */
-  /*     */public final void setRefElement(String elementId)
-  /*     */{
-    /* 176 */this.refElementId.setValue(elementId);
-    /*     */}
-
-  /*     */
-  /*     */public final void setRefElement(StringParameter element)
-  /*     */{
-    /* 185 */this.refElementId = element;
-    /* 186 */this.refElementId.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     */public final BooleanParameter getAbove()
-  /*     */{
-    /* 196 */return this.above;
-    /*     */}
-
-  /*     */
-  /*     */public final void setAbove(boolean above)
-  /*     */{
-    /* 205 */this.above.setValue(above);
-    /*     */}
-
-  /*     */
-  /*     */public final void setAbove(BooleanParameter above)
-  /*     */{
-    /* 213 */this.above = above;
-    /* 214 */this.above.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     */public final BooleanParameter getExclusive()
-  /*     */{
-    /* 224 */return this.exclusive;
-    /*     */}
-
-  /*     */
-  /*     */public final void setExclusive(boolean exclusive)
-  /*     */{
-    /* 233 */this.exclusive.setValue(exclusive);
-    /*     */}
-
-  /*     */
-  /*     */public final void setExclusive(BooleanParameter exclusive)
-  /*     */{
-    /* 241 */this.exclusive = exclusive;
-    /* 242 */this.exclusive.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     */public final IntegerParameter getHideMode()
-  /*     */{
-    /* 251 */return this.hideMode;
-    /*     */}
-
-  /*     */
-  /*     */public final void setHideMode(int hideMode)
-  /*     */{
-    /* 259 */this.hideMode.setValue(hideMode);
-    /*     */}
-
-  /*     */
-  /*     */public final void setHideMode(IntegerParameter hideMode)
-  /*     */{
-    /* 268 */this.hideMode = hideMode;
-    /* 269 */this.hideMode.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     */public final IntegerParameter getStartLevel()
-  /*     */{
-    /* 277 */return this.startLevel;
-    /*     */}
-
-  /*     */
-  /*     */public final void setStartLevel(int level)
-  /*     */{
-    /* 285 */this.startLevel.setValue(level);
-    /*     */}
-
-  /*     */
-  /*     */public final void setStartLevel(IntegerParameter level)
-  /*     */{
-    /* 293 */this.startLevel.unbind();
-    /* 294 */this.startLevel = level;
-    /* 295 */this.startLevel.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     */public final IntegerParameter getEndLevel()
-  /*     */{
-    /* 303 */return this.endLevel;
-    /*     */}
-
-  /*     */
-  /*     */public final void setEndLevel(int level)
-  /*     */{
-    /* 311 */this.endLevel.setValue(level);
-    /*     */}
-
-  /*     */
-  /*     */public final void setEndLevel(IntegerParameter level)
-  /*     */{
-    /* 318 */this.endLevel.unbind();
-    /* 319 */this.endLevel = level;
-    /* 320 */this.endLevel.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     *//** @deprecated */
-  /*     */public final StringParameter getStartElement()
-  /*     */{
-    /* 329 */return this.startElementId;
-    /*     */}
-
-  /*     */
-  /*     *//** @deprecated */
-  /*     */public final void setStartElement(String elementId)
-  /*     */{
-    /* 338 */this.startElementId.setValue(elementId);
-    /*     */}
-
-  /*     */
-  /*     *//** @deprecated */
-  /*     */public final void setStartElement(StringParameter element)
-  /*     */{
-    /* 348 */this.startElementId = element;
-    /* 349 */this.startElementId.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     *//** @deprecated */
-  /*     */public final StringParameter getEndElement()
-  /*     */{
-    /* 358 */return this.endElementId;
-    /*     */}
-
-  /*     */
-  /*     *//** @deprecated */
-  /*     */public final void setEndElement(String elementId)
-  /*     */{
-    /* 366 */this.endElementId.setValue(elementId);
-    /*     */}
-
-  /*     */
-  /*     *//** @deprecated */
-  /*     */public final void setEndElement(StringParameter element)
-  /*     */{
-    /* 376 */this.endElementId = element;
-    /* 377 */this.endElementId.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     */public final StringParameter getRevolveElement()
-  /*     */{
-    /* 386 */return this.revolveElementId;
-    /*     */}
-
-  /*     */
-  /*     */public final void setRevolveElement(String elementId)
-  /*     */{
-    /* 393 */this.revolveElementId.setValue(elementId);
-    /*     */}
-
-  /*     */
-  /*     */public final void setRevolveElement(StringParameter elementId)
-  /*     */{
-    /* 402 */this.revolveElementId = elementId;
-    /* 403 */this.revolveElementId.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     */public final IntegerParameter getRevolveCount()
-  /*     */{
-    /* 411 */return this.revolveElementsCount;
-    /*     */}
-
-  /*     */
-  /*     */public final void setRevolveCount(int revolveElementsCount)
-  /*     */{
-    /* 418 */this.revolveElementsCount.setValue(revolveElementsCount);
-    /*     */}
-
-  /*     */
-  /*     */public final void setRevolveCount(IntegerParameter revolveElementsCount)
-  /*     */{
-    /* 427 */this.revolveElementsCount = revolveElementsCount;
-    /* 428 */this.revolveElementsCount.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     */public final IntegerParameter getRevolveMode()
-  /*     */{
-    /* 437 */return this.revolveMode;
-    /*     */}
-
-  /*     */
-  /*     */public final void setRevolveMode(int revolveMode)
-  /*     */{
-    /* 445 */this.revolveMode.setValue(revolveMode);
-    /*     */}
-
-  /*     */
-  /*     */public final void setRevolveMode(IntegerParameter revolveMode)
-  /*     */{
-    /* 454 */this.revolveMode = revolveMode;
-    /* 455 */this.revolveMode.bind(this.subset);
-    /*     */}
-
-  /*     */
-  /*     */public final void bind(Subset2 subset) {
-    /* 459 */super.bind(subset);
-    /*     */
-    /* 461 */this.refElementId.bind(subset);
-    /* 462 */this.exclusive.bind(subset);
-    /* 463 */this.above.bind(subset);
-    /* 464 */this.hideMode.bind(subset);
-    /* 465 */this.startElementId.bind(subset);
-    /* 466 */this.endElementId.bind(subset);
-    /* 467 */this.startLevel.bind(subset);
-    /* 468 */this.endLevel.bind(subset);
-    /* 469 */this.revolveElementId.bind(subset);
-    /* 470 */this.revolveElementsCount.bind(subset);
-    /* 471 */this.revolveMode.bind(subset);
-    /*     */}
-
-  /*     */public final void unbind() {
-    /* 474 */super.unbind();
-    /*     */
-    /* 476 */this.refElementId.unbind();
-    /* 477 */this.exclusive.unbind();
-    /* 478 */this.above.unbind();
-    /* 479 */this.hideMode.unbind();
-    /* 480 */this.startElementId.unbind();
-    /* 481 */this.endElementId.unbind();
-    /* 482 */this.revolveElementId.unbind();
-    /* 483 */this.revolveElementsCount.unbind();
-    /* 484 */this.revolveMode.unbind();
-    /*     */}
-
-  /*     */
-  /*     */public final void adapt(FilterSetting from) {
-    /* 488 */if (!(from instanceof HierarchicalFilterSetting)) {
-      /* 489 */return;
-      /*     */}
-    /* 491 */HierarchicalFilterSetting setting = (HierarchicalFilterSetting) from;
-    /* 492 */reset();
-    /* 493 */setRefElement(setting.getRefElement().getValue());
-    /* 494 */setExclusive(setting.getExclusive().getValue().booleanValue());
-    /* 495 */setAbove(setting.getAbove().getValue().booleanValue());
-    /*     */
-    /* 497 */setHideMode(setting.getHideMode().getValue().intValue());
-    /*     */
-    /* 499 */setStartElement(setting.getStartElement().getValue());
-    /* 500 */setEndElement(setting.getEndElement().getValue());
-    /* 501 */setEndLevel(setting.getEndLevel().getValue().intValue());
-    /* 502 */setStartLevel(setting.getStartLevel().getValue().intValue());
-    /*     */
-    /* 504 */setRevolveElement(setting.getRevolveElement().getValue());
-    /* 505 */setRevolveCount(setting.getRevolveCount().getValue().intValue());
-    /* 506 */setRevolveMode(setting.getRevolveMode().getValue().intValue());
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file HierarchicalFilterSetting.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author ArndHouben
+*
+* @version $Id: HierarchicalFilterSetting.java,v 1.7 2009/04/29 10:21:57 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name:
- * org.palo.api.subsets.filter.settings.HierarchicalFilterSetting JD-Core
- * Version: 0.5.4
+ * (c) Tensegrity Software 2007
+ * All rights reserved
  */
+package org.palo.api.subsets.filter.settings;
+
+import org.palo.api.subsets.Subset2;
+import org.palo.api.subsets.filter.HierarchicalFilter;
+
+/**
+ * <code>HierarchicalFilterSetting</code>
+ * <p>
+ * Manages the settings for the {@link HierarchicalFilter}.
+ * </p>
+ *
+ * @author ArndHouben
+ * @version $Id: HierarchicalFilterSetting.java,v 1.7 2009/04/29 10:21:57 PhilippBouillon Exp $
+ **/
+public class HierarchicalFilterSetting extends AbstractFilterSettings {
+
+  //HIDE MODES:
+  public static final int HIDE_MODE_DISABLED = 0;
+
+  public static final int HIDE_MODE_LEAFS = 1;
+
+  public static final int HIDE_MODE_CONSOLIDATIONS = 2;
+
+  //REVOLVE_ADD_MODE:
+  public static final int REVOLVE_ADD_DISABLED = 0;
+
+  public static final int REVOLVE_ADD_BELOW = 1;
+
+  public static final int REVOLVE_ADD_ABOVE = 2;
+
+  //filter state:
+  private StringParameter refElementId; //for above/below selection
+
+  private BooleanParameter exclusive;
+
+  private BooleanParameter above;
+
+  private IntegerParameter hideMode; //hide 
+
+  /** @deprecated */
+  private StringParameter startElementId; //start/end selection
+
+  /** @deprecated */
+  private StringParameter endElementId;
+
+  private IntegerParameter startLevel;
+
+  private IntegerParameter endLevel;
+
+  private StringParameter revolveElementId; //revolving
+
+  private IntegerParameter revolveElementsCount;
+
+  private IntegerParameter revolveMode; //either add above or below...
+
+  public HierarchicalFilterSetting() {
+    //create parameters with default values:
+    //above/below selection:
+    refElementId = new StringParameter();
+    exclusive = new BooleanParameter();
+    above = new BooleanParameter();
+
+    //hide:
+    hideMode = new IntegerParameter();
+
+    //start/end selection:
+    startElementId = new StringParameter();
+    endElementId = new StringParameter();
+    startLevel = new IntegerParameter();
+    endLevel = new IntegerParameter();
+
+    //revolve:
+    revolveElementId = new StringParameter();
+    revolveElementsCount = new IntegerParameter();
+    revolveMode = new IntegerParameter();
+
+    //default settings...
+    reset();
+  }
+
+  public final void reset() {
+    //above/below selection
+    refElementId.setValue(null);
+    above.setValue(false);
+    exclusive.setValue(false);
+
+    //hide
+    hideMode.setValue(HIDE_MODE_DISABLED);
+
+    //level selection
+    startLevel.setValue(-1);
+    endLevel.setValue(-1);
+    startElementId.setValue(null);
+    endElementId.setValue(null);
+    refElementId.setValue(null);
+
+    //revolve
+    revolveElementId.setValue(null);
+    revolveElementsCount.setValue(0);
+    revolveMode.setValue(REVOLVE_ADD_DISABLED);
+  }
+
+  /**
+   * Checks if a reference element is specified for above/below selection
+   * @return <code>true</code> if a reference element is specified,
+   * <code>false</code> otherwise
+   */
+  public final boolean doAboveBelowSelection() {
+    return refElementId.getValue() != null;
+  }
+
+  /**
+   * Checks if start or end elements are specified for level selection
+   * @return <code>true</code> if either a start or an end element is 
+   * specified, <code>false</code> otherwise
+   */
+  public final boolean doLevelSelection() {
+    return (startElementId.getValue() != null) || (endElementId.getValue() != null)
+      || (startLevel.getValue() > -1) || (endLevel.getValue() > -1);
+  }
+
+  /**
+   * Checks if hide mode is active
+   * @return <code>true</code> if a hide mode should be used, 
+   * <code>false</code> otherwise
+   */
+  public final boolean doHide() {
+    return hideMode.getValue() != HIDE_MODE_DISABLED;
+  }
+
+  /**
+   * Checks if a revolve element is specified.
+   * @return <code>true</code> if a revolve element is specified,
+   * <code>false</code> otherwise
+   */
+  public final boolean doRevolve() {
+    return revolveElementId.getValue() != null;
+  }
+
+  /**
+   * Returns the identifier of the specified reference element for above/below
+   * selection
+   * @return reference element id
+   */
+  public final StringParameter getRefElement() {
+    return refElementId;
+  }
+
+  /**
+   * Sets the identifier of the reference element for above/below selection
+   * @param elementId the reference element
+   */
+  public final void setRefElement(String elementId) {
+    this.refElementId.setValue(elementId);
+  }
+
+  /**
+   * Sets the identifier of the reference element for above/below selection,
+   * i.e. the parameter value should contain the id of the reference element. 
+   * @param element the new <code>StringParameter</code> to use for the 
+   * above/below selection 
+   */
+  public final void setRefElement(StringParameter element) {
+    this.refElementId = element;
+    this.refElementId.bind(subset);
+  }
+
+  /**
+   * Checks if all elements above the reference element should be used for
+   * above/below selection
+   * @return <code>true</code> if all elements above reference element should
+   * be used, <code>false</code> otherwise
+   */
+  public final BooleanParameter getAbove() {
+    return above;
+  }
+
+  /**
+   * Specifies if all elements above the reference element should be used for
+   * above/below selection
+   * @param above set to <code>true</code> if all elements above reference
+   * elements should be used, to <code>false</code> otherwise
+   */
+  public final void setAbove(boolean above) {
+    this.above.setValue(above);
+  }
+
+  /**
+   * Specifies if all elements above the reference element should be included
+   * in selection 
+   * @param above
+   */
+  public final void setAbove(BooleanParameter above) {
+    this.above = above;
+    this.above.bind(subset);
+  }
+
+  /**
+   * Checks if reference element should be considered for above/below 
+   * selection too
+   * @return <code>true</code> if reference element should not be considered 
+   * too, <code>false</code> otherwise
+   */
+  public final BooleanParameter getExclusive() {
+    return exclusive;
+  }
+
+  /**
+   * Specifies if reference element should be considered for above/below
+   * selection too
+   * @param exclusive set to <code>true</code> to exclude reference element,
+   * to <code>false</code> to include it 
+   */
+  public final void setExclusive(boolean exclusive) {
+    this.exclusive.setValue(exclusive);
+  }
+
+  /**
+   * Specifies if the reference element should be included or excluded in
+   * the selection 
+   * @param exclusive
+   */
+  public final void setExclusive(BooleanParameter exclusive) {
+    this.exclusive = exclusive;
+    this.exclusive.bind(subset);
+  }
+
+  /**
+   * Returns the hide mode to use, i.e. one of the predefined hide mode
+   * constants
+   * @return the hide mode
+   */
+  public final IntegerParameter getHideMode() {
+    return hideMode;
+  }
+
+  /**
+   * Sets the hide mode. One of the predefined hide mode constants should be
+   * used
+   * @param hideMode the new hide mode
+   */
+  public final void setHideMode(int hideMode) {
+    this.hideMode.setValue(hideMode);
+  }
+
+  /**
+   * Sets the hide mode. The parameter value should be one of the 
+   * predefined hide mode constants.
+   * @param hideMode the new <code>IntegerParameter</code> to use for 
+   * the hide mode
+   */
+  public final void setHideMode(IntegerParameter hideMode) {
+    this.hideMode = hideMode;
+    this.hideMode.bind(subset);
+  }
+
+  /**
+   * Returns the start level for selection based on element level
+   * @return start level
+   */
+  public final IntegerParameter getStartLevel() {
+    return startLevel;
+  }
+
+  /**
+   * Sets the start level for selection based on element level
+   * @param level the start level
+   */
+  public final void setStartLevel(int level) {
+    startLevel.setValue(level);
+  }
+
+  /**
+   * Sets the start level for selection based on element level
+   * @param level the start level
+   */
+  public final void setStartLevel(IntegerParameter level) {
+    startLevel.unbind();
+    startLevel = level;
+    startLevel.bind(subset);
+  }
+
+  /**
+   * Returns the end level for selection based on element level
+   * @return end level
+   */
+  public final IntegerParameter getEndLevel() {
+    return endLevel;
+  }
+
+  /**
+   * Sets the end level for selection based on element level
+   * @param level the end level 
+   */
+  public final void setEndLevel(int level) {
+    endLevel.setValue(level);
+  }
+
+  /**
+   * Sets the end level for selection based on element level
+   * @param level the end level
+   */
+  public final void setEndLevel(IntegerParameter level) {
+    endLevel.unbind();
+    endLevel = level;
+    endLevel.bind(subset);
+  }
+
+  /**
+   * Returns the identifier of the specified start element for level selection
+   * @return start element id
+   * @deprecated please use {@link #getStartLevel()}
+   */
+  public final StringParameter getStartElement() {
+    return startElementId;
+  }
+
+  /**
+   * Sets the identifier of the start element for level selection
+   * @param elementId the start element
+   * @deprecated please use {@link #setStartLevel(int)}
+   */
+  public final void setStartElement(String elementId) {
+    this.startElementId.setValue(elementId);
+  }
+
+  /**
+   * Sets the identifier of the start element for level selection,
+   * i.e. the parameter value should contain the id of the start element. 
+   * @param element the new <code>StringParameter</code> to use as start
+   * element for the level selection 
+   * @deprecated please use {@link #setStartLevel(IntegerParameter)}
+   */
+  public final void setStartElement(StringParameter element) {
+    this.startElementId = element;
+    this.startElementId.bind(subset);
+  }
+
+  /**
+   * Returns the identifier of the specified end element for level selection
+   * @return end element id
+   * @deprecated please use {@link #getEndLevel()}
+   */
+  public final StringParameter getEndElement() {
+    return endElementId;
+  }
+
+  /**
+   * Sets the identifier of the end element for level selection
+   * @param elementId the end element
+   * @deprecated please use {@link #setEndLevel(int)}
+   */
+  public final void setEndElement(String elementId) {
+    this.endElementId.setValue(elementId);
+  }
+
+  /**
+   * Sets the identifier of the end element for level selection,
+   * i.e. the parameter value should contain the id of the end element. 
+   * @param element the new <code>StringParameter</code> to use as end
+   * element for the level selection 
+   * @deprecated please use {@link #setEndLevel(IntegerParameter)}
+   */
+  public final void setEndElement(StringParameter element) {
+    this.endElementId = element;
+    this.endElementId.bind(subset);
+  }
+
+  /**
+   * Returns the identifier of the specified revolve element for revolve 
+   * selection
+   * @return revolve element id
+   */
+  public final StringParameter getRevolveElement() {
+    return revolveElementId;
+  }
+
+  /**
+   * Sets the identifier of the revolve element for revolve selection
+   * @param elementId the revolve element
+   */
+  public final void setRevolveElement(String elementId) {
+    this.revolveElementId.setValue(elementId);
+  }
+
+  /**
+   * Sets the identifier of the revolve element for revolve selection,
+   * i.e. the parameter value should contain the id of the revolve element. 
+   * @param element the new <code>StringParameter</code> to use as revolve
+   * element for revolve selection 
+   */
+  public final void setRevolveElement(StringParameter elementId) {
+    this.revolveElementId = elementId;
+    this.revolveElementId.bind(subset);
+  }
+
+  /**
+   * Returns the number of elements to take for revolve selection  
+   * @return revolve count
+   */
+  public final IntegerParameter getRevolveCount() {
+    return revolveElementsCount;
+  }
+
+  /**
+   * Specifies the number of elements to take for revolve selection
+   * @param revolveElementsCount the new revolve count
+   */
+  public final void setRevolveCount(int revolveElementsCount) {
+    this.revolveElementsCount.setValue(revolveElementsCount);
+  }
+
+  /**
+   * Sets the revolve count, i.e. the parameter value should contain the 
+   * number of elements to take for revolve selection
+   * @param revolveElementsCount the new <code>IntegerParameter</code> to use 
+   * as revolve count
+   */
+  public final void setRevolveCount(IntegerParameter revolveElementsCount) {
+    this.revolveElementsCount = revolveElementsCount;
+    this.revolveElementsCount.bind(subset);
+  }
+
+  /**
+   * Returns the revolve mode, i.e. one of the predefined revolve mode
+   * constants
+   * @return the revolve mode
+   */
+  public final IntegerParameter getRevolveMode() {
+    return revolveMode;
+  }
+
+  /**
+   * Sets the revolve mode. One of the predefined revolve mode constants 
+   * should be used
+   * @param revolveMode the new revolve mode
+   */
+  public final void setRevolveMode(int revolveMode) {
+    this.revolveMode.setValue(revolveMode);
+  }
+
+  /**
+   * Sets the revolve mode, i.e. the parameter value should be one of the 
+   * predefined revolve mode constants 
+   * @param revolveMode the new <code>IntegerParameter</code> to use for  
+   * revolve mode
+   */
+  public final void setRevolveMode(IntegerParameter revolveMode) {
+    this.revolveMode = revolveMode;
+    this.revolveMode.bind(subset);
+  }
+
+  public final void bind(Subset2 subset) {
+    super.bind(subset);
+    //bind internal:
+    refElementId.bind(subset);
+    exclusive.bind(subset);
+    above.bind(subset);
+    hideMode.bind(subset);
+    startElementId.bind(subset);
+    endElementId.bind(subset);
+    startLevel.bind(subset);
+    endLevel.bind(subset);
+    revolveElementId.bind(subset);
+    revolveElementsCount.bind(subset);
+    revolveMode.bind(subset);
+  }
+
+  public final void unbind() {
+    super.unbind();
+    //unbind internal:
+    refElementId.unbind();
+    exclusive.unbind();
+    above.unbind();
+    hideMode.unbind();
+    startElementId.unbind();
+    endElementId.unbind();
+    revolveElementId.unbind();
+    revolveElementsCount.unbind();
+    revolveMode.unbind();
+  }
+
+  public final void adapt(FilterSetting from) {
+    if (!(from instanceof HierarchicalFilterSetting))
+      return;
+
+    HierarchicalFilterSetting setting = (HierarchicalFilterSetting) from;
+    reset();
+    setRefElement(setting.getRefElement().getValue());
+    setExclusive(setting.getExclusive().getValue());
+    setAbove(setting.getAbove().getValue());
+
+    setHideMode(setting.getHideMode().getValue());
+
+    setStartElement(setting.getStartElement().getValue());
+    setEndElement(setting.getEndElement().getValue());
+    setEndLevel(setting.getEndLevel().getValue());
+    setStartLevel(setting.getStartLevel().getValue());
+
+    setRevolveElement(setting.getRevolveElement().getValue());
+    setRevolveCount(setting.getRevolveCount().getValue());
+    setRevolveMode(setting.getRevolveMode().getValue());
+  }
+}

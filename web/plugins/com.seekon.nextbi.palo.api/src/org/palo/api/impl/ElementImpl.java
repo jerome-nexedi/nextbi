@@ -1,601 +1,588 @@
-/*     */package org.palo.api.impl;
-
-/*     */
-/*     */import com.tensegrity.palojava.DbConnection; /*     */
-import com.tensegrity.palojava.ElementInfo; /*     */
-import com.tensegrity.palojava.PropertyInfo; /*     */
-import com.tensegrity.palojava.loader.ElementLoader; /*     */
-import com.tensegrity.palojava.loader.PropertyLoader; /*     */
-import java.util.ArrayList; /*     */
-import java.util.Arrays; /*     */
-import java.util.HashMap; /*     */
-import java.util.Iterator; /*     */
-import java.util.LinkedHashSet; /*     */
-import java.util.Map; /*     */
-import java.util.Set; /*     */
-import org.palo.api.Attribute; /*     */
-import org.palo.api.ConnectionEvent; /*     */
-import org.palo.api.Consolidation; /*     */
-import org.palo.api.Database; /*     */
-import org.palo.api.Dimension; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.Hierarchy; /*     */
-import org.palo.api.Property2;
-
-/*     */
-/*     */class ElementImpl
-/*     */implements Element
-/*     */{
-  /*     */private final Dimension dimension;
-
-  /*     */private final Hierarchy hierarchy;
-
-  /*     */private final ConnectionImpl connection;
-
-  /*     */private final DbConnection dbConnection;
-
-  /*     */private final ElementInfo elInfo;
-
-  /*     */private final CompoundKey key;
-
-  /*     */private final PropertyLoader propertyLoader;
-
-  /*     */private final Map<String, Property2Impl> loadedProperties;
-
-  /*     */
-  /*     */static final ElementImpl create(ConnectionImpl connection,
-    Dimension dimension, ElementInfo elInfo)
-  /*     */{
-    /* 75 */return new ElementImpl(connection, dimension, elInfo, null);
-    /*     */}
-
-  /*     */
-  /*     */static final ElementImpl create(ConnectionImpl connection,
-    Dimension dimension, ElementInfo elInfo, Hierarchy hier)
-  /*     */{
-    /* 80 */return new ElementImpl(connection, dimension, elInfo, hier);
-    /*     */}
-
-  /*     */
-  /*     */private ElementImpl(ConnectionImpl connection, Dimension dimension,
-    ElementInfo elInfo, Hierarchy hier)
-  /*     */{
-    /* 96 */this.elInfo = elInfo;
-    /* 97 */this.dimension = dimension;
-    /* 98 */this.connection = connection;
-    /* 99 */this.dbConnection = connection.getConnectionInternal();
-    /* 100 */this.key =
-    /* 102 */new CompoundKey(new Object[] { ElementImpl.class,
-    /* 101 */connection, dimension.getDatabase().getId(), dimension.getId(),
-    /* 102 */elInfo.getId() });
-    /* 103 */this.loadedProperties = new HashMap();
-    /* 104 */this.propertyLoader = this.dbConnection.getTypedPropertyLoader(elInfo);
-    /* 105 */if (hier == null)
-      /* 106 */this.hierarchy = dimension.getDefaultHierarchy();
-    /*     */else
-      /* 108 */this.hierarchy = hier;
-    /*     */}
-
-  /*     */
-  /*     */public final Object getAttributeValue(Attribute attribute)
-  /*     */{
-    /* 114 */if (attribute == null)
-      /* 115 */return null;
-    /* 116 */return attribute.getValue(this);
-    /*     */}
-
-  /*     */
-  /*     */public final Object[] getAttributeValues() {
-    /* 120 */Attribute[] attributes = getHierarchy().getAttributes();
-    /* 121 */Object[] values = new Object[attributes.length];
-    /* 122 */for (int i = 0; i < values.length; ++i)
-      /* 123 */values[i] = attributes[i].getValue(this);
-    /* 124 */return values;
-    /*     */}
-
-  /*     */
-  /*     */public final int getChildCount() {
-    /* 128 */return this.elInfo.getChildrenCount();
-    /*     */}
-
-  /*     */
-  /*     */public final Element[] getChildren() {
-    /* 132 */ElementLoader loader = ((HierarchyImpl) this.hierarchy)
-      .getElementLoader();
-    /* 133 */ElementInfo[] children = loader.getChildren(this.elInfo);
-    /*     */
-    /* 142 */ArrayList _children = new ArrayList();
-    /* 143 */for (int i = 0; i < children.length; ++i) {
-      /* 144 */Element child = this.hierarchy.getElementById(children[i].getId());
-      /* 145 */if (!child.equals(this)) {
-        /* 146 */_children.add(child);
-        /*     */}
-      /*     */}
-    /* 149 */return (Element[]) _children.toArray(new Element[0]);
-    /*     */}
-
-  /*     */
-  /*     */public final Consolidation getConsolidationAt(int index)
-  /*     */{
-    /* 154 */if (getChildCount() == 0)
-      /* 155 */return null;
-    /* 156 */String childId = this.elInfo.getChildren()[index];
-    /* 157 */double weight = this.elInfo.getWeights()[index];
-    /* 158 */return ConsolidationImpl.create(this.connection, this,
-    /* 159 */this.hierarchy.getElementById(childId), weight);
-    /*     */}
-
-  /*     */
-  /*     */public final int getConsolidationCount() {
-    /* 163 */return getChildCount();
-    /*     */}
-
-  /*     */
-  /*     */public final Consolidation[] getConsolidations() {
-    /* 167 */String[] childrenIds = this.elInfo.getChildren();
-    /* 168 */double[] weights = this.elInfo.getWeights();
-    /* 169 */Consolidation[] consolidations = new Consolidation[childrenIds.length];
-    /* 170 */for (int i = 0; i < childrenIds.length; ++i) {
-      /* 171 */consolidations[i] =
-      /* 172 */ConsolidationImpl.create(this.connection, this, this.hierarchy
-        .getElementById(childrenIds[i]), weights[i]);
-      /*     */}
-    /* 174 */return consolidations;
-    /*     */}
-
-  /*     */
-  /*     */public final int getDepth() {
-    /* 178 */return this.elInfo.getDepth();
-    /*     */}
-
-  /*     */
-  /*     */public final int getLevel() {
-    /* 182 */return this.elInfo.getLevel();
-    /*     */}
-
-  /*     */
-  /*     */public final int getIndent() {
-    /* 186 */return this.elInfo.getIndent();
-    /*     */}
-
-  /*     */
-  /*     */public final Dimension getDimension() {
-    /* 190 */return this.dimension;
-    /*     */}
-
-  /*     */
-  /*     */public final Hierarchy getHierarchy() {
-    /* 194 */return this.hierarchy;
-    /*     */}
-
-  /*     */
-  /*     */public final String getName() {
-    /* 198 */return this.elInfo.getName();
-    /*     */}
-
-  /*     */
-  /*     */public final int getParentCount() {
-    /* 202 */return this.elInfo.getParentCount();
-    /*     */}
-
-  /*     */
-  /*     */public final Element[] getParents() {
-    /* 206 */String[] parentIds = this.elInfo.getParents();
-    /* 207 */Element[] parents = new Element[parentIds.length];
-    /* 208 */for (int i = 0; i < parents.length; ++i) {
-      /* 209 */parents[i] = this.hierarchy.getElementById(parentIds[i]);
-      /*     */}
-    /* 211 */return parents;
-    /*     */}
-
-  /*     */
-  /*     */public final int getType()
-  /*     */{
-    /* 216 */if (this.connection.isLegacy()) {
-      /* 217 */return this.elInfo.getType();
-      /*     */}
-    /* 219 */return infoType2elType(this.elInfo.getType());
-    /*     */}
-
-  /*     */
-  /*     */public final String getTypeAsString() {
-    /* 223 */switch (getType()) {
-    /*     */case 0:
-      /*     */
-    default:
-      /* 226 */
-      return "Numeric";
-      /*     */case 1:
-      /* 228 */
-      return "String";
-      /*     */case 2:
-      /* 230 */
-      return "Consolidated";
-      /*     */case 3:
-      /* 232 */
-    }
-    return "Rule";
-    /*     */}
-
-  /*     */
-  /*     */public final void rename(String name)
-  /*     */{
-    /* 237 */renameInternal(name, true);
-    /*     */}
-
-  /*     */
-  /*     */public final void setAttributeValue(Attribute attribute, Object value) {
-    /* 241 */attribute.setValue(this, value);
-    /*     */}
-
-  /*     */
-  /*     */public final void setAttributeValues(Attribute[] attributes,
-    Object[] values) {
-    /* 245 */for (int i = 0; i < attributes.length; ++i)
-      /* 246 */attributes[i].setValue(this, values[i]);
-    /*     */}
-
-  /*     */
-  /*     */public final void setType(int type) {
-    /* 250 */setTypeInternal(type);
-    /*     */}
-
-  /*     */
-  /*     */public final void updateConsolidations(Consolidation[] consolidations) {
-    /* 254 */updateConsolidationsInternal(consolidations, true);
-    /*     */}
-
-  /*     */
-  /*     */public final String getId() {
-    /* 258 */return this.elInfo.getId();
-    /*     */}
-
-  /*     */
-  /*     */public final int getPosition() {
-    /* 262 */return this.elInfo.getPosition();
-    /*     */}
-
-  /*     */
-  /*     */public final void move(int newPosition) {
-    /* 266 */this.dbConnection.move(this.elInfo, newPosition);
-    /* 267 */((HierarchyImpl) this.hierarchy).resetElementsCache();
-    /*     */}
-
-  /*     */
-  /*     */public final boolean equals(Object other) {
-    /* 271 */if (other instanceof ElementImpl) {
-      /* 272 */return this.key.equals(((ElementImpl) other).key);
-      /*     */}
-    /* 274 */return false;
-    /*     */}
-
-  /*     */
-  /*     */public final int hashCode() {
-    /* 278 */return this.key.hashCode();
-    /*     */}
-
-  /*     */
-  /*     */public final String toString() {
-    /* 282 */StringBuffer str = new StringBuffer();
-    /* 283 */str.append("Element(\"");
-    /* 284 */str.append(getName());
-    /* 285 */str.append("\")[");
-    /* 286 */str.append(getId());
-    /* 287 */str.append("]");
-    /* 288 */return str.toString();
-    /*     */}
-
-  /*     */
-  /*     */public final ElementInfo getInfo() {
-    /* 292 */return this.elInfo;
-    /*     */}
-
-  /*     */
-  /*     */final void renameInternal(String name, boolean doEvents)
-  /*     */{
-    /* 305 */String oldName = getName();
-    /* 306 */if (name.equals(oldName))
-      /* 307 */return;
-    /* 308 */this.dbConnection.rename(this.elInfo, name);
-    /*     */
-    /* 311 */((DimensionImpl) getDimension()).reloadRules();
-    /*     */
-    /* 314 */if (doEvents)
-      /* 315 */fireElementsRenamed(new Element[] { this }, oldName);
-    /*     */}
-
-  /*     */
-  /*     */final void reload(boolean doEvents)
-  /*     */{
-    /* 321 */String oldName = getName();
-    /* 322 */int oldType = getType();
-    /* 323 */Consolidation[] oldConsolidations = getConsolidations();
-    /*     */
-    /* 326 */this.dbConnection.reload(this.elInfo);
-    /*     */
-    /* 328 */if (doEvents) {
-      /* 329 */Element[] affetecedElements = { this };
-      /*     */
-      /* 331 */if (!getName().equals(oldName))
-        /* 332 */fireElementsRenamed(affetecedElements, oldName);
-      /* 333 */if (getType() != oldType) {
-        /* 334 */fireElementsTypeChanged(affetecedElements, oldType);
-        /*     */}
-      /* 336 */compareConsolidations(oldConsolidations, getConsolidations(),
-        doEvents);
-      /*     */}
-    /*     */}
-
-  /*     */
-  /*     */final void clearCache() {
-    /* 341 */for (Property2Impl property : this.loadedProperties.values()) {
-      /* 342 */property.clearCache();
-      /*     */}
-    /* 344 */this.loadedProperties.clear();
-    /* 345 */this.propertyLoader.reset();
-    /*     */}
-
-  /*     */
-  /*     */private final void updateConsolidationsInternal(
-    Consolidation[] newConsolidations, boolean doEvents)
-  /*     */{
-    /* 353 */Consolidation[] oldConsolidations = getConsolidations();
-    /*     */
-    /* 355 */String[] children = new String[newConsolidations.length];
-    /* 356 */double[] weights = new double[newConsolidations.length];
-    /* 357 */for (int i = 0; i < newConsolidations.length; ++i) {
-      /* 358 */ElementImpl child = (ElementImpl) newConsolidations[i].getChild();
-      /* 359 */weights[i] = newConsolidations[i].getWeight();
-      /* 360 */children[i] = child.getId();
-      /*     */}
-    /*     */
-    /* 363 */int elType = 2;
-    /* 364 */if (!this.connection.isLegacy())
-      /* 365 */elType = elType2infoType(elType);
-    /* 366 */this.dbConnection.update(this.elInfo, elType, children, weights,
-      this.dbConnection.getServerInfo());
-    /*     */
-    /* 373 */compareConsolidations(oldConsolidations, newConsolidations, doEvents);
-    /*     */}
-
-  /*     */
-  /*     */private final void setTypeInternal(int type) {
-    /* 377 */int oldType = getType();
-    /* 378 */if (oldType == type) {
-      /* 379 */return;
-      /*     */}
-    /* 381 */boolean typeOk = false;
-    /* 382 */switch (type)
-    /*     */{
-    /*     */case 0:
-      /* 384 */
-      typeOk = true;
-      /* 385 */break;
-    /*     */case 1:
-      /* 387 */
-      typeOk = true;
-      /* 388 */break;
-    /*     */case 2:
-      /* 390 */
-      typeOk = true;
-      /* 391 */break;
-    /*     */case 3:
-      /* 393 */
-      typeOk = true;
-      /* 394 */break;
-    /*     */default:
-      /* 396 */
-      typeOk = false;
-      /*     */
-    }
-    /* 398 */if (!typeOk) {
-      /* 399 */return;
-      /*     */}
-    /*     */
-    /* 402 */if (!this.connection.isLegacy()) {
-      /* 403 */type = elType2infoType(type);
-      /*     */}
-    /* 405 */this.dbConnection.update(
-    /* 406 */this.elInfo, type, this.elInfo.getChildren(),
-      this.elInfo.getWeights(), this.dbConnection.getServerInfo());
-    /*     */
-    /* 408 */fireElementsTypeChanged(new Element[] { this }, oldType);
-    /*     */}
-
-  /*     */
-  /*     */private final void compareConsolidations(
-    Consolidation[] oldConsolidations, Consolidation[] newConsolidations,
-    boolean doEvents)
-  /*     */{
-    /* 413 */Set oldCons = new LinkedHashSet(Arrays.asList(oldConsolidations));
-    /* 414 */Set newCons = new LinkedHashSet(Arrays.asList(newConsolidations));
-    /* 415 */Set removed = new LinkedHashSet(oldCons);
-    /* 416 */Set added = new LinkedHashSet(newCons);
-    /*     */
-    /* 418 */removed.removeAll(newCons);
-    /* 419 */added.removeAll(oldCons);
-    /*     */
-    /* 421 */if (!removed.isEmpty()) {
-      /* 422 */for (Iterator it = removed.iterator(); it.hasNext();) {
-        /* 423 */Consolidation consolidation = (Consolidation) it.next();
-        /* 424 */Element child = consolidation.getChild();
-        /* 425 */if (child != null)
-          /* 426 */((ElementImpl) child).reload(false);
-        /*     */}
-      /* 428 */if (doEvents) {
-        /* 429 */fireConsolidationsRemoved(removed.toArray());
-        /*     */}
-      /*     */}
-    /* 432 */if (!added.isEmpty()) {
-      /* 433 */for (Iterator it = added.iterator(); it.hasNext();) {
-        /* 434 */Consolidation consolidation = (Consolidation) it.next();
-        /* 435 */Element child = consolidation.getChild();
-        /* 436 */if (child != null) {
-          /* 437 */((ElementImpl) child).reload(false);
-          /*     */}
-        /*     */}
-      /* 440 */if (doEvents)
-        /* 441 */fireConsolidationsAdded(added.toArray());
-      /*     */}
-    /*     */}
-
-  /*     */
-  /*     */private final void fireElementsRenamed(Object[] elements, String oldName)
-  /*     */{
-    /* 447 */ConnectionEvent ev = new ConnectionEvent(this.connection,
-    /* 448 */getDimension(),
-    /* 449 */7,
-    /* 450 */elements);
-    /* 451 */ev.oldValue = oldName;
-    /* 452 */this.connection.fireEvent(ev);
-    /*     */}
-
-  /*     */
-  /*     */private final void fireElementsTypeChanged(Object[] elements, int oldType) {
-    /* 456 */ConnectionEvent ev = new ConnectionEvent(
-    /* 457 */this.connection,
-    /* 458 */getDimension(),
-    /* 459 */8,
-    /* 460 */elements);
-    /* 461 */ev.oldValue = new Integer(oldType);
-    /* 462 */this.connection.fireEvent(ev);
-    /*     */}
-
-  /*     */
-  /*     */private final void fireConsolidationsAdded(Object[] consolidations) {
-    /* 466 */this.connection.fireEvent(
-    /* 468 */new ConnectionEvent(this.connection, this,
-    /* 467 */11,
-    /* 468 */consolidations));
-    /*     */}
-
-  /*     */
-  /*     */private final void fireConsolidationsRemoved(Object[] consolidations) {
-    /* 472 */this.connection.fireEvent(
-    /* 474 */new ConnectionEvent(this.connection, this,
-    /* 473 */12,
-    /* 474 */consolidations));
-    /*     */}
-
-  /*     */
-  /*     */private final int infoType2elType(int type)
-  /*     */{
-    /* 479 */switch (type)
-    /*     */{
-    /*     */case 1:
-      /* 480 */
-      return 0;
-      /*     */case 2:
-      /* 481 */
-      return 1;
-      /*     */case 4:
-      /* 482 */
-      return 2;
-      /*     */case 3:
-      /* 483 */
-      return 3;
-      /*     */
-    }
-    /* 485 */return -1;
-    /*     */}
-
-  /*     */
-  /*     */public static final int elType2infoType(int type) {
-    /* 489 */switch (type)
-    /*     */{
-    /*     */case 0:
-      /* 490 */
-      return 1;
-      /*     */case 1:
-      /* 491 */
-      return 2;
-      /*     */case 2:
-      /* 492 */
-      return 4;
-      /*     */case 3:
-      /* 493 */
-      return 3;
-      /*     */
-    }
-    /* 495 */return -1;
-    /*     */}
-
-  /*     */
-  /*     */public String[] getAllPropertyIds() {
-    /* 499 */return this.propertyLoader.getAllPropertyIds();
-    /*     */}
-
-  /*     */
-  /*     */public Property2 getProperty(String id) {
-    /* 503 */PropertyInfo propInfo = this.propertyLoader.load(id);
-    /* 504 */if (propInfo == null) {
-      /* 505 */return null;
-      /*     */}
-    /* 507 */Property2 property = (Property2) this.loadedProperties.get(propInfo
-      .getId());
-    /* 508 */if (property == null) {
-      /* 509 */property = createProperty(propInfo);
-      /*     */}
-    /*     */
-    /* 512 */return property;
-    /*     */}
-
-  /*     */
-  /*     */public void addProperty(Property2 property) {
-    /* 516 */if (property == null) {
-      /* 517 */return;
-      /*     */}
-    /* 519 */Property2Impl _property = (Property2Impl) property;
-    /* 520 */this.propertyLoader.loaded(_property.getPropInfo());
-    /* 521 */this.loadedProperties.put(_property.getId(), _property);
-    /*     */}
-
-  /*     */
-  /*     */public void removeProperty(String id) {
-    /* 525 */Property2 property = getProperty(id);
-    /* 526 */if (property == null) {
-      /* 527 */return;
-      /*     */}
-    /* 529 */if (property.isReadOnly()) {
-      /* 530 */return;
-      /*     */}
-    /* 532 */this.loadedProperties.remove(property);
-    /*     */}
-
-  /*     */
-  /*     */private void createProperty(Property2 parent, PropertyInfo kid) {
-    /* 536 */Property2 p2Kid = Property2Impl.create(parent, kid);
-    /* 537 */parent.addChild(p2Kid);
-    /* 538 */for (PropertyInfo kidd : kid.getChildren())
-      /* 539 */createProperty(p2Kid, kidd);
-    /*     */}
-
-  /*     */
-  /*     */private Property2 createProperty(PropertyInfo propInfo)
-  /*     */{
-    /* 544 */Property2 prop = Property2Impl.create(null, propInfo);
-    /* 545 */for (PropertyInfo kid : propInfo.getChildren()) {
-      /* 546 */createProperty(prop, kid);
-      /*     */}
-    /* 548 */return prop;
-    /*     */}
-
-  /*     */
-  /*     */public boolean canBeModified()
-  /*     */{
-    /* 553 */return this.elInfo.canBeModified();
-    /*     */}
-
-  /*     */
-  /*     */public boolean canCreateChildren()
-  /*     */{
-    /* 558 */return this.elInfo.canCreateChildren();
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file ElementImpl.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Arnd Houben
+*
+* @version $Id: ElementImpl.java,v 1.65 2009/10/27 08:33:18 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.impl.ElementImpl JD-Core Version: 0.5.4
+ * (c) Tensegrity Software 2007
+ * All rights reserved
  */
+package org.palo.api.impl;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.palo.api.Attribute;
+import org.palo.api.ConnectionEvent;
+import org.palo.api.Consolidation;
+import org.palo.api.Dimension;
+import org.palo.api.Element;
+import org.palo.api.Hierarchy;
+import org.palo.api.Property2;
+
+import com.tensegrity.palojava.DbConnection;
+import com.tensegrity.palojava.ElementInfo;
+import com.tensegrity.palojava.PropertyInfo;
+import com.tensegrity.palojava.loader.ElementLoader;
+import com.tensegrity.palojava.loader.PropertyLoader;
+
+/**
+ * <code></code>
+ * TODO DOCUMENT ME
+ * 
+ * @author Arnd Houben
+ * @author Stepan Rutz
+ * @version $Id: ElementImpl.java,v 1.65 2009/10/27 08:33:18 PhilippBouillon Exp $
+ */
+class ElementImpl implements Element {
+
+  //--------------------------------------------------------------------------
+  // FACTORY
+  //
+  final static ElementImpl create(ConnectionImpl connection, Dimension dimension,
+    ElementInfo elInfo) {
+    return new ElementImpl(connection, dimension, elInfo, null);
+  }
+
+  final static ElementImpl create(ConnectionImpl connection, Dimension dimension,
+    ElementInfo elInfo, Hierarchy hier) {
+    return new ElementImpl(connection, dimension, elInfo, hier);
+  }
+
+  // -------------------------------------------------------------------------
+  // INSTANCE
+  private final Dimension dimension;
+
+  private final Hierarchy hierarchy;
+
+  private final ConnectionImpl connection;
+
+  private final DbConnection dbConnection;
+
+  private final ElementInfo elInfo;
+
+  private final CompoundKey key;
+
+  private final PropertyLoader propertyLoader;
+
+  private final Map<String, Property2Impl> loadedProperties;
+
+  private ElementImpl(ConnectionImpl connection, Dimension dimension,
+    ElementInfo elInfo, Hierarchy hier) {
+    this.elInfo = elInfo;
+    this.dimension = dimension;
+    this.connection = connection;
+    this.dbConnection = connection.getConnectionInternal();
+    this.key = new CompoundKey(new Object[] { ElementImpl.class, connection,
+      dimension.getDatabase().getId(), dimension.getId(), elInfo.getId() });
+    this.loadedProperties = new HashMap<String, Property2Impl>();
+    this.propertyLoader = dbConnection.getTypedPropertyLoader(elInfo);
+    if (hier == null) {
+      hierarchy = dimension.getDefaultHierarchy();
+    } else {
+      hierarchy = hier;
+    }
+  }
+
+  public final Object getAttributeValue(Attribute attribute) {
+    if (attribute == null)
+      return null;
+    return attribute.getValue(this);
+  }
+
+  public final Object[] getAttributeValues() {
+    Attribute[] attributes = getHierarchy().getAttributes();
+    Object[] values = new Object[attributes.length];
+    for (int i = 0; i < values.length; ++i)
+      values[i] = attributes[i].getValue(this);
+    return values;
+  }
+
+  public final int getChildCount() {
+    return elInfo.getChildrenCount();
+  }
+
+  public final Element[] getChildren() {
+    ElementLoader loader = ((HierarchyImpl) hierarchy).getElementLoader();
+    ElementInfo[] children = loader.getChildren(elInfo);
+    //		String[] children = elInfo.getChildren();
+    //		Element[] _children = new Element[children.length];
+    //		for(int i=1;i<children.length;++i) {
+    //			_children[i] = dimension.getElementById(children[i].getId());
+    //			if(_children[i] == this) {
+    //				return new Element[0];
+    //			}
+    //		}
+    ArrayList<Element> _children = new ArrayList<Element>();
+    for (int i = 0; i < children.length; ++i) {
+      Element child = hierarchy.getElementById(children[i].getId());
+      if (!child.equals(this)) {
+        _children.add(child);
+      }
+    }
+    return _children.toArray(new Element[0]);
+  }
+
+  public final Consolidation getConsolidationAt(int index) {
+    if (getChildCount() == 0)
+      return null;
+    String childId = elInfo.getChildren()[index];
+    double weight = elInfo.getWeights()[index];
+    return ConsolidationImpl.create(connection, this, hierarchy
+      .getElementById(childId), weight);
+  }
+
+  public final int getConsolidationCount() {
+    return getChildCount();
+  }
+
+  public final Consolidation[] getConsolidations() {
+    String[] childrenIds = elInfo.getChildren();
+    double[] weights = elInfo.getWeights();
+    Consolidation[] consolidations = new Consolidation[childrenIds.length];
+    for (int i = 0; i < childrenIds.length; ++i) {
+      consolidations[i] = ConsolidationImpl.create(connection, this, hierarchy
+        .getElementById(childrenIds[i]), weights[i]);
+    }
+    return consolidations;
+  }
+
+  public final int getDepth() {
+    return elInfo.getDepth();
+  }
+
+  public final int getLevel() {
+    return elInfo.getLevel();
+  }
+
+  public final int getIndent() {
+    return elInfo.getIndent();
+  }
+
+  public final Dimension getDimension() {
+    return dimension;
+  }
+
+  public final Hierarchy getHierarchy() {
+    return hierarchy;
+  }
+
+  public final String getName() {
+    return elInfo.getName();
+  }
+
+  public final int getParentCount() {
+    return elInfo.getParentCount();
+  }
+
+  public final Element[] getParents() {
+    String[] parentIds = elInfo.getParents();
+    Element[] parents = new Element[parentIds.length];
+    for (int i = 0; i < parents.length; ++i)
+      parents[i] = hierarchy.getElementById(parentIds[i]);
+    //		return (Element[]) parents.toArray(new Element[parents.size()]);
+    return parents;
+  }
+
+  public final int getType() {
+    //	  THIS IS NEEDED AS A WORKAROUND FOR A BUG IN WEB PALO!!!!		
+    if (connection.isLegacy())
+      return elInfo.getType();
+    else
+      return infoType2elType(elInfo.getType());
+  }
+
+  public final String getTypeAsString() {
+    switch (getType()) {
+    default:
+    case Element.ELEMENTTYPE_NUMERIC:
+      return Element.ELEMENTTYPE_NUMERIC_STRING;
+    case Element.ELEMENTTYPE_STRING:
+      return Element.ELEMENTTYPE_STRING_STRING;
+    case Element.ELEMENTTYPE_CONSOLIDATED:
+      return Element.ELEMENTTYPE_CONSOLIDATED_STRING;
+    case Element.ELEMENTTYPE_RULE:
+      return Element.ELEMENTTYPE_RULE_STRING;
+    }
+  }
+
+  public final void rename(String name) {
+    renameInternal(name, true);
+  }
+
+  public final void setAttributeValue(Attribute attribute, Object value) {
+    attribute.setValue(this, value);
+  }
+
+  public final void setAttributeValues(Attribute[] attributes, Object[] values) {
+    for (int i = 0; i < attributes.length; ++i)
+      attributes[i].setValue(this, values[i]);
+  }
+
+  public final void setType(int type) {
+    setTypeInternal(type);
+  }
+
+  public final void updateConsolidations(Consolidation[] consolidations) {
+    updateConsolidationsInternal(consolidations, true);
+  }
+
+  public final String getId() {
+    return elInfo.getId();
+  }
+
+  public final int getPosition() {
+    return elInfo.getPosition();
+  }
+
+  public final void move(int newPosition) {
+    dbConnection.move(elInfo, newPosition);
+    ((HierarchyImpl) hierarchy).resetElementsCache();
+  }
+
+  public final boolean equals(Object other) {
+    if (other instanceof ElementImpl) {
+      return key.equals(((ElementImpl) other).key);
+    }
+    return false;
+  }
+
+  public final int hashCode() {
+    return key.hashCode();
+  }
+
+  public final String toString() {
+    StringBuffer str = new StringBuffer();
+    str.append("Element(\"");
+    str.append(getName());
+    str.append("\")[");
+    str.append(getId());
+    str.append("]");
+    return str.toString();
+  }
+
+  public final ElementInfo getInfo() {
+    return elInfo;
+  }
+
+  // --------------------------------------------------------------------------
+  // PACKAGE INTERNAL
+  //	
+  /**
+   * 
+   * @param name
+   * @param doEvents
+   * @param commit to database, i.e. propagate rename to palo server
+   */
+  final void renameInternal(String name, boolean doEvents) {
+    String oldName = getName();
+    if (name.equals(oldName))
+      return;
+    dbConnection.rename(elInfo, name);
+
+    //get dimension and reload rules:
+    ((DimensionImpl) getDimension()).reloadRules();
+
+    // create and fire connection event:
+    if (doEvents) {
+      fireElementsRenamed(new Element[] { this }, oldName);
+    }
+  }
+
+  final void reload(boolean doEvents) {
+    //preserve all states:
+    String oldName = getName();
+    int oldType = getType();
+    Consolidation[] oldConsolidations = getConsolidations();
+
+    //reload from server:
+    dbConnection.reload(elInfo);
+
+    if (doEvents) {
+      Element[] affetecedElements = new Element[] { this };
+      //compare and raise events...
+      if (!getName().equals(oldName))
+        fireElementsRenamed(affetecedElements, oldName);
+      if (getType() != oldType)
+        fireElementsTypeChanged(affetecedElements, oldType);
+      //consolidations:
+      compareConsolidations(oldConsolidations, getConsolidations(), doEvents);
+    }
+  }
+
+  final void clearCache() {
+    for (Property2Impl property : loadedProperties.values())
+      property.clearCache();
+
+    loadedProperties.clear();
+    propertyLoader.reset();
+  }
+
+  //--------------------------------------------------------------------------
+  // PRIVATE METHODS
+  //
+  private final void updateConsolidationsInternal(Consolidation[] newConsolidations,
+    boolean doEvents) {
+    Consolidation[] oldConsolidations = getConsolidations();
+
+    String[] children = new String[newConsolidations.length];
+    double[] weights = new double[newConsolidations.length];
+    for (int i = 0; i < newConsolidations.length; ++i) {
+      ElementImpl child = (ElementImpl) newConsolidations[i].getChild();
+      weights[i] = newConsolidations[i].getWeight();
+      children[i] = child.getId();
+    }
+    // WORKAROUND FOR BUG IN WEB PALO:
+    int elType = ELEMENTTYPE_CONSOLIDATED;
+    if (!connection.isLegacy())
+      elType = elType2infoType(elType);
+    dbConnection.update(elInfo, elType, children, weights, dbConnection
+      .getServerInfo());
+    //TEMP. REMOVED FOR JEDOX 
+    // HAVE TO UPDATE DIMENSION TO, SINCE IT IS A STRUCTURAL CHANGE AND
+    // CAN HAVE INFLUENCE ON (E.G.) MAXDEPTH...
+    //		DimensionImpl dimImpl = (DimensionImpl)getDimension();
+    //		dimImpl.reloadAll();
+    // END JEDOX		
+    compareConsolidations(oldConsolidations, newConsolidations, doEvents);
+  }
+
+  private final void setTypeInternal(int type) {
+    int oldType = getType();
+    if (oldType == type)
+      return;
+    //check type:
+    boolean typeOk = false;
+    switch (type) {
+    case Element.ELEMENTTYPE_NUMERIC:
+      typeOk = true;
+      break;
+    case Element.ELEMENTTYPE_STRING:
+      typeOk = true;
+      break;
+    case Element.ELEMENTTYPE_CONSOLIDATED:
+      typeOk = true;
+      break;
+    case Element.ELEMENTTYPE_RULE:
+      typeOk = true;
+      break;
+    default:
+      typeOk = false;
+    }
+    if (!typeOk)
+      return;
+
+    //      THIS IS NEEDED AS A WORKAROUND FOR A BUG IN WEB PALO!!!!            
+    if (!connection.isLegacy())
+      type = elType2infoType(type);
+
+    dbConnection.update(elInfo, type, elInfo.getChildren(), elInfo.getWeights(),
+      dbConnection.getServerInfo());
+    // create and fire connection event:
+    fireElementsTypeChanged(new Element[] { this }, oldType);
+  }
+
+  private final void compareConsolidations(Consolidation[] oldConsolidations,
+    Consolidation[] newConsolidations, boolean doEvents) {
+    Set oldCons = new LinkedHashSet(Arrays.asList(oldConsolidations));
+    Set newCons = new LinkedHashSet(Arrays.asList(newConsolidations));
+    Set removed = new LinkedHashSet(oldCons);
+    Set added = new LinkedHashSet(newCons);
+
+    removed.removeAll(newCons);
+    added.removeAll(oldCons);
+
+    if (!removed.isEmpty()) {
+      for (Iterator it = removed.iterator(); it.hasNext();) {
+        Consolidation consolidation = (Consolidation) it.next();
+        Element child = consolidation.getChild();
+        if (child != null)
+          ((ElementImpl) child).reload(false);
+      }
+      if (doEvents)
+        fireConsolidationsRemoved(removed.toArray());
+    }
+
+    if (!added.isEmpty()) {
+      for (Iterator it = added.iterator(); it.hasNext();) {
+        Consolidation consolidation = (Consolidation) it.next();
+        Element child = consolidation.getChild();
+        if (child != null)
+          ((ElementImpl) child).reload(false);
+
+      }
+      if (doEvents)
+        fireConsolidationsAdded(added.toArray());
+    }
+  }
+
+  private final void fireElementsRenamed(Object[] elements, String oldName) {
+    ConnectionEvent ev = new ConnectionEvent(connection, getDimension(),
+      ConnectionEvent.CONNECTION_EVENT_ELEMENTS_RENAMED, elements);
+    ev.oldValue = oldName;
+    connection.fireEvent(ev);
+  }
+
+  private final void fireElementsTypeChanged(Object[] elements, int oldType) {
+    ConnectionEvent ev = new ConnectionEvent(connection, getDimension(),
+      ConnectionEvent.CONNECTION_EVENT_ELEMENTS_TYPE_CHANGED, elements);
+    ev.oldValue = new Integer(oldType);
+    connection.fireEvent(ev);
+  }
+
+  private final void fireConsolidationsAdded(Object[] consolidations) {
+    connection.fireEvent(new ConnectionEvent(connection, this,
+      ConnectionEvent.CONNECTION_EVENT_CONSOLIDATIONS_ADDED, consolidations));
+  }
+
+  private final void fireConsolidationsRemoved(Object[] consolidations) {
+    connection.fireEvent(new ConnectionEvent(connection, this,
+      ConnectionEvent.CONNECTION_EVENT_CONSOLIDATIONS_REMOVED, consolidations));
+  }
+
+  //  THIS IS NEEDED AS A WORKAROUND FOR A BUG IN WEB PALO!!!!    
+  private final int infoType2elType(int type) {
+    switch (type) {
+    case ElementInfo.TYPE_NUMERIC:
+      return Element.ELEMENTTYPE_NUMERIC;
+    case ElementInfo.TYPE_STRING:
+      return Element.ELEMENTTYPE_STRING;
+    case ElementInfo.TYPE_CONSOLIDATED:
+      return Element.ELEMENTTYPE_CONSOLIDATED;
+    case ElementInfo.TYPE_RULE:
+      return Element.ELEMENTTYPE_RULE;
+    }
+    return -1;
+  }
+
+  public static final int elType2infoType(int type) {
+    switch (type) {
+    case Element.ELEMENTTYPE_NUMERIC:
+      return ElementInfo.TYPE_NUMERIC;
+    case Element.ELEMENTTYPE_STRING:
+      return ElementInfo.TYPE_STRING;
+    case Element.ELEMENTTYPE_CONSOLIDATED:
+      return ElementInfo.TYPE_CONSOLIDATED;
+    case Element.ELEMENTTYPE_RULE:
+      return ElementInfo.TYPE_RULE;
+    }
+    return -1;
+  }
+
+  public String[] getAllPropertyIds() {
+    return propertyLoader.getAllPropertyIds();
+  }
+
+  public Property2 getProperty(String id) {
+    PropertyInfo propInfo = propertyLoader.load(id);
+    if (propInfo == null) {
+      return null;
+    }
+    Property2 property = loadedProperties.get(propInfo.getId());
+    if (property == null) {
+      property = createProperty(propInfo);
+    }
+
+    return property;
+  }
+
+  public void addProperty(Property2 property) {
+    if (property == null) {
+      return;
+    }
+    Property2Impl _property = (Property2Impl) property;
+    propertyLoader.loaded(_property.getPropInfo());
+    loadedProperties.put(_property.getId(), _property);
+  }
+
+  public void removeProperty(String id) {
+    Property2 property = getProperty(id);
+    if (property == null) {
+      return;
+    }
+    if (property.isReadOnly()) {
+      return;
+    }
+    loadedProperties.remove(property);
+  }
+
+  private void createProperty(Property2 parent, PropertyInfo kid) {
+    Property2 p2Kid = Property2Impl.create(parent, kid);
+    parent.addChild(p2Kid);
+    for (PropertyInfo kidd : kid.getChildren()) {
+      createProperty(p2Kid, kidd);
+    }
+  }
+
+  private Property2 createProperty(PropertyInfo propInfo) {
+    Property2 prop = Property2Impl.create(null, propInfo);
+    for (PropertyInfo kid : propInfo.getChildren()) {
+      createProperty(prop, kid);
+    }
+    return prop;
+  }
+
+  public boolean canBeModified() {
+    return elInfo.canBeModified();
+  }
+
+  public boolean canCreateChildren() {
+    return elInfo.canCreateChildren();
+  }
+
+  //	private final void reloadAllParentsAndChildren() {
+  //		String[] children = elInfo.getChildren();
+  //		for(String child : children)
+  //			reloadChild(child);
+  //		
+  //		String[] parents = elInfo.getParents();
+  //		for(String parent : parents)
+  //			reloadParent(parent);
+  //	}
+  //	private final void reloadChild(String id) {
+  //		ElementInfo el = ((ElementImpl)dimension.getElementById(id)).getInfo();
+  //		dbConnection.reload(el);
+  //		String[] children = el.getChildren();
+  //		for(String child : children)
+  //			reloadChild(child);
+  //	}
+  //	private final void reloadParent(String id) {
+  //		ElementInfo el = ((ElementImpl)dimension.getElementById(id)).getInfo();
+  //		dbConnection.reload(el);
+  //		String[] children = el.getChildren();
+  //		for(String child : children)
+  //			reloadChild(child);
+  //	}
+  //
+}

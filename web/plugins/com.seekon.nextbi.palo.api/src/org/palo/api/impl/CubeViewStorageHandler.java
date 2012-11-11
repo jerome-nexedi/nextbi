@@ -1,269 +1,278 @@
-/*     */package org.palo.api.impl;
+/*
+*
+* @file CubeViewStorageHandler.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author ArndHouben
+*
+* @version $Id: CubeViewStorageHandler.java,v 1.12 2009/04/29 10:21:57 PhilippBouillon Exp $
+*
+*/
 
-/*     */
-/*     */import java.io.PrintStream; /*     */
-import java.util.ArrayList; /*     */
-import java.util.HashMap; /*     */
-import java.util.Iterator; /*     */
-import java.util.LinkedHashSet; /*     */
-import java.util.List; /*     */
-import java.util.Map; /*     */
-import java.util.Set; /*     */
-import org.palo.api.Cube; /*     */
-import org.palo.api.CubeView; /*     */
-import org.palo.api.Database; /*     */
-import org.palo.api.PaloAPIException; /*     */
-import org.palo.api.Property; /*     */
-import org.palo.api.exceptions.PaloObjectNotFoundException; /*     */
-import org.palo.api.persistence.PaloPersistenceException; /*     */
+package org.palo.api.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.palo.api.Cube;
+import org.palo.api.CubeView;
+import org.palo.api.Database;
+import org.palo.api.PaloAPIException;
+import org.palo.api.Property;
+import org.palo.api.exceptions.PaloObjectNotFoundException;
+import org.palo.api.persistence.PaloPersistenceException;
 import org.palo.api.persistence.PersistenceError;
 
-/*     */
-/*     */class CubeViewStorageHandler
-/*     */{
-  /*     */private final Database database;
+/**
+ * A <code>CubeViewStorageHandler</code> encapsulates the lazy loading of cube views. 
+ * <b>NOTE:</b> This class is only temporarely and will be removed when palo 
+ * server supports cube views natively!!
+ *  
+ * @author ArndHouben
+ * @version $Id: CubeViewStorageHandler.java,v 1.12 2009/04/29 10:21:57 PhilippBouillon Exp $
+ */
+class CubeViewStorageHandler {
 
-  /*     */private final Map<String, CubeView> loadedViews;
+  private final Database database;
 
-  /*     */private final Map<String, List<PersistenceError>> failedViews;
+  private final Map<String, CubeView> loadedViews;
 
-  /* 67 */private final ApiExtensionController viewController = ApiExtensionController
+  private final Map<String, List<PersistenceError>> failedViews;
+
+  private final ApiExtensionController viewController = ApiExtensionController
     .getInstance();
 
-  /*     */private final HashMap cubeId2viewId;
+  /** key: cube id   value: a set of all its defined view ids*/
+  private final HashMap cubeId2viewId;
 
-  /*     */private final HashMap<String, CubeView> allViews;
+  private final HashMap<String, CubeView> allViews;
 
-  /*     */
-  /*     */CubeViewStorageHandler(Database database)
-  /*     */{
-    /* 75 */this.database = database;
-    /* 76 */this.cubeId2viewId = new HashMap();
-    /* 77 */this.loadedViews = new HashMap();
-    /* 78 */this.failedViews = new HashMap();
-    /* 79 */this.allViews = new HashMap();
-    /*     */}
+  CubeViewStorageHandler(Database database) {
+    this.database = database;
+    this.cubeId2viewId = new HashMap();
+    this.loadedViews = new HashMap<String, CubeView>();
+    this.failedViews = new HashMap<String, List<PersistenceError>>();
+    this.allViews = new HashMap<String, CubeView>();
+    //		reload();
+  }
 
-  /*     */
-  /*     */final void initStorage()
-  /*     */{
-    /* 84 */if (this.database.isSystem())
-      /* 85 */return;
-    /*     */try
-    /*     */{
-      /* 88 */reload();
-      /*     */} catch (PaloAPIException e) {
-      /* 90 */e.printStackTrace();
-      /* 91 */System.err.println("Cannot add view dimension to database '"
-        + this.database.getName() + "'!!");
-      /*     */}
-    /*     */}
+  final void initStorage() {
+    if (database.isSystem())
+      return;
+    try {
+      //			viewController.init(database);
+      reload();
+    } catch (PaloAPIException e) {
+      e.printStackTrace();
+      System.err.println("Cannot add view dimension to database '"
+        + database.getName() + "'!!");
+    }
+  }
 
-  /*     */
-  /*     */final int getViewCount(Cube cube)
-  /*     */{
-    /* 99 */Set knownViewIds = getKnownViewIds(cube);
-    /* 100 */return knownViewIds.size();
-    /*     */}
+  /**
+   * @param cube
+   * @return
+   */
+  final int getViewCount(Cube cube) {
+    Set knownViewIds = getKnownViewIds(cube);
+    return knownViewIds.size();
+  }
 
-  /*     */
-  /*     */final String getViewName(String id)
-  /*     */{
-    /* 105 */CubeView view = (CubeView) this.allViews.get(id);
-    /* 106 */if (view != null)
-      /* 107 */return view.getName();
-    /* 108 */return null;
-    /*     */}
+  final String getViewName(String id) {
+    CubeView view = allViews.get(id);
+    if (view != null)
+      return view.getName();
+    return null;
+  }
 
-  /*     */
-  /*     */final String[] getViewIds(Cube cube)
-  /*     */{
-    /* 117 */Set knownViewIds = getKnownViewIds(cube);
-    /* 118 */return (String[]) knownViewIds
-      .toArray(new String[knownViewIds.size()]);
-    /*     */}
+  /**
+   * Returns all known view ids for the specified cube. If the cube has no
+   * views the returned array is empty.
+   * 
+   */
+  final String[] getViewIds(Cube cube) {
+    Set knownViewIds = getKnownViewIds(cube);
+    return (String[]) knownViewIds.toArray(new String[knownViewIds.size()]);
+  }
 
-  /*     */
-  /*     */final CubeView addCubeView(Cube cube, String id, String name,
-    Property[] properties)
-  /*     */{
-    /* 123 */Set knownViewIds = getKnownViewIds(cube);
-    /* 124 */if (knownViewIds.contains(id)) {
-      /* 125 */throw new PaloAPIException("CubeView already exists!");
-      /*     */}
-    /* 127 */CubeView view = this.viewController.createCubeView(id, name, cube,
-      properties);
-    /* 128 */this.loadedViews.put(view.getId(), view);
-    /* 129 */this.allViews.put(view.getId(), view);
-    /* 130 */knownViewIds.add(id);
-    /* 131 */return view;
-    /*     */}
+  final CubeView addCubeView(Cube cube, String id, String name, Property[] properties) {
+    Set knownViewIds = getKnownViewIds(cube);
+    if (knownViewIds.contains(id))
+      throw new PaloAPIException("CubeView already exists!");
 
-  /*     */
-  /*     */final CubeView addCubeView(Cube cube, String name, Property[] properties) {
-    /* 135 */Set knownViewIds = getKnownViewIds(cube);
-    /* 136 */String id = Long.toString(System.currentTimeMillis());
-    /* 137 */while (knownViewIds.contains(id)) {
-      /* 138 */long lg = Long.parseLong(id);
-      /* 139 */lg += 1L;
-      /* 140 */id = Long.toString(lg);
-      /*     */}
-    /* 142 */return addCubeView(cube, id, name, properties);
-    /*     */}
+    CubeView view = viewController.createCubeView(id, name, cube, properties);
+    loadedViews.put(view.getId(), view);
+    allViews.put(view.getId(), view);
+    knownViewIds.add(id);
+    return view;
+  }
 
-  /*     */
-  /*     */final void removeCubeView(Cube cube, CubeView view) {
-    /*     */try {
-      /* 147 */if ((view != null) && (view.getCube().equals(cube))) {
-        /* 148 */Set knownViewIds = getKnownViewIds(cube);
-        /* 149 */this.loadedViews.remove(view.getId());
-        /* 150 */this.allViews.remove(view.getId());
-        /* 151 */knownViewIds.remove(view.getId());
-        /* 152 */ApiExtensionController.getInstance().delete(view);
-        /*     */}
-      /*     */}
-    /*     */catch (PaloAPIException ex) {
-      /* 156 */String errCode = ex.getErrorCode();
-      /* 157 */if (errCode != null) {
-        /* 158 */if (errCode.equals("2001"))
-          /* 159 */throw new PaloObjectNotFoundException("Database not found",
-          /* 160 */ex);
-        /* 161 */if (errCode.equals("3002"))
-          /* 162 */throw new PaloObjectNotFoundException(
-          /* 163 */"Dimension not found", ex);
-        /* 164 */if (errCode.equals("4004"))
-          /* 165 */throw new PaloObjectNotFoundException("Element not found",
-          /* 166 */ex);
-        /*     */}
-      /*     */else {
-        /* 169 */throw new PaloAPIException("Couldn't remove cube view '" +
-        /* 170 */view.getName() + "'", ex);
-        /*     */}
-      /*     */}
-    /*     */}
+  final CubeView addCubeView(Cube cube, String name, Property[] properties) {
+    Set knownViewIds = getKnownViewIds(cube);
+    String id = Long.toString(System.currentTimeMillis());
+    while (knownViewIds.contains(id)) {
+      long lg = Long.parseLong(id);
+      lg++;
+      id = Long.toString(lg);
+    }
+    return addCubeView(cube, id, name, properties);
+  }
 
-  /*     */
-  /*     */final CubeView getCubeView(Cube cube, String id)
-    throws PaloPersistenceException {
-    /* 175 */if (!failed(id)) {
-      /* 176 */Set knownViewIds = getKnownViewIds(cube);
-      /* 177 */if (knownViewIds.contains(id)) {
-        /* 178 */CubeView view = getCubeView(id);
-        /* 179 */return view;
-        /*     */}
-      /*     */}
-    /* 182 */return null;
-    /*     */}
+  final void removeCubeView(Cube cube, CubeView view) {
+    try {
+      if (view != null && view.getCube().equals(cube)) {
+        Set knownViewIds = getKnownViewIds(cube);
+        loadedViews.remove(view.getId());
+        allViews.remove(view.getId());
+        knownViewIds.remove(view.getId());
+        ApiExtensionController.getInstance().delete(view);
+        // reloadViewIDs();
+      }
+    } catch (PaloAPIException ex) {
+      String errCode = ex.getErrorCode();
+      if (errCode != null) {
+        if (errCode.equals("2001"))
+          throw new PaloObjectNotFoundException("Database not found", ex);
+        else if (errCode.equals("3002"))
+          throw new PaloObjectNotFoundException("Dimension not found", ex);
+        else if (errCode.equals("4004"))
+          throw new PaloObjectNotFoundException("Element not found", ex);
 
-  /*     */
-  /*     */final void removeLoadedViews(Cube cube) {
-    /* 186 */Set knownViewIds = getKnownViewIds(cube);
-    /* 187 */Iterator allViews = knownViewIds.iterator();
-    /* 188 */while (allViews.hasNext()) {
-      /* 189 */String viewId = (String) allViews.next();
-      /* 190 */this.loadedViews.remove(viewId);
-      /*     */}
-    /*     */}
+      } else
+        throw new PaloAPIException("Couldn't remove cube view '" + view.getName()
+          + "'", ex);
+    }
+  }
 
-  /*     */
-  /*     */final void reload() {
-    /* 195 */this.loadedViews.clear();
-    /* 196 */this.cubeId2viewId.clear();
-    /* 197 */this.failedViews.clear();
-    /* 198 */this.allViews.clear();
-    /*     */try {
-      /* 200 */ApiExtensionController.getInstance().loadViews(
-      /* 201 */this.database, this.cubeId2viewId, this.loadedViews);
-      /*     */}
-    /*     */catch (PaloPersistenceException pex)
-    /*     */{
-      /* 205 */PersistenceError[] errors = pex.getErrors();
-      /* 206 */for (int i = 0; i < errors.length; ++i) {
-        /* 207 */Object view = errors[i].getSource();
-        /* 208 */if (view instanceof CubeView) {
-          /* 209 */String viewId = errors[i].getSourceId();
-          /* 210 */Cube srcCube = ((CubeView) view).getCube();
-          /* 211 */addFailed(viewId, errors[i]);
-          /* 212 */this.allViews.put(viewId, (CubeView) view);
-          /* 213 */ensureIsContained(srcCube.getId(), viewId);
-          /*     */}
-        /*     */else
-        /*     */{
-          /* 217 */addFailed(errors[i].getSourceId(), errors[i]);
-          /* 218 */this.allViews.put(errors[i].getSourceId(), null);
-          /*     */}
-        /*     */}
-      /*     */}
-    /* 222 */this.allViews.putAll(this.loadedViews);
-    /*     */}
+  final CubeView getCubeView(Cube cube, String id) throws PaloPersistenceException {
+    if (!failed(id)) {
+      Set knownViewIds = getKnownViewIds(cube);
+      if (knownViewIds.contains(id)) {
+        CubeView view = getCubeView(id);
+        return view;
+      }
+    }
+    return null;
+  }
 
-  /*     */
-  /*     */private final CubeView getCubeView(String id)
-    throws PaloPersistenceException
-  /*     */{
-    /* 227 */if (failed(id)) {
-      /* 228 */return null;
-      /*     */}
-    /* 230 */CubeView view = (CubeView) this.loadedViews.get(id);
-    /* 231 */if (view == null)
-    /*     */{
-      /* 233 */view = this.viewController.loadView(this.database, id);
-      /* 234 */this.loadedViews.put(view.getId(), view);
-      /*     */}
-    /* 236 */return view;
-    /*     */}
+  final void removeLoadedViews(Cube cube) {
+    Set knownViewIds = getKnownViewIds(cube);
+    Iterator allViews = knownViewIds.iterator();
+    while (allViews.hasNext()) {
+      String viewId = (String) allViews.next();
+      loadedViews.remove(viewId);
+    }
+  }
 
-  /*     */
-  /*     */private final Set getKnownViewIds(Cube cube)
-  /*     */{
-    /* 246 */return getViewIdsSet(cube.getId());
-    /*     */}
+  final void reload() {
+    loadedViews.clear();
+    cubeId2viewId.clear();
+    failedViews.clear();
+    allViews.clear();
+    try {
+      ApiExtensionController.getInstance().loadViews(database, cubeId2viewId,
+        loadedViews);
+    } catch (PaloPersistenceException pex) {
+      //store any errors which occur...
+      //			//run through all errors and distribute them to their affected cubes:
+      PersistenceError[] errors = pex.getErrors();
+      for (int i = 0; i < errors.length; ++i) {
+        Object view = errors[i].getSource();
+        if (view instanceof CubeView) {
+          String viewId = errors[i].getSourceId();
+          Cube srcCube = ((CubeView) view).getCube();
+          addFailed(viewId, errors[i]);
+          allViews.put(viewId, (CubeView) view);
+          ensureIsContained(srcCube.getId(), viewId);
+        } else {
+          //we add it to failedViews since we could not assign it
+          //to a special view...
+          addFailed(errors[i].getSourceId(), errors[i]);
+          allViews.put(errors[i].getSourceId(), null);
+        }
+      }
+    }
+    allViews.putAll(loadedViews);
+  }
 
-  /*     */
-  /*     */private final void ensureIsContained(String cubeId, String viewId) {
-    /* 250 */Set viewIds = getViewIdsSet(cubeId);
-    /* 251 */viewIds.add(viewId);
-    /*     */}
+  private final CubeView getCubeView(String id) throws PaloPersistenceException {
+    if (failed(id))
+      return null;
 
-  /*     */
-  /*     */private final Set getViewIdsSet(String cubeId) {
-    /* 255 */Set viewIds = (Set) this.cubeId2viewId.get(cubeId);
-    /* 256 */if (viewIds == null) {
-      /* 257 */viewIds = new LinkedHashSet();
-      /* 258 */this.cubeId2viewId.put(cubeId, viewIds);
-      /*     */}
-    /* 260 */return viewIds;
-    /*     */}
+    CubeView view = (CubeView) loadedViews.get(id);
+    if (view == null) {
+      //load it
+      view = viewController.loadView(database, id);
+      loadedViews.put(view.getId(), view);
+    }
+    return view;
+  }
 
-  /*     */
-  /*     */private final void addFailed(String viewId, PersistenceError error) {
-    /* 264 */List errors = (List) this.failedViews.get(viewId);
-    /* 265 */if (errors == null) {
-      /* 266 */errors = new ArrayList();
-      /* 267 */this.failedViews.put(viewId, errors);
-      /*     */}
-    /* 269 */errors.add(error);
-    /*     */}
+  /**
+   * Returns a set of all known views for specified cube. 
+   * @param cube
+   * @return
+   */
+  private final Set getKnownViewIds(Cube cube) {
+    return getViewIdsSet(cube.getId());
+  }
 
-  /*     */
-  /*     */private final boolean failed(String viewId)
-    throws PaloPersistenceException {
-    /* 273 */if (this.failedViews.containsKey(viewId)) {
-      /* 274 */List errors = (List) this.failedViews.get(viewId);
-      /* 275 */this.failedViews.remove(viewId);
-      /* 276 */throw new PaloPersistenceException(
-      /* 277 */(PersistenceError[]) errors.toArray(new PersistenceError[errors
-        .size()]),
-      /* 278 */"Exception during cube loading");
-      /*     */}
-    /* 280 */return false;
-    /*     */}
-  /*     */
+  private final void ensureIsContained(String cubeId, String viewId) {
+    Set viewIds = getViewIdsSet(cubeId);
+    viewIds.add(viewId);
+  }
+
+  private final Set getViewIdsSet(String cubeId) {
+    Set viewIds = (Set) cubeId2viewId.get(cubeId);
+    if (viewIds == null) {
+      viewIds = new LinkedHashSet();
+      cubeId2viewId.put(cubeId, viewIds);
+    }
+    return viewIds;
+  }
+
+  private final void addFailed(String viewId, PersistenceError error) {
+    List errors = (List) failedViews.get(viewId);
+    if (errors == null) {
+      errors = new ArrayList();
+      failedViews.put(viewId, errors);
+    }
+    errors.add(error);
+  }
+
+  private final boolean failed(String viewId) throws PaloPersistenceException {
+    if (failedViews.containsKey(viewId)) {
+      List errors = (List) failedViews.get(viewId);
+      failedViews.remove(viewId);
+      throw new PaloPersistenceException((PersistenceError[]) errors
+        .toArray(new PersistenceError[errors.size()]),
+        "Exception during cube loading");
+    }
+    return false;
+  }
 }
-
-/*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.impl.CubeViewStorageHandler JD-Core Version:
- * 0.5.4
- */
