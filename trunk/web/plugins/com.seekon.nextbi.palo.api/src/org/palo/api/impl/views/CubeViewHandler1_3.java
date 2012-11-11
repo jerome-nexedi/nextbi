@@ -1,264 +1,327 @@
-/*     */package org.palo.api.impl.views;
-
-/*     */
-/*     */import com.tensegrity.palojava.PaloException; /*     */
-import java.io.PrintStream; /*     */
-import org.palo.api.Axis; /*     */
-import org.palo.api.Cube; /*     */
-import org.palo.api.CubeView; /*     */
-import org.palo.api.Database; /*     */
-import org.palo.api.Dimension; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.Hierarchy; /*     */
-import org.palo.api.PaloAPIException; /*     */
-import org.palo.api.Subset; /*     */
-import org.palo.api.impl.xml.IPaloStartHandler; /*     */
-import org.palo.api.impl.xml.XMLUtil; /*     */
-import org.palo.api.subsets.Subset2; /*     */
-import org.palo.api.subsets.SubsetHandler; /*     */
-import org.xml.sax.Attributes;
-
-/*     */
-/*     */class CubeViewHandler1_3 extends CubeViewHandler1_2
-/*     */{
-  /*     */CubeViewHandler1_3(Database database)
-  /*     */{
-    /* 69 */super(database);
-    /*     */}
-
-  /*     */
-  /*     */protected void registerStartHandlers() {
-    /* 73 */super.registerStartHandlers();
-    /*     */
-    /* 76 */registerStartHandler(new IPaloStartHandler() {
-      /*     */public String getPath() {
-        /* 78 */return "view";
-        /*     */}
-
-      /*     */
-      /*     */public void startElement(String uri, String localName, String qName,
-        Attributes attributes)
-      /*     */{
-        /* 83 */CubeViewBuilder viewBuilder = new CubeViewBuilder();
-        /* 84 */viewBuilder.setId(attributes.getValue("id"));
-        /* 85 */viewBuilder.setName(attributes.getValue("name"));
-        /* 86 */viewBuilder.setDescription(XMLUtil.dequoteString(
-        /* 87 */attributes.getValue("description")));
-        /* 88 */String str = attributes.getValue("hideempty");
-        /* 89 */if ((str != null) && (str.equalsIgnoreCase("true")))
-          /* 90 */viewBuilder.addProperty("hideEmpty",
-          /* 91 */Boolean.toString(true));
-        /* 92 */String cubeId = attributes.getValue("cube");
-        /* 93 */Cube srcCube = CubeViewHandler1_3.this.database.getCubeById(cubeId);
-        /* 94 */if (srcCube == null) {
-          /* 95 */System.err.println("view(" + attributes.getValue("id")
-            + "): unknown source cube '" + cubeId + "' in database '"
-            + CubeViewHandler1_3.this.database.getName() + "'");
-          /* 96 */throw new PaloAPIException(
-            "CubeView creation failed! No source cube found with id: " + cubeId);
-          /*     */}
-        /* 98 */if (cubeId != null)
-          /* 99 */viewBuilder.setCube(CubeViewHandler1_3.this.database
-            .getCubeById(cubeId));
-        /* 100 */CubeViewHandler1_3.this.cubeView = viewBuilder
-          .createView(CubeViewHandler1_3.this);
-        /*     */
-        /* 102 */if (CubeViewHandler1_3.this.cubeView == null)
-          /* 103 */throw new PaloAPIException("CubeView creation failed!");
-        /*     */}
-      /*     */
-    });
-    /* 127 */registerStartHandler(new IPaloStartHandler() {
-      /*     */public String getPath() {
-        /* 129 */return "view/axis/selected";
-        /*     */}
-
-      /*     */
-      /*     */public void startElement(String uri, String localName, String qName,
-        Attributes attributes) {
-        /* 133 */String element = attributes.getValue("element");
-        /* 134 */String dimId = attributes.getValue("dimension");
-        /* 135 */String hierId = attributes.getValue("hierarchy");
-        /*     */
-        /* 138 */if ((dimId == null) && (hierId != null))
-        /*     */{
-          /* 141 */String[] allIds =
-          /* 142 */hierId.split("~~~");
-          /* 143 */dimId = allIds[0];
-          /* 144 */hierId = allIds[1];
-          /*     */}
-        /* 146 */Dimension dim = CubeViewHandler1_3.this.database
-          .getDimensionById(dimId);
-        /* 147 */if (dim == null) {
-          /* 148 */CubeViewHandler1_3.this
-          /* 151 */.addError("CubeViewReader: unknown dimension id '" + dimId +
-          /* 149 */"'!!", CubeViewHandler1_3.this.cubeView.getId(),
-            CubeViewHandler1_3.this.cubeView, CubeViewHandler1_3.this.database,
-            /* 150 */dimId, 0,
-            /* 151 */CubeViewHandler1_3.this.currAxis, 0);
-          /*     */}
-        /* 153 */Hierarchy hier = null;
-        /* 154 */if ((hierId != null) && (dim != null)) {
-          /* 155 */hier = dim.getHierarchyById(hierId);
-          /* 156 */if (hier == null)
-            /* 157 */CubeViewHandler1_3.this
-            /* 160 */.addError("CubeViewReader: unknown hierarchy id '" + hierId +
-            /* 158 */"'!!", CubeViewHandler1_3.this.cubeView.getId(),
-              CubeViewHandler1_3.this.cubeView, CubeViewHandler1_3.this.database,
-              /* 159 */hierId, 0,
-              /* 160 */CubeViewHandler1_3.this.currAxis, 0);
-          /*     */}
-        /* 162 */else if (dim != null) {
-          /* 163 */hier = CubeViewHandler1_3.this.currAxis.getHierarchy(dim);
-          /*     */}
-        /* 165 */Element selected = null;
-        /*     */try {
-          /* 167 */if (hier != null)
-            /* 168 */selected = hier.getElementById(element);
-          /*     */else
-            /* 170 */selected = dim.getDefaultHierarchy().getElementById(element);
-          /*     */}
-        /*     */catch (PaloException e) {
-          /* 173 */e.printStackTrace();
-          /* 174 */selected = null;
-          /*     */}
-        /* 176 */if (selected == null)
-        /*     */{
-          /* 186 */CubeViewHandler1_3.this
-          /* 189 */.addError("CubeViewReader: unknown element id '" + element +
-          /* 187 */"'!!", CubeViewHandler1_3.this.cubeView.getId(),
-            CubeViewHandler1_3.this.cubeView, dim, element,
-            /* 188 */1,
-            /* 189 */CubeViewHandler1_3.this.currAxis, 1);
-          /*     */}
-        /*     */
-        /* 192 */if (hier == null)
-          /* 193 */CubeViewHandler1_3.this.currAxis.setSelectedElement(dim,
-            selected);
-        /*     */else
-          /* 195 */CubeViewHandler1_3.this.currAxis.setSelectedElement(hier,
-            selected);
-        /*     */}
-      /*     */
-    });
-    /* 200 */registerStartHandler(new IPaloStartHandler() {
-      /*     */public String getPath() {
-        /* 202 */return "view/axis/active";
-        /*     */}
-
-      /*     */
-      /*     */public void startElement(String uri, String localName, String qName,
-        Attributes attributes)
-      /*     */{
-        /* 207 */String subset = attributes.getValue("subset");
-        /* 208 */String subset2 = attributes.getValue("subset2");
-        /* 209 */String dimId = attributes.getValue("dimension");
-        /*     */
-        /* 211 */Dimension dim = CubeViewHandler1_3.this.database
-          .getDimensionById(dimId);
-        /* 212 */if (dim == null) {
-          /* 213 */CubeViewHandler1_3.this
-          /* 216 */.addError("CubeViewReader: unknown dimension id '" + dimId +
-          /* 214 */"'!!", CubeViewHandler1_3.this.cubeView.getId(),
-            CubeViewHandler1_3.this.cubeView, CubeViewHandler1_3.this.database,
-            /* 215 */dimId, 0,
-            /* 216 */CubeViewHandler1_3.this.currAxis, 0);
-          /*     */}
-        /* 218 */if ((subset2 != null) && (subset2.length() > 0)) {
-          /* 219 */SubsetHandler subHandler = dim.getSubsetHandler();
-          /* 220 */String attrType = attributes.getValue("type");
-          /* 221 */int type = 0;
-          /*     */try {
-            /* 223 */type = Integer.parseInt(attrType);
-            /*     */}
-          /*     */catch (NumberFormatException localNumberFormatException)
-          /*     */{
-            /*     */}
-          /*     */
-          /* 229 */Subset2 activeSub2 = null;
-          /*     */try {
-            /* 231 */activeSub2 = subHandler.getSubset(subset2, type);
-            /*     */}
-          /*     */catch (Exception localException) {
-            /*     */}
-          /* 235 */if (activeSub2 == null)
-          /*     */{
-            /* 238 */((AxisImpl) CubeViewHandler1_3.this.currAxis).setData(
-            /* 239 */"com.tensegrity.palo.unknown_subset_" + dimId,
-            /* 240 */((dim != null) ? dim.getName() : dimId) +
-            /* 241 */"," + subset2 + "," + type);
-            /* 242 */CubeViewHandler1_3.this
-            /* 245 */.addError("CubeViewReader: unknown subset id '" + subset +
-            /* 243 */"'!!", CubeViewHandler1_3.this.cubeView.getId(),
-              CubeViewHandler1_3.this.cubeView, dim,
-              /* 244 */subset, 8,
-              /* 245 */CubeViewHandler1_3.this.currAxis, 8);
-            /*     */}
-          /*     */
-          /* 248 */CubeViewHandler1_3.this.currAxis.setActiveSubset2(dim,
-            activeSub2);
-          /*     */} else {
-          /* 250 */Subset activeSub = dim.getSubset(subset);
-          /* 251 */if (activeSub == null) {
-            /* 252 */CubeViewHandler1_3.this
-            /* 255 */.addError("CubeViewReader: unknown subset id '" + subset +
-            /* 253 */"'!!", CubeViewHandler1_3.this.cubeView.getId(),
-              CubeViewHandler1_3.this.cubeView, dim,
-              /* 254 */subset, 8,
-              /* 255 */CubeViewHandler1_3.this.currAxis, 8);
-            /*     */}
-          /* 257 */CubeViewHandler1_3.this.currAxis.setActiveSubset(dim, activeSub);
-          /*     */}
-        /*     */}
-      /*     */
-    });
-    /* 288 */registerStartHandler(new IPaloStartHandler() {
-      /*     */public String getPath() {
-        /* 290 */return "view/axis/hidden";
-        /*     */}
-
-      /*     */
-      /*     */public void startElement(String uri, String localName, String qName,
-        Attributes attributes)
-      /*     */{
-        /* 295 */String path = attributes.getValue("path");
-        /* 296 */String dimId = attributes.getValue("dimension");
-        /* 297 */String hierId = attributes.getValue("hierarchy");
-        /*     */
-        /* 299 */Dimension dim = CubeViewHandler1_3.this.database
-          .getDimensionById(dimId);
-        /* 300 */if (dim == null) {
-          /* 301 */CubeViewHandler1_3.this
-          /* 304 */.addError("CubeViewReader: unknown dimension id '" + dimId +
-          /* 302 */"'!!", CubeViewHandler1_3.this.cubeView.getId(),
-            CubeViewHandler1_3.this.cubeView, CubeViewHandler1_3.this.database,
-            /* 303 */dimId, 0,
-            /* 304 */CubeViewHandler1_3.this.currAxis, 4);
-          /*     */}
-        /* 306 */Hierarchy hier = null;
-        /* 307 */if (dim != null) {
-          /* 308 */if (hierId == null) {
-            /* 309 */hier = CubeViewHandler1_3.this.currAxis.getHierarchy(dim);
-            /* 310 */if (hier == null)
-              /* 311 */hier = dim.getDefaultHierarchy();
-            /*     */}
-          /*     */else {
-            /* 314 */hier = dim.getHierarchyById(hierId);
-            /*     */}
-          /*     */}
-        /* 317 */Element[] hiddenPath = CubeViewHandler1_3.this.getPathById(
-        /* 318 */path, dim, hier, CubeViewHandler1_3.this.currAxis, 4);
-        /* 319 */CubeViewHandler1_3.this.currAxis.addHidden(dim, hiddenPath);
-        /*     */}
-      /*     */
-    });
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file CubeViewHandler1_3.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author ArndHouben
+*
+* @version $Id: CubeViewHandler1_3.java,v 1.15 2009/04/29 10:21:58 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.impl.views.CubeViewHandler1_3 JD-Core Version:
- * 0.5.4
+ * (c) Tensegrity Software 2007
+ * All rights reserved
  */
+package org.palo.api.impl.views;
+
+import org.palo.api.Cube;
+import org.palo.api.CubeView;
+import org.palo.api.Database;
+import org.palo.api.Dimension;
+import org.palo.api.Element;
+import org.palo.api.Hierarchy;
+import org.palo.api.PaloAPIException;
+import org.palo.api.Subset;
+import org.palo.api.impl.xml.EndHandler;
+import org.palo.api.impl.xml.IPaloStartHandler;
+import org.palo.api.impl.xml.StartHandler;
+import org.palo.api.impl.xml.XMLUtil;
+import org.palo.api.persistence.PersistenceError;
+import org.palo.api.subsets.Subset2;
+import org.palo.api.subsets.SubsetHandler;
+import org.xml.sax.Attributes;
+
+import com.tensegrity.palojava.PaloException;
+
+/**
+ * <code>CubeViewHandler1_3</code>
+ * Defines <code>{@link StartHandler}</code>s and 
+ * <code>{@link EndHandler}</code>s to read cube views which are stored using
+ * version 1.3. This version is completely based on ids. 
+ *
+ * @author ArndHouben
+ * @version $Id: CubeViewHandler1_3.java,v 1.15 2009/04/29 10:21:58 PhilippBouillon Exp $
+ **/
+class CubeViewHandler1_3 extends CubeViewHandler1_2 {
+
+  CubeViewHandler1_3(Database database) {
+    super(database);
+  }
+
+  protected void registerStartHandlers() {
+    super.registerStartHandlers();
+
+    // add new view handling:
+    registerStartHandler(new IPaloStartHandler() {
+      public String getPath() {
+        return "view";
+      }
+
+      public void startElement(String uri, String localName, String qName,
+        Attributes attributes) {
+        CubeViewBuilder viewBuilder = new CubeViewBuilder();
+        viewBuilder.setId(attributes.getValue("id"));
+        viewBuilder.setName(attributes.getValue("name"));
+        viewBuilder.setDescription(XMLUtil.dequoteString(attributes
+          .getValue("description")));
+        String str = attributes.getValue("hideempty");
+        if (str != null && str.equalsIgnoreCase("true"))
+          viewBuilder.addProperty(CubeView.PROPERTY_ID_HIDE_EMPTY, Boolean
+            .toString(true));
+        String cubeId = attributes.getValue("cube");
+        Cube srcCube = database.getCubeById(cubeId);
+        if (srcCube == null) {
+          System.err.println("view(" + attributes.getValue("id")
+            + "): unknown source cube '" + cubeId + "' in database '"
+            + database.getName() + "'");
+          throw new PaloAPIException(
+            "CubeView creation failed! No source cube found with id: " + cubeId);
+        }
+        if (cubeId != null)
+          viewBuilder.setCube(database.getCubeById(cubeId));
+        cubeView = viewBuilder.createView(CubeViewHandler1_3.this);
+        //we abort loading if creation failed...
+        if (cubeView == null)
+          throw new PaloAPIException("CubeView creation failed!");
+      }
+    });
+
+    //    	registerStartHandler(new IPaloStartHandler() {
+    //			public String getPath() {
+    //				return "view/axis/dimension";
+    //			}
+    //
+    //			public void startElement(String uri, String localName,
+    //					String qName, Attributes attributes) {
+    //				String dimId = attributes.getValue("id");
+    //				dimId = CubeViewReader.getLeafName(dimId);
+    //				Dimension dim = database.getDimensionById(dimId);
+    //				if (dim == null) {
+    //					addError("CubeViewReader: unknown dimension id '" + dimId
+    //							+ "'!!", cubeView.getId(), cubeView, database,
+    //							dimId, PersistenceError.UNKNOWN_DIMENSION,
+    //							currAxis, PersistenceError.TARGET_GENERAL);
+    //				}
+    //				currAxis.add(dim);
+    //			}
+    //		});
+
+    registerStartHandler(new IPaloStartHandler() {
+      public String getPath() {
+        return "view/axis/selected";
+      }
+
+      public void startElement(String uri, String localName, String qName,
+        Attributes attributes) {
+        String element = attributes.getValue("element");
+        String dimId = attributes.getValue("dimension");
+        String hierId = attributes.getValue("hierarchy");
+        //				dimId = CubeViewReader.getLeafName(dimId);
+        Dimension dim;
+        if (dimId == null && hierId != null) {
+          // Old solution had dim~~~hier in hierarchyId.
+          // Read it here.
+          String[] allIds = hierId.split(CubeViewPersistence.DIM_HIER_DELIMITER);
+          dimId = allIds[0];
+          hierId = allIds[1];
+        }
+        dim = database.getDimensionById(dimId);
+        if (dim == null) {
+          addError("CubeViewReader: unknown dimension id '" + dimId + "'!!",
+            cubeView.getId(), cubeView, database, dimId,
+            PersistenceError.UNKNOWN_DIMENSION, currAxis,
+            PersistenceError.TARGET_GENERAL);
+        }
+        Hierarchy hier = null;
+        if (hierId != null && dim != null) {
+          hier = dim.getHierarchyById(hierId);
+          if (hier == null) {
+            addError("CubeViewReader: unknown hierarchy id '" + hierId + "'!!",
+              cubeView.getId(), cubeView, database, hierId,
+              PersistenceError.UNKNOWN_DIMENSION, currAxis,
+              PersistenceError.TARGET_GENERAL);
+          }
+        } else if (dim != null) {
+          hier = currAxis.getHierarchy(dim);
+        }
+        Element selected = null;
+        try {
+          if (hier != null) {
+            selected = hier.getElementById(element);
+          } else {
+            selected = dim.getDefaultHierarchy().getElementById(element);
+          }
+        } catch (PaloException e) {
+          e.printStackTrace();
+          selected = null;
+        }
+        if (selected == null) {
+          //					String [] propKeys = cubeView.getProperties();
+          //					for (String p: propKeys) {
+          //						System.out.println(p + ": " + cubeView.getPropertyValue(p));
+          //					}
+          //					for (Hierarchy hier: dim.getHierarchies()) {
+          //						hier.getElements();
+          //					}
+          //					selected = dim.getElementById(element);
+          //					if (selected == null) {
+          addError("CubeViewReader: unknown element id '" + element + "'!!",
+            cubeView.getId(), cubeView, dim, element,
+            PersistenceError.UNKNOWN_ELEMENT, currAxis,
+            PersistenceError.TARGET_SELECTED);
+          //					}
+        }
+        if (hier == null) {
+          currAxis.setSelectedElement(dim, selected);
+        } else {
+          currAxis.setSelectedElement(hier, selected);
+        }
+      }
+    });
+
+    registerStartHandler(new IPaloStartHandler() {
+      public String getPath() {
+        return "view/axis/active";
+      }
+
+      public void startElement(String uri, String localName, String qName,
+        Attributes attributes) {
+        String subset = attributes.getValue("subset");
+        String subset2 = attributes.getValue("subset2");
+        String dimId = attributes.getValue("dimension");
+        //				dimId = CubeViewReader.getLeafName(dimId);
+        Dimension dim = database.getDimensionById(dimId);
+        if (dim == null) {
+          addError("CubeViewReader: unknown dimension id '" + dimId + "'!!",
+            cubeView.getId(), cubeView, database, dimId,
+            PersistenceError.UNKNOWN_DIMENSION, currAxis,
+            PersistenceError.TARGET_GENERAL);
+        }
+        if (subset2 != null && subset2.length() > 0) {
+          SubsetHandler subHandler = dim.getSubsetHandler();
+          String attrType = attributes.getValue("type");
+          int type = Subset2.TYPE_LOCAL;
+          try {
+            type = Integer.parseInt(attrType);
+          } catch (NumberFormatException nfe) {
+            /* ignore */
+          }
+          // PR 7017: subset loading can fail, but view loading should
+          // continue...
+          Subset2 activeSub2 = null;
+          try {
+            activeSub2 = subHandler.getSubset(subset2, type);
+          } catch (Exception ex) {
+            /* ignore */
+          }
+          if (activeSub2 == null) {
+            //PR 6875: we remember an unknown subset here
+            //=> this will and has to change with new view definition and loading!!!
+            ((AxisImpl) currAxis).setData("com.tensegrity.palo.unknown_subset_"
+              + dimId, (dim != null ? dim.getName() : dimId) + "," + subset2 + ","
+              + type);
+            addError("CubeViewReader: unknown subset id '" + subset + "'!!",
+              cubeView.getId(), cubeView, dim, subset,
+              PersistenceError.UNKNOWN_SUBSET, currAxis,
+              PersistenceError.TARGET_SUBSET);
+          }
+
+          currAxis.setActiveSubset2(dim, activeSub2);
+        } else {
+          Subset activeSub = dim.getSubset(subset);
+          if (activeSub == null) {
+            addError("CubeViewReader: unknown subset id '" + subset + "'!!",
+              cubeView.getId(), cubeView, dim, subset,
+              PersistenceError.UNKNOWN_SUBSET, currAxis,
+              PersistenceError.TARGET_SUBSET);
+          }
+          currAxis.setActiveSubset(dim, activeSub);
+        }
+      }
+    });
+
+    //    	registerStartHandler(new IPaloStartHandler() {
+    //			public String getPath() {
+    //				return "view/axis/expanded";
+    //			}
+    //
+    //			public void startElement(String uri, String localName,
+    //					String qName, Attributes attributes) {
+    //				String path = attributes.getValue("path");
+    //				String dimId = attributes.getValue("dimension");
+    //				String reps = attributes.getValue("repetitions");
+    //				dimId = CubeViewReader.getLeafName(dimId);
+    //				Dimension dim = database.getDimensionById(dimId);
+    //				int[] repetitions = CubeViewReader.getRepetitions(reps);
+    //				if (dim == null) {
+    //					addError("CubeViewReader: unknown dimension id '" + dimId
+    //							+ "'!!", cubeView.getId(), cubeView, database,
+    //							dimId, PersistenceError.UNKNOWN_DIMENSION,
+    //							currAxis, PersistenceError.TARGET_EXPANDED_PATH);
+    //				}
+    //				Element[] expPath = CubeViewHandler1_3.this.getPathById(path, dim,
+    //						currAxis, PersistenceError.TARGET_EXPANDED_PATH);
+    //				for (int i = 0; i < repetitions.length; ++i)
+    //					currAxis.addExpanded(dim, expPath, repetitions[i]);
+    //			}
+    //		});
+
+    registerStartHandler(new IPaloStartHandler() {
+      public String getPath() {
+        return "view/axis/hidden";
+      }
+
+      public void startElement(String uri, String localName, String qName,
+        Attributes attributes) {
+        String path = attributes.getValue("path");
+        String dimId = attributes.getValue("dimension");
+        String hierId = attributes.getValue("hierarchy");
+        //				dimId = CubeViewReader.getLeafName(dimId);
+        Dimension dim = database.getDimensionById(dimId);
+        if (dim == null) {
+          addError("CubeViewReader: unknown dimension id '" + dimId + "'!!",
+            cubeView.getId(), cubeView, database, dimId,
+            PersistenceError.UNKNOWN_DIMENSION, currAxis,
+            PersistenceError.TARGET_HIDDEN_PATH);
+        }
+        Hierarchy hier = null;
+        if (dim != null) {
+          if (hierId == null) {
+            hier = currAxis.getHierarchy(dim);
+            if (hier == null) {
+              hier = dim.getDefaultHierarchy();
+            }
+          } else {
+            hier = dim.getHierarchyById(hierId);
+          }
+        }
+        Element[] hiddenPath = CubeViewHandler1_3.this.getPathById(path, dim, hier,
+          currAxis, PersistenceError.TARGET_HIDDEN_PATH);
+        currAxis.addHidden(dim, hiddenPath);
+      }
+    });
+
+  }
+
+}

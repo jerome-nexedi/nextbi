@@ -1,101 +1,129 @@
-/*     */package org.palo.api.impl.subsets;
-
-/*     */
-/*     */import java.util.HashMap; /*     */
-import java.util.Iterator; /*     */
-import java.util.LinkedHashSet; /*     */
-import java.util.Map; /*     */
-import java.util.Set; /*     */
-import org.palo.api.Attribute; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.SubsetState; /*     */
-import org.palo.api.utils.ElementUtilities;
-
-/*     */
-/*     */public class SubsetStateBuilder
-/*     */{
-  /*     */private String id;
-
-  /*     */private String name;
-
-  /*     */private String expression;
-
-  /*     */private Attribute searchAttribute;
-
-  /* 67 */private final Set elements = new LinkedHashSet();
-
-  /* 68 */private final Map elPaths = new HashMap();
-
-  /* 69 */private final Map elPos = new HashMap();
-
-  /*     */
-  /*     */public final void setId(String id) {
-    /* 72 */this.id = id;
-    /*     */}
-
-  /*     */
-  /*     */final void setName(String name) {
-    /* 76 */this.name = name;
-    /*     */}
-
-  /*     */
-  /*     */final void setExpression(String expression) {
-    /* 80 */this.expression = expression;
-    /*     */}
-
-  /*     */
-  /*     */final void setSearchAttribute(Attribute searchAttribute) {
-    /* 84 */this.searchAttribute = searchAttribute;
-    /*     */}
-
-  /*     */
-  /*     */final void addElement(Element element) {
-    /* 88 */if (element != null)
-      /* 89 */this.elements.add(element);
-    /*     */}
-
-  /*     */
-  /*     */final void setPaths(Element element, String paths) {
-    /* 93 */if (element == null) {
-      /* 94 */return;
-      /*     */}
-    /* 96 */if (paths == null)
-      /* 97 */paths = ElementUtilities.getPaths(element);
-    /* 98 */this.elPaths.put(element, paths);
-    /*     */}
-
-  /*     */
-  /*     */final void setPositions(Element element, String positions) {
-    /* 102 */if ((element == null) || (positions == null))
-      /* 103 */return;
-    /* 104 */this.elPos.put(element, positions);
-    /*     */}
-
-  /*     */
-  /*     */public final SubsetState createState() {
-    /* 108 */SubsetStateImpl state = new SubsetStateImpl(this.id);
-    /* 109 */if (this.name != null)
-      /* 110 */state.setName(this.name);
-    /* 111 */if (this.expression != null)
-      /* 112 */state.setExpression(this.expression);
-    /* 113 */if (this.searchAttribute != null)
-      /* 114 */state.setSearchAttribute(this.searchAttribute);
-    /* 115 */if (!this.elements.isEmpty()) {
-      /* 116 */for (Iterator it = this.elements.iterator(); it.hasNext();) {
-        /* 117 */Element element = (Element) it.next();
-        /* 118 */state.addVisibleElment(element);
-        /* 119 */state.setPaths(element, (String) this.elPaths.get(element));
-        /* 120 */state.setPosition(element, (String) this.elPos.get(element));
-        /*     */}
-      /*     */}
-    /* 123 */return state;
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file SubsetStateBuilder.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author ArndHouben
+*
+* @version $Id: SubsetStateBuilder.java,v 1.8 2009/04/29 10:21:57 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.impl.subsets.SubsetStateBuilder JD-Core Version:
- * 0.5.4
+ * (c) Tensegrity Software 20056. All rights reserved.
  */
+package org.palo.api.impl.subsets;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.palo.api.Attribute;
+import org.palo.api.Element;
+import org.palo.api.SubsetState;
+import org.palo.api.utils.ElementUtilities;
+
+/**
+ * An internally used builder to create {@link SubsetState}s. The main usage of 
+ * this builder is during the restore of persistent subsets. Therefore this
+ * builder is for internal usage only.
+ * <p>
+ * <b>Note:</b> this builder is for internal usage only!
+ * </p>
+ 
+ * @author ArndHouben
+ * @version $Id: SubsetStateBuilder.java,v 1.8 2009/04/29 10:21:57 PhilippBouillon Exp $
+ */
+public class SubsetStateBuilder {
+
+  private String id;
+
+  private String name;
+
+  private String expression;
+
+  private Attribute searchAttribute;
+
+  private final Set elements = new LinkedHashSet();
+
+  private final Map elPaths = new HashMap();
+
+  private final Map elPos = new HashMap();
+
+  public final void setId(String id) {
+    this.id = id;
+  }
+
+  final void setName(String name) {
+    this.name = name;
+  }
+
+  final void setExpression(String expression) {
+    this.expression = expression;
+  }
+
+  final void setSearchAttribute(Attribute searchAttribute) {
+    this.searchAttribute = searchAttribute;
+  }
+
+  final void addElement(Element element) {
+    if (element != null)
+      elements.add(element);
+  }
+
+  final void setPaths(Element element, String paths) {
+    if (element == null)
+      return;
+    //PR 6725: take default paths of element if no paths are given...
+    if (paths == null)
+      paths = ElementUtilities.getPaths(element);
+    elPaths.put(element, paths);
+  }
+
+  final void setPositions(Element element, String positions) {
+    if (element == null || positions == null)
+      return;
+    elPos.put(element, positions);
+  }
+
+  public final SubsetState createState() {
+    SubsetStateImpl state = new SubsetStateImpl(id);
+    if (name != null)
+      state.setName(name);
+    if (expression != null)
+      state.setExpression(expression);
+    if (searchAttribute != null)
+      state.setSearchAttribute(searchAttribute);
+    if (!elements.isEmpty()) {
+      for (Iterator it = elements.iterator(); it.hasNext();) {
+        Element element = (Element) it.next();
+        state.addVisibleElment(element);
+        state.setPaths(element, (String) elPaths.get(element));
+        state.setPosition(element, (String) elPos.get(element));
+      }
+    }
+    return state;
+  }
+}

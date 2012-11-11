@@ -1,244 +1,256 @@
-/*     */package org.palo.api.impl;
-
-/*     */
-/*     */import com.tensegrity.palojava.ExportContextInfo; /*     */
-import org.palo.api.Condition; /*     */
-import org.palo.api.Cube; /*     */
-import org.palo.api.Dimension; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.ExportContext; /*     */
-import org.palo.api.Hierarchy;
-
-/*     */
-/*     */class ExportContextImpl
-/*     */implements ExportContext
-/*     */{
-  /*     */private final Cube cube;
-
-  /*     */private final ExportContextInfo contextInfo;
-
-  /*     */
-  /*     */ExportContextImpl(Cube cube)
-  /*     */{
-    /* 62 */this(cube, null);
-    /*     */}
-
-  /*     */
-  /*     */ExportContextImpl(Cube cube, Element[][] area) {
-    /* 66 */this.cube = cube;
-    /* 67 */this.contextInfo = new ExportContextInfo();
-    /* 68 */init(cube, area);
-    /*     */}
-
-  /*     */
-  /*     */ExportContextInfo getInfo() {
-    /* 72 */return this.contextInfo;
-    /*     */}
-
-  /*     */
-  /*     */public void reset() {
-    /* 76 */init(this.cube, null);
-    /*     */}
-
-  /*     */
-  /*     */public Condition createCondition(String condition, double value) {
-    /* 80 */Condition cond = ConditionImpl.getCondition(condition);
-    /* 81 */cond.setValue(value);
-    /* 82 */return cond;
-    /*     */}
-
-  /*     */
-  /*     */public Condition createCondition(String condition, String value) {
-    /* 86 */Condition cond = ConditionImpl.getCondition(condition);
-    /* 87 */cond.setValue(value);
-    /* 88 */return cond;
-    /*     */}
-
-  /*     */
-  /*     */public String getConditionRepresentation() {
-    /* 92 */return this.contextInfo.getConditionRepresentation();
-    /*     */}
-
-  /*     */
-  /*     */public void setCombinedCondition(Condition firstCondition,
-    Condition secondCondition, String operator)
-  /*     */{
-    /* 97 */if (isValid(operator)) {
-      /* 98 */StringBuffer condition = new StringBuffer();
-      /* 99 */condition.append(firstCondition.toString());
-      /* 100 */condition.append(operator);
-      /* 101 */condition.append(secondCondition.toString());
-      /* 102 */this.contextInfo.setConditionRepresentation(condition.toString());
-      /*     */}
-    /*     */}
-
-  /*     */
-  /*     */public void setCondition(Condition condition) {
-    /* 107 */this.contextInfo.setConditionRepresentation(condition.toString());
-    /*     */}
-
-  /*     */
-  /*     */public boolean isBaseCellsOnly()
-  /*     */{
-    /* 112 */return this.contextInfo.isBaseCellsOnly();
-    /*     */}
-
-  /*     */
-  /*     */public void setBaseCellsOnly(boolean baseCellsOnly) {
-    /* 116 */this.contextInfo.setBaseCellsOnly(baseCellsOnly);
-    /*     */}
-
-  /*     */
-  /*     */public boolean ignoreEmptyCells() {
-    /* 120 */return this.contextInfo.ignoreEmptyCells();
-    /*     */}
-
-  /*     */
-  /*     */public void setIgnoreEmptyCells(boolean ignoreEmptyCells) {
-    /* 124 */this.contextInfo.setIgnoreEmptyCells(ignoreEmptyCells);
-    /*     */}
-
-  /*     */
-  /*     */public final boolean isUseRules() {
-    /* 128 */return this.contextInfo.useRules();
-    /*     */}
-
-  /*     */public final void setUseRules(boolean useRules) {
-    /* 131 */this.contextInfo.setUseRules(useRules);
-    /*     */}
-
-  /*     */
-  /*     */public int getBlocksize() {
-    /* 135 */return this.contextInfo.getBlocksize();
-    /*     */}
-
-  /*     */
-  /*     */public void setBlocksize(int blocksize) {
-    /* 139 */this.contextInfo.setBlocksize(blocksize);
-    /*     */}
-
-  /*     */
-  /*     */public int getType() {
-    /* 143 */return this.contextInfo.getType();
-    /*     */}
-
-  /*     */
-  /*     */public void setType(int type) {
-    /* 147 */this.contextInfo.setType(type);
-    /*     */}
-
-  /*     */
-  /*     */public Element[][] getCellsArea() {
-    /* 151 */String[][] area = this.contextInfo.getCellsArea();
-    /* 152 */Element[][] cells = new Element[area.length][];
-    /* 153 */for (int i = 0; i < area.length; ++i) {
-      /* 154 */cells[i] = new Element[area[i].length];
-      /* 155 */for (int j = 0; j < area[i].length; ++j) {
-        /* 156 */Dimension dim = this.cube.getDimensionAt(j);
-        /* 157 */cells[i][j] = dim.getDefaultHierarchy().getElementByName(
-          area[i][j]);
-        /*     */}
-      /*     */}
-    /* 160 */return cells;
-    /*     */}
-
-  /*     */
-  /*     */public void setCellsArea(Element[][] area) {
-    /* 164 */if (area == null)
-      /* 165 */setAreaToDefault();
-    /*     */else
-      /* 167 */setArea(area);
-    /*     */}
-
-  /*     */
-  /*     */public double getProgress() {
-    /* 171 */return this.contextInfo.getProgress();
-    /*     */}
-
-  /*     */public void setProgress(double progress) {
-    /* 174 */this.contextInfo.setProgress(progress);
-    /*     */}
-
-  /*     */
-  /*     */public Element[] getExportAfter() {
-    /* 178 */String[] ids = this.contextInfo.getExportAfter();
-    /* 179 */if (ids == null)
-      /* 180 */return null;
-    /* 181 */Element[] path = new Element[ids.length];
-    /* 182 */for (int i = 0; i < ids.length; ++i) {
-      /* 183 */Dimension dim = this.cube.getDimensionAt(i);
-      /* 184 */path[i] = dim.getDefaultHierarchy().getElementById(ids[i]);
-      /*     */}
-    /* 186 */return path;
-    /*     */}
-
-  /*     */
-  /*     */public void setExportAfter(Element[] path)
-  /*     */{
-    /* 193 */if (path == null) {
-      /* 194 */this.contextInfo.setExportAfter(null);
-      /* 195 */return;
-      /*     */}
-    /* 197 */String[] ids = new String[path.length];
-    /* 198 */for (int i = 0; i < path.length; ++i)
-      /* 199 */ids[i] = path[i].getId();
-    /* 200 */this.contextInfo.setExportAfter(ids);
-    /*     */}
-
-  /*     */
-  /*     */private final boolean isValid(String operator)
-  /*     */{
-    /* 210 */return (operator.equals("or")) ||
-    /* 209 */(operator.equals("xor")) ||
-    /* 210 */(operator.equals("and"));
-    /*     */}
-
-  /*     */
-  /*     */private final void init(Cube cube, Element[][] area)
-  /*     */{
-    /* 215 */this.contextInfo.setProgress(0.0D);
-    /* 216 */this.contextInfo.setConditionRepresentation(null);
-    /* 217 */this.contextInfo.setBlocksize(1000);
-    /* 218 */this.contextInfo.setType(0);
-    /* 219 */this.contextInfo.setBaseCellsOnly(true);
-    /* 220 */this.contextInfo.setIgnoreEmptyCells(true);
-    /* 221 */this.contextInfo.setExportAfter(null);
-    /* 222 */if (area == null)
-    /*     */{
-      /* 224 */setAreaToDefault();
-      /*     */}
-    /* 226 */else
-      setArea(area);
-    /*     */}
-
-  /*     */
-  /*     */private final void setAreaToDefault()
-  /*     */{
-    /* 232 */Dimension[] dims = this.cube.getDimensions();
-    /* 233 */Element[][] area = new Element[dims.length][];
-    /* 234 */for (int i = 0; i < area.length; ++i) {
-      /* 235 */Dimension dim = this.cube.getDimensionAt(i);
-      /* 236 */area[i] = dim.getDefaultHierarchy().getElements();
-      /*     */}
-    /* 238 */setArea(area);
-    /*     */}
-
-  /*     */
-  /*     */private final void setArea(Element[][] area) {
-    /* 242 */String[][] ids = new String[area.length][];
-    /* 243 */for (int i = 0; i < area.length; ++i) {
-      /* 244 */ids[i] = new String[area[i].length];
-      /* 245 */for (int j = 0; j < area[i].length; ++j) {
-        /* 246 */ids[i][j] = area[i][j].getId();
-        /*     */}
-      /*     */}
-    /* 249 */this.contextInfo.setCellsArea(ids);
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file ExportContextImpl.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Axel Kiselev
+*
+* @version $Id: ExportContextImpl.java,v 1.10 2010/06/10 05:50:31 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.impl.ExportContextImpl JD-Core Version: 0.5.4
+ * (c) Tensegrity Software 2007. All rights reserved.
  */
+package org.palo.api.impl;
+
+import org.palo.api.Condition;
+import org.palo.api.Cube;
+import org.palo.api.Dimension;
+import org.palo.api.Element;
+import org.palo.api.ExportContext;
+
+import com.tensegrity.palojava.ExportContextInfo;
+
+/**
+ * {@<describe>}
+ * <p>
+ * <code>ExportContext</code> interface implementation
+ * </p>
+ * {@</describe>}
+ *
+ * @author Axel Kiselev
+ * @author ArndHouben
+ * @version $Id: ExportContextImpl.java,v 1.10 2010/06/10 05:50:31 PhilippBouillon Exp $
+ */
+class ExportContextImpl implements ExportContext {
+
+  private final Cube cube;
+
+  private final ExportContextInfo contextInfo;
+
+  ExportContextImpl(Cube cube) {
+    this(cube, null);
+  }
+
+  ExportContextImpl(Cube cube, Element[][] area) {
+    this.cube = cube;
+    contextInfo = new ExportContextInfo();
+    init(cube, area);
+  }
+
+  ExportContextInfo getInfo() {
+    return contextInfo;
+  }
+
+  public void reset() {
+    init(cube, null);
+  }
+
+  public Condition createCondition(String condition, double value) {
+    Condition cond = ConditionImpl.getCondition(condition);
+    cond.setValue(value);
+    return cond;
+  }
+
+  public Condition createCondition(String condition, String value) {
+    Condition cond = ConditionImpl.getCondition(condition);
+    cond.setValue(value);
+    return cond;
+  }
+
+  public String getConditionRepresentation() {
+    return contextInfo.getConditionRepresentation();
+  }
+
+  public void setCombinedCondition(Condition firstCondition,
+    Condition secondCondition, String operator) {
+    if (isValid(operator)) {
+      StringBuffer condition = new StringBuffer();
+      condition.append(firstCondition.toString());
+      condition.append(operator);
+      condition.append(secondCondition.toString());
+      contextInfo.setConditionRepresentation(condition.toString());
+    }
+  }
+
+  public void setCondition(Condition condition) {
+    contextInfo.setConditionRepresentation(condition.toString());
+  }
+
+  public boolean isBaseCellsOnly() {
+    return contextInfo.isBaseCellsOnly();
+  }
+
+  public void setBaseCellsOnly(boolean baseCellsOnly) {
+    contextInfo.setBaseCellsOnly(baseCellsOnly);
+  }
+
+  public boolean ignoreEmptyCells() {
+    return contextInfo.ignoreEmptyCells();
+  }
+
+  public void setIgnoreEmptyCells(boolean ignoreEmptyCells) {
+    contextInfo.setIgnoreEmptyCells(ignoreEmptyCells);
+  }
+
+  public final boolean isUseRules() {
+    return contextInfo.useRules();
+  }
+
+  public final void setUseRules(boolean useRules) {
+    contextInfo.setUseRules(useRules);
+  }
+
+  public int getBlocksize() {
+    return contextInfo.getBlocksize();
+  }
+
+  public void setBlocksize(int blocksize) {
+    contextInfo.setBlocksize(blocksize);
+  }
+
+  public int getType() {
+    return contextInfo.getType();
+  }
+
+  public void setType(int type) {
+    contextInfo.setType(type);
+  }
+
+  public Element[][] getCellsArea() {
+    String[][] area = contextInfo.getCellsArea();
+    Element[][] cells = new Element[area.length][];
+    for (int i = 0; i < area.length; i++) {
+      cells[i] = new Element[area[i].length];
+      for (int j = 0; j < area[i].length; j++) {
+        Dimension dim = cube.getDimensionAt(j);
+        cells[i][j] = dim.getDefaultHierarchy().getElementByName(area[i][j]);
+      }
+    }
+    return cells;
+  }
+
+  public void setCellsArea(Element[][] area) {
+    if (area == null)
+      setAreaToDefault();
+    else
+      setArea(area);
+  }
+
+  public double getProgress() {
+    return contextInfo.getProgress();
+  }
+
+  public void setProgress(double progress) {
+    contextInfo.setProgress(progress);
+  }
+
+  public Element[] getExportAfter() {
+    String[] ids = contextInfo.getExportAfter();
+    if (ids == null)
+      return null;
+    Element[] path = new Element[ids.length];
+    for (int i = 0; i < ids.length; i++) {
+      Dimension dim = cube.getDimensionAt(i);
+      path[i] = dim.getDefaultHierarchy().getElementById(ids[i]);
+    }
+    return path;
+  }
+
+  public void setExportAfter(Element[] path) {
+    //AXEL
+    //incoming null must be accepted - otherwise there is no way
+    //to re-start export correctly from the beginning
+    if (path == null) {
+      contextInfo.setExportAfter(null);
+      return;
+    }
+    String[] ids = new String[path.length];
+    for (int i = 0; i < path.length; i++)
+      ids[i] = path[i].getId();
+    contextInfo.setExportAfter(ids);
+  }
+
+  //--------------------------------------------------------------------------
+  // INTERNAL
+  //
+  private final boolean isValid(String operator) {
+    return operator.equals(ExportContext.OR) || operator.equals(ExportContext.XOR)
+      || operator.equals(ExportContext.AND);
+  }
+
+  private final void init(Cube cube, Element[][] area) {
+    //default values:
+    contextInfo.setProgress(0);
+    contextInfo.setConditionRepresentation(null);
+    contextInfo.setBlocksize(1000);
+    contextInfo.setType(ExportContext.TYPE_BOTH);
+    contextInfo.setBaseCellsOnly(true);
+    contextInfo.setIgnoreEmptyCells(true);
+    contextInfo.setExportAfter(null); //AXEL required for real reset
+    if (area == null) {
+      // create a default cell area
+      setAreaToDefault();
+    } else {
+      setArea(area); //this.area = area;
+    }
+  }
+
+  private final void setAreaToDefault() {
+    // create a default cell area
+    Dimension[] dims = cube.getDimensions();
+    Element[][] area = new Element[dims.length][];
+    //		for (int i = 0; i < area.length; ++i) {
+    //			Dimension dim = cube.getDimensionAt(i);
+    //			area[i] = dim.getDefaultHierarchy().getElements();
+    //		}
+    setArea(area);
+  }
+
+  private final void setArea(Element[][] area) {
+    String[][] ids = new String[area.length][];
+    for (int i = 0; i < area.length; i++) {
+      if (area[i] == null || area[i].length == 0) {
+        ids[i] = new String[1];
+        ids[i][0] = "*";
+      } else {
+        ids[i] = new String[area[i].length];
+        for (int j = 0; j < area[i].length; j++) {
+          ids[i][j] = area[i][j].getId();
+        }
+      }
+    }
+    contextInfo.setCellsArea(ids);
+  }
+}

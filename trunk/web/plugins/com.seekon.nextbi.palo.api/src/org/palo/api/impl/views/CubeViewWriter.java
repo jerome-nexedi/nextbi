@@ -1,210 +1,254 @@
-/*     */package org.palo.api.impl.views;
+/*
+*
+* @file CubeViewWriter.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Stepan Rutz
+*
+* @version $Id: CubeViewWriter.java,v 1.20 2009/04/29 10:21:58 PhilippBouillon Exp $
+*
+*/
 
-/*     */
-/*     */import java.io.BufferedWriter; /*     */
-import java.io.IOException; /*     */
-import java.io.OutputStream; /*     */
-import java.io.OutputStreamWriter; /*     */
-import java.io.PrintStream; /*     */
-import java.io.PrintWriter; /*     */
-import java.io.Writer; /*     */
-import org.palo.api.Axis; /*     */
-import org.palo.api.Cube; /*     */
-import org.palo.api.CubeView; /*     */
-import org.palo.api.Dimension; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.Hierarchy; /*     */
-import org.palo.api.Subset; /*     */
-import org.palo.api.impl.xml.XMLUtil; /*     */
-import org.palo.api.subsets.Subset2; /*     */
+/*
+ * (c) Tensegrity Software 20057. All rights reserved.
+ */
+package org.palo.api.impl.views;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Writer;
+
+import org.palo.api.Axis;
+import org.palo.api.CubeView;
+import org.palo.api.Dimension;
+import org.palo.api.Element;
+import org.palo.api.Hierarchy;
+import org.palo.api.Subset;
+import org.palo.api.impl.xml.XMLUtil;
+import org.palo.api.subsets.Subset2;
 import org.palo.api.utils.ElementPath;
 
-/*     */
-/*     */class CubeViewWriter
-/*     */{
-  /* 66 */private static CubeViewWriter instance = new CubeViewWriter();
+/**
+ * <code>CubeViewWriter</code>, writes cube views to xml.
+ *
+ * @author Stepan Rutz
+ * @author Arnd Houben
+ * @version $Id: CubeViewWriter.java,v 1.20 2009/04/29 10:21:58 PhilippBouillon Exp $
+ */
+class CubeViewWriter {
 
-  /*     */
-  /* 68 */static CubeViewWriter getInstance() {
+  //--------------------------------------------------------------------------
+  // FACTORY
+  //
+  private static CubeViewWriter instance = new CubeViewWriter();
+
+  static CubeViewWriter getInstance() {
     return instance;
   }
 
-  /*     */
-  /*     */
-  /*     */public void toXML(OutputStream output, CubeView view)
-  /*     */{
-    /*     */try
-    /*     */{
-      /* 77 */toXMLInternal(output, view);
-      /*     */} catch (Exception e) {
-      /* 79 */System.err
-      /* 80 */.println("CubeViewWriter.toXML: " + e.getLocalizedMessage());
-      /*     */}
-    /*     */}
+  private CubeViewWriter() {
+  }
 
-  /*     */
-  /*     */private void toXMLInternal(OutputStream output, CubeView view)
-    throws Exception {
-    /* 85 */PrintWriter w = new PrintWriter(
-    /* 86 */new BufferedWriter(new OutputStreamWriter(output, "UTF-8")), true);
-    /*     */try {
-      /* 88 */w.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
-      /* 89 */w.write("<?paloview version=\"1.4\"?>\r\n");
-      /* 90 */w.write("<view\r\n");
-      /* 91 */w.write("  id=\"" + XMLUtil.printQuoted(view.getId()) + "\"\r\n");
-      /* 92 */w.write("  name=\"" + XMLUtil.printQuoted(view.getName()) + "\"\r\n");
-      /* 93 */w.write("  description=\""
-        + XMLUtil.printQuoted(view.getDescription()) + "\"\r\n");
-      /* 94 */w.write("  cube=\"" + XMLUtil.printQuoted(view.getCube().getId())
-        + "\"\r\n");
-      /* 95 */w.write(">\r\n");
-      /* 96 */String[] keys = view.getProperties();
-      /* 97 */int i = 0;
-      for (int n = keys.length; i < n; ++i) {
-        /* 98 */w.write(" <property id=\"" + XMLUtil.printQuoted(keys[i])
-          + "\" value=\"" +
-          /* 99 */XMLUtil.printQuoted(view.getPropertyValue(keys[i])) + "\"/>\r\n");
-        /*     */}
-      /*     */
-      /* 102 */Axis[] axes = view.getAxes();
-      /* 103 */writeAxes(w, axes);
-      /* 104 */w.write("</view>\r\n");
-      /*     */}
-    /*     */finally
-    /*     */{
-      /* 108 */w.close();
-      /*     */}
-    /*     */}
+  public void toXML(OutputStream output, CubeView view) {
+    try {
+      toXMLInternal(output, view);
+    } catch (Exception e) {
+      System.err.println("CubeViewWriter.toXML: " + e.getLocalizedMessage()); //$NON-NLS-1$
+    }
+  }
 
-  /*     */
-  /*     */private final void writeAxes(Writer w, Axis[] axes) throws IOException
-  /*     */{
-    /* 114 */for (int i = 0; i < axes.length; ++i) {
-      /* 115 */Axis axis = axes[i];
-      /* 116 */w.write("<axis id=\"" + XMLUtil.printQuoted(axis.getId()) +
-      /* 117 */"\" name=\"" + XMLUtil.printQuoted(axis.getName()) +
-      /* 118 */"\">\r\n");
-      /* 119 */Hierarchy[] hierarchies = axis.getHierarchies();
-      /* 120 */Dimension[] dimensions = axis.getDimensions();
-      /* 121 */writeHierarchies(w, hierarchies);
-      /* 122 */writeSelectedElements(w, hierarchies, axis);
-      /* 123 */writeActiveSubsets(w, dimensions, axis);
-      /* 124 */writeExpandedPaths(w, dimensions, axis);
-      /*     */
-      /* 126 */writeVisiblePaths(w, hierarchies, axis);
-      /* 127 */writeProperties(w, axis);
-      /* 128 */w.write("</axis>\r\n");
-      /*     */}
-    /*     */}
+  private void toXMLInternal(OutputStream output, CubeView view) throws Exception {
+    PrintWriter w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
+      output, "UTF-8")), true); //$NON-NLS-1$
+    try {
+      w.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"); //$NON-NLS-1$
+      w.write("<?paloview version=\"1.4\"?>\r\n"); //$NON-NLS-1$
+      w.write("<view\r\n"); //$NON-NLS-1$
+      w.write("  id=\"" + XMLUtil.printQuoted(view.getId()) + "\"\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+      w.write("  name=\"" + XMLUtil.printQuoted(view.getName()) + "\"\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+      w
+        .write("  description=\"" + XMLUtil.printQuoted(view.getDescription()) + "\"\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+      w.write("  cube=\"" + XMLUtil.printQuoted(view.getCube().getId()) + "\"\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+      w.write(">\r\n"); //$NON-NLS-1$
+      String[] keys = view.getProperties();
+      for (int i = 0, n = keys.length; i < n; i++) {
+        w.write(" <property id=\"" + XMLUtil.printQuoted(keys[i]) + "\" value=\""
+          + XMLUtil.printQuoted(view.getPropertyValue(keys[i])) + "\"/>\r\n");
+      }
 
-  /*     */
-  /*     */private final void writeHierarchies(Writer w, Hierarchy[] hierarchies)
-  /*     */throws IOException
-  /*     */{
-    /* 148 */if (hierarchies.length == 0)
-      /* 149 */return;
-    /* 150 */w.write("  <dimensions ids=\"");
-    /* 151 */int lastHier = hierarchies.length - 1;
-    /* 152 */for (int d = 0; d < hierarchies.length; ++d) {
-      /* 153 */w.write(XMLUtil.printQuoted(hierarchies[d].getDimension().getId()));
-      /* 154 */if (d < lastHier)
-        /* 155 */w.write(",");
-      /*     */}
-    /* 157 */w.write("\" hierarchyIds=\"");
-    /* 158 */for (int d = 0; d < hierarchies.length; ++d) {
-      /* 159 */w.write(XMLUtil.printQuoted(hierarchies[d].getId()));
-      /* 160 */if (d < lastHier)
-        /* 161 */w.write(",");
-      /*     */}
-    /* 163 */w.write("\" />\r\n");
-    /*     */}
+      Axis[] axes = view.getAxes();
+      writeAxes(w, axes);
+      w.write("</view>\r\n"); //$NON-NLS-1$
+    } finally {
+      w.close();
+    }
+  }
 
-  /*     */
-  /*     */private final void writeSelectedElements(Writer w,
-    Hierarchy[] hierarchies, Axis axis)
-  /*     */throws IOException
-  /*     */{
-    /* 182 */for (int d = 0; d < hierarchies.length; ++d) {
-      /* 183 */Element element = axis.getSelectedElement(hierarchies[d]);
-      /* 184 */if (element != null)
-        /* 185 */w.write("  <selected element=\"" +
-        /* 186 */XMLUtil.printQuoted(element.getId()) +
-        /* 187 */"\" dimension=\"" +
-        /* 188 */XMLUtil.printQuoted(hierarchies[d].getDimension().getId()) +
-        /* 189 */"\" />\r\n");
-      /*     */}
-    /*     */}
+  private final void writeAxes(Writer w, Axis[] axes) throws IOException {
+    for (int i = 0; i < axes.length; ++i) {
+      Axis axis = axes[i];
+      w.write("<axis id=\"" + XMLUtil.printQuoted(axis.getId()) + "\" name=\""
+        + XMLUtil.printQuoted(axis.getName()) + "\">\r\n"); //$NON-NLS-1$
+      Hierarchy[] hierarchies = axis.getHierarchies();
+      Dimension[] dimensions = axis.getDimensions();
+      writeHierarchies(w, hierarchies);
+      writeSelectedElements(w, hierarchies, axis);
+      writeActiveSubsets(w, dimensions, axis);
+      writeExpandedPaths(w, dimensions, axis);
+      //			writeHiddenPaths(w, dimensions, axis);
+      writeVisiblePaths(w, hierarchies, axis);
+      writeProperties(w, axis);
+      w.write("</axis>\r\n"); //$NON-NLS-1$
+    }
+  }
 
-  /*     */
-  /*     */private final void writeActiveSubsets(Writer w, Dimension[] dimensions,
-    Axis axis)
-  /*     */throws IOException
-  /*     */{
-    /* 196 */for (int d = 0; d < dimensions.length; ++d) {
-      /* 197 */Subset activeSub = axis.getActiveSubset(dimensions[d]);
-      /* 198 */if (activeSub != null) {
-        /* 199 */w.write("  <active subset=\"" +
-        /* 200 */XMLUtil.printQuoted(activeSub.getId()) +
-        /* 201 */"\" dimension=\"" +
-        /* 202 */XMLUtil.printQuoted(dimensions[d].getId()) +
-        /* 203 */"\" />\r\n");
-        /*     */}
-      /*     */
-      /* 206 */Subset2 activeSub2 = axis.getActiveSubset2(dimensions[d]);
-      /* 207 */if (activeSub2 != null)
-        /* 208 */w.write("  <active subset2=\"" +
-        /* 209 */XMLUtil.printQuoted(activeSub2.getId()) +
-        /* 210 */"\" type=\"" +
-        /* 211 */XMLUtil.printQuoted(activeSub2.getType()) +
-        /* 212 */"\" dimension=\"" +
-        /* 213 */XMLUtil.printQuoted(dimensions[d].getId()) +
-        /* 214 */"\" />\r\n");
-      /*     */}
-    /*     */}
+  //    private final void writeDimensions(Writer w, Dimension[] dimensions)
+  //			throws IOException {
+  //    	if(dimensions.length == 0)
+  //    		return;
+  //    	w.write("  <dimensions ids=\"");
+  //    	int lastDim = dimensions.length - 1;
+  //		for (int d = 0; d < dimensions.length; d++) {
+  //			w.write(XMLUtil.printQuoted(dimensions[d].getId()));
+  //			if(d<lastDim)
+  //				w.write(CubeViewPersistence.DELIMITER);
+  //		}		
+  //		w.write("\" />\r\n");
+  //	}
 
-  /*     */
-  /*     */private final void writeExpandedPaths(Writer w, Dimension[] dimensions,
-    Axis axis)
-  /*     */throws IOException
-  /*     */{
-    /* 222 */ElementPath[] paths = axis.getExpandedPaths();
-    /* 223 */for (int i = 0; i < paths.length; ++i)
-      /* 224 */w.write("  <expanded paths=\"" +
-      /* 225 */XMLUtil.printQuoted(paths[i].toString()) + "\" />\r\n");
-    /*     */}
+  private final void writeHierarchies(Writer w, Hierarchy[] hierarchies)
+    throws IOException {
+    if (hierarchies.length == 0)
+      return;
+    w.write("  <dimensions ids=\"");
+    int lastHier = hierarchies.length - 1;
+    for (int d = 0; d < hierarchies.length; d++) {
+      w.write(XMLUtil.printQuoted(hierarchies[d].getDimension().getId()));
+      if (d < lastHier)
+        w.write(CubeViewPersistence.DELIMITER);
+    }
+    w.write("\" hierarchyIds=\"");
+    for (int d = 0; d < hierarchies.length; d++) {
+      w.write(XMLUtil.printQuoted(hierarchies[d].getId()));
+      if (d < lastHier)
+        w.write(CubeViewPersistence.DELIMITER);
+    }
+    w.write("\" />\r\n");
+  }
 
-  /*     */
-  /*     */private final void writeVisiblePaths(Writer w, Hierarchy[] hierarchies,
-    Axis axis)
-  /*     */throws IOException
-  /*     */{
-    /* 245 */for (int d = 0; d < hierarchies.length; ++d) {
-      /* 246 */ElementPath[] paths = axis.getVisiblePaths(hierarchies[d]);
-      /* 247 */for (int i = 0; i < paths.length; ++i)
-        /* 248 */w.write("  <visible path=\"" +
-        /* 249 */XMLUtil.printQuoted(paths[i].toString()) +
-        /* 250 */"\" dimension=\"" +
-        /* 251 */XMLUtil.printQuoted(hierarchies[d].getDimension().getId()) +
-        /* 252 */"\" />\r\n");
-      /*     */}
-    /*     */}
+  //    private final void writeSelectedElements(Writer w, Dimension[] dimensions,
+  //			Axis axis) throws IOException {
+  //		for (int d = 0; d < dimensions.length; d++) {
+  //			Element element = axis.getSelectedElement(dimensions[d]);
+  //			if (element != null) {
+  //				w.write("  <selected element=\""
+  //						+ XMLUtil.printQuoted(element.getId())
+  //						+ "\" dimension=\""
+  //						+ XMLUtil.printQuoted(dimensions[d].getId())
+  //						+ "\" />\r\n");
+  //			}
+  //		}
+  //	}
 
-  /*     */
-  /*     */private final void writeProperties(Writer w, Axis axis)
-    throws IOException
-  /*     */{
-    /* 258 */String[] propIds = axis.getProperties();
-    /* 259 */for (int i = 0; i < propIds.length; ++i)
-      /* 260 */w.write("  <property id=\"" + XMLUtil.printQuoted(propIds[i]) +
-      /* 261 */"\" value=\"" +
-      /* 262 */XMLUtil.printQuoted(axis.getPropertyValue(propIds[i])) +
-      /* 263 */"\" />\r\n");
-    /*     */}
-  /*     */
+  private final void writeSelectedElements(Writer w, Hierarchy[] hierarchies,
+    Axis axis) throws IOException {
+    for (int d = 0; d < hierarchies.length; d++) {
+      Element element = axis.getSelectedElement(hierarchies[d]);
+      if (element != null) {
+        w
+          .write("  <selected element=\"" + XMLUtil.printQuoted(element.getId())
+            + "\" dimension=\""
+            + XMLUtil.printQuoted(hierarchies[d].getDimension().getId())
+            + "\" />\r\n");
+      }
+    }
+  }
+
+  private final void writeActiveSubsets(Writer w, Dimension[] dimensions, Axis axis)
+    throws IOException {
+    for (int d = 0; d < dimensions.length; d++) {
+      Subset activeSub = axis.getActiveSubset(dimensions[d]);
+      if (activeSub != null) {
+        w.write("  <active subset=\"" + XMLUtil.printQuoted(activeSub.getId())
+          + "\" dimension=\"" + XMLUtil.printQuoted(dimensions[d].getId())
+          + "\" />\r\n");
+      }
+      //check new:
+      Subset2 activeSub2 = axis.getActiveSubset2(dimensions[d]);
+      if (activeSub2 != null) {
+        w.write("  <active subset2=\"" + XMLUtil.printQuoted(activeSub2.getId())
+          + "\" type=\"" + XMLUtil.printQuoted(activeSub2.getType())
+          + "\" dimension=\"" + XMLUtil.printQuoted(dimensions[d].getId())
+          + "\" />\r\n");
+      }
+
+    }
+  }
+
+  private final void writeExpandedPaths(Writer w, Dimension[] dimensions, Axis axis)
+    throws IOException {
+    ElementPath[] paths = axis.getExpandedPaths();
+    for (int i = 0; i < paths.length; ++i)
+      w.write("  <expanded paths=\"" + XMLUtil.printQuoted(paths[i].toString())
+        + "\" />\r\n");
+  }
+
+  //    private final void writeVisiblePaths(Writer w, Dimension[] dimensions,
+  //			Axis axis) throws IOException {
+  //		for (int d = 0; d < dimensions.length; d++) {
+  //			ElementPath[] paths = axis.getVisiblePaths(dimensions[d]);
+  //			for (int i = 0; i < paths.length; ++i) {
+  //				w.write("  <visible path=\""
+  //						+ XMLUtil.printQuoted(paths[i].toString())
+  //						+ "\" dimension=\""
+  //						+ XMLUtil.printQuoted(dimensions[d].getId())
+  //						+ "\" />\r\n");
+  //			}
+  //		}
+  //	}
+
+  private final void writeVisiblePaths(Writer w, Hierarchy[] hierarchies, Axis axis)
+    throws IOException {
+    for (int d = 0; d < hierarchies.length; d++) {
+      ElementPath[] paths = axis.getVisiblePaths(hierarchies[d]);
+      for (int i = 0; i < paths.length; ++i) {
+        w
+          .write("  <visible path=\"" + XMLUtil.printQuoted(paths[i].toString())
+            + "\" dimension=\""
+            + XMLUtil.printQuoted(hierarchies[d].getDimension().getId())
+            + "\" />\r\n");
+      }
+    }
+  }
+
+  private final void writeProperties(Writer w, Axis axis) throws IOException {
+    String[] propIds = axis.getProperties();
+    for (int i = 0; i < propIds.length; ++i) {
+      w.write("  <property id=\"" + XMLUtil.printQuoted(propIds[i]) + "\" value=\""
+        + XMLUtil.printQuoted(axis.getPropertyValue(propIds[i])) + "\" />\r\n");
+    }
+  }
 }
-
-/*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.impl.views.CubeViewWriter JD-Core Version: 0.5.4
- */

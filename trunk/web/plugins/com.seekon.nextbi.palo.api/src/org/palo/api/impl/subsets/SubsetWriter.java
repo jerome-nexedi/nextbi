@@ -1,133 +1,152 @@
-/*     */package org.palo.api.impl.subsets;
+/*
+*
+* @file SubsetWriter.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author Stepan Rutz, Arnd Houben
+*
+* @version $Id: SubsetWriter.java,v 1.8 2009/04/29 10:21:57 PhilippBouillon Exp $
+*
+*/
 
-/*     */
-/*     */import java.io.BufferedWriter; /*     */
-import java.io.OutputStream; /*     */
-import java.io.OutputStreamWriter; /*     */
-import java.io.PrintStream; /*     */
-import java.io.PrintWriter; /*     */
-import org.palo.api.Attribute; /*     */
-import org.palo.api.Dimension; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.Subset; /*     */
-import org.palo.api.SubsetState; /*     */
+/*
+ * (c) Tensegrity Software 20056. All rights reserved.
+ */
+package org.palo.api.impl.subsets;
+
+import java.io.BufferedWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+
+import org.palo.api.Attribute;
+import org.palo.api.Element;
+import org.palo.api.Subset;
+import org.palo.api.SubsetState;
 import org.palo.api.impl.xml.XMLUtil;
 
-/*     */
-/*     */class SubsetWriter
-/*     */{
-  /* 57 */private static SubsetWriter instance = new SubsetWriter();
+/**
+ * <code>SubsetWriter</code>, writes subsets and their corresponding states
+ * to xml.
+ *
+ * @author Stepan Rutz, Arnd Houben
+ * @version $Id: SubsetWriter.java,v 1.8 2009/04/29 10:21:57 PhilippBouillon Exp $
+ */
+class SubsetWriter {
 
-  /*     */
-  /* 59 */static final SubsetWriter getInstance() {
+  private static SubsetWriter instance = new SubsetWriter();
+
+  static final SubsetWriter getInstance() {
     return instance;
   }
 
-  /*     */
-  /*     */
-  /*     */final void toXML(OutputStream output, Subset subset)
-  /*     */{
-    /*     */try
-    /*     */{
-      /* 67 */toXMLInternal(output, subset);
-      /*     */} catch (Exception e) {
-      /* 69 */System.err.println(
-      /* 70 */"SubsetWriter.toXML: " + e.getLocalizedMessage());
-      /*     */}
-    /*     */}
+  private SubsetWriter() {
+  }
 
-  /*     */
-  /*     */private final void toXMLInternal(OutputStream output, Subset subset)
-    throws Exception
-  /*     */{
-    /* 76 */PrintWriter w = new PrintWriter(
-    /* 77 */new BufferedWriter(new OutputStreamWriter(output, "UTF-8")));
-    /*     */try {
-      /* 79 */w.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
-      /* 80 */w.write("<?palosubset version=\"1.1\"?>\r\n");
-      /* 81 */w.write("<subset\r\n");
-      /* 82 */w.write("  id=\"" + XMLUtil.printQuoted(subset.getId()) + "\"\r\n");
-      /* 83 */w.write("  name=\"" + XMLUtil.printQuoted(subset.getName())
-        + "\"\r\n");
-      /* 84 */w.write("  description=\""
-        + XMLUtil.printQuoted(subset.getDescription()) + "\"\r\n");
-      /* 85 */w.write("  sourceDimensionId=\""
-        + XMLUtil.printQuoted(subset.getDimension().getId()) + "\"\r\n");
-      /* 86 */if (subset.getAlias() != null)
-        /* 87 */w.write("  alias=\""
-          + XMLUtil.printQuoted(subset.getAlias().getName()) + "\"\r\n");
-      /* 88 */SubsetState activeState = subset.getActiveState();
-      /* 89 */String activeStateId = (activeState == null) ? "" : activeState
-        .getId();
-      /* 90 */w.write("  activeStateId=\"" + XMLUtil.printQuoted(activeStateId)
-        + "\">\r\n");
-      /*     */
-      /* 93 */SubsetState[] states = subset.getStates();
-      /* 94 */for (int i = 0; i < states.length; ++i) {
-        /* 95 */SubsetState state = states[i];
-        /* 96 */w.write("<state\r\n");
-        /* 97 */w.write("  id=\"" + XMLUtil.printQuoted(state.getId()) + "\"\r\n");
-        /* 98 */String name = state.getName();
-        /* 99 */if (name == null)
-          /* 100 */name = "";
-        /* 101 */w.write("  name=\"" + XMLUtil.printQuoted(name) + "\">\r\n");
-        /* 102 */writeExpression(w, state.getExpression());
-        /* 103 */if (state.getSearchAttribute() != null)
-          /* 104 */writeSearchAttribute(w, state.getSearchAttribute());
-        /* 105 */writeElements(w, state);
-        /* 106 */w.write("</state>\r\n");
-        /*     */}
-      /* 108 */w.write("</subset>\r\n");
-      /*     */} finally {
-      /* 110 */w.close();
-      /*     */}
-    /*     */}
+  final void toXML(OutputStream output, Subset subset) {
+    try {
+      toXMLInternal(output, subset);
+    } catch (Exception e) {
+      System.err.println("SubsetWriter.toXML: " + e.getLocalizedMessage()); //$NON-NLS-1$
+    }
+  }
 
-  /*     */
-  /*     */private final void writeExpression(PrintWriter w, String expression) {
-    /* 115 */w.write("<expression expr=\"" + XMLUtil.printQuoted(expression)
-      + "\"/>\r\n");
-    /*     */}
+  private final void toXMLInternal(OutputStream output, Subset subset)
+    throws Exception {
+    PrintWriter w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
+      output, "UTF-8"))); //$NON-NLS-1$
+    try {
+      w.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"); //$NON-NLS-1$
+      w.write("<?palosubset version=\"1.1\"?>\r\n"); //$NON-NLS-1$
+      w.write("<subset\r\n"); //$NON-NLS-1$
+      w.write("  id=\"" + XMLUtil.printQuoted(subset.getId()) + "\"\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+      w.write("  name=\"" + XMLUtil.printQuoted(subset.getName()) + "\"\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+      w
+        .write("  description=\"" + XMLUtil.printQuoted(subset.getDescription()) + "\"\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+      w
+        .write("  sourceDimensionId=\"" + XMLUtil.printQuoted(subset.getDimension().getId()) + "\"\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+      if (subset.getAlias() != null)
+        w
+          .write("  alias=\"" + XMLUtil.printQuoted(subset.getAlias().getName()) + "\"\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
+      SubsetState activeState = subset.getActiveState();
+      String activeStateId = activeState == null ? "" : activeState.getId();
+      w.write("  activeStateId=\"" + XMLUtil.printQuoted(activeStateId) + "\">\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
 
-  /*     */
-  /*     */private final void writeSearchAttribute(PrintWriter w,
-    Attribute searchAttribute) {
-    /* 119 */w.write("<search attribute=\""
-      + XMLUtil.printQuoted(searchAttribute.getName()) + "\"/>\r\n");
-    /*     */}
+      //----------- STATEs -----------
+      SubsetState[] states = subset.getStates();
+      for (int i = 0; i < states.length; i++) {
+        SubsetState state = states[i];
+        w.write("<state\r\n");
+        w.write("  id=\"" + XMLUtil.printQuoted(state.getId()) + "\"\r\n"); //$NON-NLS-1$
+        String name = state.getName();
+        if (name == null)
+          name = "";
+        w.write("  name=\"" + XMLUtil.printQuoted(name) + "\">\r\n"); //$NON-NLS-1$
+        writeExpression(w, state.getExpression());
+        if (state.getSearchAttribute() != null)
+          writeSearchAttribute(w, state.getSearchAttribute());
+        writeElements(w, state); //.getVisibleElements());
+        w.write("</state>\r\n");
+      }
+      w.write("</subset>\r\n"); //$NON-NLS-1$
+    } finally {
+      w.close();
+    }
+  }
 
-  /*     */
-  /*     */private final void writeElements(PrintWriter w, SubsetState state) {
-    /* 123 */Element[] elements = state.getVisibleElements();
-    /* 124 */StringBuffer elTag = new StringBuffer();
-    /* 125 */for (int i = 0; i < elements.length; ++i)
-    /*     */{
-      /* 129 */elTag.append("<element id=\"");
-      /* 130 */elTag.append(XMLUtil.printQuoted(elements[i].getId()));
-      /* 131 */elTag.append("\" ");
-      /* 132 */String elPaths =
-      /* 133 */((SubsetStateImpl) state).getPathsAsString(elements[i]);
-      /* 134 */if (elPaths != null) {
-        /* 135 */elTag.append("paths=\"");
-        /* 136 */elTag.append(XMLUtil.printQuoted(elPaths));
-        /* 137 */elTag.append("\" ");
-        /*     */}
-      /* 139 */String positions =
-      /* 140 */((SubsetStateImpl) state).getPositionsAsString(elements[i]);
-      /* 141 */if ((positions != null) && (positions.length() > 0)) {
-        /* 142 */elTag.append("pos=\"");
-        /* 143 */elTag.append(XMLUtil.printQuoted(positions));
-        /* 144 */elTag.append("\" ");
-        /*     */}
-      /* 146 */elTag.append("/>\r\n");
-      /*     */}
-    /* 148 */w.write(elTag.toString());
-    /*     */}
-  /*     */
+  private final void writeExpression(PrintWriter w, String expression) {
+    w.write("<expression expr=\"" + XMLUtil.printQuoted(expression) + "\"/>\r\n"); //$NON-NLS-1$
+  }
+
+  private final void writeSearchAttribute(PrintWriter w, Attribute searchAttribute) {
+    w
+      .write("<search attribute=\"" + XMLUtil.printQuoted(searchAttribute.getName()) + "\"/>\r\n"); //$NON-NLS-1$
+  }
+
+  private final void writeElements(PrintWriter w, SubsetState state) {
+    Element[] elements = state.getVisibleElements();
+    StringBuffer elTag = new StringBuffer();
+    for (int i = 0; i < elements.length; i++) {
+      // w.write("<element id=\"" +
+      // XMLUtil.printQuoted(elements[i].getName()) + "\"/>\r\n");
+      // //$NON-NLS-1$ //$NON-NLS-2$
+      elTag.append("<element id=\""); //$NON-NLS-1$
+      elTag.append(XMLUtil.printQuoted(elements[i].getId()));
+      elTag.append("\" "); //$NON-NLS-1$
+      String elPaths = ((SubsetStateImpl) state).getPathsAsString(elements[i]);
+      if (elPaths != null) {
+        elTag.append("paths=\""); //$NON-NLS-1$
+        elTag.append(XMLUtil.printQuoted(elPaths));
+        elTag.append("\" "); //$NON-NLS-1$
+      }
+      String positions = ((SubsetStateImpl) state).getPositionsAsString(elements[i]);
+      if (positions != null && positions.length() > 0) {
+        elTag.append("pos=\"");
+        elTag.append(XMLUtil.printQuoted(positions));
+        elTag.append("\" ");
+      }
+      elTag.append("/>\r\n"); //$NON-NLS-1$
+    }
+    w.write(elTag.toString());
+  }
 }
-
-/*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.impl.subsets.SubsetWriter JD-Core Version: 0.5.4
- */

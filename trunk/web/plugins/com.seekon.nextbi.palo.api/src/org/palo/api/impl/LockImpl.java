@@ -1,61 +1,86 @@
-/*    */package org.palo.api.impl;
-
-/*    */
-/*    */import com.tensegrity.palojava.LockInfo; /*    */
-import org.palo.api.Cell; /*    */
-import org.palo.api.Lock;
-
-/*    */
-/*    */class LockImpl
-/*    */implements Lock
-/*    */{
-  /*    */private final LockInfo lockInfo;
-
-  /*    */
-  /*    */LockImpl(LockInfo lockInfo)
-  /*    */{
-    /* 55 */this.lockInfo = lockInfo;
-    /*    */}
-
-  /*    */
-  /*    */public final Cell[] getArea()
-  /*    */{
-    /* 61 */return null;
-    /*    */}
-
-  /*    */
-  /*    */public final String getId() {
-    /* 65 */return this.lockInfo.getId();
-    /*    */}
-
-  /*    */
-  /*    */public final int getSteps() {
-    /* 69 */return this.lockInfo.getSteps();
-    /*    */}
-
-  /*    */
-  /*    */final LockInfo getInfo() {
-    /* 73 */return this.lockInfo;
-    /*    */}
-
-  /*    */
-  /*    */public final boolean equals(Object obj) {
-    /* 77 */if (obj instanceof Lock) {
-      /* 78 */Lock other = (Lock) obj;
-      /* 79 */return getId().equals(other.getId());
-      /*    */}
-    /* 81 */return false;
-    /*    */}
-
-  /*    */
-  /*    */public final int hashCode() {
-    /* 85 */return this.lockInfo.hashCode();
-    /*    */}
-  /*    */
-}
+/*
+*
+* @file LockImpl.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author ArndHouben
+*
+* @version $Id: LockImpl.java,v 1.2 2009/04/29 10:21:57 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.impl.LockImpl JD-Core Version: 0.5.4
+ * (c) Tensegrity Software 2008
+ * All rights reserved
  */
+package org.palo.api.impl;
+
+import org.palo.api.Cell;
+import org.palo.api.Lock;
+
+import com.tensegrity.palojava.LockInfo;
+
+/**
+ * <code>LockImpl</code>
+ * TODO DOCUMENT ME
+ *
+ * @author ArndHouben
+ * @version $Id: LockImpl.java,v 1.2 2009/04/29 10:21:57 PhilippBouillon Exp $
+ **/
+class LockImpl implements Lock {
+
+  private final LockInfo lockInfo;
+
+  LockImpl(LockInfo lockInfo) {
+    this.lockInfo = lockInfo;
+  }
+
+  public final Cell[] getArea() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public final String getId() {
+    return lockInfo.getId();
+  }
+
+  public final int getSteps() {
+    return lockInfo.getSteps();
+  }
+
+  final LockInfo getInfo() {
+    return lockInfo;
+  }
+
+  public final boolean equals(Object obj) {
+    if (obj instanceof Lock) {
+      Lock other = (Lock) obj;
+      return getId().equals(other.getId());
+    }
+    return false;
+  }
+
+  public final int hashCode() {
+    return lockInfo.hashCode();
+  }
+}

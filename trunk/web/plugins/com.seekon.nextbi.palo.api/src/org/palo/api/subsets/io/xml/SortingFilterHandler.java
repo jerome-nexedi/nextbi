@@ -1,204 +1,222 @@
-/*     */package org.palo.api.subsets.io.xml;
-
-/*     */
-/*     */import org.palo.api.Dimension; /*     */
-import org.palo.api.Element; /*     */
-import org.palo.api.subsets.SubsetFilter; /*     */
-import org.palo.api.subsets.filter.SortingFilter; /*     */
-import org.palo.api.subsets.filter.settings.IntegerParameter; /*     */
-import org.palo.api.subsets.filter.settings.SortingFilterSetting; /*     */
-import org.palo.api.subsets.filter.settings.StringParameter;
-
-/*     */
-/*     */class SortingFilterHandler extends AbstractSubsetFilterHandler
-/*     */{
-  /*     */public static final String XPATH = "/subset/sorting_filter";
-
-  /*     */private static final String SORTING_CRITERIA_VALUE = "/subset/sorting_filter/sorting_criteria/value";
-
-  /*     */private static final String SORTING_CRITERIA_PARAMETER = "/subset/sorting_filter/sorting_criteria/parameter";
-
-  /*     */private static final String REVERSE_VALUE = "/subset/sorting_filter/reverse/value";
-
-  /*     */private static final String REVERSE_PARAMETER = "/subset/sorting_filter/reverse/parameter";
-
-  /*     */private static final String TYPE_LIMITATION_VALUE = "/subset/sorting_filter/type_limitation/value";
-
-  /*     */private static final String TYPE_LIMITATION_PARAMETER = "/subset/sorting_filter/type_limitation/parameter";
-
-  /*     */private static final String WHOLE_VALUE = "/subset/sorting_filter/whole/value";
-
-  /*     */private static final String WHOLE_PARAMETER = "/subset/sorting_filter/whole/parameter";
-
-  /*     */private static final String ATTRIBUTE_VALUE = "/subset/sorting_filter/attribute/value";
-
-  /*     */private static final String ATTRIBUTE_PARAMETER = "/subset/sorting_filter/attribute/parameter";
-
-  /*     */private static final String LEVEL_ELEMENT_1_0RC2_VALUE = "/subset/sorting_filter/level_element/value";
-
-  /*     */private static final String LEVEL_ELEMENT_1_0RC2_PARAMETER = "/subset/sorting_filter/level_element/parameter";
-
-  /*     */private static final String LEVEL_ELEMENT_VALUE = "/subset/sorting_filter/level/value";
-
-  /*     */private static final String LEVEL_ELEMENT_PARAMETER = "/subset/sorting_filter/level/parameter";
-
-  /*     */private static final String SHOW_DUPLICATES_VALUE = "/subset/sorting_filter/show_duplicates/value";
-
-  /*     */private static final String SHOW_DUPLICATES_PARAMETER = "/subset/sorting_filter/show_duplicates/parameter";
-
-  /*     */private final SortingFilterSetting sfInfo;
-
-  /*     */
-  /*     */public SortingFilterHandler()
-  /*     */{
-    /* 81 */this.sfInfo = new SortingFilterSetting();
-    /*     */}
-
-  /*     */
-  /*     */public final String getXPath()
-  /*     */{
-    /* 86 */return "/subset/sorting_filter";
-    /*     */}
-
-  /*     */public final void enter(String path) {
-    /*     */}
-
-  /*     */
-  /*     */public final void leave(String path, String value) {
-    /* 92 */if (path.equals("/subset/sorting_filter/sorting_criteria/value")) {
-      /* 93 */this.sfInfo.setSortCriteria(SubsetXMLHandler.getInteger(value));
-      /* 94 */} else if (path
-      .equals("/subset/sorting_filter/sorting_criteria/parameter")) {
-      /* 95 */IntegerParameter oldParam = this.sfInfo.getSortCriteria();
-      /* 96 */this.sfInfo.setSortCriteria(new IntegerParameter(value));
-      /* 97 */this.sfInfo.setSortCriteria(oldParam.getValue().intValue());
-      /*     */}
-    /* 99 */else if (path.equals("/subset/sorting_filter/reverse/value")) {
-      /* 100 */this.sfInfo.setOrderMode(SubsetXMLHandler.getInteger(value));
-      /* 101 */} else if (path.equals("/subset/sorting_filter/reverse/parameter")) {
-      /* 102 */IntegerParameter oldParam = this.sfInfo.getOrderMode();
-      /* 103 */this.sfInfo.setOrderMode(new IntegerParameter(value));
-      /* 104 */this.sfInfo.setOrderMode(oldParam.getValue().intValue());
-      /*     */}
-    /* 106 */else if (path.equals("/subset/sorting_filter/type_limitation/value")) {
-      /* 107 */this.sfInfo.setSortTypeMode(SubsetXMLHandler.getInteger(value));
-      /* 108 */} else if (path
-      .equals("/subset/sorting_filter/type_limitation/parameter")) {
-      /* 109 */IntegerParameter oldParam = this.sfInfo.getSortTypeMode();
-      /* 110 */this.sfInfo.setSortTypeMode(new IntegerParameter(value));
-      /* 111 */this.sfInfo.setSortTypeMode(oldParam.getValue().intValue());
-      /*     */}
-    /* 113 */else if (path.equals("/subset/sorting_filter/whole/value")) {
-      /* 114 */this.sfInfo.setHierarchicalMode(SubsetXMLHandler.getInteger(value));
-      /* 115 */} else if (path.equals("/subset/sorting_filter/whole/parameter")) {
-      /* 116 */IntegerParameter oldParam = this.sfInfo.getHierarchicalMode();
-      /* 117 */this.sfInfo.setHierarchicalMode(new IntegerParameter(value));
-      /* 118 */this.sfInfo.setHierarchicalMode(oldParam.getValue().intValue());
-      /*     */}
-    /* 120 */else if (path.equals("/subset/sorting_filter/attribute/value")) {
-      /* 121 */this.sfInfo.setSortAttribute(value);
-      /* 122 */} else if (path.equals("/subset/sorting_filter/attribute/parameter")) {
-      /* 123 */StringParameter oldParam = this.sfInfo.getSortAttribute();
-      /* 124 */this.sfInfo.setSortAttribute(new StringParameter(value));
-      /* 125 */this.sfInfo.setSortAttribute(oldParam.getValue());
-      /*     */}
-    /* 127 */else if (path.equals("/subset/sorting_filter/level_element/value")) {
-      /* 128 */this.sfInfo.setSortLevelElement(value);
-      /* 129 */} else if (path
-      .equals("/subset/sorting_filter/level_element/parameter")) {
-      /* 130 */StringParameter oldParm = this.sfInfo.getSortLevelElement();
-      /* 131 */this.sfInfo.setSortLevelElement(new StringParameter(value));
-      /* 132 */this.sfInfo.setSortLevelElement(oldParm.getValue());
-      /*     */}
-    /* 134 */else if (path.equals("/subset/sorting_filter/level/value")) {
-      /* 135 */this.sfInfo.setSortLevel(SubsetXMLHandler.getInteger(value));
-      /* 136 */} else if (path.equals("/subset/sorting_filter/level/parameter")) {
-      /* 137 */IntegerParameter oldParm = this.sfInfo.getSortLevel();
-      /* 138 */this.sfInfo.setSortLevel(new IntegerParameter(value));
-      /* 139 */this.sfInfo.setSortLevel(oldParm.getValue().intValue());
-      /*     */}
-    /* 141 */else if (path.equals("/subset/sorting_filter/show_duplicates/value")) {
-      /* 142 */this.sfInfo.setShowDuplicates(SubsetXMLHandler.getInteger(value));
-      /* 143 */} else if (path
-      .equals("/subset/sorting_filter/show_duplicates/parameter")) {
-      /* 144 */IntegerParameter oldParam = this.sfInfo.getShowDuplicates();
-      /* 145 */this.sfInfo.setShowDuplicates(new IntegerParameter(value));
-      /* 146 */this.sfInfo.setShowDuplicates(oldParam.getValue().intValue());
-      /*     */}
-    /*     */}
-
-  /*     */
-  /*     */public final SubsetFilter createFilter(Dimension dimension)
-  /*     */{
-    /* 152 */if ((this.subsetVersion.equals("1.0rc2")) &&
-    /* 153 */(this.sfInfo.doSortPerLevel()))
-    /*     */{
-      /* 155 */Element sortElement = dimension.getElementById(
-      /* 156 */this.sfInfo.getSortLevelElement().getValue());
-      /* 157 */if (sortElement != null) {
-        /* 158 */this.sfInfo.setSortLevel(sortElement.getLevel());
-        /* 159 */this.sfInfo.setSortLevelElement("");
-        /*     */}
-      /*     */}
-    /*     */
-    /* 163 */return new SortingFilter(dimension, this.sfInfo);
-    /*     */}
-
-  /*     */
-  /*     */public static final String getPersistenceString(SortingFilter filter) {
-    /* 167 */SortingFilterSetting sfInfo = filter.getSettings();
-    /* 168 */StringBuffer xmlStr = new StringBuffer();
-    /* 169 */xmlStr.append("<sorting_filter>\r\n");
-    /*     */
-    /* 171 */if (sfInfo.doHierarchy()) {
-      /* 172 */xmlStr.append("<whole>\r\n");
-      /* 173 */xmlStr.append(
-      /* 174 */ParameterHandler.getXML(sfInfo.getHierarchicalMode()));
-      /* 175 */xmlStr.append("</whole>\r\n");
-      /*     */}
-    /*     */
-    /* 178 */xmlStr.append("<sorting_criteria>\r\n");
-    /* 179 */xmlStr.append(ParameterHandler.getXML(sfInfo.getSortCriteria()));
-    /* 180 */xmlStr.append("</sorting_criteria>\r\n");
-    /*     */
-    /* 182 */if (sfInfo.doSortByAttribute()) {
-      /* 183 */xmlStr.append("<attribute>\r\n");
-      /* 184 */xmlStr.append(ParameterHandler.getXML(sfInfo.getSortAttribute()));
-      /* 185 */xmlStr.append("</attribute>\r\n");
-      /*     */}
-    /*     */
-    /* 188 */if (sfInfo.doSortByType()) {
-      /* 189 */xmlStr.append("<type_limitation>\r\n");
-      /* 190 */xmlStr.append(ParameterHandler.getXML(sfInfo.getSortTypeMode()));
-      /* 191 */xmlStr.append("</type_limitation>\r\n");
-      /*     */}
-    /*     */
-    /* 194 */if (sfInfo.doSortPerLevel()) {
-      /* 195 */xmlStr.append("<level>\r\n");
-      /* 196 */xmlStr.append(ParameterHandler.getXML(sfInfo.getSortLevel()));
-      /* 197 */xmlStr.append("</level>\r\n");
-      /*     */}
-    /*     */
-    /* 200 */if (sfInfo.doReverseOrder()) {
-      /* 201 */xmlStr.append("<reverse>\r\n");
-      /* 202 */xmlStr.append(
-      /* 203 */ParameterHandler.getXML(sfInfo.getOrderMode()));
-      /* 204 */xmlStr.append("</reverse>\r\n");
-      /*     */}
-    /*     */
-    /* 207 */xmlStr.append("<show_duplicates>\r\n");
-    /* 208 */xmlStr.append(ParameterHandler.getXML(sfInfo.getShowDuplicates()));
-    /* 209 */xmlStr.append("</show_duplicates>\r\n");
-    /*     */
-    /* 211 */xmlStr.append("</sorting_filter>\r\n");
-    /* 212 */return xmlStr.toString();
-    /*     */}
-  /*     */
-}
+/*
+*
+* @file SortingFilterHandler.java
+*
+* Copyright (C) 2006-2009 Tensegrity Software GmbH
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License (Version 2) as published
+* by the Free Software Foundation at http://www.gnu.org/copyleft/gpl.html.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along with
+* this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+* Place, Suite 330, Boston, MA 02111-1307 USA
+*
+* If you are developing and distributing open source applications under the
+* GPL License, then you are free to use JPalo Modules under the GPL License.  For OEMs,
+* ISVs, and VARs who distribute JPalo Modules with their products, and do not license
+* and distribute their source code under the GPL, Tensegrity provides a flexible
+* OEM Commercial License.
+*
+* @author ArndHouben
+*
+* @version $Id: SortingFilterHandler.java,v 1.9 2009/04/29 10:21:58 PhilippBouillon Exp $
+*
+*/
 
 /*
- * Location:
- * E:\workspace\eclipse\opensourceBI\bicp\com.seekon.bicp.palo\lib\paloapi.jar
- * Qualified Name: org.palo.api.subsets.io.xml.SortingFilterHandler JD-Core
- * Version: 0.5.4
+ * (c) Tensegrity Software 2007
+ * All rights reserved
  */
+package org.palo.api.subsets.io.xml;
+
+import org.palo.api.Dimension;
+import org.palo.api.Element;
+import org.palo.api.subsets.SubsetFilter;
+import org.palo.api.subsets.filter.SortingFilter;
+import org.palo.api.subsets.filter.settings.IntegerParameter;
+import org.palo.api.subsets.filter.settings.SortingFilterSetting;
+import org.palo.api.subsets.filter.settings.StringParameter;
+
+/**
+ * <code>SortingFilterHandler</code>
+ * <p>
+ * API internal implementation of the {@link SubsetFilterHandler} interface 
+ * which handles {@link SortingFilter}s.
+ * </p>
+ *
+ * @author ArndHouben
+ * @version $Id: SortingFilterHandler.java,v 1.9 2009/04/29 10:21:58 PhilippBouillon Exp $
+ **/
+class SortingFilterHandler extends AbstractSubsetFilterHandler {
+
+  public static final String XPATH = "/subset/sorting_filter";
+
+  //all other elements:
+  private static final String SORTING_CRITERIA_VALUE = "/subset/sorting_filter/sorting_criteria/value";
+
+  private static final String SORTING_CRITERIA_PARAMETER = "/subset/sorting_filter/sorting_criteria/parameter";
+
+  private static final String REVERSE_VALUE = "/subset/sorting_filter/reverse/value";
+
+  private static final String REVERSE_PARAMETER = "/subset/sorting_filter/reverse/parameter";
+
+  private static final String TYPE_LIMITATION_VALUE = "/subset/sorting_filter/type_limitation/value";
+
+  private static final String TYPE_LIMITATION_PARAMETER = "/subset/sorting_filter/type_limitation/parameter";
+
+  private static final String WHOLE_VALUE = "/subset/sorting_filter/whole/value";
+
+  private static final String WHOLE_PARAMETER = "/subset/sorting_filter/whole/parameter";
+
+  private static final String ATTRIBUTE_VALUE = "/subset/sorting_filter/attribute/value";
+
+  private static final String ATTRIBUTE_PARAMETER = "/subset/sorting_filter/attribute/parameter";
+
+  private static final String LEVEL_ELEMENT_1_0RC2_VALUE = "/subset/sorting_filter/level_element/value";
+
+  private static final String LEVEL_ELEMENT_1_0RC2_PARAMETER = "/subset/sorting_filter/level_element/parameter";
+
+  //new in version 1.0:
+  private static final String LEVEL_ELEMENT_VALUE = "/subset/sorting_filter/level/value";
+
+  private static final String LEVEL_ELEMENT_PARAMETER = "/subset/sorting_filter/level/parameter";
+
+  private static final String SHOW_DUPLICATES_VALUE = "/subset/sorting_filter/show_duplicates/value";
+
+  private static final String SHOW_DUPLICATES_PARAMETER = "/subset/sorting_filter/show_duplicates/parameter";
+
+  private final SortingFilterSetting sfInfo;
+
+  public SortingFilterHandler() {
+    sfInfo = new SortingFilterSetting();
+  }
+
+  public final String getXPath() {
+    return XPATH;
+  }
+
+  public final void enter(String path) {
+  }
+
+  public final void leave(String path, String value) {
+    if (path.equals(SORTING_CRITERIA_VALUE))
+      sfInfo.setSortCriteria(SubsetXMLHandler.getInteger(value));
+    else if (path.equals(SORTING_CRITERIA_PARAMETER)) {
+      IntegerParameter oldParam = sfInfo.getSortCriteria();
+      sfInfo.setSortCriteria(new IntegerParameter(value));
+      sfInfo.setSortCriteria(oldParam.getValue());
+    } else if (path.equals(REVERSE_VALUE))
+      sfInfo.setOrderMode(SubsetXMLHandler.getInteger(value));
+    else if (path.equals(REVERSE_PARAMETER)) {
+      IntegerParameter oldParam = sfInfo.getOrderMode();
+      sfInfo.setOrderMode(new IntegerParameter(value));
+      sfInfo.setOrderMode(oldParam.getValue());
+    } else if (path.equals(TYPE_LIMITATION_VALUE))
+      sfInfo.setSortTypeMode(SubsetXMLHandler.getInteger(value));
+    else if (path.equals(TYPE_LIMITATION_PARAMETER)) {
+      IntegerParameter oldParam = sfInfo.getSortTypeMode();
+      sfInfo.setSortTypeMode(new IntegerParameter(value));
+      sfInfo.setSortTypeMode(oldParam.getValue());
+    } else if (path.equals(WHOLE_VALUE))
+      sfInfo.setHierarchicalMode(SubsetXMLHandler.getInteger(value));
+    else if (path.equals(WHOLE_PARAMETER)) {
+      IntegerParameter oldParam = sfInfo.getHierarchicalMode();
+      sfInfo.setHierarchicalMode(new IntegerParameter(value));
+      sfInfo.setHierarchicalMode(oldParam.getValue());
+    } else if (path.equals(ATTRIBUTE_VALUE))
+      sfInfo.setSortAttribute(value);
+    else if (path.equals(ATTRIBUTE_PARAMETER)) {
+      StringParameter oldParam = sfInfo.getSortAttribute();
+      sfInfo.setSortAttribute(new StringParameter(value));
+      sfInfo.setSortAttribute(oldParam.getValue());
+    } else if (path.equals(LEVEL_ELEMENT_1_0RC2_VALUE)) {
+      sfInfo.setSortLevelElement(value);
+    } else if (path.equals(LEVEL_ELEMENT_1_0RC2_PARAMETER)) {
+      StringParameter oldParm = sfInfo.getSortLevelElement();
+      sfInfo.setSortLevelElement(new StringParameter(value));
+      sfInfo.setSortLevelElement(oldParm.getValue());
+    } else if (path.equals(LEVEL_ELEMENT_VALUE))
+      sfInfo.setSortLevel(SubsetXMLHandler.getInteger(value));
+    else if (path.equals(LEVEL_ELEMENT_PARAMETER)) {
+      IntegerParameter oldParm = sfInfo.getSortLevel();
+      sfInfo.setSortLevel(new IntegerParameter(value));
+      sfInfo.setSortLevel(oldParm.getValue());
+    } else if (path.equals(SHOW_DUPLICATES_VALUE))
+      sfInfo.setShowDuplicates(SubsetXMLHandler.getInteger(value));
+    else if (path.equals(SHOW_DUPLICATES_PARAMETER)) {
+      IntegerParameter oldParam = sfInfo.getShowDuplicates();
+      sfInfo.setShowDuplicates(new IntegerParameter(value));
+      sfInfo.setShowDuplicates(oldParam.getValue());
+    }
+  }
+
+  public final SubsetFilter createFilter(Dimension dimension) {
+    //check subset version and adjust level setting:
+    if (subsetVersion.equals("1.0rc2")) {
+      if (sfInfo.doSortPerLevel()) {
+        // level setting contains element id:
+        Element sortElement = dimension.getElementById(sfInfo.getSortLevelElement()
+          .getValue());
+        if (sortElement != null) {
+          sfInfo.setSortLevel(sortElement.getLevel());
+          sfInfo.setSortLevelElement((String) null);
+        }
+      }
+    }
+    return new SortingFilter(dimension, sfInfo);
+  }
+
+  public static final String getPersistenceString(SortingFilter filter) {
+    SortingFilterSetting sfInfo = filter.getSettings();
+    StringBuffer xmlStr = new StringBuffer();
+    xmlStr.append("<sorting_filter>\r\n");
+    //whole
+    if (sfInfo.doHierarchy()) {
+      xmlStr.append("<whole>\r\n");
+      xmlStr.append(ParameterHandler.getXML(sfInfo.getHierarchicalMode()));
+      xmlStr.append("</whole>\r\n");
+    }
+    //criteria:
+    xmlStr.append("<sorting_criteria>\r\n");
+    xmlStr.append(ParameterHandler.getXML(sfInfo.getSortCriteria()));
+    xmlStr.append("</sorting_criteria>\r\n");
+    //attribute
+    if (sfInfo.doSortByAttribute()) {
+      xmlStr.append("<attribute>\r\n");
+      xmlStr.append(ParameterHandler.getXML(sfInfo.getSortAttribute()));
+      xmlStr.append("</attribute>\r\n");
+    }
+    //type limitation
+    if (sfInfo.doSortByType()) {
+      xmlStr.append("<type_limitation>\r\n");
+      xmlStr.append(ParameterHandler.getXML(sfInfo.getSortTypeMode()));
+      xmlStr.append("</type_limitation>\r\n");
+    }
+    //lvl element
+    if (sfInfo.doSortPerLevel()) {
+      xmlStr.append("<level>\r\n");
+      xmlStr.append(ParameterHandler.getXML(sfInfo.getSortLevel()));
+      xmlStr.append("</level>\r\n");
+    }
+    //reverse
+    if (sfInfo.doReverseOrder()) {
+      xmlStr.append("<reverse>\r\n");
+      xmlStr.append(ParameterHandler.getXML(sfInfo.getOrderMode()));
+      xmlStr.append("</reverse>\r\n");
+    }
+    //show duplicates
+    xmlStr.append("<show_duplicates>\r\n");
+    xmlStr.append(ParameterHandler.getXML(sfInfo.getShowDuplicates()));
+    xmlStr.append("</show_duplicates>\r\n");
+
+    xmlStr.append("</sorting_filter>\r\n");
+    return xmlStr.toString();
+  }
+
+}
