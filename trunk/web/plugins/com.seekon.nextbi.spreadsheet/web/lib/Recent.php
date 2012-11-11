@@ -65,11 +65,11 @@ class Recent extends XMLData
 
 		$this->set(null, array('recent' => array('@' => array('max' => self::DEFAULT_MAX))));
 
-		if (!is_int(palo_eindex($conn = $apol->getSuperConn(), 'System', '#_USER_PROPERTIES_', self::ATTR_NAME, true)))
-		{
-			palo_eadd($conn, 'System', '#_USER_PROPERTIES_', 'S', self::ATTR_NAME, '', 1, false, true);
-			palo_ping($conn);
-		}
+		/////if (!is_int(palo_eindex($conn = $apol->getSuperConn(), 'System', '#_USER_PROPERTIES_', self::ATTR_NAME, true)))
+		//{
+		//	palo_eadd($conn, 'System', '#_USER_PROPERTIES_', 'S', self::ATTR_NAME, '', 1, false, true);
+		//	palo_ping($conn);
+		//}
 	}
 
 	public function fetch ($context = null, $type = null)

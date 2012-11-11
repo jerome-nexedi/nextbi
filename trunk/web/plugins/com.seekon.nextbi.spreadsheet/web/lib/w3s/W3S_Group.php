@@ -96,8 +96,9 @@ class W3S_Group
 
 		$list = array();
 
-		$dbs = palo_root_list_databases($conn, true, true);
-
+		////$dbs = palo_root_list_databases($conn, true, true);
+		$dbs = palo_root_list_databases($conn);
+		
 		foreach ($dbs as $db)
 		{
 			if (substr($db, 0, 6) == 'System')
@@ -428,11 +429,16 @@ class W3S_Group
 
 	private function _palo_listHierarchies ()
 	{
+		////require_once('D:/devTools/Jedox/Palo Suite/httpd/app/docroot/FirePHPCore/FirePHP.class.php');
+		//$firephp = FirePHP::getInstance(true);
+		
 		$conn = $this->apol->getConn();
 
 		$dims = array_flip(palo_database_list_dimensions($conn, $this->uid, 0));
 		$metas = palo_dimension_list_elements($conn, $this->uid, 'meta', true);
-
+		
+		//$firephp->log($metas, 'metas'); 
+		
 		$uids_seen = array();
 
 		foreach ($metas as &$meta)
@@ -456,6 +462,8 @@ class W3S_Group
 			return null;
 
 		$res = palo_datav($conn, $this->uid, '#_meta', array(1, 2, 'type', 'data'), array_merge(array($num, 1), $uids));
+		//$firephp->log($res, 'res'); 
+		
 		array_splice($res, 0, 2);
 
 		$perms = $this->apol->calcPerms($this->uid, 'meta', $uids);
@@ -478,6 +486,7 @@ class W3S_Group
 			}
 			catch (Exception $e)
 			{
+				//$firephp->log($e, 'e');
 				continue;
 			}
 
@@ -493,7 +502,7 @@ class W3S_Group
 				$perm_h = $this->perm_h;
 				$perm_n = $perm_h & $rule_n;
 			}
-
+			//$firephp->log($data, 'data');
 			$list[$uid] = array('type' => $type, 'name' => $data->getName(), 'desc' => $data->getDescription(), 'perm_h' => $perm_h, 'perm_n' => $perm_n);
 		}
 

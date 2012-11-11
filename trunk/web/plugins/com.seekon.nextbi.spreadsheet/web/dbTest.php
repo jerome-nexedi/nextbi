@@ -1,5 +1,11 @@
 <?php
 
+	$con = mysql_connect("localhost:3306", "wss", "wss");
+	if(con && mysql_ping($con)){
+		echo "database connection is ok.";
+		mysql_close($con);
+	}
+	
 	$con = mysqli_connect("java:comp/env/jdbc/spreadsheet");
 	if(con){
 		echo "<table border='1'>

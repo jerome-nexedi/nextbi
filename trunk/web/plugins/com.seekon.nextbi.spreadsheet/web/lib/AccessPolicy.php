@@ -92,11 +92,11 @@ class AccessPolicy
 
 	public function __sleep ()
 	{
-//		if (is_resource($this->superconn))
-//			@palo_disconnect($this->superconn);
-//
-//		if (is_resource($this->conn))
-//			@palo_disconnect($this->conn);
+		if (is_resource($this->superconn))
+			palo_disconnect($this->superconn);
+
+		if (is_resource($this->conn))
+			palo_disconnect($this->conn);
 
 		return array('host', 'port', 'superuser', 'superpass', 'user', 'pass', 'groups', 'rules');
 	}
@@ -105,13 +105,13 @@ class AccessPolicy
 	{
 		if (!is_resource($this->superconn))
 		{
-			$this->superconn = @palo_init($this->host, $this->port, $this->superuser, $this->superpass);
-			@palo_use_unicode(true);
+			$this->superconn = palo_init($this->host, $this->port, $this->superuser, $this->superpass);
+			palo_use_unicode(true);
 		}
 
 		if (!$this->last_conn_type)
 		{
-			@palo_ping($this->superconn);
+			palo_ping($this->superconn);
 			$this->last_conn_type = true;
 		}
 
@@ -122,13 +122,13 @@ class AccessPolicy
 	{
 		if (!is_resource($this->conn))
 		{
-			$this->conn = @palo_init($this->host, $this->port, $this->user, $this->pass);
-			@palo_use_unicode(true);
+			$this->conn = palo_init($this->host, $this->port, $this->user, $this->pass);
+			palo_use_unicode(true);
 		}
 
 		if ($this->last_conn_type)
 		{
-			@palo_ping($this->conn);
+			palo_ping($this->conn);
 			$this->last_conn_type = false;
 		}
 
@@ -167,12 +167,11 @@ class AccessPolicy
 
 	public function reload (array $groups = null, array $rules = null)
 	{
-		/*
 		$conn = $this->getSuperConn();
 
 		if (!is_resource($conn))
 			return false;
-		
+
 
 
 		// groups
@@ -181,8 +180,8 @@ class AccessPolicy
 		else
 		{
 			// all groups
-			$res = @palo_dimension_list_elements($conn, 'System', '#_GROUP_');
-
+			$res = palo_dimension_list_elements($conn, 'System', '#_GROUP_');
+			
 			if (!is_array($res) || !count($res))
 				return false;
 
@@ -190,8 +189,8 @@ class AccessPolicy
 				$all_groups[] = $entry['name'];
 
 			// user's groups
-			$res = @palo_datav($conn, 'System', '#_USER_GROUP', $this->user, array_merge(array(count($all_groups), 1), $all_groups));
-
+			$res = palo_datav($conn, 'System', '#_USER_GROUP', $this->user, array_merge(array(count($all_groups), 1), $all_groups));
+			
 			if (!is_array($res))
 				return false;
 
@@ -205,7 +204,7 @@ class AccessPolicy
 				return false;
 
 			// active user's groups
-			$res = @palo_datav($conn, 'System', '#_GROUP_GROUP_PROPERTIES', array_merge(array(1, count($all_user_groups)), $all_user_groups), 'accountStatus');
+			$res = palo_datav($conn, 'System', '#_GROUP_GROUP_PROPERTIES', array_merge(array(1, count($all_user_groups)), $all_user_groups), 'accountStatus');
 
 			if (is_array($res))
 			{
@@ -231,7 +230,7 @@ class AccessPolicy
 		// roles
 
 		// all roles
-		$res = @palo_dimension_list_elements($conn, 'System', '#_ROLE_');
+		$res = palo_dimension_list_elements($conn, 'System', '#_ROLE_');
 
 		if (!is_array($res))
 			return false;
@@ -245,7 +244,7 @@ class AccessPolicy
 			return false;
 
 		// groups' roles
-		$res = @palo_datav($conn, 'System', '#_GROUP_ROLE', array_merge(array(1, $groups_num), $this->groups), array_merge(array($all_roles_num, 1), $all_roles));
+		$res = palo_datav($conn, 'System', '#_GROUP_ROLE', array_merge(array(1, $groups_num), $this->groups), array_merge(array($all_roles_num, 1), $all_roles));
 
 		if (!is_array($res))
 			return false;
@@ -270,7 +269,7 @@ class AccessPolicy
 		// rules
 		if (!is_array($rules) || !count($rules))
 		{
-			$res = @palo_dimension_list_elements($conn, 'System', '#_RIGHT_OBJECT_');
+			$res = palo_dimension_list_elements($conn, 'System', '#_RIGHT_OBJECT_');
 
 			if (!is_array($res))
 				return false;
@@ -287,7 +286,7 @@ class AccessPolicy
 
 
 		// rules effective perms
-		$res = @palo_datav($conn, 'System', '#_ROLE_RIGHT_OBJECT', array_merge(array(1, $roles_num), $roles), array_merge(array($rules_num, 1), $rules));
+		$res = palo_datav($conn, 'System', '#_ROLE_RIGHT_OBJECT', array_merge(array(1, $roles_num), $roles), array_merge(array($rules_num, 1), $rules));
 
 		if (!is_array($res))
 			return false;
@@ -304,17 +303,7 @@ class AccessPolicy
 
 			$this->rules[$rules[$u]] = $perm;
 		}
-*/
-		// groups
-		if (is_array($groups) && count($groups))
-		{
-			$this->groups = $groups;
-		}
-		else
-		{
-			$this->groups = array();
-			$this->groups[0] = "admin";
-		}
+
 		return true;
 	}
 
@@ -324,7 +313,7 @@ class AccessPolicy
 
 		if ($elems_chk)
 		{
-			$res = @palo_dimension_list_elements($conn, $db, $dim, true);
+			$res = palo_dimension_list_elements($conn, $db, $dim, true);
 
 			if (is_array($res) && count($res))
 				foreach ($res as &$elem)
@@ -346,7 +335,7 @@ class AccessPolicy
 
 		$groups_num = count($this->groups);
 
-		$res = @palo_datav($conn, $db, '#_GROUP_DIMENSION_DATA_' . $dim, array_merge(array(1, $groups_num), $this->groups), array_merge(array($elems_num, 1), $elems));
+		$res = palo_datav($conn, $db, '#_GROUP_DIMENSION_DATA_' . $dim, array_merge(array(1, $groups_num), $this->groups), array_merge(array($elems_num, 1), $elems));
 
 		if (!is_array($res))
 			return array_combine($elems, array_fill(0, $elems_num, self::PERM_NONE));
