@@ -1,0 +1,16 @@
+# PALO CUBE DATA
+# 
+# Description of data: 
+# TIME_STAMP;SIZE_DIMENSIONS;
+[CUBE]
+1171442611.801619;4,0;
+# Description of data: 
+# ID;NAME 
+[GROUP]
+0;"admin";
+1;"users";
+# Description of data: 
+# PATH;VALUE 
+[STRING]
+# 
+# PALO CUBE DATA END

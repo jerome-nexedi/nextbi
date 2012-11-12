@@ -1,0 +1,125 @@
+# PALO DATABASE DATA
+# 
+# Description of data:
+# SIZE_DIMENSIONS;SIZE_CUBES;TYPE
+[DATABASE]
+7;6;2;
+# Description of data:
+# ID;NAME;TYPE;...
+[DIMENSIONS]
+0;"#_USER_";2;0;0;1;
+1;"#_USER_PROPERTIES_";2;0;0;1;
+2;"#_GROUP_";2;0;0;1;
+3;"#_ROLE_";2;0;0;1;
+4;"#_RIGHT_OBJECT_";2;0;0;0;
+5;"#_GROUP_PROPERTIES_";2;0;0;1;
+6;"#_ROLE_PROPERTIES_";2;0;0;1;
+# Description of data: 
+# ID;NAME,LEVEL,INDENT,DEPTH,SIZE_ELEMENTS; 
+[DIMENSION 0]
+0;"#_USER_";0;1;0;42;
+# Description of data: 
+# ID;NAME,POSITION,TYPE,STRING_CONSOLIDATION,LEVEL,INDENT,DEPTH,PARENTS,CHILDREN,CHILDREN_WEIGHT; 
+[ELEMENTS DIMENSION 0]
+0;"admin";0;2;0;0;1;0;;;;
+38;"smith";1;2;0;0;1;0;;;;
+39;"john";2;2;0;0;1;0;;;;
+40;"steven";3;2;0;0;1;0;;;;
+41;"julia";4;2;0;0;1;0;;;;
+# Description of data: 
+# ID;NAME,LEVEL,INDENT,DEPTH,SIZE_ELEMENTS; 
+[DIMENSION 1]
+1;"#_USER_PROPERTIES_";0;1;0;11;
+# Description of data: 
+# ID;NAME,POSITION,TYPE,STRING_CONSOLIDATION,LEVEL,INDENT,DEPTH,PARENTS,CHILDREN,CHILDREN_WEIGHT; 
+[ELEMENTS DIMENSION 1]
+0;"password";3;2;0;0;1;0;;;;
+4;"accountStatus";4;2;0;0;1;0;;;;
+6;"description";2;2;0;0;1;0;;;;
+7;"userName";0;2;0;0;1;0;;;;
+9;"fullName";1;2;0;0;1;0;;;;
+10;"recent";5;2;0;0;1;0;;;;
+# Description of data: 
+# ID;NAME,LEVEL,INDENT,DEPTH,SIZE_ELEMENTS; 
+[DIMENSION 2]
+2;"#_GROUP_";0;1;0;17;
+# Description of data: 
+# ID;NAME,POSITION,TYPE,STRING_CONSOLIDATION,LEVEL,INDENT,DEPTH,PARENTS,CHILDREN,CHILDREN_WEIGHT; 
+[ELEMENTS DIMENSION 2]
+0;"admin";0;2;0;0;1;0;;;;
+13;"smith";1;2;0;0;1;0;;;;
+14;"designer";2;2;0;0;1;0;;;;
+15;"sales";3;2;0;0;1;0;;;;
+16;"marketing";4;2;0;0;1;0;;;;
+# Description of data: 
+# ID;NAME,LEVEL,INDENT,DEPTH,SIZE_ELEMENTS; 
+[DIMENSION 3]
+3;"#_ROLE_";0;1;0;6;
+# Description of data: 
+# ID;NAME,POSITION,TYPE,STRING_CONSOLIDATION,LEVEL,INDENT,DEPTH,PARENTS,CHILDREN,CHILDREN_WEIGHT; 
+[ELEMENTS DIMENSION 3]
+0;"admin";0;2;0;0;1;0;;;;
+1;"poweruser";1;2;0;0;1;0;;;;
+2;"editor";2;2;0;0;1;0;;;;
+3;"viewer";3;2;0;0;1;0;;;;
+4;"designer";4;2;0;0;1;0;;;;
+5;"user";5;2;0;0;1;0;;;;
+# Description of data: 
+# ID;NAME,LEVEL,INDENT,DEPTH,SIZE_ELEMENTS; 
+[DIMENSION 4]
+4;"#_RIGHT_OBJECT_";0;1;0;20;
+# Description of data: 
+# ID;NAME,POSITION,TYPE,STRING_CONSOLIDATION,LEVEL,INDENT,DEPTH,PARENTS,CHILDREN,CHILDREN_WEIGHT; 
+[ELEMENTS DIMENSION 4]
+0;"user";0;2;0;0;1;0;;;;
+1;"password";1;2;0;0;1;0;;;;
+2;"group";2;2;0;0;1;0;;;;
+3;"database";3;2;0;0;1;0;;;;
+4;"cube";4;2;0;0;1;0;;;;
+5;"dimension";5;2;0;0;1;0;;;;
+6;"dimension element";6;2;0;0;1;0;;;;
+7;"cell data";7;2;0;0;1;0;;;;
+8;"rights";8;2;0;0;1;0;;;;
+9;"system operations";9;2;0;0;1;0;;;;
+10;"event processor";10;2;0;0;1;0;;;;
+11;"sub-set view";11;2;0;0;1;0;;;;
+12;"user info";12;2;0;0;1;0;;;;
+13;"rule";13;2;0;0;1;0;;;;
+14;"ste_reports";14;2;0;0;1;0;;;;
+15;"ste_files";15;2;0;0;1;0;;;;
+16;"ste_palo";16;2;0;0;1;0;;;;
+17;"ste_users";17;2;0;0;1;0;;;;
+18;"ste_etl";18;2;0;0;1;0;;;;
+19;"ste_conns";19;2;0;0;1;0;;;;
+# Description of data: 
+# ID;NAME,LEVEL,INDENT,DEPTH,SIZE_ELEMENTS; 
+[DIMENSION 5]
+5;"#_GROUP_PROPERTIES_";0;1;0;5;
+# Description of data: 
+# ID;NAME,POSITION,TYPE,STRING_CONSOLIDATION,LEVEL,INDENT,DEPTH,PARENTS,CHILDREN,CHILDREN_WEIGHT; 
+[ELEMENTS DIMENSION 5]
+0;"groupName";0;2;0;0;1;0;;;;
+1;"description";1;2;0;0;1;0;;;;
+2;"accountStatus";2;1;0;0;1;0;;;;
+# Description of data: 
+# ID;NAME,LEVEL,INDENT,DEPTH,SIZE_ELEMENTS; 
+[DIMENSION 6]
+6;"#_ROLE_PROPERTIES_";0;1;0;13;
+# Description of data: 
+# ID;NAME,POSITION,TYPE,STRING_CONSOLIDATION,LEVEL,INDENT,DEPTH,PARENTS,CHILDREN,CHILDREN_WEIGHT; 
+[ELEMENTS DIMENSION 6]
+10;"name";0;2;0;0;1;0;;;;
+11;"description";1;2;0;0;1;0;;;;
+12;"status";2;2;0;0;1;0;;;;
+# Description of data:
+# ID;NAME;DIMENSIONS;TYPE;DELETABLE;RENAMABLE;...
+[CUBES]
+0;"#_USER_USER_PROPERTIES";0,1;1;0;0;
+1;"#_USER_GROUP";0,2;1;0;0;
+2;"#_ROLE_RIGHT_OBJECT";3,4;1;0;0;
+3;"#_GROUP_ROLE";2,3;1;0;0;
+4;"#_ROLE_ROLE_PROPERTIES";3,6;1;0;0;
+5;"#_GROUP_GROUP_PROPERTIES";2,5;1;0;0;
+# 
+# 
+# PALO DATABASE DATA END

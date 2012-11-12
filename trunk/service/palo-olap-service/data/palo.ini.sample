@@ -1,0 +1,416 @@
+###
+### PALO configuration file
+###
+
+################################################################################
+#
+# Configuration file info:
+#
+#  - the command line arguments are evaluated first, the configuration file is
+#    evaluated after the command line arguments have been processed
+#
+#  - if you start palo with -n or --load-init-file on the command line, then
+#    the init file is not read. The load-init-file options is ignored if given
+#    in the configuration file. 
+#
+#  - a comment starts with a "#" sign
+#
+#  - parameters without additional parameters like "auto-load", "auto-commit"
+#    or "chdir" toggle a state from "true" to "false" and vice versa. You can
+#    declare a "toggle" parameter more than once.
+#
+#  - if parameters with additional parameters like "worker" or "workerlogin"
+#    are given more than once on the command line or the configuration file
+#    only the last definition is valid.
+#
+#  - the parameters "admin", "http" are treated specially. All the 
+#    definitions supplied on the command line / in the init file are used.
+#
+# For example:
+# 
+#  The default of "add-new-database" is true (see palo -?). If you supply
+#  --add-new-database on the command line but not in the configuration file,
+#  then the option will be set to false. If you supply add-new-database in the
+#  configuration file but not on the command line then the option will also be
+#  set to false. If you supply --add-new-database on the command line and in
+#  the configuration file, then the option will be true again, as it is
+#  toggled twice.
+#  
+#  The option "workerlogin" has one additional argument. If you supply
+#  workerlogin on the command line and on the configuration file, then the
+#  value supplied in the configuration will be taken.
+#
+#  If the http option is supplied for port A on the command line and for port B
+#  in the configuration file, then both ports A and B are used.
+#
+################################################################################
+
+### ############################################################################
+### General options
+### ############################################################################
+
+## path of the data directory
+# (default directory is "Data")
+#
+# data-directory c:\olap\palo-2.0\Data
+# data-directory /home/palo/palo-2.0/Data
+#
+
+## directory of online documentation 
+# (default directory is "Api")
+#
+# template-directory Binary/Api
+#
+
+## load all databases on server start into memory which are defined in the
+# palo.csv  (default state is "true")
+#
+# auto-load
+#
+
+## commit all changes on server shutdown
+# (default state is "true")
+#
+# auto-commit
+#
+
+## change into data directory
+# if true, palo changes into the data directory at the program start. Any path
+# supplied in the init file is therefore local to the data directory in this
+# case.
+# (default state is "true")
+#
+# chdir
+#
+
+## try to add directories with OLAP database automatically and add them to
+# palo.csv (default state is "true")
+#
+# add-new-databases
+#
+
+## force users to login
+# (default state is "false")
+#
+# user-login
+#
+user-login
+
+## splashing limits in mega byte
+# generate an error if splashing requires more space than the first number
+# generate a warning entry if splashing requires more space than the second 
+# number generate a info entry if splashing requires more space than the third 
+# number
+#
+# splash-limit 1000 500 100
+
+##  
+# Goalseek algorithm can be executed on slices with maximum <cell_limit> cells (default 1000).
+# Algorithm must complete within <timeout> miliseconds (default 10000).
+# 
+# goalseek-limit <cell_limit>
+# goalseek-timeout <timeout>
+#
+# goalseek-limit 1000
+# goalseek-timeout 10000
+
+## maximal growth in area computation
+
+### ############################################################################
+### Server address and port for http interface
+###
+### an address can be "", a server name or an internet address
+### example address 
+###       "" (for all server internet addresses)
+###       localhost
+###       server.domain.net
+###       192.168.1.2
+###
+### a port is a number
+### ############################################################################
+
+## http interface with server browser and online documentation
+#
+# admin		"" 7777
+# admin		localhost 7777
+# admin		server.domain.net 7777
+# admin		192.168.1.2 7777
+# admin		localhost 7770
+# admin		localhost 7777
+#
+
+## http interface
+#
+# http		"" 7779
+# http		localhost 7779
+#
+
+## keep trying
+# If the HTTP port cannot be opened, keep trying until it can be opened. Default
+# is to give up and exit, if the ports cannot be opened.
+#
+# keep-trying
+
+
+
+### ############################################################################
+### Logging
+### ############################################################################
+
+## Logfile
+# log to stdout (default)
+# log - 
+#
+# log to stderr
+# log + 
+#
+# log to a file
+# log /var/log/palo.log
+#
+
+## Log-level
+# levels
+#    error (default)
+#    warning
+#    info
+#    debug
+#    trace
+#
+# verbose error
+#
+#verbose		info
+
+  
+
+### ############################################################################
+### Worker 
+### ############################################################################
+
+## path to the worker
+# worker <executable> <argument_1> ... <argument_n> 
+#
+# worker          /usr/bin/php5 /home/palo/worker.php
+#
+
+## use a worker for login
+# if not set, then no login worker is used
+# possible values:
+#               information
+#               authentication
+#               authorization
+#
+# workerlogin     authorization
+#
+
+## use workers
+# (default state is "false")
+#
+# use-cube-worker
+#
+
+## enable cell drillthrough
+# (default state is "false")
+#
+enable-drillthrough
+#
+
+
+
+### ############################################################################
+### Cache
+### ############################################################################
+
+## The server side cache is configured to default to 10000 cells per cube.
+#
+# cache-barrier <maximum of number_of_cells to store in each Cube chache> 
+# (default 10000)
+# clear-cache-cells <number_of_cells to purge from cache>  (default 1000)
+#
+# In order to turn off the cache set "cache-barrier" to "0" and 
+# "clear-cache-cells" to "0".
+#
+# cache-barrier 0
+# clear-cache-cells 0
+#
+
+
+
+### ############################################################################
+### Undo
+### ############################################################################
+
+##
+# In a locked cube area it is possible to undo changes. Each lock can use
+# <undo_memory_size_in_bytes_per_lock> bytes in memory and
+# <undo_file_size_in_bytes_per_lock> bytes in files for storing changes:
+#
+# undo-memory-size <undo_memory_size_in_bytes_per_lock>
+# undo-file-size <undo_file_size_in_bytes_per_lock>
+#
+# undo-memory-size 10000000
+# undo-file-size  100000000
+#
+
+
+
+### ############################################################################
+### SSL
+### ############################################################################
+
+##
+# Set the encryption type
+#	none
+#	optional
+#	required
+#
+# If none is selected, then no HTTPS support is available. If optional is 
+# selected, then you can use HTTPS. If required is selected, then only
+# /server/info will function unencrypted. All other functions require a HTTPS
+# connection.
+#
+# If you specify optional or required each http or admin command must be followed
+# by a https command containing the HTTPS port to use.
+#
+# encryption none
+
+##
+# Set the https port
+#
+# If you specify optional or required as encryption type, then each http or 
+# admin command must be followed by a https command containing the HTTPS port to
+# use.
+#
+# https 7778
+
+##
+# The following certificates are need: a root certificate and a private 
+# certificate signed be root authority. In addition a file with the
+# diffie-hellman parameters must be supplied. The private certificate can be
+# protected by a password. The pathes are relative to the data directory.
+#
+# key-files <ca> <private> <diffie-hellman>
+# password <private-password>
+#
+# The files can be generated using the OpenSSL command line tool, see the
+# OpenSSL documentation for details. Generate a self-signed certificate use:
+#
+# Root-Certificate and Server-Key (<ca> and <private> are identical):
+# openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout server.pem -out server.pem
+#
+# Diffie-Hellman paramater file:
+# openssl dhparam -2 -outform PEM -out dh1024.pem 1024
+#
+# key-files server.pem server.pem dh1024.pem
+
+## location of directory containing the HTTPS extension
+#
+# extensions <directory>
+#
+
+### ############################################################################
+### FOR DEBUGGING ONLY, DO NOT USE IN A PRODUCTION SYSTEM
+### ############################################################################
+
+## generates a default session id 0000
+#
+# fake-session
+#
+
+### ############################################################################
+### Autosave
+### ############################################################################
+
+## autosaves all the databases
+#
+# autosaves at an exact time once a day.
+# autosave T HH:MM
+#
+# autosave T 23:59
+#
+# autosaves cyclically when a given amount of time elapses.
+# autosave L HH:MM
+#
+# autosave L 10:10
+
+### ############################################################################
+### Threading
+### ############################################################################
+
+## initial-thread-pool <initial-pool-size> sets how many concurrent users the 
+# server is prepared to serve immediately after startup. after reaching this 
+# limit the server will dynamically increase the pool size
+#
+# initial-thread-pool <initial-pool-size>
+# initial-thread-pool 4
+#
+## max-subjobs <max-subjobs-size> sets the number or processor cores allocated
+# for calculating complex jobs
+#
+# max-subjobs <max-subjobs-size>
+# max-subjobs 2
+#
+# Q: How do these options relate to one another? Is a subjob a "child" of a 
+# thread so that 4 threads + 2 max-subjobs = 8 subjobs?
+# A: Yes. However, this applies only to computational intensive jobs. More
+# precisely to retrieving aggregated cells and only when rules are involved.
+# In such a case, a job (the query that requested aggregated cells) will be
+# split into multiple subjobs.
+#
+# Q: Is the number of possible (parallel) subjobs limited by the numer of cores?
+# A: One can split this into as many subjobs as desired. However, as a first
+# hint, going for more than the number of processors (times two if the
+# processors support hyper threading) might not lead to performance improvement.
+#
+# Q: Is there still a differentiation between processors and cores?
+# A: Not. From the software standpoint there makes no sense to do so and it was
+# removed.
+#
+# Q: Is there a limit for the threading pool after which the server won't
+# further increase it?
+# A: Not. The server will always increase the pool to accept new clients. When
+# no available treads remain to serve an incoming connection, the server will
+# add the exact number of threads specified in the initial thread pool. On the
+# other hand, if 50% of the threads in the pool do not serve active connections
+# and the number of threads in the pool is larger than the initial size (the 
+# pool was increased at least once), the server will remove threads till it 
+# reaches one of the two criteria specified above ( less that 50% threads idle 
+# or initial size reached).
+#
+# Q: What's the advantage of having more initial threads if the server will 
+# anyhow increase it dynamically?
+# A: The best operating situation is when the server does not adjust the thread
+# count and all of them are busy. More threads means more memory consumed and 
+# some overhead. Therefore it is best to have as little as possible. However, 
+# creating a new thread means time spent by the server on something else than 
+# serving a client connection so it is good to have one already created. There 
+# is always a balance to be reached between memory overhead and responsiveness.
+# On a large enterprise environment it might be a good idea to start with plenty
+# of threads, on a simple, desktop only installation one might be enough.
+#
+# Q: "More precisely to retrieving aggregated cells and only when rules are 
+# involved." Does this mean: when those two conditions combined are true, or 
+# when one of them is true?
+# A: Yes, both of them have to be met.
+#
+# Q: What are the default settings for these options, 4 and 2?
+# A: initial pool size = 10, maximum subjobs = 2 
+
+### ############################################################################
+### ignore-rule-error
+### ############################################################################
+
+## Ignores arithmetical errors during rule calculation 
+# (like division by zero) and replaces them with 0.
+#
+# ignore-rule-error (default state is true)
+
+### ############################################################################
+### maximum-return-cells
+### ############################################################################
+
+##
+# sets a maximum limit for cells return from an area call
+# maximum-return-cells  <maximum_return_cells> ( default is 20000 )
+#
+#
+# maximum-return-cells  10000

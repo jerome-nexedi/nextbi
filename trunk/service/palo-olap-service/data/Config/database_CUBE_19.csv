@@ -1,0 +1,18 @@
+# PALO CUBE DATA
+#
+# Description of data:
+# TIME_STAMP;SIZE_DIMENSIONS;
+[CUBE]
+1242220161.875000;0,0;
+# Description of data:
+# PATH;VALUE
+[NUMERIC]
+# Description of data:
+# PATH;VALUE
+[STRING]
+2,0;"d:\devTools\Jedox\Palo Suite\storage\";
+1,0;"local";
+1,1;"homePage";
+#
+# PALO CUBE DATA END
+

@@ -1,0 +1,84 @@
+# PALO CUBE DATA
+# 
+# Description of data: 
+# TIME_STAMP;SIZE_DIMENSIONS;
+[CUBE]
+1352610997.421875;4,3;
+# Description of data: 
+# PATH;VALUE 
+[NUMERIC]
+# Description of data: 
+# PATH;VALUE 
+[STRING]
+41,7;"julia";
+40,9;"Steven Roberts";
+40,0;"steven";
+39,4;"1";
+38,7;"smith";
+40,7;"steven";
+39,7;"john";
+40,6;"Account Manager";
+39,0;"john";
+38,4;"1";
+40,4;"1";
+0,10;"<?xml version=""1.0"" encoding=""utf-8""?>
+<recent max=""16"">
+  <item>
+    <context>files</context>
+    <type>hyperlink</type>
+    <subtype>ahview</subtype>
+    <location>
+      <group>fgrp1</group>
+      <hierarchy>h1</hierarchy>
+      <node>n1</node>
+      <path>//Default/Public Files//New Palo Pivot</path>
+    </location>
+  </item>
+  <item>
+    <context>files</context>
+    <type>spreadsheet</type>
+    <location>
+      <group>fgrp2</group>
+      <hierarchy>h1</hierarchy>
+      <node>n2</node>
+      <path>//Demo Spreadsheets/Demos/MIS Cockpit/Start</path>
+    </location>
+  </item>
+  <item>
+    <context>files</context>
+    <type>spreadsheet</type>
+    <location>
+      <group>fgrp1</group>
+      <hierarchy>h1</hierarchy>
+      <node>n5</node>
+      <path>//Default/Public Files/test/New Spreadsheet</path>
+    </location>
+  </item>
+  <item>
+    <context>files</context>
+    <type>spreadsheet</type>
+    <location>
+      <group>fgrp1</group>
+      <hierarchy>h1</hierarchy>
+      <node>n2</node>
+      <path>//Default/Public Files/New Spreadsheet</path>
+    </location>
+  </item>
+</recent>
+";
+0,0;"admin";
+0,4;"1";
+41,9;"Julia Parker";
+39,9;"John Johnson";
+38,0;"smith";
+41,4;"1";
+0,9;"Administrator";
+38,6;"Sample user";
+38,9;"User Smith";
+0,6;"Administrator Account";
+0,7;"admin";
+41,6;"Marketing Manager";
+39,6;"Designer";
+41,0;"julia";
+# 
+# PALO CUBE DATA END

@@ -1,0 +1,59 @@
+# PALO CUBE DATA
+# 
+# Description of data: 
+# TIME_STAMP;SIZE_DIMENSIONS;
+[CUBE]
+1352611004.406250;0,0;
+# Description of data: 
+# PATH;VALUE 
+[NUMERIC]
+# Description of data: 
+# PATH;VALUE 
+[STRING]
+0,1;"workbook";
+0,0;"urlplugin";
+1,2;"<element name=""n3"" type=""folder"">
+  <info>
+    <name>test</name>
+    <desc>New Folder</desc>
+    <comment></comment>
+    <i18n/>
+  </info>
+</element>";
+0,2;"folder";
+1,0;"<element name=""n1"" type=""urlplugin"">
+  <info>
+    <name>New Palo Pivot</name>
+    <desc>New Palo Pivot</desc>
+    <comment></comment>
+    <i18n/>
+  </info>
+  <referrers/>
+  <hyperlink type=""url"" target=""self"">
+    <data><![CDATA[/web-palo-ng/com.tensegrity.wpalo.WPalo/WPalo.html]]></data>
+  </hyperlink>
+  <plugin type=""ahview""/>
+  <params>
+    <param name=""hideToolbar"" value=""0""/>
+    <param name=""hideSave"" value=""0""/>
+    <param name=""hideFilter"" value=""0""/>
+    <param name=""hideStaticFilter"" value=""0""/>
+    <param name=""hideHorizontalAxis"" value=""0""/>
+    <param name=""hideVerticalAxis"" value=""0""/>
+    <param name=""hideConnectionPicker"" value=""1""/>
+  </params>
+</element>";
+1,1;"<element name=""n2"" type=""workbook"">
+  <info>
+    <name>New Spreadsheet</name>
+    <desc>New Spreadsheet</desc>
+    <comment></comment>
+    <i18n/>
+  </info>
+  <vars/>
+  <referrers/>
+  <resources/>
+  <dependents/>
+</element>";
+# 
+# PALO CUBE DATA END
