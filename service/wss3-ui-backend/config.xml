@@ -27,9 +27,7 @@
   <extensions>
   	<extension name="ui_backend.dll" config="ui_backend_config.xml" />
   	<extension name="php_macro_engine.dll" config="php_macro_engine_config.xml" />
-  	<!--
   	<extension name="palo_wss3.dll" config="palo_wss3_config.xml" />
-  	-->
   	<extension name="filter_xlsx.dll" config="" />
   </extensions>
 </wss_configuration>
