@@ -1,0 +1,32 @@
+# PALO CUBE DATA
+# 
+# Description of data: 
+# TIME_STAMP;SIZE_DIMENSIONS;
+[CUBE]
+1264070352.288788;4,0;
+# Description of data: 
+# PATH;VALUE 
+[NUMERIC]
+# Description of data: 
+# PATH;VALUE 
+[STRING]
+3,12;"1";
+5,10;"user";
+4,11;"Suite Designer Role";
+4,12;"1";
+5,12;"1";
+3,10;"viewer";
+4,10;"designer";
+0,12;"1";
+0,10;"admin";
+1,10;"poweruser";
+2,11;"Editor Role";
+1,12;"1";
+3,11;"Viewer Role";
+0,11;"Admin Role";
+5,11;"Suite User Role";
+2,10;"editor";
+2,12;"1";
+1,11;"Power User Role";
+# 
+# PALO CUBE DATA END

@@ -1,0 +1,18 @@
+# PALO SERVER DATA
+# 
+# Description of data:
+# NUMBER_DATABASES;
+[SERVER]
+7;
+# Description of data: 
+# ID;NAME;TYPE;DELETABLE;RENAMABLE;EXENTSIBLE
+[DATABASES]
+0;"System";2;0;0;0;
+1;"Config";3;1;1;1;
+2;"Demo";1;1;1;1;
+3;"fgrp1";3;1;1;1;
+4;"fgrp2";3;1;1;1;
+5;"rgrp1";3;1;1;1;
+6;"rgrp2";3;1;1;1;
+# 
+# PALO SERVER DATA END

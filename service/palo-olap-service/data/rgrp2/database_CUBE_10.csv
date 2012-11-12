@@ -1,0 +1,34 @@
+# PALO CUBE DATA
+# 
+# Description of data: 
+# TIME_STAMP;SIZE_DIMENSIONS;
+[CUBE]
+1269942307.74625;0,0;
+# Description of data: 
+# PATH;VALUE 
+[NUMERIC]
+# Description of data: 
+# PATH;VALUE 
+[STRING]
+2,1;"5";
+0,1;"report";
+2,0;"2";
+0,0;"report";
+1,0;"<element name=""rgrp2"" type=""report"">
+  <info>
+    <name>Demo Reports</name>
+    <desc>Demo Reports</desc>
+    <comment></comment>
+    <i18n/>
+  </info>
+</element>";
+1,1;"<element name=""h1"" type=""report"">
+  <info>
+    <name>MIS Cockpit</name>
+    <desc>MIS Cockpit</desc>
+    <comment></comment>
+    <i18n/>
+  </info>
+</element>";
+# 
+# PALO CUBE DATA END

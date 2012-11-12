@@ -1,0 +1,35 @@
+# PALO CUBE DATA
+#
+# Description of data:
+# TIME_STAMP;SIZE_DIMENSIONS;
+[CUBE]
+1269876469.184000;0,0;
+# Description of data:
+# PATH;VALUE
+[NUMERIC]
+# Description of data:
+# PATH;VALUE
+[STRING]
+2,1;"9";
+0,1;"file";
+2,0;"1";
+0,0;"file";
+1,0;"<element name=""fgrp2"" type=""file"">
+  <info>
+    <name>Demo Spreadsheets</name>
+    <desc>Demo Spreadsheets</desc>
+    <comment></comment>
+    <i18n/>
+  </info>
+</element>";
+1,1;"<element name=""h1"" type=""file"">
+  <info>
+    <name>Demos</name>
+    <desc>Demos</desc>
+    <comment></comment>
+    <i18n/>
+  </info>
+  <backend type=""local"" location=""d:\devTools\Jedox\Palo Suite\storage\"" username="""" password=""""/>
+</element>";
+#
+# PALO CUBE DATA END

@@ -1,0 +1,34 @@
+# PALO CUBE DATA
+# 
+# Description of data: 
+# TIME_STAMP;SIZE_DIMENSIONS;
+[CUBE]
+1257440454.281250;0,0;
+# Description of data: 
+# PATH;VALUE 
+[NUMERIC]
+# Description of data: 
+# PATH;VALUE 
+[STRING]
+2,1;"srv1.serverfarm.com";
+5,0;"admin";
+4,0;"admin";
+4,1;"viewer";
+3,0;"7921";
+0,1;"palo";
+7,1;"Palo remote";
+2,0;"127.0.0.1";
+0,0;"palo";
+6,0;"1";
+1,0;"Palo server on localhost";
+26,1;"6434c629570c0d6a4f60693462f2a5ab2b0fcd0c";
+27,0;"0";
+6,1;"0";
+5,1;"viewer";
+27,1;"0";
+3,1;"7921";
+26,0;"05c6c9a15d64be4ef0dbe20d81b657e33d0fe971";
+7,0;"Palo local";
+1,1;"Palo server on srv1.serverfarm.com";
+# 
+# PALO CUBE DATA END
