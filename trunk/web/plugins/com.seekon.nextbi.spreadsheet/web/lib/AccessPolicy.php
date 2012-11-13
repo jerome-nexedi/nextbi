@@ -92,11 +92,11 @@ class AccessPolicy
 
 	public function __sleep ()
 	{
-		if (is_resource($this->superconn))
-			palo_disconnect($this->superconn);
+		//if (is_resource($this->superconn))
+		//	palo_disconnect($this->superconn);
 
-		if (is_resource($this->conn))
-			palo_disconnect($this->conn);
+		//if (is_resource($this->conn))
+		//	palo_disconnect($this->conn);
 
 		return array('host', 'port', 'superuser', 'superpass', 'user', 'pass', 'groups', 'rules');
 	}

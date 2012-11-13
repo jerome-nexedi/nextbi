@@ -1009,7 +1009,7 @@ class W3S_NodeData extends W3S_BaseData {
 	}
 
 	public static function setNodeData($conn, W3S_NodeData $data, $group, $hierarchy, $node) {
-		@palo_setdata($data->export(), 'false', $conn, $group, '#_' . $hierarchy, 'data', $node);
+		palo_setdata($data->export(), 'false', $conn, $group, '#_' . $hierarchy, 'data', $node);
 	}
 
 	public static function setVariables($conn, $group, $hierarchy, $node, array $vars) {

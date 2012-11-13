@@ -322,8 +322,9 @@ class XMLData
 
 		$this->createDocument();
 
-		////$res = @palo_dataa(($asAdmin ? $apol->getSuperConn() : $apol->getConn()), $db, $cube, $coords);
-
+		////$res = palo_dataa(($asAdmin ? $apol->getSuperConn() : $apol->getConn()), $db, $cube, $coords);
+		
+		
 		$res = '<?xml version="1.0" encoding="utf-8"?>'
 					+ '<recent max="16">'
   				+ '<item>'
@@ -337,7 +338,7 @@ class XMLData
     	+ '</location>'
   		+ '</item>'
 			+ '</recent>';
-
+		
 		if (substr($res, 0, 1) == '<' && $this->doc->loadXML($res, LIBXML_NOWARNING | LIBXML_NOERROR) && @$this->doc->{$this->schema_method}($this->schema))
 			$success = true;
 		else

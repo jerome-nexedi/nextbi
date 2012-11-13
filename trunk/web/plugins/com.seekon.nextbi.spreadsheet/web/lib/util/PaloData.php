@@ -56,7 +56,7 @@ class PaloData
 
 	public function dir ($db, $dim, $assoc = false)
 	{
-		$res = @palo_dimension_list_elements($this->conn, $db, $dim, true);
+		$res = palo_dimension_list_elements($this->conn, $db, $dim, true);
 
 		$list = array();
 
@@ -164,7 +164,7 @@ class PaloData
 		if (empty($data))
 			return false;
 
-		$dims = @palo_cube_list_dimensions($this->conn, $db, $cube);
+		$dims = palo_cube_list_dimensions($this->conn, $db, $cube);
 
 		if (!is_array($dims))
 			return false;
@@ -244,18 +244,18 @@ class PaloData
 		if ($add)
 		{
 			foreach ($coords_new as $dim => &$coords)
-					@palo_element_create_bulk($this->conn, $db, $dim, array_keys($coords), 'S');
+					palo_element_create_bulk($this->conn, $db, $dim, array_keys($coords), 'S');
 
 			if (!empty($coords_new))
-				@palo_ping($this->conn);
+				palo_ping($this->conn);
 		}
 
-		return @palo_setdata_bulk($this->conn, $db, $cube, $coords_list, $vals, false) === true;
+		return palo_setdata_bulk($this->conn, $db, $cube, $coords_list, $vals, false) === true;
 	}
 
 	public function remove ($db, $dim, array $coords)
 	{
-		return @palo_edelete_bulk($this->conn, $db, $dim, $coords) === true;
+		return palo_edelete_bulk($this->conn, $db, $dim, $coords) === true;
 	}
 
 	public function rename ($db, $dim, array $names)
@@ -267,7 +267,7 @@ class PaloData
 			if (!isset($names_map[$name_old]))
 				continue;
 
-			if (@palo_erename($this->conn, $db, $dim, $name_old, $name_new) !== true)
+			if (palo_erename($this->conn, $db, $dim, $name_old, $name_new) !== true)
 				return false;
 		}
 
