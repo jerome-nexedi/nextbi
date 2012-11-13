@@ -610,9 +610,9 @@ class Studio
 			if ($this->_isError($result))
 				throw new Exception($result[0], $result[1]);
 
-			//return array_slice($result, 2);
-			array_splice($result, 0, 2);
-			return $result;
+			return array_slice($result, 2);
+			//array_splice($result, 0, 2);
+			//return $result;
 		}
 		catch (Exception $e) {
 			return array($e->getMessage(), self::$errMsg[$e->getCode()]);

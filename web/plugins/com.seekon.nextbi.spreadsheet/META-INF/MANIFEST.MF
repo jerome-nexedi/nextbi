@@ -9,3 +9,4 @@ Require-Bundle: com.seekon.com.caucho.quercus;bundle-version="4.0.25",
  com.seekon.nextbi.palo.api;bundle-version="1.0.0"
 Context-Path: /spreadsheet
 Web-Folder: /web
+Import-Package: com.tensegrity.palojava
