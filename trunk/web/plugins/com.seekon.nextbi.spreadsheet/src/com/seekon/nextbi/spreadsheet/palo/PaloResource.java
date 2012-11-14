@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.palo.api.Connection;
-import org.palo.api.ConnectionFactory;
 import org.palo.api.Consolidation;
 import org.palo.api.Cube;
 import org.palo.api.Database;
@@ -16,10 +15,9 @@ import org.palo.api.Element;
 import org.palo.api.Rule;
 import org.palo.api.Subset;
 
+import com.caucho.quercus.annotation.ResourceType;
 import com.tensegrity.palojava.CubeInfo;
 import com.tensegrity.palojava.DimensionInfo;
-
-import com.caucho.quercus.annotation.ResourceType;
 
 @ResourceType("palo service")
 public class PaloResource {
@@ -28,20 +26,19 @@ public class PaloResource {
 
   public PaloResource(String server, String port, String username, String password) {
     super();
-    connection = ConnectionFactory.getInstance().newConnection(server, port,
-      username, password);
+    connection = ConnectionPool.getInstance().getConnection(server, port, username,
+      password);
   }
 
   public void disconnect() {
-    connection.disconnect();
+    ConnectionPool.getInstance().disconnect(connection);
   }
 
   public void ping() {
     connection.ping();
   }
 
-  public Object[] dimension_list_elements(String databaseName,
-    String dimName) {
+  public Object[] dimension_list_elements(String databaseName, String dimName) {
     Database database = connection.getDatabaseByName(databaseName);
     Dimension dimension = database.getDimensionByName(dimName);
     Element[] elements = dimension.getElements();
@@ -95,8 +92,8 @@ public class PaloResource {
     return result.toArray();
   }
 
-  public Object[] palo_datav(String databaseName, String cubeName, String rowElement,
-    List columnElements) {
+  public Object[] palo_datav(String databaseName, String cubeName,
+    String rowElement, List columnElements) {
     Object[] data = palo_datav(databaseName, cubeName, new String[] { rowElement },
       checkAndGetAllowedElementList(columnElements));
     List result = columnElements.subList(0, 2);
@@ -511,21 +508,23 @@ public class PaloResource {
     Dimension dim = db.getDimensionByName(dimName);
     Element element = dim.addElement(elemName, elemType);
   }
-  
-  public String palo_get_element_id(String databaseName, String dimName, String elemName){
+
+  public String palo_get_element_id(String databaseName, String dimName,
+    String elemName) {
     Database db = connection.getDatabaseByName(databaseName);
     Dimension dim = db.getDimensionByName(dimName);
     Element element = dim.getElementByName(elemName);
     return element.getId();
   }
-  
-  public String palo_get_cube_id(PaloResource resource,String databaseName, String cubeName) {
+
+  public String palo_get_cube_id(PaloResource resource, String databaseName,
+    String cubeName) {
     Database db = connection.getDatabaseByName(databaseName);
     Cube cube = db.getCubeByName(cubeName);
     return cube.getId();
   }
-  
-  public String palo_dataa(String databaseName, String cubeName, String[] coordinates){
+
+  public String palo_dataa(String databaseName, String cubeName, String[] coordinates) {
     Database db = connection.getDatabaseByName(databaseName);
     Cube cube = db.getCubeByName(cubeName);
     Object data = cube.getData(coordinates);
